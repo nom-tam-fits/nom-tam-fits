@@ -176,6 +176,13 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         return hdr;
     }
 
+    @Override
+    public void setColumnName(int index, String name, String comment)
+            throws IndexOutOfBoundsException, HeaderCardException {
+        super.setColumnName(index, name, comment);
+        myData.setColumnName(index, name);
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     public int addColumn(Object newCol) throws FitsException {

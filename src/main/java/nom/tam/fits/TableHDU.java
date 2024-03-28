@@ -48,6 +48,23 @@ import static nom.tam.fits.header.Standard.TTYPEn;
 public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> {
 
     /**
+     * Returns the default name for a columns with the specified index, to use if no column name was explicitly defined
+     * 
+     * @param  col The zero-based Java index of the column
+     * 
+     * @return     The default column name to use if no other name was defined.
+     * 
+     * @since      1.20
+     * 
+     * @author     Attila Kovacs
+     * 
+     * @see        #setColumnName(int, String, String)
+     */
+    public static String getDefaultColumnName(int col) {
+        return "Column " + (col + 1);
+    }
+
+    /**
      * Create the TableHDU. Note that this will normally only be invoked by subclasses in the FITS package.
      *
      * @deprecated     intended for internal use. Its visibility should be reduced to package level in the future.
@@ -57,11 +74,6 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     protected TableHDU(Header hdr, T td) {
         super(hdr, td);
-        for (int i = getNCols(); --i >= 0;) {
-            if (getColumnName(i) == null) {
-                setDefaultColumnName(i);
-            }
-        }
     }
 
     /**
@@ -81,7 +93,6 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     public int addColumn(Object newCol) throws FitsException {
         int nCols = getNCols();
         myHeader.findCard(TFIELDS).setValue(nCols);
-        setDefaultColumnName(nCols);
         return nCols;
     }
 
@@ -356,11 +367,14 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Get the name of a column in the table.
+     * Gets the name of a column in the table, as it appears in this HDU's header. It may differ from a more currently
+     * assigned name of the binary table data column after the HDU creation or reading.
      *
      * @param  index The 0-based column index.
      *
      * @return       The column name.
+     * 
+     * @see          BinaryTable.ColumnDesc#name()
      */
     public String getColumnName(int index) {
 
@@ -620,33 +634,26 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * Sets the name / ID of a specific column in this table. Naming columns is generally a good idea so that people can
      * figure out what sort of data actually appears in specific table columns.
      * 
-     * @param  index               the column index
-     * @param  name                the name or ID we want to assing to the column
-     * @param  comment             Any additional comment we would like to store alongside in the FITS header. (The
-     *                                 comment may be truncated or even ommitted, depending on space constraints in the
-     *                                 FITS header.
+     * @param  index                     the column index
+     * @param  name                      the name or ID we want to assing to the column
+     * @param  comment                   Any additional comment we would like to store alongside in the FITS header.
+     *                                       (The comment may be truncated or even ommitted, depending on space
+     *                                       constraints in the FITS header.
      * 
-     * @throws HeaderCardException if there was a problem wil adding the associated descriptive FITS header keywords to
-     *                                 this table's header.
+     * @throws IndexOutOfBoundsException if the table has no column matching the index
+     * @throws HeaderCardException       if there was a problem wil adding the associated descriptive FITS header
+     *                                       keywords to this table's header.
+     * 
+     * @see                              #getColumnName(int)
+     * @see                              #getDefaultColumnName(int)
      */
-    public void setColumnName(int index, String name, String comment) throws HeaderCardException {
+    public void setColumnName(int index, String name, String comment)
+            throws IndexOutOfBoundsException, HeaderCardException {
+        if (index < 0 || index >= getNCols()) {
+            throw new IndexOutOfBoundsException(
+                    "column index " + index + " is out of bounds for table with " + getNCols() + " columns");
+        }
         setColumnMeta(index, TTYPEn, name, comment, true);
-    }
-
-    private void setDefaultColumnName(int index) {
-        // TODO
-        // AK: We currently allow undefined column names, but some other software, such as fv, have
-        // problemss processing such files. By uncommenting the lines below, we can enable
-        // setting default column names when columns are created or added to the table...
-        // This should not break anything in principle, but can increase header size,
-        // and therefore some of out unit tests may fail, unless adjusted...
-
-        // try {
-        // setColumnName(index, "Column" + (index + 1), "default column name");
-        // } catch (Exception e) {
-        // // Should not happen.
-        // e.printStackTrace();
-        // }
     }
 
     /**

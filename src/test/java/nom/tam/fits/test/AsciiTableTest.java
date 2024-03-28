@@ -59,6 +59,7 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.PaddingException;
 import nom.tam.fits.TableHDU;
 import nom.tam.fits.header.NonStandard;
@@ -653,7 +654,7 @@ public class AsciiTableTest {
         AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
         assertEquals("I10", hdu.getColumnFormat(1));
         assertEquals("I10", hdu.getColumnMeta(1, "TFORM"));
-        Assert.assertNull(hdu.getColumnName(1));
+        Assert.assertEquals(TableHDU.getDefaultColumnName(1), hdu.getColumnName(1));
 
         hdu.setColumnMeta(1, "TTYPE", "TATA", null);
         assertEquals("TATA", hdu.getColumnName(1));
@@ -675,10 +676,8 @@ public class AsciiTableTest {
     public void testDelete() throws Exception {
         AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
         assertEquals(5, hdu.getNCols());
-        assertEquals(18, hdu.getHeader().size());
         hdu.deleteColumnsIndexOne(1, 1, new String[] {});
         assertEquals(4, hdu.getNCols());
-        assertEquals(17, hdu.getHeader().size());
     }
 
     @Test(expected = FitsException.class)
@@ -692,7 +691,6 @@ public class AsciiTableTest {
         AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
         hdu.deleteColumnsIndexOne(1, 0, new String[] {});
         assertEquals(5, hdu.getNCols());
-        assertEquals(18, hdu.getHeader().size());
     }
 
     @Test
@@ -1363,4 +1361,44 @@ public class AsciiTableTest {
         Object[] cols = new Object[] {new int[3], "blah"};
         AsciiTable.fromColumnMajor(cols); /// addColumn("blah") throws IllegalArgumentException, recast to FitsException
     }
+
+    @Test
+    public void testSetColumnName() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        AsciiTableHDU hdu = tab.toHDU();
+
+        hdu.setColumnName(1, "my column", "custom column name");
+
+        Assert.assertEquals(TableHDU.getDefaultColumnName(0), hdu.getColumnName(0));
+        Assert.assertEquals("my column", hdu.getColumnName(1));
+    }
+
+    @Test(expected = HeaderCardException.class)
+    public void testSetColumnNameInvalidString() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        AsciiTableHDU hdu = tab.toHDU();
+
+        hdu.setColumnName(1, "my column\n", "invalid column name");
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testSetColumnNameNegativeIndex() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        AsciiTableHDU hdu = tab.toHDU();
+
+        hdu.setColumnName(-1, "my column", "invalid column name");
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testSetColumnNameIndexOutOfBounds() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        AsciiTableHDU hdu = tab.toHDU();
+
+        hdu.setColumnName(2, "my column", "invalid column name");
+    }
+
 }

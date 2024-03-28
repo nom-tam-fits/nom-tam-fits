@@ -909,18 +909,9 @@ public class BinaryTableTest {
 
             Fits f = new Fits();
             Object[] data = new Object[] {bytes, bits, bools, shorts, ints, floats, doubles, longs, strings};
-            // complex,
-            // dcomplex, complex_arr, dcomplex_arr, vcomplex};
             BinaryTableHDU bhdu = (BinaryTableHDU) Fits.makeHDU(data);
 
-            bhdu.setComplexColumn(9);
-            bhdu.setComplexColumn(10);
-            bhdu.setComplexColumn(11);
-            bhdu.setComplexColumn(12);
-            bhdu.setComplexColumn(13);
-
             f.addHDU(bhdu);
-            bhdu.setColumnName(9, "Complex1", null);
 
             FitsFile bf = new FitsFile("target/bt1c.fits", "rw");
             f.write(bf);

@@ -1873,4 +1873,38 @@ public class BinaryTableNewTest {
         Assert.assertEquals(4 * FitsFactory.FITS_BLOCK_SIZE, file.length());
     }
 
+    @Test
+    public void testIndexOf() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(BinaryTable.ColumnDesc.createForScalars(byte.class));
+        tab.addColumn(BinaryTable.ColumnDesc.createForScalars(int.class).name("my column"));
+
+        Assert.assertEquals(0, tab.indexOf(TableHDU.getDefaultColumnName(0)));
+        Assert.assertEquals(1, tab.indexOf("my column"));
+        Assert.assertEquals(-1, tab.indexOf("not in this table"));
+    }
+
+    @Test
+    public void testGetDescriptorString() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(BinaryTable.ColumnDesc.createForScalars(byte.class));
+        tab.addColumn(BinaryTable.ColumnDesc.createForScalars(int.class).name("my column"));
+
+        Assert.assertEquals(tab.getDescriptor(0), tab.getDescriptor(TableHDU.getDefaultColumnName(0)));
+        Assert.assertEquals(tab.getDescriptor(1), tab.getDescriptor("my column"));
+        Assert.assertNull(tab.getDescriptor("not in this table"));
+    }
+
+    @Test
+    public void testSetColumnNameNull() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(BinaryTable.ColumnDesc.createForScalars(byte.class));
+        tab.addColumn(BinaryTable.ColumnDesc.createForScalars(int.class));
+        tab.getDescriptor(1).name(null);
+        BinaryTableHDU hdu = tab.toHDU();
+
+        Assert.assertEquals(TableHDU.getDefaultColumnName(0), hdu.getHeader().getStringValue(Standard.TTYPEn.n(1)));
+        Assert.assertFalse(hdu.getHeader().containsKey(Standard.TTYPEn.n(2)));
+    }
+
 }
