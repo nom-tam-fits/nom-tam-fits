@@ -149,21 +149,89 @@ public enum Stokes {
     }
 
     /**
-     * Helper class for setting or interpreting a set of measured Stokes parameters stored along an array dimension.
+     * Helper class for setting or interpreting a set of measured Stokes parameters stored along an array dimension. Two
+     * instances of Stokes parameters are considered equal if they measure the same polarization terms, in the same
+     * order.
      * 
      * @author Attila Kovacs
      * 
      * @since  1.20
      */
-    public abstract static class Parameters {
+    public static final class Parameters {
+        private int flags;
         private int offset;
         private int step;
         private int count;
 
-        private Parameters(int rpix, int delt, int n) {
-            this.offset = rpix;
-            this.step = delt;
-            this.count = n;
+        private Parameters(int flags) {
+            this.flags = flags;
+
+            boolean reversed = (flags & REVERSED_ORDER) != 0;
+
+            step = reversed ? -1 : 1;
+            count = STANDARD_PARAMETER_COUNT;
+
+            if ((flags & FULL_CROSS_POLARIZATION) == 0) {
+                offset = reversed ? Stokes.V.getCoordinateValue() : Stokes.I.getCoordinateValue();
+            } else {
+                step = -step;
+
+                if ((flags & CIRCULAR_CROSS_POLARIZATION) == 0) {
+                    offset = reversed ? Stokes.YX.getCoordinateValue() : Stokes.XX.getCoordinateValue();
+                } else if ((flags & LINEAR_CROSS_POLARIZATION) == 0) {
+                    offset = reversed ? Stokes.LR.getCoordinateValue() : Stokes.RR.getCoordinateValue();
+                } else {
+                    offset = reversed ? Stokes.YX.getCoordinateValue() : Stokes.RR.getCoordinateValue();
+                    count = FULL_PARAMETER_COUNT;
+                }
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return flags;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return (o instanceof Parameters) ? ((Parameters) o).hashCode() == hashCode() : false;
+        }
+
+        /**
+         * Checks if the parameters are stored in reversed index order in the FITS.
+         * 
+         * @return <code>true</code> if the Stokes parameters will be stored in reversed index order in the FITS,
+         *             otherwise <code>false</code>.
+         */
+        public boolean isReversedOrder() {
+            return (flags & REVERSED_ORDER) != 0;
+        }
+
+        /**
+         * Checks if the parameters are for measuring cross-polarization between two inputs.
+         * 
+         * @return <code>true</code> if it is for cross polarization, otherwise <code>false</code>.
+         */
+        public boolean isCrossPolarization() {
+            return (flags & FULL_CROSS_POLARIZATION) != 0;
+        }
+
+        /**
+         * Checks if the parameters include linear polarization terms.
+         * 
+         * @return <code>true</code> if linear polarization is measured, otherwise <code>false</code>.
+         */
+        public boolean hasLinearPolarization() {
+            return (flags & FULL_CROSS_POLARIZATION) != CIRCULAR_CROSS_POLARIZATION;
+        }
+
+        /**
+         * Checks if the parameters include circular polarization term(s).
+         * 
+         * @return <code>true</code> if cirular cross polarization is measured, otherwise <code>false</code>.
+         */
+        public boolean hasCircularPolarization() {
+            return (flags & FULL_CROSS_POLARIZATION) != LINEAR_CROSS_POLARIZATION;
         }
 
         /**
@@ -314,138 +382,64 @@ public enum Stokes {
     }
 
     /**
-     * Stokes parameters for a single-ended polarization measurement (I, Q, U, V)
+     * Returns a new set of standard single-input Stokes parameters (I, Q, U, V).
      * 
-     * @author Attila Kovacs
-     * 
-     * @since  1.20
+     * @return the standard set of I, Q, U, V Stokes parameters.
      */
-    public static class SingleEndedPolarization extends Parameters {
-
-        /** Constructor for single ended polarization parameters in I, Q, U, V order. */
-        public SingleEndedPolarization() {
-            this(false);
-        }
-
-        /**
-         * Constructor for single ended polarization parameters in the specified index order.
-         *
-         * @param reversedOrder <code>true</code> If the parameters are to be stored in the order V, U, Q, I; or else
-         *                          <code>false</code> to store them in I, Q, U, V index order.
-         */
-        public SingleEndedPolarization(boolean reversedOrder) {
-            super(reversedOrder ? Stokes.V.getCoordinateValue() : Stokes.I.getCoordinateValue(), reversedOrder ? -1 : 1,
-                    STANDARD_PARAMETER_COUNT);
-        }
+    public static Parameters parameters() {
+        return parameters(0);
     }
 
     /**
-     * Stokes parameters for a dual-input cross polarization (circular or linear, or full cross polarization containing
-     * both circular and linear parameters).
+     * Returns the set of Stokes parameters for the given bitwise flags, which may specify linear or cicular cross
+     * polarization, or both, and/or if the parameters are stored in reversed index order in the FITS. The flags can be
+     * bitwise OR'd, e.g. {@link #REVERSED_ORDER} | {@link #CIRCULAR_CROSS_POLARIZATION} will select Stokes parameters
+     * for measuring circular cross polarization, stored in reversed index order that is: (LR, RL, LL, RR).
      * 
-     * @author Attila Kovacs
+     * @param  flags the bitwise flags specifying the type of Stokes parameters.
      * 
-     * @since  1.20
+     * @return       the set of Stokes parameters for the given bitwise flags.
      */
-    public abstract static class CrossPolarization extends Parameters {
-        private CrossPolarization(int rpix, int delt, int n) {
-            super(rpix, delt, n);
-        }
-
+    public static Parameters parameters(int flags) {
+        return new Parameters(flags);
     }
 
     /**
-     * Stokes parameters for a dual-input circular cross-polarization parameters (RR, LL, RL, LR).
-     * 
-     * @author Attila Kovacs
-     * 
-     * @since  1.20
+     * Bitwise flag for Stokes parameters stored in reversed index order
      */
-    public static class CircularCrossPolarization extends CrossPolarization {
-
-        /** Constructor for circular cross-polarization parameters in RR, LL, RL, LR order. */
-        public CircularCrossPolarization() {
-            this(false);
-        }
-
-        /**
-         * Constructor for circular cross-polarization parameters in the specified index order.
-         *
-         * @param reversedOrder <code>true</code> If the parameters are to be stored in the order LR, RL, LL, RR; or
-         *                          else <code>false</code> to store them in RR, LL, RL, LR index order.
-         */
-        public CircularCrossPolarization(boolean reversedOrder) {
-            super(reversedOrder ? Stokes.LR.getCoordinateValue() : Stokes.RR.getCoordinateValue(), reversedOrder ? 1 : -1,
-                    STANDARD_PARAMETER_COUNT);
-        }
-    }
+    public static final int REVERSED_ORDER = 1;
 
     /**
-     * Stokes parameters for a dual-input linear cross-polarization parameters (XX, YY, XY, YX).
-     * 
-     * @author Attila Kovacs
-     * 
-     * @since  1.20
+     * Bitwise flag for dual-input linear cross polarization Stokes parameters (XX, YY, XY, YX)
      */
-    public static class LinearCrossPolarization extends CrossPolarization {
-
-        /** Constructor for linear cross-polarization parameters in XX, YY, XY, YX order. */
-        public LinearCrossPolarization() {
-            this(false);
-        }
-
-        /**
-         * Constructor for linear cross-polarization parameters in the specified index order.
-         *
-         * @param reversedOrder <code>true</code> If the parameters are to be stored in the order YX, XY, YY, XX; or
-         *                          else <code>false</code> to store them in XX, YY, XY, YX index order.
-         */
-        public LinearCrossPolarization(boolean reversedOrder) {
-            super(reversedOrder ? Stokes.YX.getCoordinateValue() : Stokes.XX.getCoordinateValue(), reversedOrder ? 1 : -1,
-                    STANDARD_PARAMETER_COUNT);
-        }
-    }
+    public static final int LINEAR_CROSS_POLARIZATION = 2;
 
     /**
-     * Stokes parameters for full (circular + linear) cross-polarization measurements
-     * 
-     * @author Attila Kovacs
-     * 
-     * @since  1.20
+     * Bitwise flag for dual-input circular cross polarization Stokes parameters (RR, LL, RL, LR)
      */
-    public static class FullCrossPolarization extends CrossPolarization {
+    public static final int CIRCULAR_CROSS_POLARIZATION = 4;
 
-        /** Constructor for full cross-polarization parameters in RR, LL, RL, LR, XX, YY, XY, YX order. */
-        public FullCrossPolarization() {
-            this(false);
-        }
-
-        /**
-         * Constructor for full cross-polarization parameters in the specified index order.
-         *
-         * @param reversedOrder <code>true</code> If the parameters are to be stored in the order YX, XY, YY, XX, LR,
-         *                          RL, LL, RR; or else <code>false</code> to store them in RR, LL, RL, LR, XX, YY, XY,
-         *                          YX index order.
-         */
-        public FullCrossPolarization(boolean reversedOrder) {
-            super(reversedOrder ? Stokes.YX.getCoordinateValue() : Stokes.RR.getCoordinateValue(), reversedOrder ? 1 : -1,
-                    FULL_PARAMETER_COUNT);
-        }
-    }
+    /**
+     * Bitwise flag for dual-input full (linear + circular) cross polarization Stokes parameters (RR, LL, RL, LR, XX,
+     * YY, XY, YX)
+     */
+    public static final int FULL_CROSS_POLARIZATION = LINEAR_CROSS_POLARIZATION | CIRCULAR_CROSS_POLARIZATION;
 
     private static Parameters forCoordinateRange(int start, int count) {
         if (start == I.index) {
-            return new SingleEndedPolarization();
+            return parameters(0);
         } else if (start == V.index) {
-            return new SingleEndedPolarization(true);
+            return parameters(REVERSED_ORDER);
         } else if (start == RR.index) {
-            return count <= V.index ? new CircularCrossPolarization() : new FullCrossPolarization();
+            return count <= STANDARD_PARAMETER_COUNT ? parameters(CIRCULAR_CROSS_POLARIZATION) :
+                    parameters(FULL_CROSS_POLARIZATION);
         } else if (start == LR.index) {
-            return new CircularCrossPolarization(true);
+            return parameters(CIRCULAR_CROSS_POLARIZATION | REVERSED_ORDER);
         } else if (start == XX.index) {
-            return new LinearCrossPolarization();
+            return parameters(LINEAR_CROSS_POLARIZATION);
         } else if (start == YX.index) {
-            return count <= V.index ? new LinearCrossPolarization(true) : new FullCrossPolarization(true);
+            return count <= STANDARD_PARAMETER_COUNT ? parameters(LINEAR_CROSS_POLARIZATION | REVERSED_ORDER) :
+                    parameters(FULL_CROSS_POLARIZATION | REVERSED_ORDER);
         } else {
             return null;
         }

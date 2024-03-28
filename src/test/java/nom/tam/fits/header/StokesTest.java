@@ -80,7 +80,7 @@ public class StokesTest {
 
     @Test
     public void testSingleEndedParameters() throws Exception {
-        Stokes.Parameters p = new Stokes.SingleEndedPolarization();
+        Stokes.Parameters p = Stokes.parameters();
 
         Assert.assertEquals(Stokes.I, p.getParameter(0));
         Assert.assertEquals(Stokes.Q, p.getParameter(1));
@@ -133,7 +133,7 @@ public class StokesTest {
 
     @Test
     public void testCircularCrossParameters() throws Exception {
-        Stokes.Parameters p = new Stokes.CircularCrossPolarization();
+        Stokes.Parameters p = Stokes.parameters(Stokes.CIRCULAR_CROSS_POLARIZATION);
 
         Assert.assertEquals(Stokes.RR, p.getParameter(0));
         Assert.assertEquals(Stokes.LL, p.getParameter(1));
@@ -186,7 +186,7 @@ public class StokesTest {
 
     @Test
     public void testLinearCrossParameters() throws Exception {
-        Stokes.Parameters p = new Stokes.LinearCrossPolarization();
+        Stokes.Parameters p = Stokes.parameters(Stokes.LINEAR_CROSS_POLARIZATION);
 
         Assert.assertEquals(Stokes.XX, p.getParameter(0));
         Assert.assertEquals(Stokes.YY, p.getParameter(1));
@@ -239,7 +239,7 @@ public class StokesTest {
 
     @Test
     public void testFullCrossParameters() throws Exception {
-        Stokes.Parameters p = new Stokes.FullCrossPolarization();
+        Stokes.Parameters p = Stokes.parameters(Stokes.FULL_CROSS_POLARIZATION);
 
         Assert.assertEquals(Stokes.RR, p.getParameter(0));
         Assert.assertEquals(Stokes.LL, p.getParameter(1));
@@ -309,57 +309,57 @@ public class StokesTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testGetNegParameter() throws Exception {
-        new Stokes.SingleEndedPolarization().getParameter(-1);
+        Stokes.parameters().getParameter(-1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testGetOutOfBoundsParameter() throws Exception {
-        new Stokes.SingleEndedPolarization().getParameter(4);
+        Stokes.parameters().getParameter(4);
     }
 
     @Test(expected = FitsException.class)
     public void testFillImageHeaderNoNAXIS() throws Exception {
-        new Stokes.SingleEndedPolarization().fillImageHeader(new Header(), 0);
+        Stokes.parameters().fillImageHeader(new Header(), 0);
     }
 
     @Test(expected = FitsException.class)
     public void testFillTableHeaderNoTDIM() throws Exception {
-        new Stokes.SingleEndedPolarization().fillTableHeader(new Header(), 0, 0);
+        Stokes.parameters().fillTableHeader(new Header(), 0, 0);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testFillImageHeaderNegIndex() throws Exception {
         Header h = new Header();
         h.addValue(Standard.NAXIS, 3);
-        new Stokes.SingleEndedPolarization().fillImageHeader(h, -1);
+        Stokes.parameters().fillImageHeader(h, -1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testFillImageHeaderOutOfBoundsIndex() throws Exception {
         Header h = new Header();
         h.addValue(Standard.NAXIS, 3);
-        new Stokes.SingleEndedPolarization().fillImageHeader(h, 3);
+        Stokes.parameters().fillImageHeader(h, 3);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testFillTableHeaderInvalidColumn() throws Exception {
         Header h = new Header();
         h.addValue(Standard.TDIMn.n(1), "(4)");
-        new Stokes.SingleEndedPolarization().fillTableHeader(h, -1, 0);
+        Stokes.parameters().fillTableHeader(h, -1, 0);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testFillTableHeaderNegIndex() throws Exception {
         Header h = new Header();
         h.addValue(Standard.TDIMn.n(1), "(4)");
-        new Stokes.SingleEndedPolarization().fillTableHeader(h, 0, -1);
+        Stokes.parameters().fillTableHeader(h, 0, -1);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testFillTableHeaderOutOfBoundsIndex() throws Exception {
         Header h = new Header();
         h.addValue(Standard.TDIMn.n(1), "(4)");
-        new Stokes.SingleEndedPolarization().fillTableHeader(h, 0, 3);
+        Stokes.parameters().fillTableHeader(h, 0, 3);
     }
 
     @Test
@@ -381,7 +381,7 @@ public class StokesTest {
         Header h = new Header();
         h.addValue(Standard.NAXIS, 1);
 
-        new Stokes.SingleEndedPolarization().fillImageHeader(h, 0);
+        Stokes.parameters().fillImageHeader(h, 0);
         h.deleteKey(Standard.NAXIS);
         Stokes.fromImageHeader(h);
     }
@@ -391,7 +391,7 @@ public class StokesTest {
         Header h = new Header();
         h.addValue(Standard.NAXIS, 1);
 
-        new Stokes.SingleEndedPolarization().fillImageHeader(h, 0);
+        Stokes.parameters().fillImageHeader(h, 0);
         h.addValue("CRVAL1", 0.0, null);
         Stokes.fromImageHeader(h);
     }
@@ -401,7 +401,7 @@ public class StokesTest {
         Header h = new Header();
         h.addValue(Standard.NAXIS, 1);
 
-        new Stokes.SingleEndedPolarization().fillImageHeader(h, 0);
+        Stokes.parameters().fillImageHeader(h, 0);
         h.addValue("CRPIX1", 1.0, null);
         Stokes.fromImageHeader(h);
     }
@@ -411,7 +411,7 @@ public class StokesTest {
         Header h = new Header();
         h.addValue(Standard.NAXIS, 1);
 
-        new Stokes.SingleEndedPolarization().fillImageHeader(h, 0);
+        Stokes.parameters().fillImageHeader(h, 0);
         h.addValue("CDELT1", 2.0, null);
         Stokes.fromImageHeader(h);
     }
@@ -427,7 +427,7 @@ public class StokesTest {
         Header h = new Header();
         h.addValue(Standard.TDIMn.n(1), "(4)");
 
-        new Stokes.SingleEndedPolarization().fillTableHeader(h, 0, 0);
+        Stokes.parameters().fillTableHeader(h, 0, 0);
         h.deleteKey(Standard.TDIMn.n(1));
         Stokes.fromTableHeader(h, 0);
     }
@@ -437,7 +437,7 @@ public class StokesTest {
         Header h = new Header();
         h.addValue(Standard.TDIMn.n(1), "(4)");
 
-        new Stokes.SingleEndedPolarization().fillTableHeader(h, 0, 0);
+        Stokes.parameters().fillTableHeader(h, 0, 0);
         h.addValue("1CRVL1", 0.0, null);
         Stokes.fromTableHeader(h, 0);
     }
@@ -447,7 +447,7 @@ public class StokesTest {
         Header h = new Header();
         h.addValue(Standard.TDIMn.n(1), "(4)");
 
-        new Stokes.SingleEndedPolarization().fillTableHeader(h, 0, 0);
+        Stokes.parameters().fillTableHeader(h, 0, 0);
         h.addValue("1CRPX1", 1.0, null);
         Stokes.fromTableHeader(h, 0);
     }
@@ -457,8 +457,27 @@ public class StokesTest {
         Header h = new Header();
         h.addValue(Standard.TDIMn.n(1), "(4)");
 
-        new Stokes.SingleEndedPolarization().fillTableHeader(h, 0, 0);
+        Stokes.parameters().fillTableHeader(h, 0, 0);
         h.addValue("1CDLT1", 2.0, null);
         Stokes.fromTableHeader(h, 0);
+    }
+
+    @Test
+    public void testParameters() throws Exception {
+        for (int i = 0; i < 8; i++) {
+            Stokes.Parameters p = Stokes.parameters(i);
+            Assert.assertEquals((i & Stokes.REVERSED_ORDER) != 0, p.isReversedOrder());
+            Assert.assertEquals((i & Stokes.FULL_CROSS_POLARIZATION) != 0, p.isCrossPolarization());
+
+            if (p.isCrossPolarization()) {
+                Assert.assertEquals((i & Stokes.CIRCULAR_CROSS_POLARIZATION) != 0, p.hasCircularPolarization());
+                Assert.assertEquals((i & Stokes.LINEAR_CROSS_POLARIZATION) != 0, p.hasLinearPolarization());
+            } else {
+                Assert.assertTrue(p.hasCircularPolarization());
+                Assert.assertTrue(p.hasLinearPolarization());
+            }
+
+        }
+
     }
 }
