@@ -3942,7 +3942,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @param  name The column name (case sensitive).
      * 
-     * @return      The descriptor of the first column by that name, or <code>null</null> if the table contains no
+     * @return      The descriptor of the first column by that name, or <code>null</code> if the table contains no
      *                  column by that name.
      * 
      * @see         #getDescriptor(int)
