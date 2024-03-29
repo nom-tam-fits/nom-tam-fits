@@ -503,4 +503,52 @@ public class StokesTest {
         p0.fillImageHeader(h, 0);
         Assert.assertEquals(p0, Stokes.fromImageHeader(h).getValue());
     }
+
+    @Test(expected = FitsException.class)
+    public void testReverseOrderInvalidCDELT() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+        h.addValue(Standard.NAXIS1, 4);
+
+        Stokes.Parameters p0 = Stokes.parameters(Stokes.REVERSED_ORDER);
+        p0.fillImageHeader(h, 0);
+        h.addValue(Standard.CDELTn.n(1), 1.0);
+        Stokes.fromImageHeader(h).getValue();
+    }
+
+    @Test(expected = FitsException.class)
+    public void testReverseOrderInvalidCircularCDELT() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+        h.addValue(Standard.NAXIS1, 4);
+
+        Stokes.Parameters p0 = Stokes.parameters(Stokes.REVERSED_ORDER | Stokes.CIRCULAR_CROSS_POLARIZATION);
+        p0.fillImageHeader(h, 0);
+        h.addValue(Standard.CDELTn.n(1), -1.0);
+        Assert.assertNull(Stokes.fromImageHeader(h).getValue());
+    }
+
+    @Test(expected = FitsException.class)
+    public void testReverseOrderInvalidLinearCDELT() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+        h.addValue(Standard.NAXIS1, 4);
+
+        Stokes.Parameters p0 = Stokes.parameters(Stokes.REVERSED_ORDER | Stokes.LINEAR_CROSS_POLARIZATION);
+        p0.fillImageHeader(h, 0);
+        h.addValue(Standard.CDELTn.n(1), -1.0);
+        Assert.assertNull(Stokes.fromImageHeader(h).getValue());
+    }
+
+    @Test(expected = FitsException.class)
+    public void testReverseOrderInvalidFullCDELT() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+        h.addValue(Standard.NAXIS1, 8);
+
+        Stokes.Parameters p0 = Stokes.parameters(Stokes.REVERSED_ORDER | Stokes.FULL_CROSS_POLARIZATION);
+        p0.fillImageHeader(h, 0);
+        h.addValue(Standard.CDELTn.n(1), -1.0);
+        Assert.assertNull(Stokes.fromImageHeader(h).getValue());
+    }
 }

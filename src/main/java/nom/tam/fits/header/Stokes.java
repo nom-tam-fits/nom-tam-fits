@@ -500,11 +500,6 @@ public enum Stokes {
                             + header.getDoubleValue(WCS.CRPIXna.n(i)) + ", expected 0");
                 }
 
-                if (header.getDoubleValue(WCS.CDELTna.n(i)) != p.step) {
-                    throw new FitsException("Invalid Stokes " + WCS.CDELTna.n(i).key() + " value: "
-                            + header.getDoubleValue(WCS.CDELTna.n(i)) + ", expected " + p.step);
-                }
-
                 return new AbstractMap.SimpleImmutableEntry(n - i, p);
             }
         }
@@ -567,11 +562,6 @@ public enum Stokes {
                 if (header.getDoubleValue(WCS.nCRPXn.n(i, column)) != 0.0) {
                     throw new FitsException("Invalid Stokes " + WCS.nCRPXn.n(i, column).key() + " value: "
                             + header.getDoubleValue(WCS.nCRPXn.n(i, column)) + ", expected 0");
-                }
-
-                if (header.getDoubleValue(WCS.nCDLTn.n(i, column)) != p.step) {
-                    throw new FitsException("Invalid Stokes " + WCS.nCDLTn.n(i, column).key() + " value: "
-                            + header.getDoubleValue(WCS.nCDLTn.n(i, column)) + ", expected " + p.step);
                 }
 
                 return new AbstractMap.SimpleImmutableEntry(n - i, p);
