@@ -478,6 +478,29 @@ public class StokesTest {
             }
 
         }
+    }
 
+    @Test
+    public void testReverseOrderHeaders() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+        h.addValue(Standard.NAXIS1, 4);
+
+        Stokes.Parameters p0 = Stokes.parameters(Stokes.REVERSED_ORDER);
+        p0.fillImageHeader(h, 0);
+        Assert.assertEquals(p0, Stokes.fromImageHeader(h).getValue());
+
+        p0 = Stokes.parameters(Stokes.REVERSED_ORDER | Stokes.CIRCULAR_CROSS_POLARIZATION);
+        p0.fillImageHeader(h, 0);
+        Assert.assertEquals(p0, Stokes.fromImageHeader(h).getValue());
+
+        p0 = Stokes.parameters(Stokes.REVERSED_ORDER | Stokes.LINEAR_CROSS_POLARIZATION);
+        p0.fillImageHeader(h, 0);
+        Assert.assertEquals(p0, Stokes.fromImageHeader(h).getValue());
+
+        h.addValue(Standard.NAXIS1, 8);
+        p0 = Stokes.parameters(Stokes.REVERSED_ORDER | Stokes.FULL_CROSS_POLARIZATION);
+        p0.fillImageHeader(h, 0);
+        Assert.assertEquals(p0, Stokes.fromImageHeader(h).getValue());
     }
 }

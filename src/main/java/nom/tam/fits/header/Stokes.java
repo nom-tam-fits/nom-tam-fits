@@ -425,24 +425,34 @@ public enum Stokes {
      */
     public static final int FULL_CROSS_POLARIZATION = LINEAR_CROSS_POLARIZATION | CIRCULAR_CROSS_POLARIZATION;
 
-    private static Parameters forCoordinateRange(int start, int count) {
-        if (start == I.index) {
-            return parameters(0);
-        } else if (start == V.index) {
+    private static Parameters forCoords(double start, double delt, int count) {
+        int flag = 0;
+
+        if (start == I.index && delt == 1.0) {
+            return parameters();
+        } else if (start == V.index && delt == -1.0) {
             return parameters(REVERSED_ORDER);
-        } else if (start == RR.index) {
-            return count <= STANDARD_PARAMETER_COUNT ? parameters(CIRCULAR_CROSS_POLARIZATION) :
-                    parameters(FULL_CROSS_POLARIZATION);
-        } else if (start == LR.index) {
-            return parameters(CIRCULAR_CROSS_POLARIZATION | REVERSED_ORDER);
-        } else if (start == XX.index) {
-            return parameters(LINEAR_CROSS_POLARIZATION);
-        } else if (start == YX.index) {
-            return count <= STANDARD_PARAMETER_COUNT ? parameters(LINEAR_CROSS_POLARIZATION | REVERSED_ORDER) :
-                    parameters(FULL_CROSS_POLARIZATION | REVERSED_ORDER);
+        } else if (start == RR.index && delt == -1.0) {
+            flag |= count <= STANDARD_PARAMETER_COUNT ? CIRCULAR_CROSS_POLARIZATION : FULL_CROSS_POLARIZATION;
+        } else if (start == LR.index && delt == 1.0) {
+            flag |= CIRCULAR_CROSS_POLARIZATION;
+        } else if (start == XX.index && delt == -1.0) {
+            flag |= LINEAR_CROSS_POLARIZATION;
+        } else if (start == YX.index && delt == 1.0) {
+            flag |= count <= STANDARD_PARAMETER_COUNT ? LINEAR_CROSS_POLARIZATION : FULL_CROSS_POLARIZATION;
         } else {
             return null;
         }
+
+        if (flag != 0) {
+            delt = -delt;
+        }
+
+        if (delt < 0.0) {
+            flag |= REVERSED_ORDER;
+        }
+
+        return parameters(flag);
     }
 
     /**
@@ -477,11 +487,12 @@ public enum Stokes {
 
         for (int i = 1; i <= n; i++) {
             if (Stokes.CTYPE.equalsIgnoreCase(header.getStringValue(WCS.CTYPEna.n(i)))) {
-                Parameters p = forCoordinateRange(header.getIntValue(WCS.CRVALna.n(i)),
+                Parameters p = forCoords(header.getDoubleValue(WCS.CRVALna.n(i)), header.getDoubleValue(WCS.CDELTna.n(i)),
                         header.getIntValue(Standard.NAXISn.n(i), 0));
+
                 if (p == null) {
-                    throw new FitsException("Invalid Stokes " + WCS.CRVALna.n(i).key() + " value: "
-                            + header.getDoubleValue(WCS.CRVALna.n(i)));
+                    throw new FitsException("Invalid Stokes: " + header.getDoubleValue(WCS.CRVALna.n(i)) + " step "
+                            + header.getDoubleValue(WCS.CDELTna.n(i)));
                 }
 
                 if (header.getDoubleValue(WCS.CRPIXna.n(i)) != 0.0) {
@@ -545,10 +556,12 @@ public enum Stokes {
             String d = tokens.nextToken();
 
             if (Stokes.CTYPE.equalsIgnoreCase(header.getStringValue(WCS.nCTYPn.n(i, column)))) {
-                Parameters p = forCoordinateRange(header.getIntValue(WCS.nCRVLn.n(i, column)), Integer.parseInt(d));
+                Parameters p = forCoords(header.getDoubleValue(WCS.nCRVLn.n(i, column)),
+                        header.getDoubleValue(WCS.nCDLTn.n(i, column)), Integer.parseInt(d));
+
                 if (p == null) {
-                    throw new FitsException("Invalid Stokes " + WCS.nCRVLn.n(i, column).key() + " value: "
-                            + header.getDoubleValue(WCS.nCRVLn.n(i, column)));
+                    throw new FitsException("Invalid Stokes: " + +header.getDoubleValue(WCS.nCRVLn.n(i, column)) + " step "
+                            + header.getDoubleValue(WCS.nCDLTn.n(i, column)));
                 }
 
                 if (header.getDoubleValue(WCS.nCRPXn.n(i, column)) != 0.0) {
