@@ -444,11 +444,7 @@ public enum Stokes {
             return null;
         }
 
-        if (flag != 0) {
-            delt = -delt;
-        }
-
-        if (delt < 0.0) {
+        if (delt > 0.0) {
             flag |= REVERSED_ORDER;
         }
 
