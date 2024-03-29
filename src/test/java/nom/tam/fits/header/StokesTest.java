@@ -505,6 +505,54 @@ public class StokesTest {
     }
 
     @Test(expected = FitsException.class)
+    public void testInvalidCDELT() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+        h.addValue(Standard.NAXIS1, 4);
+
+        Stokes.Parameters p0 = Stokes.parameters();
+        p0.fillImageHeader(h, 0);
+        h.addValue(Standard.CDELTn.n(1), -1.0);
+        Stokes.fromImageHeader(h).getValue();
+    }
+
+    @Test(expected = FitsException.class)
+    public void testInvalidCircularCDELT() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+        h.addValue(Standard.NAXIS1, 4);
+
+        Stokes.Parameters p0 = Stokes.parameters(Stokes.CIRCULAR_CROSS_POLARIZATION);
+        p0.fillImageHeader(h, 0);
+        h.addValue(Standard.CDELTn.n(1), 1.0);
+        Assert.assertNull(Stokes.fromImageHeader(h).getValue());
+    }
+
+    @Test(expected = FitsException.class)
+    public void testInvalidLinearCDELT() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+        h.addValue(Standard.NAXIS1, 4);
+
+        Stokes.Parameters p0 = Stokes.parameters(Stokes.LINEAR_CROSS_POLARIZATION);
+        p0.fillImageHeader(h, 0);
+        h.addValue(Standard.CDELTn.n(1), 1.0);
+        Assert.assertNull(Stokes.fromImageHeader(h).getValue());
+    }
+
+    @Test(expected = FitsException.class)
+    public void testInvalidFullCDELT() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+        h.addValue(Standard.NAXIS1, 8);
+
+        Stokes.Parameters p0 = Stokes.parameters(Stokes.FULL_CROSS_POLARIZATION);
+        p0.fillImageHeader(h, 0);
+        h.addValue(Standard.CDELTn.n(1), 1.0);
+        Assert.assertNull(Stokes.fromImageHeader(h).getValue());
+    }
+
+    @Test(expected = FitsException.class)
     public void testReverseOrderInvalidCDELT() throws Exception {
         Header h = new Header();
         h.addValue(Standard.NAXIS, 1);
