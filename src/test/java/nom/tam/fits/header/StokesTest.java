@@ -599,4 +599,23 @@ public class StokesTest {
         h.addValue(Standard.CDELTn.n(1), -1.0);
         Assert.assertNull(Stokes.fromImageHeader(h).getValue());
     }
+
+    @Test
+    public void testEqualsNull() throws Exception {
+        Assert.assertFalse(Stokes.parameters().equals(null));
+    }
+
+    @Test
+    public void testEqualsOther() throws Exception {
+        Assert.assertFalse(Stokes.parameters().equals("blah"));
+    }
+
+    @Test
+    public void testEquals() throws Exception {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Assert.assertEquals(i + ", " + j, (i == j), Stokes.parameters(i).equals(Stokes.parameters(j)));
+            }
+        }
+    }
 }
