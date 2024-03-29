@@ -430,9 +430,17 @@ public enum Stokes {
 
         if (start == I.index && delt == 1.0) {
             return parameters();
-        } else if (start == V.index && delt == -1.0) {
+        }
+        if (start == V.index && delt == -1.0) {
             return parameters(REVERSED_ORDER);
-        } else if (start == RR.index && delt == -1.0) {
+        }
+
+        // Only cross-polarization at this point...
+        if (delt > 0.0) {
+            flag |= REVERSED_ORDER;
+        }
+
+        if (start == RR.index && delt == -1.0) {
             flag |= count <= STANDARD_PARAMETER_COUNT ? CIRCULAR_CROSS_POLARIZATION : FULL_CROSS_POLARIZATION;
         } else if (start == LR.index && delt == 1.0) {
             flag |= CIRCULAR_CROSS_POLARIZATION;
@@ -442,10 +450,6 @@ public enum Stokes {
             flag |= count <= STANDARD_PARAMETER_COUNT ? LINEAR_CROSS_POLARIZATION : FULL_CROSS_POLARIZATION;
         } else {
             return null;
-        }
-
-        if (delt > 0.0) {
-            flag |= REVERSED_ORDER;
         }
 
         return parameters(flag);
