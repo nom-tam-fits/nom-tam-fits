@@ -58,7 +58,7 @@ import nom.tam.fits.Header;
  * @since  1.20
  * 
  * @see    WCS
- * @see    Parameters
+ * @see    #parameters()
  */
 public enum Stokes {
     /** Stokes I: total (polarized + unpolarized) power */
@@ -187,23 +187,54 @@ public enum Stokes {
             }
         }
 
+        private Parameters(int offset, int step, int n) {
+            this.offset = offset;
+            this.step = step;
+            this.count = n;
+
+            if (offset < 0) {
+                int end = offset + (n - 1) * step;
+
+                if (Math.min(offset, end) <= XX.index) {
+                    flags |= LINEAR_CROSS_POLARIZATION;
+                }
+
+                if (Math.max(offset, end) > XX.index) {
+                    flags |= CIRCULAR_CROSS_POLARIZATION;
+                }
+
+                step = -step;
+            }
+
+            if (step < 0) {
+                flags |= REVERSED_ORDER;
+            }
+        }
+
         @Override
         public int hashCode() {
-            return flags;
+            return flags ^ Integer.hashCode(offset) ^ Integer.hashCode(step);
         }
 
         @Override
         public boolean equals(Object o) {
-            return (o instanceof Parameters) ? ((Parameters) o).hashCode() == hashCode() : false;
+            if (!(o instanceof Parameters)) {
+                return false;
+            }
+            Parameters p = (Parameters) o;
+            if (p.flags != flags) {
+                return false;
+            }
+            if (p.offset != offset) {
+                return false;
+            }
+            if (p.step != step) {
+                return false;
+            }
+            return true;
         }
 
-        /**
-         * Checks if the parameters are stored in reversed index order in the FITS.
-         * 
-         * @return <code>true</code> if the Stokes parameters will be stored in reversed index order in the FITS,
-         *             otherwise <code>false</code>.
-         */
-        public boolean isReversedOrder() {
+        boolean isReversedOrder() {
             return (flags & REVERSED_ORDER) != 0;
         }
 
@@ -326,7 +357,7 @@ public enum Stokes {
             int i = n - coordinateIndex;
 
             header.addValue(WCS.CTYPEna.n(i), Stokes.CTYPE);
-            header.addValue(WCS.CRPIXna.n(i), 0);
+            header.addValue(WCS.CRPIXna.n(i), 1);
             header.addValue(WCS.CRVALna.n(i), offset);
             header.addValue(WCS.CDELTna.n(i), step);
         }
@@ -375,7 +406,7 @@ public enum Stokes {
             int i = n - coordinateIndex;
 
             header.addValue(WCS.nCTYPn.n(i, column), Stokes.CTYPE);
-            header.addValue(WCS.nCRPXn.n(i, column), 0);
+            header.addValue(WCS.nCRPXn.n(i, column), 1);
             header.addValue(WCS.nCRVLn.n(i, column), offset);
             header.addValue(WCS.nCDLTn.n(i, column), step);
         }
@@ -385,6 +416,8 @@ public enum Stokes {
      * Returns a new set of standard single-input Stokes parameters (I, Q, U, V).
      * 
      * @return the standard set of I, Q, U, V Stokes parameters.
+     * 
+     * @see    #parameters(int)
      */
     public static Parameters parameters() {
         return parameters(0);
@@ -393,21 +426,26 @@ public enum Stokes {
     /**
      * Returns the set of Stokes parameters for the given bitwise flags, which may specify linear or cicular cross
      * polarization, or both, and/or if the parameters are stored in reversed index order in the FITS. The flags can be
-     * bitwise OR'd, e.g. {@link #REVERSED_ORDER} | {@link #CIRCULAR_CROSS_POLARIZATION} will select Stokes parameters
-     * for measuring circular cross polarization, stored in reversed index order that is: (LR, RL, LL, RR).
+     * bitwise OR'd, e.g. {@link #LINEAR_CROSS_POLARIZATION} | {@link #CIRCULAR_CROSS_POLARIZATION} will select Stokes
+     * parameters for measuring circular cross polarization, stored in reversed index order that is: (LR, RL, LL, RR).
      * 
      * @param  flags the bitwise flags specifying the type of Stokes parameters.
      * 
      * @return       the set of Stokes parameters for the given bitwise flags.
+     * 
+     * @see          #parameters()
+     * @see          #LINEAR_CROSS_POLARIZATION
+     * @see          #CIRCULAR_CROSS_POLARIZATION
+     * @see          #FULL_CROSS_POLARIZATION
      */
     public static Parameters parameters(int flags) {
         return new Parameters(flags);
     }
 
     /**
-     * Bitwise flag for Stokes parameters stored in reversed index order
+     * Bitwise flag for Stokes parameters stored in reversed index order.
      */
-    public static final int REVERSED_ORDER = 1;
+    static final int REVERSED_ORDER = 1;
 
     /**
      * Bitwise flag for dual-input linear cross polarization Stokes parameters (XX, YY, XY, YX)
@@ -421,38 +459,34 @@ public enum Stokes {
 
     /**
      * Bitwise flag for dual-input full (linear + circular) cross polarization Stokes parameters (RR, LL, RL, LR, XX,
-     * YY, XY, YX)
+     * YY, XY, YX). By definition tme as ({@link #CIRCULAR_CROSS_POLARIZATION} | {@link #LINEAR_CROSS_POLARIZATION}).
+     * 
+     * @see #CIRCULAR_CROSS_POLARIZATION
+     * @see #LINEAR_CROSS_POLARIZATION
      */
     public static final int FULL_CROSS_POLARIZATION = LINEAR_CROSS_POLARIZATION | CIRCULAR_CROSS_POLARIZATION;
 
-    private static Parameters forCoords(double start, double delt, int count) {
-        int flag = 0;
-
-        if (start == I.index && delt == 1.0) {
-            return parameters();
-        }
-        if (start == V.index && delt == -1.0) {
-            return parameters(REVERSED_ORDER);
+    private static Parameters forCoords(double start, double delt, int count) throws FitsException {
+        if (count < 1) {
+            throw new FitsException("Invalid Stokes coordinate element count: " + count);
         }
 
-        // Only cross-polarization at this point...
-        if (delt > 0.0) {
-            flag |= REVERSED_ORDER;
+        int offset = (int) start;
+        if (start != offset) {
+            throw new FitsException("Invalid (non-integer) Stokes coordinate start: " + start);
         }
 
-        if (start == RR.index && delt == -1.0) {
-            flag |= count <= STANDARD_PARAMETER_COUNT ? CIRCULAR_CROSS_POLARIZATION : FULL_CROSS_POLARIZATION;
-        } else if (start == LR.index && delt == 1.0) {
-            flag |= CIRCULAR_CROSS_POLARIZATION;
-        } else if (start == XX.index && delt == -1.0) {
-            flag |= LINEAR_CROSS_POLARIZATION;
-        } else if (start == YX.index && delt == 1.0) {
-            flag |= count <= STANDARD_PARAMETER_COUNT ? LINEAR_CROSS_POLARIZATION : FULL_CROSS_POLARIZATION;
-        } else {
-            return null;
+        int step = (int) delt;
+        if (delt != step) {
+            throw new FitsException("Invalid (non-integer) Stokes coordinate step: " + delt);
         }
 
-        return parameters(flag);
+        int end = offset + step * (count - 1);
+        if (Math.min(offset, end) <= 0 && Math.max(offset, end) >= 0) {
+            throw new FitsException("Invalid Stokes coordinate range: " + offset + ":" + end);
+        }
+
+        return new Parameters(offset, step, count);
     }
 
     /**
@@ -487,18 +521,13 @@ public enum Stokes {
 
         for (int i = 1; i <= n; i++) {
             if (Stokes.CTYPE.equalsIgnoreCase(header.getStringValue(WCS.CTYPEna.n(i)))) {
-                Parameters p = forCoords(header.getDoubleValue(WCS.CRVALna.n(i)), header.getDoubleValue(WCS.CDELTna.n(i)),
-                        header.getIntValue(Standard.NAXISn.n(i), 0));
-
-                if (p == null) {
-                    throw new FitsException("Invalid Stokes: " + header.getDoubleValue(WCS.CRVALna.n(i)) + " step "
-                            + header.getDoubleValue(WCS.CDELTna.n(i)));
-                }
-
-                if (header.getDoubleValue(WCS.CRPIXna.n(i)) != 0.0) {
+                if (header.getDoubleValue(WCS.CRPIXna.n(i), 1.0) != 1.0) {
                     throw new FitsException("Invalid Stokes " + WCS.CRPIXna.n(i).key() + " value: "
-                            + header.getDoubleValue(WCS.CRPIXna.n(i)) + ", expected 0");
+                            + header.getDoubleValue(WCS.CRPIXna.n(i)) + ", expected 1");
                 }
+
+                Parameters p = forCoords(header.getDoubleValue(WCS.CRVALna.n(i), 0.0),
+                        header.getDoubleValue(WCS.CDELTna.n(i), 1.0), header.getIntValue(Standard.NAXISn.n(i), 1));
 
                 return new AbstractMap.SimpleImmutableEntry(n - i, p);
             }
@@ -551,18 +580,13 @@ public enum Stokes {
             String d = tokens.nextToken();
 
             if (Stokes.CTYPE.equalsIgnoreCase(header.getStringValue(WCS.nCTYPn.n(i, column)))) {
-                Parameters p = forCoords(header.getDoubleValue(WCS.nCRVLn.n(i, column)),
-                        header.getDoubleValue(WCS.nCDLTn.n(i, column)), Integer.parseInt(d));
-
-                if (p == null) {
-                    throw new FitsException("Invalid Stokes: " + +header.getDoubleValue(WCS.nCRVLn.n(i, column)) + " step "
-                            + header.getDoubleValue(WCS.nCDLTn.n(i, column)));
-                }
-
-                if (header.getDoubleValue(WCS.nCRPXn.n(i, column)) != 0.0) {
+                if (header.getDoubleValue(WCS.nCRPXn.n(i, column), 1.0) != 1.0) {
                     throw new FitsException("Invalid Stokes " + WCS.nCRPXn.n(i, column).key() + " value: "
-                            + header.getDoubleValue(WCS.nCRPXn.n(i, column)) + ", expected 0");
+                            + header.getDoubleValue(WCS.nCRPXn.n(i, column)) + ", expected 1");
                 }
+
+                Parameters p = forCoords(header.getDoubleValue(WCS.nCRVLn.n(i, column), 0.0),
+                        header.getDoubleValue(WCS.nCDLTn.n(i, column), 1.0), Integer.parseInt(d));
 
                 return new AbstractMap.SimpleImmutableEntry(n - i, p);
             }
@@ -570,5 +594,4 @@ public enum Stokes {
 
         return null;
     }
-
 }

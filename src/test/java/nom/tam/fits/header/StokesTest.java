@@ -108,26 +108,26 @@ public class StokesTest {
         h.addValue(Standard.NAXIS, 3);
         p.fillImageHeader(h, 1);
         Assert.assertEquals("STOKES", h.getStringValue("CTYPE2"));
-        Assert.assertEquals(0.0, h.getDoubleValue("CRPIX2"), 1e-12);
+        Assert.assertEquals(1.0, h.getDoubleValue("CRPIX2"), 1e-12);
         Assert.assertEquals(1.0, h.getDoubleValue("CDELT2"), 1e-12);
         Assert.assertEquals(1.0, h.getDoubleValue("CRVAL2"), 1e-12);
 
         Map.Entry<Integer, Stokes.Parameters> e = Stokes.fromImageHeader(h);
         Assert.assertEquals(1, (int) e.getKey());
-        Assert.assertEquals(p.getClass(), e.getValue().getClass());
+        Assert.assertEquals(p, e.getValue());
 
         h = new Header();
         h.addValue(Standard.TDIMn.n(4), "(2,4,3)");
         p.fillTableHeader(h, 3, 1);
 
         Assert.assertEquals("STOKES", h.getStringValue("2CTYP4"));
-        Assert.assertEquals(0.0, h.getDoubleValue("2CRPX4"), 1e-12);
+        Assert.assertEquals(1.0, h.getDoubleValue("2CRPX4"), 1e-12);
         Assert.assertEquals(1.0, h.getDoubleValue("2CDLT4"), 1e-12);
         Assert.assertEquals(1.0, h.getDoubleValue("2CRVL4"), 1e-12);
 
         e = Stokes.fromTableHeader(h, 3);
         Assert.assertEquals(1, (int) e.getKey());
-        Assert.assertEquals(p.getClass(), e.getValue().getClass());
+        Assert.assertEquals(p, e.getValue());
 
     }
 
@@ -161,7 +161,7 @@ public class StokesTest {
         h.addValue(Standard.NAXIS, 3);
         p.fillImageHeader(h, 1);
         Assert.assertEquals("STOKES", h.getStringValue("CTYPE2"));
-        Assert.assertEquals(0.0, h.getDoubleValue("CRPIX2"), 1e-12);
+        Assert.assertEquals(1.0, h.getDoubleValue("CRPIX2"), 1e-12);
         Assert.assertEquals(-1.0, h.getDoubleValue("CDELT2"), 1e-12);
         Assert.assertEquals(-1.0, h.getDoubleValue("CRVAL2"), 1e-12);
 
@@ -174,13 +174,13 @@ public class StokesTest {
         p.fillTableHeader(h, 3, 1);
 
         Assert.assertEquals("STOKES", h.getStringValue("2CTYP4"));
-        Assert.assertEquals(0.0, h.getDoubleValue("2CRPX4"), 1e-12);
+        Assert.assertEquals(1.0, h.getDoubleValue("2CRPX4"), 1e-12);
         Assert.assertEquals(-1.0, h.getDoubleValue("2CDLT4"), 1e-12);
         Assert.assertEquals(-1.0, h.getDoubleValue("2CRVL4"), 1e-12);
 
         e = Stokes.fromTableHeader(h, 3);
         Assert.assertEquals(1, (int) e.getKey());
-        Assert.assertEquals(p.getClass(), e.getValue().getClass());
+        Assert.assertEquals(p, e.getValue());
 
     }
 
@@ -214,26 +214,26 @@ public class StokesTest {
         h.addValue(Standard.NAXIS, 3);
         p.fillImageHeader(h, 1);
         Assert.assertEquals("STOKES", h.getStringValue("CTYPE2"));
-        Assert.assertEquals(0.0, h.getDoubleValue("CRPIX2"), 1e-12);
+        Assert.assertEquals(1.0, h.getDoubleValue("CRPIX2"), 1e-12);
         Assert.assertEquals(-1.0, h.getDoubleValue("CDELT2"), 1e-12);
         Assert.assertEquals(-5.0, h.getDoubleValue("CRVAL2"), 1e-12);
 
         Map.Entry<Integer, Stokes.Parameters> e = Stokes.fromImageHeader(h);
         Assert.assertEquals(1, (int) e.getKey());
-        Assert.assertEquals(p.getClass(), e.getValue().getClass());
+        Assert.assertEquals(p, e.getValue());
 
         h = new Header();
         h.addValue(Standard.TDIMn.n(4), "(2,4,3)");
         p.fillTableHeader(h, 3, 1);
 
         Assert.assertEquals("STOKES", h.getStringValue("2CTYP4"));
-        Assert.assertEquals(0.0, h.getDoubleValue("2CRPX4"), 1e-12);
+        Assert.assertEquals(1.0, h.getDoubleValue("2CRPX4"), 1e-12);
         Assert.assertEquals(-1.0, h.getDoubleValue("2CDLT4"), 1e-12);
         Assert.assertEquals(-5.0, h.getDoubleValue("2CRVL4"), 1e-12);
 
         e = Stokes.fromTableHeader(h, 3);
         Assert.assertEquals(1, (int) e.getKey());
-        Assert.assertEquals(p.getClass(), e.getValue().getClass());
+        Assert.assertEquals(p, e.getValue());
 
     }
 
@@ -284,26 +284,26 @@ public class StokesTest {
         h.addValue(Standard.NAXIS2, 8);
         p.fillImageHeader(h, 1);
         Assert.assertEquals("STOKES", h.getStringValue("CTYPE2"));
-        Assert.assertEquals(0.0, h.getDoubleValue("CRPIX2"), 1e-12);
+        Assert.assertEquals(1.0, h.getDoubleValue("CRPIX2"), 1e-12);
         Assert.assertEquals(-1.0, h.getDoubleValue("CDELT2"), 1e-12);
         Assert.assertEquals(-1.0, h.getDoubleValue("CRVAL2"), 1e-12);
 
         Map.Entry<Integer, Stokes.Parameters> e = Stokes.fromImageHeader(h);
         Assert.assertEquals(1, (int) e.getKey());
-        Assert.assertEquals(p.getClass(), e.getValue().getClass());
+        Assert.assertEquals(p, e.getValue());
 
         h = new Header();
         h.addValue(Standard.TDIMn.n(4), "(2,8,3)");
         p.fillTableHeader(h, 3, 1);
 
         Assert.assertEquals("STOKES", h.getStringValue("2CTYP4"));
-        Assert.assertEquals(0.0, h.getDoubleValue("2CRPX4"), 1e-12);
+        Assert.assertEquals(1.0, h.getDoubleValue("2CRPX4"), 1e-12);
         Assert.assertEquals(-1.0, h.getDoubleValue("2CDLT4"), 1e-12);
         Assert.assertEquals(-1.0, h.getDoubleValue("2CRVL4"), 1e-12);
 
         e = Stokes.fromTableHeader(h, 3);
         Assert.assertEquals(1, (int) e.getKey());
-        Assert.assertEquals(p.getClass(), e.getValue().getClass());
+        Assert.assertEquals(p, e.getValue());
 
     }
 
@@ -402,7 +402,7 @@ public class StokesTest {
         h.addValue(Standard.NAXIS, 1);
 
         Stokes.parameters().fillImageHeader(h, 0);
-        h.addValue("CRPIX1", 1.0, null);
+        h.addValue("CRPIX1", 1.5, null);
         Stokes.fromImageHeader(h);
     }
 
@@ -412,7 +412,7 @@ public class StokesTest {
         h.addValue(Standard.NAXIS, 1);
 
         Stokes.parameters().fillImageHeader(h, 0);
-        h.addValue("CDELT1", 2.0, null);
+        h.addValue("CDELT1", 1.5, null);
         Stokes.fromImageHeader(h);
     }
 
@@ -448,7 +448,7 @@ public class StokesTest {
         h.addValue(Standard.TDIMn.n(1), "(4)");
 
         Stokes.parameters().fillTableHeader(h, 0, 0);
-        h.addValue("1CRPX1", 1.0, null);
+        h.addValue("1CRPX1", 1.5, null);
         Stokes.fromTableHeader(h, 0);
     }
 
@@ -458,7 +458,7 @@ public class StokesTest {
         h.addValue(Standard.TDIMn.n(1), "(4)");
 
         Stokes.parameters().fillTableHeader(h, 0, 0);
-        h.addValue("1CDLT1", 2.0, null);
+        h.addValue("1CDLT1", 1.5, null);
         Stokes.fromTableHeader(h, 0);
     }
 
@@ -512,92 +512,8 @@ public class StokesTest {
 
         Stokes.Parameters p0 = Stokes.parameters();
         p0.fillImageHeader(h, 0);
-        h.addValue(Standard.CDELTn.n(1), -1.0);
+        h.addValue(Standard.CDELTn.n(1), 1.5);
         Stokes.fromImageHeader(h).getValue();
-    }
-
-    @Test(expected = FitsException.class)
-    public void testInvalidCircularCDELT() throws Exception {
-        Header h = new Header();
-        h.addValue(Standard.NAXIS, 1);
-        h.addValue(Standard.NAXIS1, 4);
-
-        Stokes.Parameters p0 = Stokes.parameters(Stokes.CIRCULAR_CROSS_POLARIZATION);
-        p0.fillImageHeader(h, 0);
-        h.addValue(Standard.CDELTn.n(1), 1.0);
-        Assert.assertNull(Stokes.fromImageHeader(h).getValue());
-    }
-
-    @Test(expected = FitsException.class)
-    public void testInvalidLinearCDELT() throws Exception {
-        Header h = new Header();
-        h.addValue(Standard.NAXIS, 1);
-        h.addValue(Standard.NAXIS1, 4);
-
-        Stokes.Parameters p0 = Stokes.parameters(Stokes.LINEAR_CROSS_POLARIZATION);
-        p0.fillImageHeader(h, 0);
-        h.addValue(Standard.CDELTn.n(1), 1.0);
-        Assert.assertNull(Stokes.fromImageHeader(h).getValue());
-    }
-
-    @Test(expected = FitsException.class)
-    public void testInvalidFullCDELT() throws Exception {
-        Header h = new Header();
-        h.addValue(Standard.NAXIS, 1);
-        h.addValue(Standard.NAXIS1, 8);
-
-        Stokes.Parameters p0 = Stokes.parameters(Stokes.FULL_CROSS_POLARIZATION);
-        p0.fillImageHeader(h, 0);
-        h.addValue(Standard.CDELTn.n(1), 1.0);
-        Assert.assertNull(Stokes.fromImageHeader(h).getValue());
-    }
-
-    @Test(expected = FitsException.class)
-    public void testReverseOrderInvalidCDELT() throws Exception {
-        Header h = new Header();
-        h.addValue(Standard.NAXIS, 1);
-        h.addValue(Standard.NAXIS1, 4);
-
-        Stokes.Parameters p0 = Stokes.parameters(Stokes.REVERSED_ORDER);
-        p0.fillImageHeader(h, 0);
-        h.addValue(Standard.CDELTn.n(1), 1.0);
-        Stokes.fromImageHeader(h).getValue();
-    }
-
-    @Test(expected = FitsException.class)
-    public void testReverseOrderInvalidCircularCDELT() throws Exception {
-        Header h = new Header();
-        h.addValue(Standard.NAXIS, 1);
-        h.addValue(Standard.NAXIS1, 4);
-
-        Stokes.Parameters p0 = Stokes.parameters(Stokes.REVERSED_ORDER | Stokes.CIRCULAR_CROSS_POLARIZATION);
-        p0.fillImageHeader(h, 0);
-        h.addValue(Standard.CDELTn.n(1), -1.0);
-        Assert.assertNull(Stokes.fromImageHeader(h).getValue());
-    }
-
-    @Test(expected = FitsException.class)
-    public void testReverseOrderInvalidLinearCDELT() throws Exception {
-        Header h = new Header();
-        h.addValue(Standard.NAXIS, 1);
-        h.addValue(Standard.NAXIS1, 4);
-
-        Stokes.Parameters p0 = Stokes.parameters(Stokes.REVERSED_ORDER | Stokes.LINEAR_CROSS_POLARIZATION);
-        p0.fillImageHeader(h, 0);
-        h.addValue(Standard.CDELTn.n(1), -1.0);
-        Assert.assertNull(Stokes.fromImageHeader(h).getValue());
-    }
-
-    @Test(expected = FitsException.class)
-    public void testReverseOrderInvalidFullCDELT() throws Exception {
-        Header h = new Header();
-        h.addValue(Standard.NAXIS, 1);
-        h.addValue(Standard.NAXIS1, 8);
-
-        Stokes.Parameters p0 = Stokes.parameters(Stokes.REVERSED_ORDER | Stokes.FULL_CROSS_POLARIZATION);
-        p0.fillImageHeader(h, 0);
-        h.addValue(Standard.CDELTn.n(1), -1.0);
-        Assert.assertNull(Stokes.fromImageHeader(h).getValue());
     }
 
     @Test
@@ -608,6 +524,32 @@ public class StokesTest {
     @Test
     public void testEqualsOther() throws Exception {
         Assert.assertFalse(Stokes.parameters().equals("blah"));
+    }
+
+    @Test
+    public void testEqualsOffset() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+        h.addValue(Standard.NAXIS1, 4);
+
+        Stokes.Parameters p0 = Stokes.parameters();
+        p0.fillImageHeader(h, 0);
+        h.addValue(Standard.CRVALn.n(1), 2);
+
+        Assert.assertNotEquals(p0, Stokes.fromImageHeader(h).getValue());
+    }
+
+    @Test
+    public void testEqualsStep() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+        h.addValue(Standard.NAXIS1, 4);
+
+        Stokes.Parameters p0 = Stokes.parameters();
+        p0.fillImageHeader(h, 0);
+        h.addValue(Standard.CDELTn.n(1), 2);
+
+        Assert.assertNotEquals(p0, Stokes.fromImageHeader(h).getValue());
     }
 
     @Test
