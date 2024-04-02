@@ -467,10 +467,6 @@ public enum Stokes {
     public static final int FULL_CROSS_POLARIZATION = LINEAR_CROSS_POLARIZATION | CIRCULAR_CROSS_POLARIZATION;
 
     private static Parameters forCoords(double start, double delt, int count) throws FitsException {
-        if (count < 1) {
-            throw new FitsException("Invalid Stokes coordinate element count: " + count);
-        }
-
         int offset = (int) start;
         if (start != offset) {
             throw new FitsException("Invalid (non-integer) Stokes coordinate start: " + start);
