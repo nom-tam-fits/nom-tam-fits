@@ -397,6 +397,16 @@ public class StokesTest {
     }
 
     @Test(expected = FitsException.class)
+    public void testFromImageHeaderFractionalCRVAL() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+
+        Stokes.parameters().fillImageHeader(h, 0);
+        h.addValue("CRVAL1", 1.5, null);
+        Stokes.fromImageHeader(h);
+    }
+
+    @Test(expected = FitsException.class)
     public void testFromImageHeaderInvalidCRPIX() throws Exception {
         Header h = new Header();
         h.addValue(Standard.NAXIS, 1);
@@ -439,6 +449,16 @@ public class StokesTest {
 
         Stokes.parameters().fillTableHeader(h, 0, 0);
         h.addValue("1CRVL1", 0.0, null);
+        Stokes.fromTableHeader(h, 0);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFromTableHeaderFractionalCRVAL() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.TDIMn.n(1), "(4)");
+
+        Stokes.parameters().fillTableHeader(h, 0, 0);
+        h.addValue("1CRVL1", 1.5, null);
         Stokes.fromTableHeader(h, 0);
     }
 
@@ -557,6 +577,9 @@ public class StokesTest {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 Assert.assertEquals(i + ", " + j, (i == j), Stokes.parameters(i).equals(Stokes.parameters(j)));
+                if (i == j) {
+                    Assert.assertEquals("hash " + i, Stokes.parameters(i).hashCode(), Stokes.parameters(j).hashCode());
+                }
             }
         }
     }
