@@ -156,17 +156,20 @@ public class CompressedTableData extends BinaryTable {
         int ncols = data.getNCols();
 
         if (!isPrepped) {
+            // Create compressed columns...
             for (int column = 0; column < ncols; column++) {
                 addColumn(BinaryTable.ColumnDesc.createForVariableSize(byte.class));
+            }
+
+            // Initialized compressed rows...
+            for (int rowStart = 0; rowStart < nrows; rowStart += getRowsPerTile()) {
+                addRow(new byte[ncols][0]);
             }
         }
 
         // Changed tile-order in 1.19.1 to be in row-major table order.
-        for (int tileIndex = 0, rowStart = 0; rowStart < nrows; tileIndex++, rowStart += getRowsPerTile()) {
-            for (int column = 0; column < ncols; column++) {
-                if (!isPrepped) {
-                    addRow(new byte[ncols][0]);
-                }
+        for (int column = 0; column < ncols; column++) {
+            for (int tileIndex = 0, rowStart = 0; rowStart < nrows; tileIndex++, rowStart += getRowsPerTile()) {
 
                 BinaryTableTileDescription td = tile()//
                         .rowStart(rowStart)//
