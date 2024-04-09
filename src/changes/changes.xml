@@ -1,7 +1,11 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.20.0-SNAPSHOT" date="2024-03-28" description="Upcoming feature release under development.">
+   <release version="1.20.0-SNAPSHOT" date="2024-04-09" description="Upcoming feature release under development.">
+      <action type="fix" dev="attipaci" issue="596">
+          Botched compression of multicolumn tables, resulting in extra rows in the compressed table (as many rows as
+          there were total table tiles across all columns).
+      </action>
       <action type="add" dev="attipaci" issue="586">
           Default column names. Some tools, including (S)FITSIO have issues dealing with table columns that have no
           CTYPEn keywords set to define column names. Therefore to enhance interoperability we will use 'Column N'
