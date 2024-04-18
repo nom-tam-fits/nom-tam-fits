@@ -35,6 +35,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * @deprecated               (<i>for internal use</i>) use {@link MultiArrayCopier} instead. Make copies of
  *                               multi-dimensional arrays.
@@ -43,8 +45,12 @@ import java.util.Map;
  * @param      <Destination> The generic type of array to which we want to copy elements.
  */
 @Deprecated
+@SuppressFBWarnings(value = "SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", justification = "warning persists despite private constructor")
 public class MultiArrayCopyFactory<Source, Destination> {
-
+    
+    private MultiArrayCopyFactory() {
+    }
+    
     private static final class ByteToChar extends MultiArrayCopyFactory<byte[], char[]> {
 
         @Override
@@ -557,7 +563,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
      * @deprecated for internal use only. This ought to be private.
      */
     @SuppressWarnings("javadoc")
-    public static MultiArrayCopyFactory<?, ?> select(Class<?> primitiveType, Class<?> primitiveType2) {
+    public static synchronized MultiArrayCopyFactory<?, ?> select(Class<?> primitiveType, Class<?> primitiveType2) {
         Map<Class<?>, MultiArrayCopyFactory<?, ?>> from = MultiArrayCopyFactory.FACTORIES.get(primitiveType);
         if (from != null) {
             MultiArrayCopyFactory<?, ?> to = from.get(primitiveType2);
