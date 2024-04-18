@@ -43,8 +43,9 @@ import java.util.Map;
  * @param      <Destination> The generic type of array to which we want to copy elements.
  */
 @Deprecated
+@SuppressFBWarnings(value = "SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", justification = "warning persists despite private constructor")
 public class MultiArrayCopyFactory<Source, Destination> {
-
+    
     private MultiArrayCopyFactory() {
     }
     
