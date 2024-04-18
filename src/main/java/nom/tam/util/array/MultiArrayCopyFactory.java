@@ -45,6 +45,9 @@ import java.util.Map;
 @Deprecated
 public class MultiArrayCopyFactory<Source, Destination> {
 
+    private MultiArrayCopyFactory() {
+    }
+    
     private static final class ByteToChar extends MultiArrayCopyFactory<byte[], char[]> {
 
         @Override
@@ -557,7 +560,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
      * @deprecated for internal use only. This ought to be private.
      */
     @SuppressWarnings("javadoc")
-    public static MultiArrayCopyFactory<?, ?> select(Class<?> primitiveType, Class<?> primitiveType2) {
+    public static synchronized MultiArrayCopyFactory<?, ?> select(Class<?> primitiveType, Class<?> primitiveType2) {
         Map<Class<?>, MultiArrayCopyFactory<?, ?>> from = MultiArrayCopyFactory.FACTORIES.get(primitiveType);
         if (from != null) {
             MultiArrayCopyFactory<?, ?> to = from.get(primitiveType2);
