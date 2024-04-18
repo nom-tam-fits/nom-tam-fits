@@ -35,6 +35,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * @deprecated               (<i>for internal use</i>) use {@link MultiArrayCopier} instead. Make copies of
  *                               multi-dimensional arrays.
