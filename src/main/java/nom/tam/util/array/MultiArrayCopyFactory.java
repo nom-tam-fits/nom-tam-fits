@@ -170,7 +170,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         @Override
         public void arraycopy(double[] src, int srcPos, byte[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
-                dest[index + destPos] = (byte) src[index + srcPos];
+                dest[index + destPos] = (byte) Math.round(src[index + srcPos]);
             }
         }
     }
@@ -180,7 +180,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         @Override
         public void arraycopy(double[] src, int srcPos, char[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
-                dest[index + destPos] = (char) src[index + srcPos];
+                dest[index + destPos] = (char) Math.round(src[index + srcPos]);
             }
         }
     }
@@ -200,7 +200,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         @Override
         public void arraycopy(double[] src, int srcPos, int[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
-                dest[index + destPos] = (int) src[index + srcPos];
+                dest[index + destPos] = (int) Math.round(src[index + srcPos]);
             }
         }
     }
@@ -210,7 +210,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         @Override
         public void arraycopy(double[] src, int srcPos, long[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
-                dest[index + destPos] = (long) src[index + srcPos];
+                dest[index + destPos] = Math.round(src[index + srcPos]);
             }
         }
     }
@@ -220,7 +220,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         @Override
         public void arraycopy(double[] src, int srcPos, short[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
-                dest[index + destPos] = (short) src[index + srcPos];
+                dest[index + destPos] = (short) Math.round(src[index + srcPos]);
             }
         }
     }
@@ -230,7 +230,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         @Override
         public void arraycopy(float[] src, int srcPos, byte[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
-                dest[index + destPos] = (byte) src[index + srcPos];
+                dest[index + destPos] = (byte) Math.round(src[index + srcPos]);
             }
         }
     }
@@ -240,7 +240,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         @Override
         public void arraycopy(float[] src, int srcPos, char[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
-                dest[index + destPos] = (char) src[index + srcPos];
+                dest[index + destPos] = (char) Math.round(src[index + srcPos]);
             }
         }
     }
@@ -260,7 +260,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         @Override
         public void arraycopy(float[] src, int srcPos, int[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
-                dest[index + destPos] = (int) src[index + srcPos];
+                dest[index + destPos] = Math.round(src[index + srcPos]);
             }
         }
     }
@@ -270,7 +270,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         @Override
         public void arraycopy(float[] src, int srcPos, long[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
-                dest[index + destPos] = (long) src[index + srcPos];
+                dest[index + destPos] = Math.round(src[index + srcPos]);
             }
         }
     }
@@ -280,7 +280,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         @Override
         public void arraycopy(float[] src, int srcPos, short[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
-                dest[index + destPos] = (short) src[index + srcPos];
+                dest[index + destPos] = (short) Math.round(src[index + srcPos]);
             }
         }
     }

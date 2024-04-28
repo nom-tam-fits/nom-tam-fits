@@ -33,6 +33,7 @@ package nom.tam.fits;
 
 import java.io.IOException;
 import java.nio.Buffer;
+import java.util.Arrays;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.NonStandard;
@@ -42,8 +43,10 @@ import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
 import nom.tam.util.FitsEncoder;
+import nom.tam.util.Quantizer;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.array.MultiArrayIterator;
 import nom.tam.util.type.ElementType;
@@ -65,18 +68,36 @@ import nom.tam.util.type.ElementType;
  */
 public class ImageData extends Data {
 
+    private static final String COMPLEX_TYPE = "COMPLEX";
+
     /**
      * This class describes an array
      */
-    protected static class ArrayDesc {
-
-        private final int[] dims;
+    protected static class ArrayDesc implements Cloneable {
 
         private final Class<?> type;
+        private final int[] dims;
+
+        private Quantizer quant;
+
+        private int complexAxis = -1;
 
         ArrayDesc(int[] dims, Class<?> type) {
             this.dims = dims;
             this.type = type;
+
+            if (ComplexValue.class.isAssignableFrom(type)) {
+                complexAxis = dims.length - 1;
+            }
+        }
+
+        @Override
+        protected ArrayDesc clone() {
+            try {
+                return (ArrayDesc) super.clone();
+            } catch (CloneNotSupportedException e) {
+                return null;
+            }
         }
     }
 
@@ -117,8 +138,7 @@ public class ImageData extends Data {
      * Create the equivalent of a null data element.
      */
     public ImageData() {
-        dataArray = new byte[0];
-        byteSize = 0;
+        this(new byte[0]);
     }
 
     /**
@@ -148,6 +168,7 @@ public class ImageData extends Data {
             throw new IllegalArgumentException(e.getMessage(), e);
         }
 
+        dataDescription = new ArrayDesc(ArrayFuncs.getDimensions(x), ArrayFuncs.getBaseClass(x));
         dataArray = x;
         byteSize = FitsEncoder.computeSize(x);
     }
@@ -241,10 +262,23 @@ public class ImageData extends Data {
 
         Cursor<String, HeaderCard> c = head.iterator();
         c.add(HeaderCard.create(Standard.SIMPLE, true));
-        c.add(HeaderCard.create(Standard.BITPIX,
-                Bitpix.forPrimitiveType(ArrayFuncs.getBaseClass(dataArray)).getHeaderValue()));
+
+        Class<?> base = ArrayFuncs.getBaseClass(dataArray);
+        if (ComplexValue.Float.class.isAssignableFrom(base)) {
+            base = float.class;
+        }
+        if (ComplexValue.class.isAssignableFrom(base)) {
+            base = double.class;
+        }
+
+        c.add(HeaderCard.create(Standard.BITPIX, Bitpix.forPrimitiveType(base).getHeaderValue()));
 
         int[] dims = ArrayFuncs.getDimensions(dataArray);
+        if (ComplexValue.class.isAssignableFrom(base)) {
+            dims = Arrays.copyOf(dims, dims.length + 1);
+            dims[dims.length - 1] = 2;
+        }
+
         c.add(HeaderCard.create(Standard.NAXIS, dims.length));
 
         for (int i = 1; i <= dims.length; i++) {
@@ -255,6 +289,14 @@ public class ImageData extends Data {
         c.add(HeaderCard.create(Standard.PCOUNT, 0));
         c.add(HeaderCard.create(Standard.GCOUNT, 1));
         c.add(HeaderCard.create(Standard.EXTEND, true));
+
+        if (dataDescription.complexAxis >= 0) {
+            c.add(HeaderCard.create(Standard.CTYPEn.n(dims.length - dataDescription.complexAxis), COMPLEX_TYPE));
+        }
+
+        if (dataDescription.quant != null) {
+            dataDescription.quant.editImageHeader(head);
+        }
 
         Standard.context(null);
     }
@@ -304,7 +346,20 @@ public class ImageData extends Data {
             dims[ndim - i] = cdim;
         }
         byteSize *= bitpix.byteSize();
-        return new ArrayDesc(dims, baseClass);
+
+        ArrayDesc desc = new ArrayDesc(dims, baseClass);
+        if (COMPLEX_TYPE.equals(h.getStringValue(Standard.CTYPEn.n(1))) && dims[ndim - 1] == 2) {
+            desc.complexAxis = ndim - 1;
+        } else if (COMPLEX_TYPE.equals(h.getStringValue(Standard.CTYPEn.n(ndim))) && dims[0] == 2) {
+            desc.complexAxis = 0;
+        }
+
+        desc.quant = Quantizer.fromImageHeader(h);
+        if (desc.quant.isDefault()) {
+            desc.quant = null;
+        }
+
+        return desc;
     }
 
     void setTiler(StandardImageTiler tiler) {
@@ -383,7 +438,13 @@ public class ImageData extends Data {
      */
     static void checkCompatible(Object data) throws IllegalArgumentException, FitsException {
         if (data != null) {
-            Bitpix.forPrimitiveType(ArrayFuncs.getBaseClass(data));
+            Class<?> base = ArrayFuncs.getBaseClass(data);
+            if (ComplexValue.Float.class.isAssignableFrom(base)) {
+                base = float.class;
+            } else if (ComplexValue.class.isAssignableFrom(base)) {
+                base = double.class;
+            }
+            Bitpix.forPrimitiveType(base);
             ArrayFuncs.checkRegularArray(data, false);
         }
     }
@@ -394,5 +455,68 @@ public class ImageData extends Data {
         Header h = new Header();
         fillHeader(h);
         return new ImageHDU(h, this);
+    }
+
+    /**
+     * Sets the conversion between decimal and integer data representations.
+     * 
+     * @param quant the quantizer that converts between floating-point and integer data representations.
+     * 
+     * @see         #getQuantizer()
+     * @see         #convertTo(Class)
+     * 
+     * @since       1.20
+     */
+    public void setQuantizer(Quantizer quant) {
+        dataDescription.quant = quant;
+    }
+
+    /**
+     * Returns the conversion between decimal and integer data representations.
+     * 
+     * @return the quantizer that converts between floating-point and integer data representations.
+     * 
+     * @see    #setQuantizer(Quantizer)
+     * @see    #convertTo(Class)
+     * 
+     * @since  1.20
+     */
+    public final Quantizer getQuantizer() {
+        return dataDescription.quant;
+    }
+
+    /**
+     * Converts this image HDU to another image HDU of a different type, possibly using a qunatizer for the
+     * integer-decimal conversion of the data elements. In all other respects, the returned image is identical to the
+     * the original.
+     * 
+     * @param  type The primitive numerical type (e.g. <code>int.class</code> or <code>double.class</code>), or else a
+     *                  {@link ComplexValue} type in which data should be represented. Complex representations are
+     *                  normally available for data whose first or last CTYPEn axis was described as 'COMPLEX' by the
+     *                  FITS header with a dimensionality is 2 corresponfing to a pair of real and imaginary data
+     *                  elements.
+     * 
+     * @return      An image HDU containing the same data in the chosen representation by another type. (It may be the
+     *                  same as this HDU if the type is unchanged from the original).
+     * 
+     * @since       1.20
+     */
+    public ImageData convertTo(Class<?> type) {
+        ImageData typed = null;
+
+        if (ComplexValue.class.isAssignableFrom(type) && dataDescription.complexAxis >= 0) {
+            if (dataDescription.complexAxis == 0) {
+                Class<?> numType = ComplexValue.Float.class.isAssignableFrom(type) ? float.class : double.class;
+                Object[] t = (Object[]) ArrayFuncs.convertArray(dataArray, numType, getQuantizer());
+                typed = new ImageData(ArrayFuncs.decimalsToComplex(t[0], t[1]));
+            }
+        }
+
+        if (typed == null) {
+            typed = new ImageData(ArrayFuncs.convertArray(dataArray, type, getQuantizer()));
+        }
+
+        typed.dataDescription.quant = dataDescription.quant;
+        return typed;
     }
 }
