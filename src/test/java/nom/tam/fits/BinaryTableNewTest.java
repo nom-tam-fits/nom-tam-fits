@@ -431,6 +431,10 @@ public class BinaryTableNewTest {
         ComplexValue z = new ComplexValue(-1.0, -2.0);
         tab.set(0, 0, z);
         Assert.assertEquals(z, tab.get(0, 0));
+
+        z = new ComplexValue(3.0, 4.0);
+        tab.set(0, 0, new double[] {z.re(), z.im()});
+        Assert.assertEquals(z, tab.get(0, 0));
     }
 
     @Test
@@ -2051,5 +2055,30 @@ public class BinaryTableNewTest {
         double[] e2 = (double[]) tab.getArrayElement(0, 0, double.class);
         Assert.assertEquals(1, e2.length);
         Assert.assertEquals(2.5, e2[0], 1e-12);
+    }
+
+    @Test
+    public void testIsNumeric() throws Exception {
+        Assert.assertTrue(ColumnDesc.createForScalars(byte.class).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForScalars(short.class).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForScalars(int.class).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForScalars(long.class).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForScalars(float.class).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForScalars(double.class).isNumeric());
+
+        Assert.assertFalse(ColumnDesc.createForStrings(20).isNumeric());
+        Assert.assertFalse(ColumnDesc.createForScalars(boolean.class).isNumeric());
+        Assert.assertFalse(ColumnDesc.createForScalars(Boolean.class).isNumeric());
+
+        Assert.assertTrue(ColumnDesc.createForFixedArrays(byte.class, 2).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForFixedArrays(short.class, 2).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForFixedArrays(int.class, 2).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForFixedArrays(long.class, 2).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForFixedArrays(float.class, 2).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForFixedArrays(double.class, 2).isNumeric());
+
+        Assert.assertFalse(ColumnDesc.createForStrings(10, 2).isNumeric());
+        Assert.assertFalse(ColumnDesc.createForFixedArrays(boolean.class, 2).isNumeric());
+        Assert.assertFalse(ColumnDesc.createForFixedArrays(Boolean.class, 2).isNumeric());
     }
 }

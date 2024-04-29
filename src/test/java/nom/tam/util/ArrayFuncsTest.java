@@ -79,28 +79,28 @@ public class ArrayFuncsTest {
 
     @Test
     public void decimals2ComplexFloatComponents() throws Exception {
-        float[][] re = {{1.0F, 2.0F}};
-        float[][] im = {{-1.0F, -2.0F}};
+        float[][] re = {{1.0F}, {2.0F}};
+        float[][] im = {{-1.0F}, {-2.0F}};
         ComplexValue.Float[][] z = (ComplexValue.Float[][]) ArrayFuncs.decimalsToComplex(re, im);
-        Assert.assertEquals(1, z.length);
-        Assert.assertEquals(2, z[0].length);
+        Assert.assertEquals(2, z.length);
+        Assert.assertEquals(1, z[0].length);
         Assert.assertEquals(1.0, z[0][0].re(), 1e-6);
         Assert.assertEquals(-1.0, z[0][0].im(), 1e-6);
-        Assert.assertEquals(2.0, z[0][1].re(), 1e-6);
-        Assert.assertEquals(-2.0, z[0][1].im(), 1e-6);
+        Assert.assertEquals(2.0, z[1][0].re(), 1e-6);
+        Assert.assertEquals(-2.0, z[1][0].im(), 1e-6);
     }
 
     @Test
     public void decimals2ComplexDoubleComponents() throws Exception {
-        double[][] re = {{1.0, 2.0}};
-        double[][] im = {{-1.0, -2.0}};
+        double[][] re = {{1.0}, {2.0}};
+        double[][] im = {{-1.0}, {-2.0}};
         ComplexValue[][] z = (ComplexValue[][]) ArrayFuncs.decimalsToComplex(re, im);
-        Assert.assertEquals(1, z.length);
-        Assert.assertEquals(2, z[0].length);
+        Assert.assertEquals(2, z.length);
+        Assert.assertEquals(1, z[0].length);
         Assert.assertEquals(1.0, z[0][0].re(), 1e-12);
         Assert.assertEquals(-1.0, z[0][0].im(), 1e-12);
-        Assert.assertEquals(2.0, z[0][1].re(), 1e-12);
-        Assert.assertEquals(-2.0, z[0][1].im(), 1e-12);
+        Assert.assertEquals(2.0, z[1][0].re(), 1e-12);
+        Assert.assertEquals(-2.0, z[1][0].im(), 1e-12);
     }
 
     @Test(expected = IllegalArgumentException.class)
