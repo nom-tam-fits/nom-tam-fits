@@ -169,7 +169,7 @@ public class ImageData extends Data {
         if (tiler != null) {
             dataArray = tiler.getCompleteImage();
         } else {
-            dataArray = ArrayFuncs.newInstance(dataDescription.type, dataDescription.dims);
+            dataArray = ArrayFuncs.newInstance(getType(), getDimensions());
             in.readImage(dataArray);
         }
     }
@@ -203,8 +203,8 @@ public class ImageData extends Data {
      * @param data the buffer that may hold this image's data in serialized form.
      */
     public void setBuffer(Buffer data) {
-        ElementType<Buffer> elementType = ElementType.forClass(dataDescription.type);
-        dataArray = ArrayFuncs.newInstance(dataDescription.type, dataDescription.dims);
+        ElementType<Buffer> elementType = ElementType.forClass(getType());
+        dataArray = ArrayFuncs.newInstance(getType(), getDimensions());
         MultiArrayIterator<?> iterator = new MultiArrayIterator<>(dataArray);
         Object array = iterator.next();
         while (array != null) {
@@ -253,8 +253,8 @@ public class ImageData extends Data {
         Cursor<String, HeaderCard> c = head.iterator();
         c.add(HeaderCard.create(Standard.SIMPLE, true));
 
-        Class<?> base = dataDescription.type;
-        int[] dims = dataDescription.dims;
+        Class<?> base = getType();
+        int[] dims = getDimensions();
 
         if (ComplexValue.class.isAssignableFrom(base)) {
             dims = Arrays.copyOf(dims, dims.length + 1);
@@ -471,15 +471,46 @@ public class ImageData extends Data {
     }
 
     /**
-     * Checks if the image data is designated as a complex valued image. It does not necesarily mean that the data
-     * itself is currently in {@link ComplexValue} type representation. Rather it simply means that this data can be
-     * represented as {@link ComplexValue} type, possiblt after an appropriate conversion to a {@link ComplexValue}
-     * type.
+     * Returns the element type of this image in its current representation.
+     * 
+     * @return The element type of this image, such as <code>int.class</code>, <code>double.class</code> or
+     *             {@link ComplexValue}<code>.class</code>.
+     * 
+     * @see    #getDimensions()
+     * @see    #isComplexValued()
+     * @see    #convertTo(Class)
+     * 
+     * @since  1.20
+     */
+    public final Class<?> getType() {
+        return dataDescription.type;
+    }
+
+    /**
+     * Returns the array dimensions
+     * 
+     * @return An array of sizes along each data dimension, in Java indexing order.
+     * 
+     * @see    #getType()
+     * 
+     * @since  1.20
+     */
+    public final int[] getDimensions() {
+        return Arrays.copyOf(dataDescription.dims, dataDescription.dims.length);
+    }
+
+    /**
+     * Checks if the image data is designated as a complex valued image. It is different from {@link #getType()}, as it
+     * does not necesarily mean that the data itself is currently in {@link ComplexValue} type representation. Rather it
+     * simply means that this data can be represented as {@link ComplexValue} type, possibly after an appropriate
+     * conversion to a {@link ComplexValue} type.
      * 
      * @return <code>true</code> if the data is complex valued or can be converted to complex valued. Otherwise
      *             <code>false</code>
      * 
-     * @since  {@link #convertTo(Class)}
+     * @see    #convertTo(Class)
+     * @see    #getType()
+     * 
      * @since  1.20
      */
     public final boolean isComplexValued() {
@@ -507,7 +538,7 @@ public class ImageData extends Data {
      * @since                1.20
      */
     public ImageData convertTo(Class<?> type) throws FitsException {
-        if (type.isAssignableFrom(dataDescription.type)) {
+        if (type.isAssignableFrom(getType())) {
             return this;
         }
 
@@ -515,8 +546,7 @@ public class ImageData extends Data {
 
         ImageData typed = null;
 
-        boolean toComplex = ComplexValue.class.isAssignableFrom(type)
-                && !ComplexValue.class.isAssignableFrom(dataDescription.type);
+        boolean toComplex = ComplexValue.class.isAssignableFrom(type) && !ComplexValue.class.isAssignableFrom(getType());
 
         if (toComplex && dataDescription.complexAxis == 0) {
             // Special case of converting separate re/im arrays to complex...
@@ -525,14 +555,14 @@ public class ImageData extends Data {
             Class<?> numType = ComplexValue.Float.class.isAssignableFrom(type) ? float.class : double.class;
             Object[] t = (Object[]) ArrayFuncs.convertArray(dataArray, numType, getQuantizer());
             ImageData f = new ImageData(ArrayFuncs.decimalsToComplex(t[0], t[1]));
-            f.dataDescription.quant = dataDescription.quant;
+            f.dataDescription.quant = getQuantizer();
 
             // 2. Assemble complex from separate re/im components.
             return f.convertTo(type);
         }
 
         typed = new ImageData(ArrayFuncs.convertArray(dataArray, type, getQuantizer()));
-        typed.dataDescription.quant = dataDescription.quant;
+        typed.dataDescription.quant = getQuantizer();
         return typed;
     }
 }

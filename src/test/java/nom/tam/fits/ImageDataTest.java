@@ -217,7 +217,7 @@ public class ImageDataTest {
         double[][] data = {{1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0}};
 
         ImageData im = new ImageData(data);
-        ImageData iim = im.convertTo(double.class);
+        ImageData iim = im.convertTo(int.class);
 
         int[][] idata = (int[][]) iim.getData();
 

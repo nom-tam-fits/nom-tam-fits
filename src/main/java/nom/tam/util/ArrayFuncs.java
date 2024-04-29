@@ -953,6 +953,8 @@ public final class ArrayFuncs {
                 integerToDecimal(array, t, quant);
             } else if (!fromInteger && toInteger) {
                 decimalToInteger(array, t, quant);
+            } else {
+                MultiArrayCopier.copyInto(array, t);
             }
         } else {
             MultiArrayCopier.copyInto(array, t);
