@@ -229,4 +229,21 @@ public class ImageDataTest {
         Assert.assertEquals(5, idata[2][0]);
         Assert.assertEquals(6, idata[2][1]);
     }
+
+    @Test
+    public void testComplexDownConvert() throws Exception {
+        ComplexValue[] z = {new ComplexValue(1.0, 2.0), new ComplexValue(3.0, 4.0), new ComplexValue(5.0, 6.0)};
+
+        ImageData im = new ImageData(z);
+        ImageData fim = im.convertTo(ComplexValue.Float.class);
+
+        ComplexValue.Float[] fz = (ComplexValue.Float[]) fim.getData();
+
+        Assert.assertEquals(3, fz.length);
+
+        Assert.assertEquals(1.0F, fz[0].re(), 1e-6);
+        Assert.assertEquals(2.0F, fz[0].im(), 1e-6);
+        Assert.assertEquals(5.0F, fz[2].re(), 1e-6);
+        Assert.assertEquals(6.0F, fz[2].im(), 1e-6);
+    }
 }
