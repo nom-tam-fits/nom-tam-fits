@@ -233,14 +233,15 @@ public class ArrayFuncsTest {
     @Test
     public void convertFloatDoubleTest() throws Exception {
         float[][] f = {{1.0F, 2.0F}};
+        Quantizer q = new Quantizer(2.0, 0.5, null);
 
-        double[][] d = (double[][]) ArrayFuncs.convertArray(f, double.class, null);
+        double[][] d = (double[][]) ArrayFuncs.convertArray(f, double.class, q);
         Assert.assertEquals(1, d.length);
         Assert.assertEquals(2, d[0].length);
         Assert.assertEquals(1.0, d[0][0], 1e-6);
         Assert.assertEquals(2.0, d[0][1], 1e-6);
 
-        float[][] f2 = (float[][]) ArrayFuncs.convertArray(d, float.class, null);
+        float[][] f2 = (float[][]) ArrayFuncs.convertArray(d, float.class, q);
         Assert.assertEquals(1, f2.length);
         Assert.assertEquals(2, f2[0].length);
         Assert.assertEquals(1.0F, f2[0][0], 1e-6);
@@ -250,26 +251,27 @@ public class ArrayFuncsTest {
     @Test
     public void convertIntsTest() throws Exception {
         int[][] i = {{1, 2}};
+        Quantizer q = new Quantizer(2.0, 0.5, null);
 
-        long[][] l = (long[][]) ArrayFuncs.convertArray(i, long.class, null);
+        long[][] l = (long[][]) ArrayFuncs.convertArray(i, long.class, q);
         Assert.assertEquals(1, l.length);
         Assert.assertEquals(2, l[0].length);
         Assert.assertEquals(1, l[0][0]);
         Assert.assertEquals(2, l[0][1]);
 
-        int[][] i2 = (int[][]) ArrayFuncs.convertArray(l, int.class, null);
+        int[][] i2 = (int[][]) ArrayFuncs.convertArray(l, int.class, q);
         Assert.assertEquals(1, i2.length);
         Assert.assertEquals(2, i2[0].length);
         Assert.assertEquals(1, i2[0][0]);
         Assert.assertEquals(2, i2[0][1]);
 
-        short[][] s = (short[][]) ArrayFuncs.convertArray(i, short.class, null);
+        short[][] s = (short[][]) ArrayFuncs.convertArray(i, short.class, q);
         Assert.assertEquals(1, s.length);
         Assert.assertEquals(2, s[0].length);
         Assert.assertEquals(1, s[0][0]);
         Assert.assertEquals(2, s[0][1]);
 
-        byte[][] b = (byte[][]) ArrayFuncs.convertArray(s, byte.class, null);
+        byte[][] b = (byte[][]) ArrayFuncs.convertArray(s, byte.class, q);
         Assert.assertEquals(1, b.length);
         Assert.assertEquals(2, b[0].length);
         Assert.assertEquals(1, b[0][0]);

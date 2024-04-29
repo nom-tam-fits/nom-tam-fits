@@ -211,4 +211,22 @@ public class ImageDataTest {
         im2 = new ImageData(h);
         Assert.assertFalse(im2.isComplexValued());
     }
+
+    @Test
+    public void testScalarConvert() throws Exception {
+        double[][] data = {{1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0}};
+
+        ImageData im = new ImageData(data);
+        ImageData iim = im.convertTo(double.class);
+
+        int[][] idata = (int[][]) iim.getData();
+
+        Assert.assertEquals(3, idata.length);
+        Assert.assertEquals(2, idata[0].length);
+
+        Assert.assertEquals(1, idata[0][0]);
+        Assert.assertEquals(2, idata[0][1]);
+        Assert.assertEquals(5, idata[2][0]);
+        Assert.assertEquals(6, idata[2][1]);
+    }
 }

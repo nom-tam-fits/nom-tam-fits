@@ -1945,15 +1945,20 @@ public class BinaryTableNewTest {
         BinaryTable tab = new BinaryTable();
         tab.addColumn(new int[] {1});
         tab.addColumn(new double[] {1.0});
+        tab.addColumn(new float[] {1.0F});
 
         tab.getDescriptor(0).setQuantizer(new Quantizer(2.0, 0.5, null));
         tab.getDescriptor(1).setQuantizer(new Quantizer(0.5, -0.5, null));
+        tab.getDescriptor(2).setQuantizer(new Quantizer(0.5, -0.5, null));
 
         tab.set(0, 0, 5.0);
         Assert.assertEquals(2, (int) tab.get(0, 0));
 
         tab.set(0, 1, 4);
         Assert.assertEquals(1.5, (double) tab.get(0, 1), 1e-12);
+
+        tab.set(0, 2, 4);
+        Assert.assertEquals(1.5F, (float) tab.get(0, 2), 1e-6);
 
         // No quantization needed:
 
@@ -1964,7 +1969,13 @@ public class BinaryTableNewTest {
         Assert.assertEquals(-1.5, (double) tab.get(0, 1), 1e-12);
 
         tab.set(0, 1, -2.5F);
-        Assert.assertEquals(-2.5F, (double) tab.get(0, 1), 1e-5);
+        Assert.assertEquals(-2.5F, (double) tab.get(0, 1), 1e-6);
+
+        tab.set(0, 2, -1.5);
+        Assert.assertEquals(-1.5F, (float) tab.get(0, 2), 1e-6);
+
+        tab.set(0, 2, -2.5F);
+        Assert.assertEquals(-2.5F, (float) tab.get(0, 2), 1e-6);
 
         tab.set(0, 1, new BigInteger("1234567890"));
         Assert.assertEquals(1234567890L, (double) tab.get(0, 1), 1e-5);
