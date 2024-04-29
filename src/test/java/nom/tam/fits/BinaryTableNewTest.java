@@ -1970,4 +1970,42 @@ public class BinaryTableNewTest {
         tab.set(0, 1, new int[] {4});
         Assert.assertEquals(1.5, ((double[]) tab.get(0, 1))[0], 1e-12);
     }
+
+    @Test
+    public void testGetArrayElement() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[] {1});
+        tab.addColumn(new double[] {1.0});
+        tab.addColumn(new Boolean[] {null});
+
+        int[] e1 = (int[]) tab.getArrayElement(0, 0);
+        Assert.assertEquals(1, e1.length);
+        Assert.assertEquals(1, e1[0]);
+
+        double[] e2 = (double[]) tab.getArrayElement(0, 1);
+        Assert.assertEquals(1, e2.length);
+        Assert.assertEquals(1.0, e2[0], 1e-12);
+
+        Boolean[] e3 = (Boolean[]) tab.getArrayElement(0, 2);
+        Assert.assertEquals(1, e3.length);
+        Assert.assertNull(e3[0]);
+    }
+
+    @Test
+    public void testGetArrayElementAsType() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[] {1});
+        tab.addColumn(new double[] {1.0});
+
+        tab.getDescriptor(0).setQuantizer(new Quantizer(2.0, 0.5, null));
+        tab.getDescriptor(1).setQuantizer(new Quantizer(0.5, -0.5, null));
+
+        int[] e1 = (int[]) tab.getArrayElement(0, 1, int.class);
+        Assert.assertEquals(1, e1.length);
+        Assert.assertEquals(3, e1[0]);
+
+        double[] e2 = (double[]) tab.getArrayElement(0, 0, double.class);
+        Assert.assertEquals(1, e2.length);
+        Assert.assertEquals(2.5, e2[0], 1e-12);
+    }
 }

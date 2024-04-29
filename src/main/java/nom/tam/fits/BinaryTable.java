@@ -2675,16 +2675,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     public Object getArrayElement(int row, int col, Class<?> asType) throws IllegalArgumentException {
         ColumnDesc c = getDescriptor(col);
         Object e = getElement(row, col, true);
-        if (e == null) {
-            return null;
-        }
-
-        if (asType.isAssignableFrom(c.getFitsBase())) {
-            return e;
-        }
-
-        e = ArrayFuncs.convertArray(e, asType, c.getQuantizer());
-        return e;
+        return asType.isAssignableFrom(c.getFitsBase()) ? e : ArrayFuncs.convertArray(e, asType, c.getQuantizer());
     }
 
     /**

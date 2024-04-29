@@ -40,6 +40,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Random;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -386,6 +387,12 @@ public class ComplexValueTest {
             thrown = true;
         }
         assertTrue(thrown);
+    }
+
+    @Test
+    public void testToArray() throws Exception {
+        Assert.assertArrayEquals(new double[] {1.0, 2.0}, (double[]) new ComplexValue(1.0, 2.0).toArray(), 1e-12);
+        Assert.assertArrayEquals(new float[] {1.0F, 2.0F}, (float[]) new ComplexValue.Float(1.0F, 2.0F).toArray(), 1e-6F);
     }
 
 }

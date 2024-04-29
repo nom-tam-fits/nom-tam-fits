@@ -73,7 +73,7 @@ public class ImageData extends Data {
     /**
      * This class describes an array
      */
-    protected static class ArrayDesc implements Cloneable {
+    protected static class ArrayDesc {
 
         private final Class<?> type;
         private int[] dims;
@@ -88,15 +88,6 @@ public class ImageData extends Data {
 
             if (ComplexValue.class.isAssignableFrom(type)) {
                 complexAxis = dims.length;
-            }
-        }
-
-        @Override
-        protected ArrayDesc clone() {
-            try {
-                return (ArrayDesc) super.clone();
-            } catch (CloneNotSupportedException e) {
-                return null;
             }
         }
     }

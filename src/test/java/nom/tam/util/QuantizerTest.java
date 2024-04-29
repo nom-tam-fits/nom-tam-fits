@@ -83,11 +83,29 @@ public class QuantizerTest {
     public void testImageHeader() throws Exception {
         Quantizer q = new Quantizer(2.0, 0.5, -999);
         Header h = new Header();
+
         q.editImageHeader(h);
         Assert.assertEquals(2.0, h.getDoubleValue(Standard.BSCALE), 1e-12);
         Assert.assertEquals(0.5, h.getDoubleValue(Standard.BZERO), 1e-12);
         Assert.assertEquals(-999, h.getLongValue(Standard.BLANK));
+
         Quantizer q1 = Quantizer.fromImageHeader(h);
+        Assert.assertEquals(-999, q1.toLong(Double.NaN));
+        Assert.assertEquals(0.5, q1.toDouble(0), 1e-12);
+        Assert.assertEquals(2.5, q1.toDouble(1), 1e-12);
+    }
+
+    @Test
+    public void testTableHeader() throws Exception {
+        Quantizer q = new Quantizer(2.0, 0.5, -999);
+        Header h = new Header();
+
+        q.editTableHeader(h, 0);
+        Assert.assertEquals(2.0, h.getDoubleValue(Standard.TSCALn.n(1)), 1e-12);
+        Assert.assertEquals(0.5, h.getDoubleValue(Standard.TZEROn.n(1)), 1e-12);
+        Assert.assertEquals(-999, h.getLongValue(Standard.TNULLn.n(1)));
+
+        Quantizer q1 = Quantizer.fromTableHeader(h, 0);
         Assert.assertEquals(-999, q1.toLong(Double.NaN));
         Assert.assertEquals(0.5, q1.toDouble(0), 1e-12);
         Assert.assertEquals(2.5, q1.toDouble(1), 1e-12);
@@ -97,6 +115,7 @@ public class QuantizerTest {
     public void testImageHeaderNoBlanking() throws Exception {
         Quantizer q = new Quantizer(2.0, 0.5, null);
         Header h = new Header();
+
         q.editImageHeader(h);
         Assert.assertEquals(2.0, h.getDoubleValue(Standard.BSCALE), 1e-12);
         Assert.assertEquals(0.5, h.getDoubleValue(Standard.BZERO), 1e-12);
@@ -107,6 +126,7 @@ public class QuantizerTest {
     public void testTableHeaderNoBlanking() throws Exception {
         Quantizer q = new Quantizer(2.0, 0.5, null);
         Header h = new Header();
+
         q.editTableHeader(h, 0);
         Assert.assertEquals(2.0, h.getDoubleValue(Standard.TSCALn.n(1)), 1e-12);
         Assert.assertEquals(0.5, h.getDoubleValue(Standard.TZEROn.n(1)), 1e-12);
