@@ -4,6 +4,7 @@ import java.io.DataOutput;
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /*-
@@ -1953,6 +1954,23 @@ public class BinaryTableNewTest {
 
         tab.set(0, 1, 4);
         Assert.assertEquals(1.5, (double) tab.get(0, 1), 1e-12);
+
+        // No quantization needed:
+
+        tab.set(0, 0, -1);
+        Assert.assertEquals(-1, (int) tab.get(0, 0));
+
+        tab.set(0, 1, -1.5);
+        Assert.assertEquals(-1.5, (double) tab.get(0, 1), 1e-12);
+
+        tab.set(0, 1, -2.5F);
+        Assert.assertEquals(-2.5F, (double) tab.get(0, 1), 1e-5);
+
+        tab.set(0, 1, new BigInteger("1234567890"));
+        Assert.assertEquals(1234567890L, (double) tab.get(0, 1), 1e-5);
+
+        tab.set(0, 1, new BigDecimal("1.234567890e123"));
+        Assert.assertEquals(1.234567890e123, (double) tab.get(0, 1), 1e-5);
     }
 
     @Test
@@ -1989,6 +2007,21 @@ public class BinaryTableNewTest {
         Boolean[] e3 = (Boolean[]) tab.getArrayElement(0, 2);
         Assert.assertEquals(1, e3.length);
         Assert.assertNull(e3[0]);
+    }
+
+    @Test
+    public void testGetArrayElementOwnType() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[] {1});
+        tab.addColumn(new double[] {1.0});
+
+        int[] e1 = (int[]) tab.getArrayElement(0, 0, int.class);
+        Assert.assertEquals(1, e1.length);
+        Assert.assertEquals(1, e1[0]);
+
+        double[] e2 = (double[]) tab.getArrayElement(0, 1, double.class);
+        Assert.assertEquals(1, e2.length);
+        Assert.assertEquals(1.0, e2[0], 1e-12);
     }
 
     @Test

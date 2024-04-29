@@ -74,6 +74,7 @@ public class ImageDataTest {
 
         try (Fits fits = new Fits("target/complex-first.fits")) {
             im = (ImageData) fits.getHDU(0).getData();
+
             ImageData zim = im.convertTo(ComplexValue.class);
             ComplexValue[] z = (ComplexValue[]) zim.getData();
 
@@ -82,6 +83,15 @@ public class ImageDataTest {
             Assert.assertEquals(3.0, z[0].im(), 1e-12);
             Assert.assertEquals(2.0, z[1].re(), 1e-12);
             Assert.assertEquals(4.0, z[1].im(), 1e-12);
+
+            ImageData zfim = im.convertTo(ComplexValue.Float.class);
+            ComplexValue.Float[] zf = (ComplexValue.Float[]) zfim.getData();
+
+            Assert.assertEquals(2, zf.length);
+            Assert.assertEquals(1.0F, zf[0].re(), 1e-6);
+            Assert.assertEquals(3.0F, zf[0].im(), 1e-6);
+            Assert.assertEquals(2.0F, zf[1].re(), 1e-6);
+            Assert.assertEquals(4.0F, zf[1].im(), 1e-6);
         }
     }
 
