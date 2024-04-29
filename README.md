@@ -299,8 +299,8 @@ floating-point values as integers, via quantization. The quantization has the fo
  - a blanking value, i.e. the integer that corresponds to NaN (not used by default).
  
  The quantization of images is defined by the `BSCALE`, `BZERO`, and `BLANK` keywords accordingly in the FITS header.
- So, if these keywords are present, the integer to decimal conversion will automatically apply the integer-to-decimal
- conversion as:
+ Thus, when these keywords are present, the integer to decimal conversion will automatically apply the 
+ integer-to-decimal conversion as:
  
  ```
    <decimal-value> = <scaling> * <integer-value> + <offset>
@@ -332,7 +332,7 @@ As of version 1.20, this library recognises when the convention is used. However
 back as their storage type (e.g. `float[4][3][2]`) for back compatibility. However, you can then check if the data is 
 meant to be complex (or not) and convert it to complex values in a second step after:
 
-```
+```java
   // Read the data in the stored data format as some primitive array...
   ImageData data = hdu.getData();
   
@@ -578,9 +578,9 @@ You can convert array elements via the `BinaryTable.getArrayElementAs()` method.
 
 ```java
   BinaryTable tab = ...;
-  
-  // The row 1, column 3 as an array of doubles, regardless of its underlying numerical type...
-  // Assuming that the column contains 2D numerical entries of some type:
+
+  // Assuming that the column contains 2D numerical entries of some type...  
+  // Get a table entry as an array of doubles, regardless of its (numerical) storage type...
   double[][] e = tab.getArrayElementAs(1, 3, double.class);
 ```
 

@@ -443,9 +443,12 @@ public class ImageData extends Data {
     }
 
     /**
-     * Sets the conversion between decimal and integer data representations.
+     * Sets the conversion between decimal and integer data representations. The quantizer for the image is set
+     * automatically if the image was read from a FITS input, and if any of the associated BSCALE, BZERO, or BLANK
+     * keywords were defined in the HDU's header.
      * 
-     * @param quant the quantizer that converts between floating-point and integer data representations.
+     * @param quant the quantizer that converts between floating-point and integer data representations, or <code>
+     *          null</code> to not use quantization and instead rely on simple rounding for decimal-ineger conversions..
      * 
      * @see         #getQuantizer()
      * @see         #convertTo(Class)
@@ -459,7 +462,8 @@ public class ImageData extends Data {
     /**
      * Returns the conversion between decimal and integer data representations.
      * 
-     * @return the quantizer that converts between floating-point and integer data representations.
+     * @return the quantizer that converts between floating-point and integer data representations, which may be
+     *             <code>null</code>
      * 
      * @see    #setQuantizer(Quantizer)
      * @see    #convertTo(Class)
@@ -534,6 +538,7 @@ public class ImageData extends Data {
      * @throws FitsException if the data cannot be read from the input.
      * 
      * @see                  #isComplexValued()
+     * @see                  ArrayFuncs#convertArray(Object, Class, Quantizer)
      * 
      * @since                1.20
      */

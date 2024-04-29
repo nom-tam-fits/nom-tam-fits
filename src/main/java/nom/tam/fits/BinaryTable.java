@@ -264,7 +264,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         /**
          * Returns the conversion between decimal and integer data representations for the column data.
          * 
-         * @return the quantizer that converts between floating-point and integer data representations.
+         * @return the quantizer that converts between floating-point and integer data representations, whic may be
+         *             <code>null</code>.
          * 
          * @see    #setQuantizer(Quantizer)
          * 
@@ -275,9 +276,13 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         /**
-         * Sets the conversion between decimal and integer data representations for the column data.
+         * Sets the conversion between decimal and integer data representations for the column data. If the table is
+         * read from a FITS input, the column's quantizer is automatically set if the Table HDU's header defines any of
+         * the TSCALn, TZEROn, or TNULLn keywords for the column.
          * 
-         * @param q the quantizer that converts between floating-point and integer data representations.
+         * @param q the quantizer that converts between floating-point and integer data representations, or
+         *              <code>null</code> to not use any quantization, and instead rely on the generic rounding for
+         *              decimal-integer conversions for this column.
          * 
          * @see     #getQuantizer()
          * 
@@ -2631,7 +2636,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @return     The table entry as an array of the stored type, without applying any quantization conversions.
      * 
-     * @see        #getArrayElement(int, int, Class)
+     * @see        #getArrayElementAs(int, int, Class)
      * @see        #get(int, int)
      * 
      * @since      1.20
@@ -2672,7 +2677,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @since                           1.20
      */
-    public Object getArrayElement(int row, int col, Class<?> asType) throws IllegalArgumentException {
+    public Object getArrayElementAs(int row, int col, Class<?> asType) throws IllegalArgumentException {
         ColumnDesc c = getDescriptor(col);
         Object e = getElement(row, col, true);
         return asType.isAssignableFrom(c.getFitsBase()) ? e : ArrayFuncs.convertArray(e, asType, c.getQuantizer());
@@ -2719,7 +2724,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @see                  #getNumber(int, int)
      * @see                  #getLogical(int, int)
      * @see                  #getString(int, int)
-     * @see                  #getArrayElement(int, int, Class)
+     * @see                  #getArrayElementAs(int, int, Class)
      * @see                  #set(int, int, Object)
      * 
      * @since                1.18
