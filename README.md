@@ -13,7 +13,7 @@ __nom.tam.fits__ is a full-featured, fast, 100% pure Java 8+ library for reading
 _nom.tam_ prefix) at NASA Goddard Space Flight Center. Currently it is maintained by 
 [Attila Kovacs](https://github.com/attipaci) at the Center for Astrophysics | Harvard &amp; Smithsonian.
 
-This document has been updated for 1.19.1 and/or later 1.x releases.
+This document has been updated for 1.20 and/or later 1.x releases.
 
 ## Table of Contents
 
@@ -263,6 +263,7 @@ during reading.
 
 
 <a name="reading-whole-images"></a>
+
 #### Reading whole images
 
 The simplest example of reading an image contained in the first HDU is given below:
@@ -280,6 +281,68 @@ the results to the appropriate type. Given that the FITS file may contain many d
 provides us with no class that can point to different kinds of primitive arrays other than `Object`, such explicit 
 casting is inevitable if you want to use the data from the FITS files.
 
+
+#### Converting images to a different type
+
+As of version 1.20, the library provices tools to convert images to a numerical type other than the type stored in
+the FITS file. Let's say the FITS stored the images as integer, but we want them as double-precision values. 
+
+```java
+  double[][] darray = hdu.getData().convertTo(double.class).getKernel();
+```
+
+Things get somewhat interesting too at this point, because FITS allows for the integer representation of 
+floating-point values as integers, via quantization. The quantization has the following parameters:
+
+ - A scaling factor, i.e. the separation of discrete levels in the floating point data (defaults to 1.0)
+ - an offset, i.e. the floating point value that corresponds to an integer value of 0 (defaults to 0.0).
+ - a blanking value, i.e. the integer that corresponds to NaN (not used by default).
+ 
+ The quantization of images is defined by the `BSCALE`, `BZERO`, and `BLANK` keywords accordingly in the FITS header.
+ So, if these keywords are present, the integer to decimal conversion will automatically apply the integer-to-decimal
+ conversion as:
+ 
+ ```
+   <decimal-value> = <scaling> * <integer-value> + <offset>
+ ``` 
+ 
+or else set NaN values when the integer value matches the designated blanking value. In the absense of the above
+header keywords defining quantization, the integer-to-decimal conversion is effectively just a widening conversion.
+
+The reverse conversion, from decimal images to integer images, involves rounding, i.e.:
+
+```
+  <integer-value> = round((<decimal-value> - <offset>) / <scaling>)
+```
+
+If you want to convert the image without quantization, you may call `ImageData.setQuantizer(null)` prior to the 
+conversions, or else use the static low-level `ArrayFuncs.convertArray(Object, Class)` method.
+
+
+#### Complex valued images
+ 
+While the original FITS had only images of scalar numerical types, The FITS standard (version 4.0) also specifies a
+convention to represent complex valued data as images. Complex arrays are recorded as any scalar numerical type, but 
+with an extra dimension of 2 containing the real and imaginary components. E.g. a 4x3 complex array can thus be 
+recorded as any primitive numbertype with 4x3x2 dimensions. The convention is that the axis containing the complex 
+pair of values has is `CTYPEn` header keyword named as 'COMPLEX'. Note that complex values can be recorded as integers 
+also, and use quantization just like decimals.
+
+As of version 1.20, this library recognises when the convention is used. However, images recorded this way will read
+back as their storage type (e.g. `float[4][3][2]`) for back compatibility. However, you can then check if the data is 
+meant to be complex (or not) and convert it to complex values in a second step after:
+
+```
+  // Read the data in the stored data format as some primitive array...
+  ImageData data = hdu.getData();
+  
+  // If the complex array convntion was used in the header, we can convert the image data
+  // to complex-valued as the second step...
+  if (data.isComplexValued()) {
+     ComplexValue.Float[][] z = data.convetrTo(ComplexValue.Float.class).getKernel();
+     ...
+  }
+```
 
 
 <a name="reading-cutouts"></a>
@@ -413,9 +476,6 @@ Now we can cycle through the image rows (or chunks) and collect the statistics a
 ```
     
 
-
-
-
 <a name="reading-tables"></a>
 ### Reading Tables
 
@@ -508,6 +568,28 @@ The library provides methods for accessing entire rows and columns also via the 
 forward because these methods return data that may be confounding to interpret, with non-trivial data types and/or 
 dimensions.
 
+
+#### Converting array elements
+
+As of version 1.20, the library also support converting array elements to a different numerical type than the stored
+data. Like in the case for images (further above) the integer-decimal conversions will use the columns qunatization
+parameters if they are defined. Otherwise narrowing conversions of decimal-to-integer types will use simple rounding.
+You can convert array elements via the `BinaryTable.getArrayElementAs()` method. E.g.:
+
+```java
+  BinaryTable tab = ...;
+  
+  // The row 1, column 3 as an array of doubles, regardless of its underlying numerical type...
+  // Assuming that the column contains 2D numerical entries of some type:
+  double[][] e = tab.getArrayElementAs(1, 3, double.class);
+```
+
+The quantization of columns is automatically digested based on the `TSCALn`, `TZEROn`, and `TNULLn` keywords in the 
+table's header, but can be (re)set to a different quantization using the `ColumnDesc.setQuantizer()` method, if need 
+be.
+
+Because binary tables already have designated complex-valued column types, the conversions apply only between scalar
+numerical types, such as `byte.class`, `short.class`, `int.class`, `long.class`, `float.class`, and `double.class`.
 
 -----------------------------------------------------------------------------
 
@@ -643,10 +725,9 @@ representation.
 
 #### Images
 
-We can write images one subarray at a time, if we want to. Here is an example of
-how you could go about it. First, create storage for the contiguous chunk we want
-to write at a time. For example, same we want to write a 32-bit floating-point image 
-with `[nRows][nCols]` pixels, and we want to write these one row at a time:
+We can write images one subarray at a time, if we want to. Here is an example of how you could go about it. First, 
+create storage for the contiguous chunk we want to write at a time. For example, same we want to write a 32-bit 
+floating-point image  with `[nRows][nCols]` pixels, and we want to write these one row at a time:
 
 First let's create storage for the chunk:
 
@@ -655,8 +736,8 @@ First let's create storage for the chunk:
   float[] chunk = new float[nCols];
 ```
 
-Next create a header. It's easiest to create it from the chunk, and then just
-modify the dimensions for the full image, e.g. as:
+Next create a header. It's easiest to create it from the chunk, and then just modify the dimensions for the full 
+image, e.g. as:
 
 ```java
   // Create an image HDU with the row 
@@ -667,8 +748,8 @@ modify the dimensions for the full image, e.g. as:
   ImageData.overrideHeaderAxes(header, nRow, nCol); 
 ```
 
-Next, we can complete the header description adding whatever information we desire.
-Once complete, we'll write the image header to the output:
+Next, we can complete the header description adding whatever information we desire. Once complete, we'll write the 
+image header to the output:
 
 ```java
   // Create a FITS and write to the image to it
@@ -676,8 +757,8 @@ Once complete, we'll write the image header to the output:
   header.write(out);
 ```
 
-Now, we can start writing the image data, iterating over the rows, populating our 
-chunk data in turn, and writing it out as we go.
+Now, we can start writing the image data, iterating over the rows, populating our chunk data in turn, and writing it 
+out as we go.
 
 ```java
   // Iterate over the image rows
@@ -690,8 +771,7 @@ chunk data in turn, and writing it out as we go.
   }
 ```
 
-Finally, add the requisite padding to complete the FITS block of 2880 bytes
-after the end of the image data:
+Finally, add the requisite padding to complete the FITS block of 2880 bytes after the end of the image data:
 
 ```java
   FitsUtil.pad(out, out.position());
@@ -700,12 +780,12 @@ after the end of the image data:
 
 #### Tables
 
-We can do something pretty similar for tables _so long as we don't have variable length columns_, but 
-it requires a little more work.
+We can do something pretty similar for tables _so long as we don't have variable length columns_, but it requires a 
+little more work.
 
-First we have to make sure we are not trying to write tables into the primary HDU of a FITS. Tables
-can only reside in extensions, and so we might need to create and write a dummy primary HDU to the
-FITS before we can write the table itself:
+First we have to make sure we are not trying to write tables into the primary HDU of a FITS. Tables can only reside in 
+extensions, and so we might need to create and write a dummy primary HDU to the FITS before we can write the table 
+itself:
 
 ```java
   FitsFile out = new FitsFile("table.fits", "rw");
@@ -715,8 +795,8 @@ FITS before we can write the table itself:
   new NullDataHDU().write(out);
 ```
 
-Next, assume we have a binary table that we either read from an input, or else assembled ourselves
-(see further below on how to build binary tables):
+Next, assume we have a binary table that we either read from an input, or else assembled ourselves (see further below 
+on how to build binary tables):
 
 ```java 
   BinaryTable table = ...
@@ -729,9 +809,8 @@ Next, we will need to create an appropriate FITS header for the table:
   table.fillHeader(header);
 ```
 
-We can now complete the header descriprtion as we see fit, with whatever optional entries. We can also
-save space for future additions, e.g. for values we will have only after we start writing the table
-data itself:
+We can now complete the header descriprtion as we see fit, with whatever optional entries. We can also save space for 
+future additions, e.g. for values we will have only after we start writing the table data itself:
 
 ```java
    // Make space for at least 200 more header lines to be added later
@@ -744,8 +823,8 @@ Now, we can write out the header:
    header.write(out);
 ```
 
-Next, we can finally write regular table rows (without variable-length entries) in a loop. Assuming
-that our row is something like `{ { double[1] }, { byte[10] }, { float[256] }, ... }`: 
+Next, we can finally write regular table rows (without variable-length entries) in a loop. Assuming that our row is 
+something like `{ { double[1] }, { byte[10] }, { float[256] }, ... }`: 
 
 ```java
   for (...) {
@@ -760,23 +839,23 @@ that our row is something like `{ { double[1] }, { byte[10] }, { float[256] }, .
   }
 ```
 
-We want to keep count of the rows we write (e.g. `nRowsWritten`). Once we finish writing the table data, 
-we must add the requisite padding to complete the FITS block of 2880 bytes after the table data ends. 
+We want to keep count of the rows we write (e.g. `nRowsWritten`). Once we finish writing the table data, we must add 
+the requisite padding to complete the FITS block of 2880 bytes after the table data ends. 
 
 ```java
   // Add padding to the file to complete the FITS block
   FitsUtil.pad(out, nRowsWritten * table.getRegularRowSize());
 ```
 
-After the table has been thus written to the output, we should make sure that the header has the correct number 
-of table rows in in `NAXIS2` entry:
+After the table has been thus written to the output, we should make sure that the header has the correct number of 
+table rows in in `NAXIS2` entry:
 
 ```java
   header.addValue(Standard.NAXISn.n(2), nRowsWritten);
 ```
 
-We can also complete the header with any other information that became available since the start (using the space 
-we reserved for additions earlier). Once the header is all in ship-shape, we can re-write in the file at its original
+We can also complete the header with any other information that became available since the start (using the space we 
+reserved for additions earlier). Once the header is all in ship-shape, we can re-write in the file at its original
 location:
 
 ```java
