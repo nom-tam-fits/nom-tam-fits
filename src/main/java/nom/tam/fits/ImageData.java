@@ -274,7 +274,7 @@ public class ImageData extends Data {
         c.add(HeaderCard.create(Standard.GCOUNT, 1));
         c.add(HeaderCard.create(Standard.EXTEND, true));
 
-        if (dataDescription.complexAxis >= 0) {
+        if (isComplexValued()) {
             c.add(HeaderCard.create(Standard.CTYPEn.n(dims.length - dataDescription.complexAxis), COMPLEX_TYPE));
         }
 
@@ -471,6 +471,22 @@ public class ImageData extends Data {
     }
 
     /**
+     * Checks if the image data is designated as a complex valued image. It does not necesarily mean that the data
+     * itself is currently in {@link ComplexValue} type representation. Rather it simply means that this data can be
+     * represented as {@link ComplexValue} type, possiblt after an appropriate conversion to a {@link ComplexValue}
+     * type.
+     * 
+     * @return <code>true</code> if the data is complex valued or can be converted to complex valued. Otherwise
+     *             <code>false</code>
+     * 
+     * @since  {@link #convertTo(Class)}
+     * @since  1.20
+     */
+    public final boolean isComplexValued() {
+        return dataDescription.complexAxis >= 0;
+    }
+
+    /**
      * Converts this image HDU to another image HDU of a different type, possibly using a qunatizer for the
      * integer-decimal conversion of the data elements. In all other respects, the returned image is identical to the
      * the original. If th conversion is th indetity, it will return itself and the data may remain in deferred mode.
@@ -485,6 +501,8 @@ public class ImageData extends Data {
      *                           be the same as this HDU if the type is unchanged from the original).
      * 
      * @throws FitsException if the data cannot be read from the input.
+     * 
+     * @see                  #isComplexValued()
      * 
      * @since                1.20
      */

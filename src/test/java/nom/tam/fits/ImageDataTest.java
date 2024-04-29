@@ -185,4 +185,30 @@ public class ImageDataTest {
         Assert.assertEquals(6, idata[2][1]);
     }
 
+    @Test
+    public void testFalseComplexHeaders() throws Exception {
+        int[][][] data = new int[3][2][5];
+        ImageData im = new ImageData(data);
+
+        Header h = new Header();
+        im.fillHeader(h);
+        h.addValue(Standard.CTYPEn.n(1), "COMPLEX");
+
+        ImageData im2 = new ImageData(h);
+        Assert.assertFalse(im2.isComplexValued());
+
+        h = new Header();
+        im.fillHeader(h);
+        h.addValue(Standard.CTYPEn.n(2), "COMPLEX");
+
+        im2 = new ImageData(h);
+        Assert.assertFalse(im2.isComplexValued());
+
+        h = new Header();
+        im.fillHeader(h);
+        h.addValue(Standard.CTYPEn.n(3), "COMPLEX");
+
+        im2 = new ImageData(h);
+        Assert.assertFalse(im2.isComplexValued());
+    }
 }
