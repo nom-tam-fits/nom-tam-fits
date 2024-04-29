@@ -76,7 +76,7 @@ public class ImageData extends Data {
     protected static class ArrayDesc implements Cloneable {
 
         private final Class<?> type;
-        private final int[] dims;
+        private int[] dims;
 
         private Quantizer quant;
 
@@ -87,7 +87,7 @@ public class ImageData extends Data {
             this.type = type;
 
             if (ComplexValue.class.isAssignableFrom(type)) {
-                complexAxis = dims.length - 1;
+                complexAxis = dims.length;
             }
         }
 
@@ -226,7 +226,6 @@ public class ImageData extends Data {
     @SuppressWarnings({"resource", "deprecation"})
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
-
         // Don't need to write null data (noted by Jens Knudstrup)
         if (byteSize == 0) {
             return;
@@ -263,24 +262,18 @@ public class ImageData extends Data {
         Cursor<String, HeaderCard> c = head.iterator();
         c.add(HeaderCard.create(Standard.SIMPLE, true));
 
-        Class<?> base = ArrayFuncs.getBaseClass(dataArray);
-        if (ComplexValue.Float.class.isAssignableFrom(base)) {
-            base = float.class;
-        }
+        Class<?> base = dataDescription.type;
+        int[] dims = dataDescription.dims;
+
         if (ComplexValue.class.isAssignableFrom(base)) {
-            base = double.class;
+            dims = Arrays.copyOf(dims, dims.length + 1);
+            dims[dims.length - 1] = 2;
+            base = ComplexValue.Float.class.isAssignableFrom(base) ? float.class : double.class;
         }
 
         c.add(HeaderCard.create(Standard.BITPIX, Bitpix.forPrimitiveType(base).getHeaderValue()));
 
-        int[] dims = ArrayFuncs.getDimensions(dataArray);
-        if (ComplexValue.class.isAssignableFrom(base)) {
-            dims = Arrays.copyOf(dims, dims.length + 1);
-            dims[dims.length - 1] = 2;
-        }
-
         c.add(HeaderCard.create(Standard.NAXIS, dims.length));
-
         for (int i = 1; i <= dims.length; i++) {
             c.add(HeaderCard.create(Standard.NAXISn.n(i), dims[dims.length - i]));
         }
@@ -348,6 +341,7 @@ public class ImageData extends Data {
         byteSize *= bitpix.byteSize();
 
         ArrayDesc desc = new ArrayDesc(dims, baseClass);
+
         if (COMPLEX_TYPE.equals(h.getStringValue(Standard.CTYPEn.n(1))) && dims[ndim - 1] == 2) {
             desc.complexAxis = ndim - 1;
         } else if (COMPLEX_TYPE.equals(h.getStringValue(Standard.CTYPEn.n(ndim))) && dims[0] == 2) {
@@ -488,34 +482,47 @@ public class ImageData extends Data {
     /**
      * Converts this image HDU to another image HDU of a different type, possibly using a qunatizer for the
      * integer-decimal conversion of the data elements. In all other respects, the returned image is identical to the
-     * the original.
+     * the original. If th conversion is th indetity, it will return itself and the data may remain in deferred mode.
      * 
-     * @param  type The primitive numerical type (e.g. <code>int.class</code> or <code>double.class</code>), or else a
-     *                  {@link ComplexValue} type in which data should be represented. Complex representations are
-     *                  normally available for data whose first or last CTYPEn axis was described as 'COMPLEX' by the
-     *                  FITS header with a dimensionality is 2 corresponfing to a pair of real and imaginary data
-     *                  elements.
+     * @param  type          The primitive numerical type (e.g. <code>int.class</code> or <code>double.class</code>), or
+     *                           else a {@link ComplexValue} type in which data should be represented. Complex
+     *                           representations are normally available for data whose first or last CTYPEn axis was
+     *                           described as 'COMPLEX' by the FITS header with a dimensionality is 2 corresponfing to a
+     *                           pair of real and imaginary data elements.
      * 
-     * @return      An image HDU containing the same data in the chosen representation by another type. (It may be the
-     *                  same as this HDU if the type is unchanged from the original).
+     * @return               An image HDU containing the same data in the chosen representation by another type. (It may
+     *                           be the same as this HDU if the type is unchanged from the original).
      * 
-     * @since       1.20
+     * @throws FitsException if the data cannot be read from the input.
+     * 
+     * @since                1.20
      */
-    public ImageData convertTo(Class<?> type) {
+    public ImageData convertTo(Class<?> type) throws FitsException {
+        if (type.isAssignableFrom(dataDescription.type)) {
+            return this;
+        }
+
+        ensureData();
+
         ImageData typed = null;
 
-        if (ComplexValue.class.isAssignableFrom(type) && dataDescription.complexAxis >= 0) {
-            if (dataDescription.complexAxis == 0) {
-                Class<?> numType = ComplexValue.Float.class.isAssignableFrom(type) ? float.class : double.class;
-                Object[] t = (Object[]) ArrayFuncs.convertArray(dataArray, numType, getQuantizer());
-                typed = new ImageData(ArrayFuncs.decimalsToComplex(t[0], t[1]));
-            }
+        boolean toComplex = ComplexValue.class.isAssignableFrom(type)
+                && !ComplexValue.class.isAssignableFrom(dataDescription.type);
+
+        if (toComplex && dataDescription.complexAxis == 0) {
+            // Special case of converting separate re/im arrays to complex...
+
+            // 1. Convert to intermediate floating-point class as necessary (with quantization if any)
+            Class<?> numType = ComplexValue.Float.class.isAssignableFrom(type) ? float.class : double.class;
+            Object[] t = (Object[]) ArrayFuncs.convertArray(dataArray, numType, getQuantizer());
+            ImageData f = new ImageData(ArrayFuncs.decimalsToComplex(t[0], t[1]));
+            f.dataDescription.quant = dataDescription.quant;
+
+            // 2. Assemble complex from separate re/im components.
+            return f.convertTo(type);
         }
 
-        if (typed == null) {
-            typed = new ImageData(ArrayFuncs.convertArray(dataArray, type, getQuantizer()));
-        }
-
+        typed = new ImageData(ArrayFuncs.convertArray(dataArray, type, getQuantizer()));
         typed.dataDescription.quant = dataDescription.quant;
         return typed;
     }

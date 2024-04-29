@@ -566,6 +566,11 @@ public class FitsEncoder extends OutputEncoder {
             return;
         }
 
+        if (o instanceof ComplexValue) {
+            putArray(((ComplexValue) o).toArray());
+            return;
+        }
+
         if (!o.getClass().isArray()) {
             throw new IllegalArgumentException("Not an array: " + o.getClass().getName());
         }
@@ -623,6 +628,10 @@ public class FitsEncoder extends OutputEncoder {
                 size += computeSize(e);
             }
             return size;
+        }
+
+        if (o instanceof ComplexValue) {
+            return 2 * (o instanceof ComplexValue.Float ? ElementType.FLOAT.size() : ElementType.DOUBLE.size());
         }
 
         Class<?> type = o.getClass();

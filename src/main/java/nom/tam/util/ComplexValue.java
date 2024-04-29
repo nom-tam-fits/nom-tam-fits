@@ -274,6 +274,15 @@ public class ComplexValue {
     }
 
     /**
+     * Converts this complex number to an array of 2.
+     * 
+     * @return An array of 2 floating point values.
+     */
+    Object toArray() {
+        return new double[] {re, im};
+    }
+
+    /**
      * Single-precision complex values.
      * 
      * @author Attila Kovacs
@@ -310,6 +319,11 @@ public class ComplexValue {
          */
         public Float(String str) throws IllegalArgumentException {
             super(str);
+        }
+
+        @Override
+        Object toArray() {
+            return new float[] {(float) re(), (float) im()};
         }
     }
 }

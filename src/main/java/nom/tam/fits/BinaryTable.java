@@ -699,6 +699,16 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         /**
+         * Checks if this column contains numerical values, such as any primitive number type or a {@link ComplexValue}
+         * type.
+         * 
+         * @return <code>true</code> if this column contains numerical data.
+         */
+        public final boolean isNumeric() {
+            return !isLogical() && !isBits() && !isString();
+        }
+
+        /**
          * Returns the Java array element type that is used in Java to represent data in this column. When accessing
          * columns or their elements in the old way, through arrays, this is the type that arrays from the Java side
          * will expect or provide. For example, when storing {@link String} values (regular or variable-sized), this
@@ -3159,7 +3169,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             }
         } else if (o.getClass().isArray()) {
             Class<?> eType = ArrayFuncs.getBaseClass(o);
-            if (!c.getFitsBase().isAssignableFrom(eType) && !c.isLogical() && !c.isBits()) {
+            if (!c.getFitsBase().isAssignableFrom(eType) && c.isNumeric()) {
                 o = ArrayFuncs.convertArray(o, c.getFitsBase(), c.getQuantizer());
             }
             setElement(row, col, o);
@@ -3220,7 +3230,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         Quantizer q = c.getQuantizer();
 
         if (q != null) {
-            boolean decimalBase = (base == float.class && base == double.class);
+            boolean decimalBase = (base == float.class || base == double.class);
             boolean decimalValue = (value instanceof Float || value instanceof Double || value instanceof BigInteger
                     || value instanceof BigDecimal);
 

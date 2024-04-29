@@ -39,6 +39,11 @@ import nom.tam.fits.header.Standard;
 
 public class QuantizerTest {
 
+    @Test(expected = IllegalStateException.class)
+    public void testNaNNoBlanking() throws Exception {
+        new Quantizer(2.0, 0.5, null).toLong(Double.NaN);
+    }
+
     @Test
     public void testDefault() throws Exception {
         Assert.assertTrue(new Quantizer(1.0, 0.0, null).isDefault());
@@ -89,17 +94,23 @@ public class QuantizerTest {
     }
 
     @Test
-    public void testTableHeader() throws Exception {
-        Quantizer q = new Quantizer(2.0, 0.5, -999);
+    public void testImageHeaderNoBlanking() throws Exception {
+        Quantizer q = new Quantizer(2.0, 0.5, null);
+        Header h = new Header();
+        q.editImageHeader(h);
+        Assert.assertEquals(2.0, h.getDoubleValue(Standard.BSCALE), 1e-12);
+        Assert.assertEquals(0.5, h.getDoubleValue(Standard.BZERO), 1e-12);
+        Assert.assertFalse(h.containsKey(Standard.BLANK));
+    }
+
+    @Test
+    public void testTableHeaderNoBlanking() throws Exception {
+        Quantizer q = new Quantizer(2.0, 0.5, null);
         Header h = new Header();
         q.editTableHeader(h, 0);
         Assert.assertEquals(2.0, h.getDoubleValue(Standard.TSCALn.n(1)), 1e-12);
         Assert.assertEquals(0.5, h.getDoubleValue(Standard.TZEROn.n(1)), 1e-12);
-        Assert.assertEquals(-999, h.getLongValue(Standard.TNULLn.n(1)));
-        Quantizer q1 = Quantizer.fromTableHeader(h, 0);
-        Assert.assertEquals(-999, q1.toLong(Double.NaN));
-        Assert.assertEquals(0.5, q1.toDouble(0), 1e-12);
-        Assert.assertEquals(2.5, q1.toDouble(1), 1e-12);
-        Assert.assertTrue(Quantizer.fromTableHeader(h, 1).isDefault());
+        Assert.assertFalse(h.containsKey(Standard.TNULLn.n(1)));
     }
+
 }

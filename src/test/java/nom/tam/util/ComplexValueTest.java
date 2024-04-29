@@ -153,10 +153,13 @@ public class ComplexValueTest {
 
     @Test
     public void testComplexFromString() throws Exception {
-        // Missing brackets
         ComplexValue z = new ComplexValue("(5566.2,-1123.1)");
-        assertEquals(5566.2, z.re(), 1 - 10);
-        assertEquals(-1123.1, z.im(), 1 - 10);
+        assertEquals(5566.2, z.re(), 1e-10);
+        assertEquals(-1123.1, z.im(), 1e-10);
+
+        ComplexValue.Float zf = new ComplexValue.Float("(5566.2,-1123.1)");
+        assertEquals(5566.2, zf.re(), 1e-6);
+        assertEquals(-1123.1, zf.im(), 1e-6);
     }
 
     @Test(expected = IllegalArgumentException.class)

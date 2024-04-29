@@ -46,6 +46,7 @@ import nom.tam.fits.header.Standard;
 import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.FitsInputStream;
+import nom.tam.util.Quantizer;
 
 @SuppressWarnings({"javadoc", "deprecation"})
 public class BinaryTableNewTest {
@@ -1907,4 +1908,66 @@ public class BinaryTableNewTest {
         Assert.assertFalse(hdu.getHeader().containsKey(Standard.TTYPEn.n(2)));
     }
 
+    @Test
+    public void testQuantizer() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[] {1});
+        tab.addColumn(new double[] {1.0});
+
+        Assert.assertEquals(1.0, tab.getDouble(0, 0), 1e-12);
+        Assert.assertEquals(1, tab.getLong(0, 1));
+
+        tab.getDescriptor(0).setQuantizer(new Quantizer(2.0, 0.5, null));
+        tab.getDescriptor(1).setQuantizer(new Quantizer(0.5, -0.5, null));
+
+        Assert.assertEquals(2.5, tab.getDouble(0, 0), 1e-12);
+        Assert.assertEquals(3, tab.getLong(0, 1));
+
+        Header h = new Header();
+        tab.fillHeader(h, true);
+
+        tab.getDescriptor(0).setQuantizer(null);
+        tab.getDescriptor(1).setQuantizer(null);
+
+        Assert.assertEquals(1.0, tab.getDouble(0, 0), 1e-12);
+        Assert.assertEquals(1, tab.getLong(0, 1));
+
+        tab.getDescriptor(0).setQuantizer(Quantizer.fromTableHeader(h, 0));
+        tab.getDescriptor(1).setQuantizer(Quantizer.fromTableHeader(h, 1));
+
+        Assert.assertEquals(2.5, tab.getDouble(0, 0), 1e-12);
+        Assert.assertEquals(3, tab.getLong(0, 1));
+    }
+
+    @Test
+    public void testQuantizerSet() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[] {1});
+        tab.addColumn(new double[] {1.0});
+
+        tab.getDescriptor(0).setQuantizer(new Quantizer(2.0, 0.5, null));
+        tab.getDescriptor(1).setQuantizer(new Quantizer(0.5, -0.5, null));
+
+        tab.set(0, 0, 5.0);
+        Assert.assertEquals(2, (int) tab.get(0, 0));
+
+        tab.set(0, 1, 4);
+        Assert.assertEquals(1.5, (double) tab.get(0, 1), 1e-12);
+    }
+
+    @Test
+    public void testQuantizerSetArray() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[][] {{1}});
+        tab.addColumn(new double[][] {{1.0}});
+
+        tab.getDescriptor(0).setQuantizer(new Quantizer(2.0, 0.5, null));
+        tab.getDescriptor(1).setQuantizer(new Quantizer(0.5, -0.5, null));
+
+        tab.set(0, 0, new double[] {5.0});
+        Assert.assertEquals(2, ((int[]) tab.get(0, 0))[0]);
+
+        tab.set(0, 1, new int[] {4});
+        Assert.assertEquals(1.5, ((double[]) tab.get(0, 1))[0], 1e-12);
+    }
 }
