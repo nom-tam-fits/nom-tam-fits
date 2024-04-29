@@ -264,7 +264,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         /**
          * Returns the conversion between decimal and integer data representations for the column data.
          * 
-         * @return the quantizer that converts between floating-point and integer data representations, whic may be
+         * @return the quantizer that converts between floating-point and integer data representations, which may be
          *             <code>null</code>.
          * 
          * @see    #setQuantizer(Quantizer)
@@ -278,7 +278,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         /**
          * Sets the conversion between decimal and integer data representations for the column data. If the table is
          * read from a FITS input, the column's quantizer is automatically set if the Table HDU's header defines any of
-         * the TSCALn, TZEROn, or TNULLn keywords for the column.
+         * the TSCALn, TZEROn, or TNULLn keywords for the column. Users can override that by specifying another quatizer
+         * to use for the column, or dicard qunatizing by calling this method with a <code>null</code>argument.
          * 
          * @param q the quantizer that converts between floating-point and integer data representations, or
          *              <code>null</code> to not use any quantization, and instead rely on the generic rounding for

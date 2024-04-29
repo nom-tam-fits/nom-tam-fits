@@ -445,7 +445,8 @@ public class ImageData extends Data {
     /**
      * Sets the conversion between decimal and integer data representations. The quantizer for the image is set
      * automatically if the image was read from a FITS input, and if any of the associated BSCALE, BZERO, or BLANK
-     * keywords were defined in the HDU's header.
+     * keywords were defined in the HDU's header. User may use this methods to set a different quantization or to use no
+     * quantization at all when converting between floating-point and integer representations.
      * 
      * @param quant the quantizer that converts between floating-point and integer data representations, or <code>
      *          null</code> to not use quantization and instead rely on simple rounding for decimal-ineger conversions..
@@ -504,13 +505,16 @@ public class ImageData extends Data {
     }
 
     /**
-     * Checks if the image data is designated as a complex valued image. It is different from {@link #getType()}, as it
-     * does not necesarily mean that the data itself is currently in {@link ComplexValue} type representation. Rather it
-     * simply means that this data can be represented as {@link ComplexValue} type, possibly after an appropriate
-     * conversion to a {@link ComplexValue} type.
+     * Checks if the image data is explicitly designated as a complex valued image. An image may be designated as
+     * complex-valued either because it was created with {@link ComplexValue} type data, or because it was read from a
+     * FITS file in which one image axis of dimension 2 was designated as an axis containing complex-valued components
+     * with the corresponding CTYPEn header keyword set to 'COMPLEX'. The complex-valued deignation checked by this
+     * method is not the same as {@link #getType()}, as it does not necesarily mean that the data itself is currently in
+     * {@link ComplexValue} type representation. Rather it simply means that this data can be represented as
+     * {@link ComplexValue} type, possibly after an appropriate conversion to a {@link ComplexValue} type.
      * 
-     * @return <code>true</code> if the data is complex valued or can be converted to complex valued. Otherwise
-     *             <code>false</code>
+     * @return <code>true</code> if the data is complex valued or has been explicitly designated as complex valued.
+     *             Otherwise <code>false</code>
      * 
      * @see    #convertTo(Class)
      * @see    #getType()
@@ -530,7 +534,9 @@ public class ImageData extends Data {
      *                           else a {@link ComplexValue} type in which data should be represented. Complex
      *                           representations are normally available for data whose first or last CTYPEn axis was
      *                           described as 'COMPLEX' by the FITS header with a dimensionality is 2 corresponfing to a
-     *                           pair of real and imaginary data elements.
+     *                           pair of real and imaginary data elements. Even if no such designation was present in
+     *                           the header, it is always possible to convertto complex all arrays that have a trailing
+     *                           Java dimension (NAXIS1 in FITS) equal to 2.
      * 
      * @return               An image HDU containing the same data in the chosen representation by another type. (It may
      *                           be the same as this HDU if the type is unchanged from the original).
