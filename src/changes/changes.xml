@@ -60,8 +60,8 @@
       <action type="update" dev="attipaci" issue="592">
           ArrayFuncs.convertArray(Object, Class) is now the same as  the new 
           ArrayFuncs.convertArray(Object, Class, Quantizer) method without a quantizer, and thus allows conversions 
-          to/from complex valued data also, when primitive arrays have a trailing dimension of 2 (e.g. `float[]..[2]` 
-          or `int[]..[2]`).
+          to/from complex valued data also, when primitive arrays have a trailing dimension of 2 (e.g. float[]..[2] 
+          or int[]..[2]).
       </action>
       <action type="update" dev="attipaci" issue="609">
           MultiArrayCopier.copyInto() now rounds floating point values before casting to integer types for a more 
