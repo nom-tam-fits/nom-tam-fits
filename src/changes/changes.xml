@@ -1,19 +1,76 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.20.0-SNAPSHOT" date="2024-04-09" description="Upcoming feature release under development.">
+   <release version="1.20.0-SNAPSHOT" date="2024-04-30" description="Upcoming feature release under development.">
       <action type="fix" dev="attipaci" issue="596">
           Botched compression of multicolumn tables, resulting in extra rows in the compressed table (as many rows as
           there were total table tiles across all columns).
       </action>
+      <action type="fix" dev="attipaci" issue="610">
+          Standard.TNULLn keyword can take any argument type (was previously restricted to strings only).
+      </action>
       <action type="add" dev="attipaci" issue="586">
-          Default column names. Some tools, including (S)FITSIO have issues dealing with table columns that have no
+          Default column names. Some tools, including (C)FITSIO have issues dealing with table columns that have no
           CTYPEn keywords set to define column names. Therefore to enhance interoperability we will use 'Column N'
           type naming, until the user sets a column name otherwise.          
+      </action>
+      <action type="add" dev="attipaci" issue="611">
+          new Quantizer class to handle generic decimal-integer conversions in line with the FITS specification for 
+          integer representation of floating-point data. The new class will interpret the necessary header keywords for 
+          both images and tables, and can fill the required values in FITS headers.
+      </action>
+      <action type="add" dev="attipaci" issue="611">
+          ImageData.setQuantizer() / .getQuantizer() and BinaryTable.ColumnDesc.setQuantizer() / .getQuantizer()
+          methods to access the quantizers that handle decimal-integer conversions for images and binary table 
+          columns, respectively.
+      </action>
+      <action type="add" dev="attipaci" issue="592">
+         ImageData now supports complex valued images, both when constructed programatically from ComplexValue[]... 
+         data; or if so described with an image axis whose type is 'COMPLEX' and contains 2 components (as long as the 
+         complex axis is either the first or last axis). The latter is true even if integer representation is used in 
+         the FITS, e.g. via a quantization. When reading complex valued images, the native ImageData is that of the 
+         stored type (e.g. float[..][..][2]) for compatibility, but ImageData.convertTo(ComplexValue.class) or 
+         .convertTo(ComplexValue.Float.class) can convert these to be true complex valued images in a second step 
+         after reading. (You may also use ImageData.isComplexValued() to check if the data were designated as 
+         complex-valued at origination, by the FITS header or the constructor.)
+      </action>
+      <action type="add" dev="attipaci" issue="610">
+      	 ImageData.convertTo(Class type) will return the equivalent image data with another storage type (but 
+      	 otherwise the same as the original image). Any decimal-integer conversion is handled by the image's own 
+      	 quantizer (which is either specified in the image header or else set by the user) if it is available.
+      </action>
+      <action type="add" dev="attipaci" issue="610">
+         BinaryTable.getArrayElementAs(int row, int col, Class asType) method to allow accessing numerical table 
+         elements as arrays of a desired other numerical type. 
+      </action>
+      <action type="add" dev="attipaci" issue="610">
+         ArrayFuncs.convertArray(Object array, Class newType, Quantizer quant) method provides generic conversions 
+         to numerical type arrays, including ComplexValue type arrays, and can be used for explicit quantization 
+         conversions outside of images and table columns.
       </action>
       <action type="change" dev="attipaci" issue="590">
           Remove Main class, and main() entry points from JAR, which also clears up a whole lot of junk being added
           to the classpath into MANIFEST.MF.
+      </action>
+      <action type="change" dev="attipaci" issue="610">
+          BinaryTable.getArrayElement(row, col) method to return the table element as an array always (without the 
+          boxing of scalar entries), but still representing FITS logicals as Boolean[]..., FITS bits as 
+          boolean[]..., and complex values a ComplexValue[]... arrays.
+      </action>
+      <action type="change" dev="attipaci" issue="592">
+          ArrayFuncs.convertArray(Object, Class) is now the same as  the new 
+          ArrayFuncs.convertArray(Object, Class, Quantizer) method without a quantizer, and thus allows conversions 
+          to/from complex valued data also, when primitive arrays have a trailing dimension of 2 (e.g. `float[]..[2]` 
+          or `int[]..[2]`).
+      </action>
+      <action type="change" dev="attipaci" issue="609">
+          MultiArrayCopier.copyInto() now rounds floating point values before casting to integer types for a more 
+          regular behavior.
+      </action>
+      <action type="change" dev="attipaci" issue="611">
+          BinaryTable.getDouble(...) and .getLong(...) and .set(...) methods will now use the specified quantization 
+          (as specified in the header or else set explicitly by the user) when converting from decimal to integer 
+          types and vice-versa.
       </action>
       <action type="update" dev="attipaci">
           Uses the latest maven build and runtime dependencies.
