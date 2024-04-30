@@ -705,10 +705,13 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         /**
-         * Checks if this column contains numerical values, such as any primitive number type or a {@link ComplexValue}
-         * type.
+         * Checks if this column contains numerical values, such as any primitive number type (e.g.
+         * <code>nt.class</code> or <code>double.class</code>) or else a {@link ComplexValue} type. type.
          * 
-         * @return <code>true</code> if this column contains numerical data.
+         * @return <code>true</code> if this column contains numerical data, including complex-valued data. String,
+         *             bits, and FITS logicals are not numerical (but all other column types are).
+         * 
+         * @since  1.20
          */
         public final boolean isNumeric() {
             return !isLogical() && !isBits() && !isString();
@@ -2624,18 +2627,20 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * Returns a table element as an array of the FITS storage type. Similar to the venerable
+     * Returns a table element as an array of the FITS storage type. Similar to the original
      * {@link #getElement(int, int)}, except that FITS logicals are returned as arrays of <code>Boolean</code> (rather
-     * than <code>boolean</code>), and complex values are returned as arrays of {@link ComplexValue} rather than arrays
-     * of <code>double[2]</code> or <code>float[2]</code>. Singleton (scalar) table elements are not boxed to an
-     * enclosing Java type (unlike {@link #get(int, int)}), an instead returned as arrays of one element. For example, a
-     * single logical as a <code>Boolean[1]</code>, a single float as a <code>float[1]</code> or a single complex value
-     * as <code>ComplexValue[1]</code>.
+     * than <code>boolean</code>), bits are returned as arrays of <code>boolean</code>, and complex values are returned
+     * as arrays of {@link ComplexValue} rather than arrays of <code>double[2]</code> or <code>float[2]</code>.
+     * Singleton (scalar) table elements are not boxed to an enclosing Java type (unlike {@link #get(int, int)}), an
+     * instead returned as arrays of just one element. For example, a single logical as a <code>Boolean[1]</code>, a
+     * single float as a <code>float[1]</code> or a single double-precision complex value as
+     * <code>ComplexValue[1]</code>.
      * 
      * @param  row zero-based row index
      * @param  col zero-based column index
      * 
-     * @return     The table entry as an array of the stored type, without applying any quantization conversions.
+     * @return     The table entry as an array of the stored Java type, without applying any type or quantization
+     *                 conversions.
      * 
      * @see        #getArrayElementAs(int, int, Class)
      * @see        #get(int, int)
@@ -2650,10 +2655,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * <p>
      * Returns a numerical table element as an array of a specific underlying other numerical type. Similar
      * {@link #getArrayElement(int, int)} except that table entries are converted to the specified array type before
-     * returning. If an integer-decimal conversion is involved, it will be performed through the columns quantizer (if
+     * returning. If an integer-decimal conversion is involved, it will be performed through the column's quantizer (if
      * any) or else via a simple rounding as necessary.
-     * <p>
      * </p>
+     * <p>
      * For example, if you have an <code>short</code>-type column, and you want is an array of <code>double</code>
      * values that are represented by the 16-bit integers, then the conversion will use the column's quantizer scaling
      * and offset before returning the result either as an array of doubles, and the designated <code>short</code>
@@ -2780,9 +2785,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * </p>
      * <p>
      * Since version 1.20, if the column has a quantizer and stores integer elements, the conversion to double-precision
-     * will account for the quantization of the column, and will return NaN if the stored integer is the designated
-     * blanking value. To bypass quantization, you can use {@link #getNumber(int, int)} instead followed by
-     * {@link Number#doubleValue()} to to get the stored integer values as a double.
+     * will account for the quantization of the column, if any, and will return NaN if the stored integer is the
+     * designated blanking value (if any). To bypass quantization, you can use {@link #getNumber(int, int)} instead
+     * followed by {@link Number#doubleValue()} to to get the stored integer values as a double.
      * </p>
      * 
      * @param  row                the zero-based row index
@@ -2823,7 +2828,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * Additionally, since version 1.20, if the column has a quantizer and stores floating-point elements, the
      * conversion to integer will include the quantization, and NaN values will be converted to the designated integer
      * blanking values. To bypass quantization, you can use {@link #getNumber(int, int)} instead followed by
-     * {@link Number#longValue()} to to get the stored floating point values cast directly to a long.
+     * {@link Number#longValue()} to to get the stored floating point values rounded directly to a long.
      * </p>
      * 
      * @param  row                   the zero-based row index

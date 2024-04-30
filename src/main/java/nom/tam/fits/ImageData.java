@@ -54,14 +54,15 @@ import nom.tam.util.type.ElementType;
 /**
  * <p>
  * Image data. Essentially these data are a primitive multi-dimensional array, such as a <code>double[]</code>,
- * <code>float[][]</code>, or <code>short[][][]</code>
+ * <code>float[][]</code>, or <code>short[][][]</code>. Or, as of version 1.20, they may also be {@link ComplexValue}
+ * types also.
  * </p>
  * <p>
  * Starting in version 0.9 of the FITS library, this class allows users to defer the reading of images if the FITS data
  * is being read from a file. An {@link ImageTiler} object is supplied which can return an arbitrary subset of the image
- * as a one dimensional array -- suitable for manipulation by standard Java libraries. A call to the {@link #getData()}
- * method will still return a multi-dimensional array, but the image data will not be read until the user explicitly
- * requests.
+ * as a one dimensional array -- suitable for manipulation by standard Java libraries. The image data may not be read
+ * from the input until the user calls a method that requires the actual data (e.g. the {@link #getData()} /
+ * {@link #getKernel()}, {@link #convertTo(Class)} or {@link #write(ArrayDataOutput)} methods).
  * </p>
  * 
  * @see ImageHDU
@@ -492,9 +493,10 @@ public class ImageData extends Data {
     }
 
     /**
-     * Returns the array dimensions
+     * Returns the dimensions of this image.
      * 
-     * @return An array of sizes along each data dimension, in Java indexing order.
+     * @return An array containing the sizes along each data dimension, in Java indexing order. The returned array is
+     *             not used internally, and therefore modifying it will not damage the integrity of the image data.
      * 
      * @see    #getType()
      * 
@@ -505,7 +507,7 @@ public class ImageData extends Data {
     }
 
     /**
-     * Checks if the image data is explicitly designated as a complex valued image. An image may be designated as
+     * Checks if the image data is explicitly designated as a complex-valued image. An image may be designated as
      * complex-valued either because it was created with {@link ComplexValue} type data, or because it was read from a
      * FITS file in which one image axis of dimension 2 was designated as an axis containing complex-valued components
      * with the corresponding CTYPEn header keyword set to 'COMPLEX'. The complex-valued deignation checked by this
@@ -514,7 +516,7 @@ public class ImageData extends Data {
      * {@link ComplexValue} type, possibly after an appropriate conversion to a {@link ComplexValue} type.
      * 
      * @return <code>true</code> if the data is complex valued or has been explicitly designated as complex valued.
-     *             Otherwise <code>false</code>
+     *             Otherwise <code>false</code>.
      * 
      * @see    #convertTo(Class)
      * @see    #getType()
@@ -534,9 +536,9 @@ public class ImageData extends Data {
      *                           else a {@link ComplexValue} type in which data should be represented. Complex
      *                           representations are normally available for data whose first or last CTYPEn axis was
      *                           described as 'COMPLEX' by the FITS header with a dimensionality is 2 corresponfing to a
-     *                           pair of real and imaginary data elements. Even if no such designation was present in
-     *                           the header, it is always possible to convertto complex all arrays that have a trailing
-     *                           Java dimension (NAXIS1 in FITS) equal to 2.
+     *                           pair of real and imaginary data elements. Even without the CTYPEn designation, it is
+     *                           always possible to convert to complex all arrays that have a trailing Java dimension
+     *                           (NAXIS1 in FITS) equal to 2.
      * 
      * @return               An image HDU containing the same data in the chosen representation by another type. (It may
      *                           be the same as this HDU if the type is unchanged from the original).

@@ -291,8 +291,8 @@ the FITS file. Let's say the FITS stored the images as integer, but we want them
   double[][] darray = hdu.getData().convertTo(double.class).getKernel();
 ```
 
-Things get somewhat interesting too at this point, because FITS allows for the integer representation of 
-floating-point values as integers, via quantization. The quantization has the following parameters:
+Things get somewhat interesting at this point, because FITS allows for the integer representation of floating-point 
+values as integers, via quantization. The quantization has the following parameters:
 
  - A scaling factor, i.e. the separation of discrete levels in the floating point data (defaults to 1.0)
  - an offset, i.e. the floating point value that corresponds to an integer value of 0 (defaults to 0.0).
@@ -316,21 +316,21 @@ The reverse conversion, from decimal images to integer images, involves rounding
 ```
 
 If you want to convert the image without quantization, you may call `ImageData.setQuantizer(null)` prior to the 
-conversions, or else use the static low-level `ArrayFuncs.convertArray(Object, Class)` method.
+conversions, or else use the static low-level `ArrayFuncs.convertArray(Object, Class)` method instead.
 
 
 #### Complex valued images
  
-While the original FITS had only images of scalar numerical types, The FITS standard (version 4.0) also specifies a
-convention to represent complex valued data as images. Complex arrays are recorded as any scalar numerical type, but 
-with an extra dimension of 2 containing the real and imaginary components. E.g. a 4x3 complex array can thus be 
-recorded as any primitive numbertype with 4x3x2 dimensions. The convention is that the axis containing the complex 
-pair of values has is `CTYPEn` header keyword named as 'COMPLEX'. Note that complex values can be recorded as integers 
-also, and use quantization just like decimals.
+While the original FITS standard designated images for scalar numerical types only, the current standard (version 4.0) 
+also specifies a convention to represent complex valued data as images. Complex arrays are recorded as any scalar 
+numerical type, but with an extra dimension of 2 containing the real and imaginary components. E.g. a 4x3 complex 
+array can thus be represented as any primitive type array with 4x3x2 dimensions. The convention is that the axis 
+containing the complex pair of values has is `CTYPEn` header keyword named as 'COMPLEX'. Note that complex values can 
+be recorded as integers also, and use quantization just like decimals.
 
-As of version 1.20, this library recognises when the convention is used. However, images recorded this way will read
-back as their storage type (e.g. `float[4][3][2]`) for back compatibility. However, you can then check if the data is 
-meant to be complex (or not) and convert it to complex values in a second step after:
+As of version 1.20, this library recognises when the convention is used when reading FITS image HDUs. However, images 
+recorded this way will read back as their storage type (e.g. `float[4][3][2]`) for back compatibility. However, you 
+can check if the data is meant to be complex (or not) and convert it to complex values in a second step after:
 
 ```java
   // Read the data in the stored data format as some primitive array...
@@ -339,7 +339,7 @@ meant to be complex (or not) and convert it to complex values in a second step a
   // If the complex array convntion was used in the header, we can convert the image data
   // to complex-valued as the second step...
   if (data.isComplexValued()) {
-     ComplexValue.Float[][] z = data.convetrTo(ComplexValue.Float.class).getKernel();
+     ComplexValue.Float[][] z = data.convertTo(ComplexValue.Float.class).getKernel();
      ...
   }
 ```
@@ -369,6 +369,12 @@ image afterwards using `ArrayFuncs.curl()`, e.g.:
 
 ```java
   short[][] center2D = (short[][]) ArrayFuncs.curl(center, 100, 100);
+```
+
+And you can convert to other numerical types, e.g. via one of the `ArrayFuncs.convertArray()` methods, e.g.:
+
+```
+  double[][] dCenter2D = (double[][]) ArrayFuncs.convertArray(center2D, double.class, hdu.getData().getQuantizer());
 ```
 
 
@@ -408,7 +414,7 @@ Below is an example code sketch for streaming image cutouts from a very large im
   Fits output = new Fits();
   output.addHDU(FitsFactory.hduFactory(cutoutHeader, streamingTileImageData));
       
-  // The cutout is processed at write time!  
+  // The cutout is processed at write time!
   output.write(outputStream);
 ```
 
@@ -451,7 +457,7 @@ The `reset()` method causes the internal stream to seek to the beginning of the 
 returns `false`. Next, we obtain the input file or stream for reading, query the image size, and set up our 
 chunk-sized storage (e.g. by image row):
 
-```java  
+```java
   // Get the input associated to the FITS
   ArrayDataInput in = fits.getStream();
   
@@ -514,7 +520,7 @@ Now we can loop through the rows of interest and pick out the entries we need. F
 rows to get only the scalar values from the column named `UTC` (see above), a phase value in the 4th column (Java 
 index 3), and a spectrum stored in the fifth column (i.e. Java index 4):
 
-```java   
+```java
   // Loop through rows, accessing the relevant column data
   for(int row = 0; row < tab.getNRows(); row++) {
   
@@ -534,7 +540,7 @@ The old `getElement()` / `setElement()` methods supported access as arrays only.
 alternative (though slightly less elegant), we recommend against it going forward. Nevetheless, the equivalent to the 
 above using this approach would be:
 
-```java   
+```java
   // Loop through rows, accessing the relevant column data
   for(int row = 0; row < tab.getNRows(); row++) {
   
@@ -579,7 +585,7 @@ You can convert array elements via the `BinaryTable.getArrayElementAs()` method.
 ```java
   BinaryTable tab = ...;
 
-  // Assuming that the column contains 2D numerical entries of some type...  
+  // Assuming that the column contains 2D numerical entries of some type...
   // Get a table entry as an array of doubles, regardless of its (numerical) storage type...
   double[][] e = tab.getArrayElementAs(1, 3, double.class);
 ```
@@ -608,7 +614,7 @@ numerical types, such as `byte.class`, `short.class`, `int.class`, `long.class`,
 When creating FITS files from data we have at hand, the easiest is to start with a `Fits` object. We can add to it 
 image and/or table HDUs we create. When everything is assembled, we write the FITS to a file or stream:
 
-```java  
+```java
   Fits fits = new Fits();
 
   fits.addHDU(...);
@@ -1358,7 +1364,7 @@ Finally, you might want to update the checksums for a FITS you modify in place:
       for (int j = 0; i < data[0].length; j++)
           data[i][j] += 1.12;
     
-  // Calculate new checksums for the HDU      
+  // Calculate new checksums for the HDU
   im.setChecksum();
   im.rewrite();
 ```
@@ -1552,7 +1558,7 @@ particular application.
 Now you can populate the table with your data, one row at a time, using the `addRow()` method as many times over as 
 necessary:
 
-```java   
+```java
    for (...) {
        // prepare the row data, making sure each row is compatible with prior rows...
        ...
@@ -1573,7 +1579,7 @@ adding rows if that is more convenient in your application. Thus, you may simply
 to add a row consisting of an 32-bit integer, a double-precision floating point value (presuming your table has those 
 two types of columns). Prior to __1.18__, the same would have to have been written as:
 
-```java  
+```java
   table.addRow(new Object[] { new int[] {1}, new double[] {3.14159265} }; 
 ```
 
@@ -1615,7 +1621,7 @@ We can add these as columns to an existing table (empty or not) using the `Binar
 For example, say we have two arrays, one a time-series of spectra, and a matching array of corresponding timestamps. We
 can create a table with these (or add them to an existing table with a matching number of rows) as:
 
-```java  
+```java
    double[] timestamps = new double[nRows]; 
    ComplexValue[][] spectra = new ComplexValue[nRows][];
    ...

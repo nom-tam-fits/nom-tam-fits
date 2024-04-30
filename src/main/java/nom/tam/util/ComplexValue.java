@@ -277,6 +277,8 @@ public class ComplexValue {
      * Converts this complex number to an array of 2.
      * 
      * @return An array of 2 floating point values.
+     * 
+     * @since  1.20
      */
     Object toArray() {
         return new double[] {re, im};
@@ -296,6 +298,8 @@ public class ComplexValue {
          *
          * @param re the real part
          * @param im thei maginary part
+         * 
+         * @since    1.20
          */
         public Float(float re, float im) {
             super(re, im);
@@ -314,8 +318,8 @@ public class ComplexValue {
          * 
          * @throws IllegalArgumentException if the supplied string does not appear to be a FITS standard representation
          *                                      of a complex value.
-         *
-         * @see                             #ComplexValue(String)
+         * 
+         * @since                           1.20
          */
         public Float(String str) throws IllegalArgumentException {
             super(str);
