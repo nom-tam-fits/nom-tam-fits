@@ -4,6 +4,7 @@ import java.io.DataOutput;
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /*-
@@ -46,6 +47,7 @@ import nom.tam.fits.header.Standard;
 import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.FitsInputStream;
+import nom.tam.util.Quantizer;
 
 @SuppressWarnings({"javadoc", "deprecation"})
 public class BinaryTableNewTest {
@@ -428,6 +430,10 @@ public class BinaryTableNewTest {
         tab.addColumn(new ComplexValue[] {new ComplexValue(1.0, 0.0), new ComplexValue(2.0, 3.0)});
         ComplexValue z = new ComplexValue(-1.0, -2.0);
         tab.set(0, 0, z);
+        Assert.assertEquals(z, tab.get(0, 0));
+
+        z = new ComplexValue(3.0, 4.0);
+        tab.set(0, 0, new double[] {z.re(), z.im()});
         Assert.assertEquals(z, tab.get(0, 0));
     }
 
@@ -1907,4 +1913,172 @@ public class BinaryTableNewTest {
         Assert.assertFalse(hdu.getHeader().containsKey(Standard.TTYPEn.n(2)));
     }
 
+    @Test
+    public void testQuantizer() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[] {1});
+        tab.addColumn(new double[] {1.0});
+
+        Assert.assertEquals(1.0, tab.getDouble(0, 0), 1e-12);
+        Assert.assertEquals(1, tab.getLong(0, 1));
+
+        tab.getDescriptor(0).setQuantizer(new Quantizer(2.0, 0.5, null));
+        tab.getDescriptor(1).setQuantizer(new Quantizer(0.5, -0.5, null));
+
+        Assert.assertEquals(2.5, tab.getDouble(0, 0), 1e-12);
+        Assert.assertEquals(3, tab.getLong(0, 1));
+
+        Header h = new Header();
+        tab.fillHeader(h, true);
+
+        tab.getDescriptor(0).setQuantizer(null);
+        tab.getDescriptor(1).setQuantizer(null);
+
+        Assert.assertEquals(1.0, tab.getDouble(0, 0), 1e-12);
+        Assert.assertEquals(1, tab.getLong(0, 1));
+
+        tab.getDescriptor(0).setQuantizer(Quantizer.fromTableHeader(h, 0));
+        tab.getDescriptor(1).setQuantizer(Quantizer.fromTableHeader(h, 1));
+
+        Assert.assertEquals(2.5, tab.getDouble(0, 0), 1e-12);
+        Assert.assertEquals(3, tab.getLong(0, 1));
+    }
+
+    @Test
+    public void testQuantizerSet() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[] {1});
+        tab.addColumn(new double[] {1.0});
+        tab.addColumn(new float[] {1.0F});
+
+        tab.getDescriptor(0).setQuantizer(new Quantizer(2.0, 0.5, null));
+        tab.getDescriptor(1).setQuantizer(new Quantizer(0.5, -0.5, null));
+        tab.getDescriptor(2).setQuantizer(new Quantizer(0.5, -0.5, null));
+
+        tab.set(0, 0, 5.0);
+        Assert.assertEquals(2, (int) tab.get(0, 0));
+
+        tab.set(0, 1, 4);
+        Assert.assertEquals(1.5, (double) tab.get(0, 1), 1e-12);
+
+        tab.set(0, 2, 4);
+        Assert.assertEquals(1.5F, (float) tab.get(0, 2), 1e-6);
+
+        // No quantization needed:
+
+        tab.set(0, 0, -1);
+        Assert.assertEquals(-1, (int) tab.get(0, 0));
+
+        tab.set(0, 1, -1.5);
+        Assert.assertEquals(-1.5, (double) tab.get(0, 1), 1e-12);
+
+        tab.set(0, 1, -2.5F);
+        Assert.assertEquals(-2.5F, (double) tab.get(0, 1), 1e-6);
+
+        tab.set(0, 2, -1.5);
+        Assert.assertEquals(-1.5F, (float) tab.get(0, 2), 1e-6);
+
+        tab.set(0, 2, -2.5F);
+        Assert.assertEquals(-2.5F, (float) tab.get(0, 2), 1e-6);
+
+        tab.set(0, 1, new BigInteger("1234567890"));
+        Assert.assertEquals(1234567890L, (double) tab.get(0, 1), 1e-5);
+
+        tab.set(0, 1, new BigDecimal("1.234567890e123"));
+        Assert.assertEquals(1.234567890e123, (double) tab.get(0, 1), 1e-5);
+    }
+
+    @Test
+    public void testQuantizerSetArray() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[][] {{1}});
+        tab.addColumn(new double[][] {{1.0}});
+
+        tab.getDescriptor(0).setQuantizer(new Quantizer(2.0, 0.5, null));
+        tab.getDescriptor(1).setQuantizer(new Quantizer(0.5, -0.5, null));
+
+        tab.set(0, 0, new double[] {5.0});
+        Assert.assertEquals(2, ((int[]) tab.get(0, 0))[0]);
+
+        tab.set(0, 1, new int[] {4});
+        Assert.assertEquals(1.5, ((double[]) tab.get(0, 1))[0], 1e-12);
+    }
+
+    @Test
+    public void testGetArrayElement() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[] {1});
+        tab.addColumn(new double[] {1.0});
+        tab.addColumn(new Boolean[] {null});
+
+        int[] e1 = (int[]) tab.getArrayElement(0, 0);
+        Assert.assertEquals(1, e1.length);
+        Assert.assertEquals(1, e1[0]);
+
+        double[] e2 = (double[]) tab.getArrayElement(0, 1);
+        Assert.assertEquals(1, e2.length);
+        Assert.assertEquals(1.0, e2[0], 1e-12);
+
+        Boolean[] e3 = (Boolean[]) tab.getArrayElement(0, 2);
+        Assert.assertEquals(1, e3.length);
+        Assert.assertNull(e3[0]);
+    }
+
+    @Test
+    public void testGetArrayElementOwnType() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[] {1});
+        tab.addColumn(new double[] {1.0});
+
+        int[] e1 = (int[]) tab.getArrayElementAs(0, 0, int.class);
+        Assert.assertEquals(1, e1.length);
+        Assert.assertEquals(1, e1[0]);
+
+        double[] e2 = (double[]) tab.getArrayElementAs(0, 1, double.class);
+        Assert.assertEquals(1, e2.length);
+        Assert.assertEquals(1.0, e2[0], 1e-12);
+    }
+
+    @Test
+    public void testGetArrayElementAsType() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[] {1});
+        tab.addColumn(new double[] {1.0});
+
+        tab.getDescriptor(0).setQuantizer(new Quantizer(2.0, 0.5, null));
+        tab.getDescriptor(1).setQuantizer(new Quantizer(0.5, -0.5, null));
+
+        int[] e1 = (int[]) tab.getArrayElementAs(0, 1, int.class);
+        Assert.assertEquals(1, e1.length);
+        Assert.assertEquals(3, e1[0]);
+
+        double[] e2 = (double[]) tab.getArrayElementAs(0, 0, double.class);
+        Assert.assertEquals(1, e2.length);
+        Assert.assertEquals(2.5, e2[0], 1e-12);
+    }
+
+    @Test
+    public void testIsNumeric() throws Exception {
+        Assert.assertTrue(ColumnDesc.createForScalars(byte.class).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForScalars(short.class).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForScalars(int.class).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForScalars(long.class).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForScalars(float.class).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForScalars(double.class).isNumeric());
+
+        Assert.assertFalse(ColumnDesc.createForStrings(20).isNumeric());
+        Assert.assertFalse(ColumnDesc.createForScalars(boolean.class).isNumeric());
+        Assert.assertFalse(ColumnDesc.createForScalars(Boolean.class).isNumeric());
+
+        Assert.assertTrue(ColumnDesc.createForFixedArrays(byte.class, 2).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForFixedArrays(short.class, 2).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForFixedArrays(int.class, 2).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForFixedArrays(long.class, 2).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForFixedArrays(float.class, 2).isNumeric());
+        Assert.assertTrue(ColumnDesc.createForFixedArrays(double.class, 2).isNumeric());
+
+        Assert.assertFalse(ColumnDesc.createForStrings(10, 2).isNumeric());
+        Assert.assertFalse(ColumnDesc.createForFixedArrays(boolean.class, 2).isNumeric());
+        Assert.assertFalse(ColumnDesc.createForFixedArrays(Boolean.class, 2).isNumeric());
+    }
 }

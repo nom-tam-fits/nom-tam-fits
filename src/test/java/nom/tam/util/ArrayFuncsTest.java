@@ -76,4 +76,231 @@ public class ArrayFuncsTest {
     public void arrayCopyMismatchedType() {
         ArrayFuncs.copy(new int[2], 0, new long[2], 0, 2, 1);
     }
+
+    @Test
+    public void decimals2ComplexFloatComponents() throws Exception {
+        float[][] re = {{1.0F}, {2.0F}};
+        float[][] im = {{-1.0F}, {-2.0F}};
+        ComplexValue.Float[][] z = (ComplexValue.Float[][]) ArrayFuncs.decimalsToComplex(re, im);
+        Assert.assertEquals(2, z.length);
+        Assert.assertEquals(1, z[0].length);
+        Assert.assertEquals(1.0, z[0][0].re(), 1e-6);
+        Assert.assertEquals(-1.0, z[0][0].im(), 1e-6);
+        Assert.assertEquals(2.0, z[1][0].re(), 1e-6);
+        Assert.assertEquals(-2.0, z[1][0].im(), 1e-6);
+    }
+
+    @Test
+    public void decimals2ComplexDoubleComponents() throws Exception {
+        double[][] re = {{1.0}, {2.0}};
+        double[][] im = {{-1.0}, {-2.0}};
+        ComplexValue[][] z = (ComplexValue[][]) ArrayFuncs.decimalsToComplex(re, im);
+        Assert.assertEquals(2, z.length);
+        Assert.assertEquals(1, z[0].length);
+        Assert.assertEquals(1.0, z[0][0].re(), 1e-12);
+        Assert.assertEquals(-1.0, z[0][0].im(), 1e-12);
+        Assert.assertEquals(2.0, z[1][0].re(), 1e-12);
+        Assert.assertEquals(-2.0, z[1][0].im(), 1e-12);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void decimals2ComplexMismatchedComponents() throws Exception {
+        ArrayFuncs.decimalsToComplex(new float[2], new double[2]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void decimals2ComplexMismatchedComponentDims() throws Exception {
+        ArrayFuncs.decimalsToComplex(new float[2], new float[2][2]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void decimals2ComplexUnsupportedComponents() throws Exception {
+        ArrayFuncs.decimalsToComplex(new boolean[2], new boolean[2]);
+    }
+
+    @Test
+    public void convertIntsToComplexNoQuantTest() throws Exception {
+        int[][] i = {{1, 2}};
+
+        ComplexValue[] z = (ComplexValue[]) ArrayFuncs.convertArray(i, ComplexValue.class, null);
+        Assert.assertEquals(1, z.length);
+        Assert.assertEquals(1.0, z[0].re(), 1e-12);
+        Assert.assertEquals(2.0, z[0].im(), 1e-12);
+
+        ComplexValue.Float[] zf = (ComplexValue.Float[]) ArrayFuncs.convertArray(i, ComplexValue.Float.class, null);
+        Assert.assertEquals(1, zf.length);
+        Assert.assertEquals(1.0F, zf[0].re(), 1e-6);
+        Assert.assertEquals(2.0F, zf[0].im(), 1e-6);
+    }
+
+    @Test
+    public void convertIntsToComplexQuantTest() throws Exception {
+        int[][] i = {{1, 2}};
+
+        ComplexValue[] z = (ComplexValue[]) ArrayFuncs.convertArray(i, ComplexValue.class, new Quantizer(1.5, 0.5, null));
+        Assert.assertEquals(1, z.length);
+        Assert.assertEquals(2.0, z[0].re(), 1e-12);
+        Assert.assertEquals(3.5, z[0].im(), 1e-12);
+
+        ComplexValue.Float[] zf = (ComplexValue.Float[]) ArrayFuncs.convertArray(i, ComplexValue.Float.class,
+                new Quantizer(1.5, 0.5, null));
+        Assert.assertEquals(1, zf.length);
+        Assert.assertEquals(2.0F, zf[0].re(), 1e-6);
+        Assert.assertEquals(3.5F, zf[0].im(), 1e-6);
+
+        z = (ComplexValue[]) ArrayFuncs.convertArray(new byte[][] {{1, 2}}, ComplexValue.class,
+                new Quantizer(1.5, 0.5, null));
+        Assert.assertEquals(1, z.length);
+        Assert.assertEquals(2.0, z[0].re(), 1e-12);
+        Assert.assertEquals(3.5, z[0].im(), 1e-12);
+
+        z = (ComplexValue[]) ArrayFuncs.convertArray(new short[][] {{1, 2}}, ComplexValue.class,
+                new Quantizer(1.5, 0.5, null));
+        Assert.assertEquals(1, z.length);
+        Assert.assertEquals(2.0, z[0].re(), 1e-12);
+        Assert.assertEquals(3.5, z[0].im(), 1e-12);
+
+        z = (ComplexValue[]) ArrayFuncs.convertArray(new long[][] {{1L, 2L}}, ComplexValue.class,
+                new Quantizer(1.5, 0.5, null));
+        Assert.assertEquals(1, z.length);
+        Assert.assertEquals(2.0, z[0].re(), 1e-12);
+        Assert.assertEquals(3.5, z[0].im(), 1e-12);
+    }
+
+    @Test
+    public void convertMoreIntsToComplex() throws Exception {
+        int[][] i = {{1, 2}, {3, 4}};
+
+        ComplexValue[] z = (ComplexValue[]) ArrayFuncs.convertArray(i, ComplexValue.class, null);
+        Assert.assertEquals(2, z.length);
+        Assert.assertEquals(1.0, z[0].re(), 1e-12);
+        Assert.assertEquals(2.0, z[0].im(), 1e-12);
+        Assert.assertEquals(3.0, z[1].re(), 1e-12);
+        Assert.assertEquals(4.0, z[1].im(), 1e-12);
+    }
+
+    @Test
+    public void convertComplexToIntsNoQuantTest() throws Exception {
+        ComplexValue[] z = {new ComplexValue(0.5, 1.5)};
+
+        int[][] i = (int[][]) ArrayFuncs.convertArray(z, int.class, null);
+        Assert.assertEquals(1, i.length);
+        Assert.assertEquals(2, i[0].length);
+        Assert.assertEquals(1, i[0][0]);
+        Assert.assertEquals(2, i[0][1]);
+
+        ComplexValue.Float[] zf = {new ComplexValue.Float(1.0F, 2.0F)};
+
+        i = (int[][]) ArrayFuncs.convertArray(zf, int.class, null);
+        Assert.assertEquals(1, i.length);
+        Assert.assertEquals(2, i[0].length);
+        Assert.assertEquals(1, i[0][0]);
+        Assert.assertEquals(2, i[0][1]);
+    }
+
+    @Test
+    public void convertComplexToIntsQuantTest() throws Exception {
+        ComplexValue[] z = {new ComplexValue(2.5, 3.5)};
+        Quantizer q = new Quantizer(1.5, 0.5, null);
+
+        int[][] i = (int[][]) ArrayFuncs.convertArray(z, int.class, q);
+        Assert.assertEquals(1, i.length);
+        Assert.assertEquals(2, i[0].length);
+        Assert.assertEquals(1, i[0][0]);
+        Assert.assertEquals(2, i[0][1]);
+
+        ComplexValue.Float[] zf = {new ComplexValue.Float(2.0F, 3.5F)};
+
+        i = (int[][]) ArrayFuncs.convertArray(zf, int.class, q);
+        Assert.assertEquals(1, i.length);
+        Assert.assertEquals(2, i[0].length);
+        Assert.assertEquals(1, i[0][0]);
+        Assert.assertEquals(2, i[0][1]);
+
+        byte[][] b = (byte[][]) ArrayFuncs.convertArray(z, byte.class, q);
+        Assert.assertEquals(1, b.length);
+        Assert.assertEquals(2, b[0].length);
+        Assert.assertEquals(1, b[0][0]);
+        Assert.assertEquals(2, b[0][1]);
+
+        short[][] s = (short[][]) ArrayFuncs.convertArray(z, short.class, q);
+        Assert.assertEquals(1, s.length);
+        Assert.assertEquals(2, s[0].length);
+        Assert.assertEquals(1, s[0][0]);
+        Assert.assertEquals(2, s[0][1]);
+
+        long[][] l = (long[][]) ArrayFuncs.convertArray(z, long.class, q);
+        Assert.assertEquals(1, l.length);
+        Assert.assertEquals(2, l[0].length);
+        Assert.assertEquals(1, l[0][0]);
+        Assert.assertEquals(2, l[0][1]);
+    }
+
+    @Test
+    public void convertFloatDoubleTest() throws Exception {
+        float[][] f = {{1.0F, 2.0F}};
+        Quantizer q = new Quantizer(2.0, 0.5, null);
+
+        double[][] d = (double[][]) ArrayFuncs.convertArray(f, double.class, q);
+        Assert.assertEquals(1, d.length);
+        Assert.assertEquals(2, d[0].length);
+        Assert.assertEquals(1.0, d[0][0], 1e-6);
+        Assert.assertEquals(2.0, d[0][1], 1e-6);
+
+        float[][] f2 = (float[][]) ArrayFuncs.convertArray(d, float.class, q);
+        Assert.assertEquals(1, f2.length);
+        Assert.assertEquals(2, f2[0].length);
+        Assert.assertEquals(1.0F, f2[0][0], 1e-6);
+        Assert.assertEquals(2.0F, f2[0][1], 1e-6);
+    }
+
+    @Test
+    public void convertIntsTest() throws Exception {
+        int[][] i = {{1, 2}};
+        Quantizer q = new Quantizer(2.0, 0.5, null);
+
+        long[][] l = (long[][]) ArrayFuncs.convertArray(i, long.class, q);
+        Assert.assertEquals(1, l.length);
+        Assert.assertEquals(2, l[0].length);
+        Assert.assertEquals(1, l[0][0]);
+        Assert.assertEquals(2, l[0][1]);
+
+        int[][] i2 = (int[][]) ArrayFuncs.convertArray(l, int.class, q);
+        Assert.assertEquals(1, i2.length);
+        Assert.assertEquals(2, i2[0].length);
+        Assert.assertEquals(1, i2[0][0]);
+        Assert.assertEquals(2, i2[0][1]);
+
+        short[][] s = (short[][]) ArrayFuncs.convertArray(i, short.class, q);
+        Assert.assertEquals(1, s.length);
+        Assert.assertEquals(2, s[0].length);
+        Assert.assertEquals(1, s[0][0]);
+        Assert.assertEquals(2, s[0][1]);
+
+        byte[][] b = (byte[][]) ArrayFuncs.convertArray(s, byte.class, q);
+        Assert.assertEquals(1, b.length);
+        Assert.assertEquals(2, b[0].length);
+        Assert.assertEquals(1, b[0][0]);
+        Assert.assertEquals(2, b[0][1]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void convertComplexChar() throws Exception {
+        ArrayFuncs.convertArray(new int[1], char.class, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void convertComplexBoolean() throws Exception {
+        ArrayFuncs.convertArray(new int[1], boolean.class, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void convertComplexNonPrimitive() throws Exception {
+        ArrayFuncs.convertArray(new int[1], String.class, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void convertNotArray() throws Exception {
+        ArrayFuncs.convertArray("blah", int.class, null);
+    }
 }

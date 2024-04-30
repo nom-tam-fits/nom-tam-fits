@@ -274,7 +274,18 @@ public class ComplexValue {
     }
 
     /**
-     * Just a class we can refer to when we want to specify that we want to use single-precision complex values.
+     * Converts this complex number to an array of 2.
+     * 
+     * @return An array of 2 floating point values.
+     * 
+     * @since  1.20
+     */
+    Object toArray() {
+        return new double[] {re, im};
+    }
+
+    /**
+     * Single-precision complex values.
      * 
      * @author Attila Kovacs
      * 
@@ -282,5 +293,41 @@ public class ComplexValue {
      */
     public static final class Float extends ComplexValue {
 
+        /**
+         * Instantiates a new single-precision complex number value with the specified real and imaginary components.
+         *
+         * @param re the real part
+         * @param im thei maginary part
+         * 
+         * @since    1.20
+         */
+        public Float(float re, float im) {
+            super(re, im);
+        }
+
+        /**
+         * <p>
+         * Instantiates a new single-precision complex number value from the string repressentation of it in a FITS
+         * header value. By default, it will parse complex numbers as a comma-separated pair of real values enclosed in
+         * a bracket, such as <code>(1.0, -2.0)</code>, or standard real values, such as <code>123.456</code> or
+         * <code>123</code> (as real-only values). There can be any number of spaces around the brackets, number
+         * components or the comma.
+         * </p>
+         * 
+         * @param  str                      the FITS string representation of the complex value
+         * 
+         * @throws IllegalArgumentException if the supplied string does not appear to be a FITS standard representation
+         *                                      of a complex value.
+         * 
+         * @since                           1.20
+         */
+        public Float(String str) throws IllegalArgumentException {
+            super(str);
+        }
+
+        @Override
+        Object toArray() {
+            return new float[] {(float) re(), (float) im()};
+        }
     }
 }

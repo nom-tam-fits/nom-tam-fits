@@ -492,7 +492,7 @@ public enum Standard implements IFitsHeader {
      * represents an undefined value for field n of data type B, I, or J. The keyword may not be used in 'BINTABLE'
      * extensions if field n is of any other data type.
      */
-    TNULLn(SOURCE.INTEGRAL, HDU.TABLE, VALUE.STRING, "column value for undefined elements"),
+    TNULLn(SOURCE.INTEGRAL, HDU.TABLE, VALUE.ANY, "column value for undefined elements"),
 
     /**
      * This indexed keyword shall be used, along with the TZEROn keyword, when the quantity in field n does not

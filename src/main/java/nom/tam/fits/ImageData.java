@@ -33,6 +33,7 @@ package nom.tam.fits;
 
 import java.io.IOException;
 import java.nio.Buffer;
+import java.util.Arrays;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.NonStandard;
@@ -42,8 +43,10 @@ import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
 import nom.tam.util.FitsEncoder;
+import nom.tam.util.Quantizer;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.array.MultiArrayIterator;
 import nom.tam.util.type.ElementType;
@@ -51,32 +54,42 @@ import nom.tam.util.type.ElementType;
 /**
  * <p>
  * Image data. Essentially these data are a primitive multi-dimensional array, such as a <code>double[]</code>,
- * <code>float[][]</code>, or <code>short[][][]</code>
+ * <code>float[][]</code>, or <code>short[][][]</code>. Or, as of version 1.20, they may also be {@link ComplexValue}
+ * types also.
  * </p>
  * <p>
  * Starting in version 0.9 of the FITS library, this class allows users to defer the reading of images if the FITS data
  * is being read from a file. An {@link ImageTiler} object is supplied which can return an arbitrary subset of the image
- * as a one dimensional array -- suitable for manipulation by standard Java libraries. A call to the {@link #getData()}
- * method will still return a multi-dimensional array, but the image data will not be read until the user explicitly
- * requests.
+ * as a one dimensional array -- suitable for manipulation by standard Java libraries. The image data may not be read
+ * from the input until the user calls a method that requires the actual data (e.g. the {@link #getData()} /
+ * {@link #getKernel()}, {@link #convertTo(Class)} or {@link #write(ArrayDataOutput)} methods).
  * </p>
  * 
  * @see ImageHDU
  */
 public class ImageData extends Data {
 
+    private static final String COMPLEX_TYPE = "COMPLEX";
+
     /**
      * This class describes an array
      */
     protected static class ArrayDesc {
 
-        private final int[] dims;
-
         private final Class<?> type;
+        private int[] dims;
+
+        private Quantizer quant;
+
+        private int complexAxis = -1;
 
         ArrayDesc(int[] dims, Class<?> type) {
             this.dims = dims;
             this.type = type;
+
+            if (ComplexValue.class.isAssignableFrom(type)) {
+                complexAxis = dims.length;
+            }
         }
     }
 
@@ -117,8 +130,7 @@ public class ImageData extends Data {
      * Create the equivalent of a null data element.
      */
     public ImageData() {
-        dataArray = new byte[0];
-        byteSize = 0;
+        this(new byte[0]);
     }
 
     /**
@@ -148,6 +160,7 @@ public class ImageData extends Data {
             throw new IllegalArgumentException(e.getMessage(), e);
         }
 
+        dataDescription = new ArrayDesc(ArrayFuncs.getDimensions(x), ArrayFuncs.getBaseClass(x));
         dataArray = x;
         byteSize = FitsEncoder.computeSize(x);
     }
@@ -157,7 +170,7 @@ public class ImageData extends Data {
         if (tiler != null) {
             dataArray = tiler.getCompleteImage();
         } else {
-            dataArray = ArrayFuncs.newInstance(dataDescription.type, dataDescription.dims);
+            dataArray = ArrayFuncs.newInstance(getType(), getDimensions());
             in.readImage(dataArray);
         }
     }
@@ -191,8 +204,8 @@ public class ImageData extends Data {
      * @param data the buffer that may hold this image's data in serialized form.
      */
     public void setBuffer(Buffer data) {
-        ElementType<Buffer> elementType = ElementType.forClass(dataDescription.type);
-        dataArray = ArrayFuncs.newInstance(dataDescription.type, dataDescription.dims);
+        ElementType<Buffer> elementType = ElementType.forClass(getType());
+        dataArray = ArrayFuncs.newInstance(getType(), getDimensions());
         MultiArrayIterator<?> iterator = new MultiArrayIterator<>(dataArray);
         Object array = iterator.next();
         while (array != null) {
@@ -205,7 +218,6 @@ public class ImageData extends Data {
     @SuppressWarnings({"resource", "deprecation"})
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
-
         // Don't need to write null data (noted by Jens Knudstrup)
         if (byteSize == 0) {
             return;
@@ -241,12 +253,19 @@ public class ImageData extends Data {
 
         Cursor<String, HeaderCard> c = head.iterator();
         c.add(HeaderCard.create(Standard.SIMPLE, true));
-        c.add(HeaderCard.create(Standard.BITPIX,
-                Bitpix.forPrimitiveType(ArrayFuncs.getBaseClass(dataArray)).getHeaderValue()));
 
-        int[] dims = ArrayFuncs.getDimensions(dataArray);
+        Class<?> base = getType();
+        int[] dims = getDimensions();
+
+        if (ComplexValue.class.isAssignableFrom(base)) {
+            dims = Arrays.copyOf(dims, dims.length + 1);
+            dims[dims.length - 1] = 2;
+            base = ComplexValue.Float.class.isAssignableFrom(base) ? float.class : double.class;
+        }
+
+        c.add(HeaderCard.create(Standard.BITPIX, Bitpix.forPrimitiveType(base).getHeaderValue()));
+
         c.add(HeaderCard.create(Standard.NAXIS, dims.length));
-
         for (int i = 1; i <= dims.length; i++) {
             c.add(HeaderCard.create(Standard.NAXISn.n(i), dims[dims.length - i]));
         }
@@ -255,6 +274,14 @@ public class ImageData extends Data {
         c.add(HeaderCard.create(Standard.PCOUNT, 0));
         c.add(HeaderCard.create(Standard.GCOUNT, 1));
         c.add(HeaderCard.create(Standard.EXTEND, true));
+
+        if (isComplexValued()) {
+            c.add(HeaderCard.create(Standard.CTYPEn.n(dims.length - dataDescription.complexAxis), COMPLEX_TYPE));
+        }
+
+        if (dataDescription.quant != null) {
+            dataDescription.quant.editImageHeader(head);
+        }
 
         Standard.context(null);
     }
@@ -304,7 +331,21 @@ public class ImageData extends Data {
             dims[ndim - i] = cdim;
         }
         byteSize *= bitpix.byteSize();
-        return new ArrayDesc(dims, baseClass);
+
+        ArrayDesc desc = new ArrayDesc(dims, baseClass);
+
+        if (COMPLEX_TYPE.equals(h.getStringValue(Standard.CTYPEn.n(1))) && dims[ndim - 1] == 2) {
+            desc.complexAxis = ndim - 1;
+        } else if (COMPLEX_TYPE.equals(h.getStringValue(Standard.CTYPEn.n(ndim))) && dims[0] == 2) {
+            desc.complexAxis = 0;
+        }
+
+        desc.quant = Quantizer.fromImageHeader(h);
+        if (desc.quant.isDefault()) {
+            desc.quant = null;
+        }
+
+        return desc;
     }
 
     void setTiler(StandardImageTiler tiler) {
@@ -383,7 +424,13 @@ public class ImageData extends Data {
      */
     static void checkCompatible(Object data) throws IllegalArgumentException, FitsException {
         if (data != null) {
-            Bitpix.forPrimitiveType(ArrayFuncs.getBaseClass(data));
+            Class<?> base = ArrayFuncs.getBaseClass(data);
+            if (ComplexValue.Float.class.isAssignableFrom(base)) {
+                base = float.class;
+            } else if (ComplexValue.class.isAssignableFrom(base)) {
+                base = double.class;
+            }
+            Bitpix.forPrimitiveType(base);
             ArrayFuncs.checkRegularArray(data, false);
         }
     }
@@ -394,5 +441,141 @@ public class ImageData extends Data {
         Header h = new Header();
         fillHeader(h);
         return new ImageHDU(h, this);
+    }
+
+    /**
+     * Sets the conversion between decimal and integer data representations. The quantizer for the image is set
+     * automatically if the image was read from a FITS input, and if any of the associated BSCALE, BZERO, or BLANK
+     * keywords were defined in the HDU's header. User may use this methods to set a different quantization or to use no
+     * quantization at all when converting between floating-point and integer representations.
+     * 
+     * @param quant the quantizer that converts between floating-point and integer data representations, or <code>
+     *          null</code> to not use quantization and instead rely on simple rounding for decimal-ineger conversions..
+     * 
+     * @see         #getQuantizer()
+     * @see         #convertTo(Class)
+     * 
+     * @since       1.20
+     */
+    public void setQuantizer(Quantizer quant) {
+        dataDescription.quant = quant;
+    }
+
+    /**
+     * Returns the conversion between decimal and integer data representations.
+     * 
+     * @return the quantizer that converts between floating-point and integer data representations, which may be
+     *             <code>null</code>
+     * 
+     * @see    #setQuantizer(Quantizer)
+     * @see    #convertTo(Class)
+     * 
+     * @since  1.20
+     */
+    public final Quantizer getQuantizer() {
+        return dataDescription.quant;
+    }
+
+    /**
+     * Returns the element type of this image in its current representation.
+     * 
+     * @return The element type of this image, such as <code>int.class</code>, <code>double.class</code> or
+     *             {@link ComplexValue}<code>.class</code>.
+     * 
+     * @see    #getDimensions()
+     * @see    #isComplexValued()
+     * @see    #convertTo(Class)
+     * 
+     * @since  1.20
+     */
+    public final Class<?> getType() {
+        return dataDescription.type;
+    }
+
+    /**
+     * Returns the dimensions of this image.
+     * 
+     * @return An array containing the sizes along each data dimension, in Java indexing order. The returned array is
+     *             not used internally, and therefore modifying it will not damage the integrity of the image data.
+     * 
+     * @see    #getType()
+     * 
+     * @since  1.20
+     */
+    public final int[] getDimensions() {
+        return Arrays.copyOf(dataDescription.dims, dataDescription.dims.length);
+    }
+
+    /**
+     * Checks if the image data is explicitly designated as a complex-valued image. An image may be designated as
+     * complex-valued either because it was created with {@link ComplexValue} type data, or because it was read from a
+     * FITS file in which one image axis of dimension 2 was designated as an axis containing complex-valued components
+     * with the corresponding CTYPEn header keyword set to 'COMPLEX'. The complex-valued deignation checked by this
+     * method is not the same as {@link #getType()}, as it does not necesarily mean that the data itself is currently in
+     * {@link ComplexValue} type representation. Rather it simply means that this data can be represented as
+     * {@link ComplexValue} type, possibly after an appropriate conversion to a {@link ComplexValue} type.
+     * 
+     * @return <code>true</code> if the data is complex valued or has been explicitly designated as complex valued.
+     *             Otherwise <code>false</code>.
+     * 
+     * @see    #convertTo(Class)
+     * @see    #getType()
+     * 
+     * @since  1.20
+     */
+    public final boolean isComplexValued() {
+        return dataDescription.complexAxis >= 0;
+    }
+
+    /**
+     * Converts this image HDU to another image HDU of a different type, possibly using a qunatizer for the
+     * integer-decimal conversion of the data elements. In all other respects, the returned image is identical to the
+     * the original. If th conversion is th indetity, it will return itself and the data may remain in deferred mode.
+     * 
+     * @param  type          The primitive numerical type (e.g. <code>int.class</code> or <code>double.class</code>), or
+     *                           else a {@link ComplexValue} type in which data should be represented. Complex
+     *                           representations are normally available for data whose first or last CTYPEn axis was
+     *                           described as 'COMPLEX' by the FITS header with a dimensionality is 2 corresponfing to a
+     *                           pair of real and imaginary data elements. Even without the CTYPEn designation, it is
+     *                           always possible to convert to complex all arrays that have a trailing Java dimension
+     *                           (NAXIS1 in FITS) equal to 2.
+     * 
+     * @return               An image HDU containing the same data in the chosen representation by another type. (It may
+     *                           be the same as this HDU if the type is unchanged from the original).
+     * 
+     * @throws FitsException if the data cannot be read from the input.
+     * 
+     * @see                  #isComplexValued()
+     * @see                  ArrayFuncs#convertArray(Object, Class, Quantizer)
+     * 
+     * @since                1.20
+     */
+    public ImageData convertTo(Class<?> type) throws FitsException {
+        if (type.isAssignableFrom(getType())) {
+            return this;
+        }
+
+        ensureData();
+
+        ImageData typed = null;
+
+        boolean toComplex = ComplexValue.class.isAssignableFrom(type) && !ComplexValue.class.isAssignableFrom(getType());
+
+        if (toComplex && dataDescription.complexAxis == 0) {
+            // Special case of converting separate re/im arrays to complex...
+
+            // 1. Convert to intermediate floating-point class as necessary (with quantization if any)
+            Class<?> numType = ComplexValue.Float.class.isAssignableFrom(type) ? float.class : double.class;
+            Object[] t = (Object[]) ArrayFuncs.convertArray(dataArray, numType, getQuantizer());
+            ImageData f = new ImageData(ArrayFuncs.decimalsToComplex(t[0], t[1]));
+            f.dataDescription.quant = getQuantizer();
+
+            // 2. Assemble complex from separate re/im components.
+            return f.convertTo(type);
+        }
+
+        typed = new ImageData(ArrayFuncs.convertArray(dataArray, type, getQuantizer()));
+        typed.dataDescription.quant = getQuantizer();
+        return typed;
     }
 }

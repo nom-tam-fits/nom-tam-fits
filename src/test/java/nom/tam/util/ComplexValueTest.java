@@ -40,6 +40,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Random;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -153,10 +154,13 @@ public class ComplexValueTest {
 
     @Test
     public void testComplexFromString() throws Exception {
-        // Missing brackets
         ComplexValue z = new ComplexValue("(5566.2,-1123.1)");
-        assertEquals(5566.2, z.re(), 1 - 10);
-        assertEquals(-1123.1, z.im(), 1 - 10);
+        assertEquals(5566.2, z.re(), 1e-10);
+        assertEquals(-1123.1, z.im(), 1e-10);
+
+        ComplexValue.Float zf = new ComplexValue.Float("(5566.2,-1123.1)");
+        assertEquals(5566.2, zf.re(), 1e-6);
+        assertEquals(-1123.1, zf.im(), 1e-6);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -383,6 +387,12 @@ public class ComplexValueTest {
             thrown = true;
         }
         assertTrue(thrown);
+    }
+
+    @Test
+    public void testToArray() throws Exception {
+        Assert.assertArrayEquals(new double[] {1.0, 2.0}, (double[]) new ComplexValue(1.0, 2.0).toArray(), 1e-12);
+        Assert.assertArrayEquals(new float[] {1.0F, 2.0F}, (float[]) new ComplexValue.Float(1.0F, 2.0F).toArray(), 1e-6F);
     }
 
 }
