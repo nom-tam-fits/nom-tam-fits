@@ -284,15 +284,15 @@ casting is inevitable if you want to use the data from the FITS files.
 
 #### Converting images to a different type
 
-As of version 1.20, the library provices tools to convert images to a numerical type other than the type stored in
-the FITS file. Let's say the FITS stored the images as integer, but we want them as double-precision values. 
+As of version 1.20, the library provides the means for convert images between numerical types. Let's say the FITS 
+stored the images as integer, but we want them as double-precision values. 
 
 ```java
   double[][] darray = hdu.getData().convertTo(double.class).getKernel();
 ```
 
-Things get somewhat interesting at this point, because FITS allows for the integer representation of floating-point 
-values as integers, via quantization. The quantization has the following parameters:
+Things get somewhat interesting at this point, because the FITS standard also allows for the integer representation of 
+floating-point values as integers, via quantization. The quantization has the following parameters:
 
  - A scaling factor, i.e. the separation of discrete levels in the floating point data (defaults to 1.0)
  - an offset, i.e. the floating point value that corresponds to an integer value of 0 (defaults to 0.0).
@@ -325,18 +325,22 @@ While the original FITS standard designated images for scalar numerical types on
 also specifies a convention to represent complex valued data as images. Complex arrays are recorded as any scalar 
 numerical type, but with an extra dimension of 2 containing the real and imaginary components. E.g. a 4x3 complex 
 array can thus be represented as any primitive type array with 4x3x2 dimensions. The convention is that the axis 
-containing the complex pair of values has is `CTYPEn` header keyword named as 'COMPLEX'. Note that complex values can 
+containing the complex pair of values has is `CTYPEn` header keyword named as 'COMPLEX'. Note, that complex values can 
 be recorded as integers also, and use quantization just like decimals.
 
-As of version 1.20, this library recognises when the convention is used when reading FITS image HDUs. However, images 
-recorded this way will read back as their storage type (e.g. `float[4][3][2]`) for back compatibility. However, you 
-can check if the data is meant to be complex (or not) and convert it to complex values in a second step after:
+As of version 1.20, this library recognises when the convention is used when reading FITS image HDUs. (The library can 
+only handle the convention if the 'COMPLEX' axis is the first or last image axis -- which should cover all but some 
+very pathological use cases.) 
+
+However, images recorded this way will continue to read back as their storage type (e.g. `float[4][3][2]`) for back 
+compatibility with previous releases. But, you can check if the data is meant to be complex (or not) and convert it to 
+complex values in a second step after loading the data:
 
 ```java
-  // Read the data in the stored data format as some primitive array...
+  // Get the data in the stored data format as some primitive array...
   ImageData data = hdu.getData();
   
-  // If the complex array convntion was used in the header, we can convert the image data
+  // If the complex array convention was used in the header, we can convert the image data
   // to complex-valued as the second step...
   if (data.isComplexValued()) {
      ComplexValue.Float[][] z = data.convertTo(ComplexValue.Float.class).getKernel();
@@ -1016,7 +1020,7 @@ and `0` to `9`), plus hyphens (`-`) and underscores (`_`), and string values may
 However, the [HIERARCH keyword convention](https://fits.gsfc.nasa.gov/registry/hierarch_keyword.html) allows for 
 longer and/or more extended set of keywords that may utilize the ASCII range from `0x21` through `0x7E`, and which
 can contain hierarchies. And string values of arbitrary length may be added to headers via the 
-[CONTINUE longkeyword convention](https://fits.gsfc.nasa.gov/registry/continue_keyword.html), which is now an 
+[CONTINUE long keyword convention](https://fits.gsfc.nasa.gov/registry/continue_keyword.html), which is now an 
 integral part of the standard as of FITS version 4.0. See more about these conventions, and their usage within this 
 library, further below.
 
@@ -1196,7 +1200,7 @@ The `Header.KeywordCheck` enum defines the following policies that may be used:
 - `NONE` -- no keyword checking will be applied. You can do whatever you want without consequences. This policy is the 
   most backward compatible one, since we have not done checking before.
 - `DATA_TYPE` -- Checks that the keyword is supported by the data type that the header is meant to describe. This is 
-  the default policy since __1.19__.
+  the default policy since version __1.19__ of the library.
 - `STRICT` -- In addition to checking if the keyword is suitable for the data type, the library will also prevent 
   users from setting essential keywords that really should be handled by the library alone (such as `SIMPLE` or 
   `XTENSION`, `BITPIX`, `NAXIS` etc.).
@@ -1218,7 +1222,8 @@ The keyword checking policy can be adjusted via the `HeaderCard.setValueChecking
 - `LOGGING` -- Attempting to set values of the wrong type for `IFitsHeader` keywords will be allowed but a warning 
   will be logged each time.
 - `EXCEPTION` --  Attempting to set values of the wrong type for `IFitsHeader` keywords will throw an appropriate 
-  exception, such as `ValueTypeException` or `IllegalArgumentException` depending on the method used. 
+  exception, such as `ValueTypeException` or `IllegalArgumentException` depending on the method used. This is the 
+  default policy since version __1.19__ of the library.
 
 
 
