@@ -1,8 +1,8 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.20.0-SNAPSHOT" date="2024-04-30" description="Upcoming feature release under development.">
-      <action type="fix" dev="attipaci" issue="596">
+   <release version="1.20.0-rc1" date="2024-04-30" description="Upcoming feature release under development.">
+      <action type="fix" dev="attipaci" issue="596" due-to="keastrid">
           Botched compression of multicolumn tables, resulting in extra rows in the compressed table (as many rows as
           there were total table tiles across all columns).
       </action>
@@ -15,7 +15,7 @@
           type naming, until the user sets a column name otherwise.          
       </action>
       <action type="add" dev="attipaci" issue="611">
-          new Quantizer class to handle generic decimal-integer conversions in line with the FITS specification for 
+          New Quantizer class to handle generic decimal-integer conversions in line with the FITS specification for 
           integer representation of floating-point data. The new class will interpret the necessary header keywords for 
           both images and tables, and can fill the required values in FITS headers.
       </action>
@@ -48,26 +48,26 @@
          to numerical type arrays, including ComplexValue type arrays, and can be used for explicit quantization 
          conversions outside of images and table columns.
       </action>
-      <action type="change" dev="attipaci" issue="590">
+      <action type="update" dev="attipaci" issue="590" due-to="bogdanni">
           Remove Main class, and main() entry points from JAR, which also clears up a whole lot of junk being added
           to the classpath into MANIFEST.MF.
       </action>
-      <action type="change" dev="attipaci" issue="610">
+      <action type="update" dev="attipaci" issue="610">
           BinaryTable.getArrayElement(row, col) method to return the table element as an array always (without the 
           boxing of scalar entries), but still representing FITS logicals as Boolean[]..., FITS bits as 
           boolean[]..., and complex values a ComplexValue[]... arrays.
       </action>
-      <action type="change" dev="attipaci" issue="592">
+      <action type="update" dev="attipaci" issue="592">
           ArrayFuncs.convertArray(Object, Class) is now the same as  the new 
           ArrayFuncs.convertArray(Object, Class, Quantizer) method without a quantizer, and thus allows conversions 
           to/from complex valued data also, when primitive arrays have a trailing dimension of 2 (e.g. `float[]..[2]` 
           or `int[]..[2]`).
       </action>
-      <action type="change" dev="attipaci" issue="609">
+      <action type="update" dev="attipaci" issue="609">
           MultiArrayCopier.copyInto() now rounds floating point values before casting to integer types for a more 
           regular behavior.
       </action>
-      <action type="change" dev="attipaci" issue="611">
+      <action type="update" dev="attipaci" issue="611">
           BinaryTable.getDouble(...) and .getLong(...) and .set(...) methods will now use the specified quantization 
           (as specified in the header or else set explicitly by the user) when converting from decimal to integer 
           types and vice-versa.
@@ -78,14 +78,14 @@
    </release>
 
    <release version="1.19.1" date="2024-03-25" description="Bug fix release, with improved table compression support.">
-      <action type="fix" dev="attipaci" issue="562">
+      <action type="fix" dev="attipaci" issue="562" due-to="keastrid">
           Compressed tables had the ZCTYPn keywords written with a 0-based index, and thus were off-by-one in
           the FITS convention. Now fixed.
       </action>
-      <action type="fix" dev="attipaci" issue="552">
+      <action type="fix" dev="attipaci" issue="552" due-to="keastrid">
           Fix inconsistently maintained ColumnDesc.fileSize, by replacing it with dynamic .rowLen().
       </action>
-      <action type="fix" dev="attipaci" issue="557">
+      <action type="fix" dev="attipaci" issue="557" due-to="keastrid">
           Fix the compression of variable-length table columns. These were completely off-spec in prior releases, 
           but are now properly supported as per the (C)FITSIO convention, which is slightly deviating from the
           documented standard. However, based on private communication with the maintainers, they are inclined
@@ -106,7 +106,7 @@
       <action type="fix" dev="attipaci" issue="578">
           Check setting elements in ColumnTable more consistently to avoid creating corrupted FITS tables.
       </action>
-      <action type="fix" dev="attipaci" issue="580">
+      <action type="fix" dev="attipaci" issue="580" due-to="keastrid">
           Fix ArrayIndexOutOfBoundsException when defragmenting larger heaps. 
       </action>
       <action type="add" dev="rmathar" issue="558">
