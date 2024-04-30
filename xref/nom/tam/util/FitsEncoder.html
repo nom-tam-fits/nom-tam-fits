@@ -574,84 +574,93 @@
 <a class="jxr_linenumber" name="L566" href="#L566">566</a>             <strong class="jxr_keyword">return</strong>;
 <a class="jxr_linenumber" name="L567" href="#L567">567</a>         }
 <a class="jxr_linenumber" name="L568" href="#L568">568</a> 
-<a class="jxr_linenumber" name="L569" href="#L569">569</a>         <strong class="jxr_keyword">if</strong> (!o.getClass().isArray()) {
-<a class="jxr_linenumber" name="L570" href="#L570">570</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Not an array: "</span> + o.getClass().getName());
-<a class="jxr_linenumber" name="L571" href="#L571">571</a>         }
-<a class="jxr_linenumber" name="L572" href="#L572">572</a> 
-<a class="jxr_linenumber" name="L573" href="#L573">573</a>         <strong class="jxr_keyword">int</strong> length = Array.getLength(o);
-<a class="jxr_linenumber" name="L574" href="#L574">574</a>         <strong class="jxr_keyword">if</strong> (length == 0) {
-<a class="jxr_linenumber" name="L575" href="#L575">575</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L569" href="#L569">569</a>         <strong class="jxr_keyword">if</strong> (o instanceof <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a>) {
+<a class="jxr_linenumber" name="L570" href="#L570">570</a>             putArray(((<a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a>) o).toArray());
+<a class="jxr_linenumber" name="L571" href="#L571">571</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L572" href="#L572">572</a>         }
+<a class="jxr_linenumber" name="L573" href="#L573">573</a> 
+<a class="jxr_linenumber" name="L574" href="#L574">574</a>         <strong class="jxr_keyword">if</strong> (!o.getClass().isArray()) {
+<a class="jxr_linenumber" name="L575" href="#L575">575</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Not an array: "</span> + o.getClass().getName());
 <a class="jxr_linenumber" name="L576" href="#L576">576</a>         }
 <a class="jxr_linenumber" name="L577" href="#L577">577</a> 
-<a class="jxr_linenumber" name="L578" href="#L578">578</a>         <strong class="jxr_keyword">if</strong> (o instanceof byte[]) {
-<a class="jxr_linenumber" name="L579" href="#L579">579</a>             getOutputBuffer().put((byte[]) o, 0, length);
-<a class="jxr_linenumber" name="L580" href="#L580">580</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">boolean</strong>[]) {
-<a class="jxr_linenumber" name="L581" href="#L581">581</a>             put((<strong class="jxr_keyword">boolean</strong>[]) o, 0, length);
-<a class="jxr_linenumber" name="L582" href="#L582">582</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">char</strong>[]) {
-<a class="jxr_linenumber" name="L583" href="#L583">583</a>             put((<strong class="jxr_keyword">char</strong>[]) o, 0, length);
-<a class="jxr_linenumber" name="L584" href="#L584">584</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">short</strong>[]) {
-<a class="jxr_linenumber" name="L585" href="#L585">585</a>             getOutputBuffer().put((<strong class="jxr_keyword">short</strong>[]) o, 0, length);
-<a class="jxr_linenumber" name="L586" href="#L586">586</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">int</strong>[]) {
-<a class="jxr_linenumber" name="L587" href="#L587">587</a>             getOutputBuffer().put((<strong class="jxr_keyword">int</strong>[]) o, 0, length);
-<a class="jxr_linenumber" name="L588" href="#L588">588</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">float</strong>[]) {
-<a class="jxr_linenumber" name="L589" href="#L589">589</a>             getOutputBuffer().put((<strong class="jxr_keyword">float</strong>[]) o, 0, length);
-<a class="jxr_linenumber" name="L590" href="#L590">590</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">long</strong>[]) {
-<a class="jxr_linenumber" name="L591" href="#L591">591</a>             getOutputBuffer().put((<strong class="jxr_keyword">long</strong>[]) o, 0, length);
-<a class="jxr_linenumber" name="L592" href="#L592">592</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">double</strong>[]) {
-<a class="jxr_linenumber" name="L593" href="#L593">593</a>             getOutputBuffer().put((<strong class="jxr_keyword">double</strong>[]) o, 0, length);
-<a class="jxr_linenumber" name="L594" href="#L594">594</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof Boolean[]) {
-<a class="jxr_linenumber" name="L595" href="#L595">595</a>             put((Boolean[]) o, 0, length);
-<a class="jxr_linenumber" name="L596" href="#L596">596</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof String[]) {
-<a class="jxr_linenumber" name="L597" href="#L597">597</a>             put((String[]) o, 0, length);
-<a class="jxr_linenumber" name="L598" href="#L598">598</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L599" href="#L599">599</a>             Object[] array = (Object[]) o;
-<a class="jxr_linenumber" name="L600" href="#L600">600</a>             <em class="jxr_comment">// Is this a multidimensional array? If so process recursively</em>
-<a class="jxr_linenumber" name="L601" href="#L601">601</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; length; i++) {
-<a class="jxr_linenumber" name="L602" href="#L602">602</a>                 putArray(array[i]);
-<a class="jxr_linenumber" name="L603" href="#L603">603</a>             }
-<a class="jxr_linenumber" name="L604" href="#L604">604</a>         }
-<a class="jxr_linenumber" name="L605" href="#L605">605</a>     }
-<a class="jxr_linenumber" name="L606" href="#L606">606</a> 
-<a class="jxr_linenumber" name="L607" href="#L607">607</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L608" href="#L608">608</a> <em class="jxr_javadoccomment">     * Returns the size of this object as the number of bytes in a FITS binary representation.</em>
-<a class="jxr_linenumber" name="L609" href="#L609">609</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L610" href="#L610">610</a> <em class="jxr_javadoccomment">     * @param  o the object</em>
-<a class="jxr_linenumber" name="L611" href="#L611">611</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L612" href="#L612">612</a> <em class="jxr_javadoccomment">     * @return   the number of bytes in the FITS binary representation of the object or 0 if the object has no FITS</em>
-<a class="jxr_linenumber" name="L613" href="#L613">613</a> <em class="jxr_javadoccomment">     *               representation. (Also elements not known to FITS will count as 0 sized).</em>
-<a class="jxr_linenumber" name="L614" href="#L614">614</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L615" href="#L615">615</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">long</strong> computeSize(Object o) {
-<a class="jxr_linenumber" name="L616" href="#L616">616</a>         <strong class="jxr_keyword">if</strong> (o == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L617" href="#L617">617</a>             <strong class="jxr_keyword">return</strong> 0;
-<a class="jxr_linenumber" name="L618" href="#L618">618</a>         }
-<a class="jxr_linenumber" name="L619" href="#L619">619</a> 
-<a class="jxr_linenumber" name="L620" href="#L620">620</a>         <strong class="jxr_keyword">if</strong> (o instanceof Object[]) {
-<a class="jxr_linenumber" name="L621" href="#L621">621</a>             <strong class="jxr_keyword">long</strong> size = 0;
-<a class="jxr_linenumber" name="L622" href="#L622">622</a>             <strong class="jxr_keyword">for</strong> (Object e : (Object[]) o) {
-<a class="jxr_linenumber" name="L623" href="#L623">623</a>                 size += computeSize(e);
-<a class="jxr_linenumber" name="L624" href="#L624">624</a>             }
-<a class="jxr_linenumber" name="L625" href="#L625">625</a>             <strong class="jxr_keyword">return</strong> size;
-<a class="jxr_linenumber" name="L626" href="#L626">626</a>         }
-<a class="jxr_linenumber" name="L627" href="#L627">627</a> 
-<a class="jxr_linenumber" name="L628" href="#L628">628</a>         Class&lt;?&gt; type = o.getClass();
-<a class="jxr_linenumber" name="L629" href="#L629">629</a>         ElementType&lt;?&gt; eType = type.isArray() ? ElementType.forClass(type.getComponentType()) : ElementType.forClass(type);
-<a class="jxr_linenumber" name="L630" href="#L630">630</a> 
-<a class="jxr_linenumber" name="L631" href="#L631">631</a>         <strong class="jxr_keyword">if</strong> (eType == ElementType.UNKNOWN) {
-<a class="jxr_linenumber" name="L632" href="#L632">632</a>             LOG.log(Level.WARNING, <span class="jxr_string">"computeSize() called with unknown type."</span>,
-<a class="jxr_linenumber" name="L633" href="#L633">633</a>                     <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Don't know FITS size of type "</span> + type.getSimpleName()));
-<a class="jxr_linenumber" name="L634" href="#L634">634</a>         }
-<a class="jxr_linenumber" name="L635" href="#L635">635</a> 
-<a class="jxr_linenumber" name="L636" href="#L636">636</a>         <strong class="jxr_keyword">if</strong> (eType.isVariableSize()) {
-<a class="jxr_linenumber" name="L637" href="#L637">637</a>             <strong class="jxr_keyword">return</strong> eType.size(o);
-<a class="jxr_linenumber" name="L638" href="#L638">638</a>         }
+<a class="jxr_linenumber" name="L578" href="#L578">578</a>         <strong class="jxr_keyword">int</strong> length = Array.getLength(o);
+<a class="jxr_linenumber" name="L579" href="#L579">579</a>         <strong class="jxr_keyword">if</strong> (length == 0) {
+<a class="jxr_linenumber" name="L580" href="#L580">580</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L581" href="#L581">581</a>         }
+<a class="jxr_linenumber" name="L582" href="#L582">582</a> 
+<a class="jxr_linenumber" name="L583" href="#L583">583</a>         <strong class="jxr_keyword">if</strong> (o instanceof byte[]) {
+<a class="jxr_linenumber" name="L584" href="#L584">584</a>             getOutputBuffer().put((byte[]) o, 0, length);
+<a class="jxr_linenumber" name="L585" href="#L585">585</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">boolean</strong>[]) {
+<a class="jxr_linenumber" name="L586" href="#L586">586</a>             put((<strong class="jxr_keyword">boolean</strong>[]) o, 0, length);
+<a class="jxr_linenumber" name="L587" href="#L587">587</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">char</strong>[]) {
+<a class="jxr_linenumber" name="L588" href="#L588">588</a>             put((<strong class="jxr_keyword">char</strong>[]) o, 0, length);
+<a class="jxr_linenumber" name="L589" href="#L589">589</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">short</strong>[]) {
+<a class="jxr_linenumber" name="L590" href="#L590">590</a>             getOutputBuffer().put((<strong class="jxr_keyword">short</strong>[]) o, 0, length);
+<a class="jxr_linenumber" name="L591" href="#L591">591</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">int</strong>[]) {
+<a class="jxr_linenumber" name="L592" href="#L592">592</a>             getOutputBuffer().put((<strong class="jxr_keyword">int</strong>[]) o, 0, length);
+<a class="jxr_linenumber" name="L593" href="#L593">593</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">float</strong>[]) {
+<a class="jxr_linenumber" name="L594" href="#L594">594</a>             getOutputBuffer().put((<strong class="jxr_keyword">float</strong>[]) o, 0, length);
+<a class="jxr_linenumber" name="L595" href="#L595">595</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">long</strong>[]) {
+<a class="jxr_linenumber" name="L596" href="#L596">596</a>             getOutputBuffer().put((<strong class="jxr_keyword">long</strong>[]) o, 0, length);
+<a class="jxr_linenumber" name="L597" href="#L597">597</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">double</strong>[]) {
+<a class="jxr_linenumber" name="L598" href="#L598">598</a>             getOutputBuffer().put((<strong class="jxr_keyword">double</strong>[]) o, 0, length);
+<a class="jxr_linenumber" name="L599" href="#L599">599</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof Boolean[]) {
+<a class="jxr_linenumber" name="L600" href="#L600">600</a>             put((Boolean[]) o, 0, length);
+<a class="jxr_linenumber" name="L601" href="#L601">601</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof String[]) {
+<a class="jxr_linenumber" name="L602" href="#L602">602</a>             put((String[]) o, 0, length);
+<a class="jxr_linenumber" name="L603" href="#L603">603</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L604" href="#L604">604</a>             Object[] array = (Object[]) o;
+<a class="jxr_linenumber" name="L605" href="#L605">605</a>             <em class="jxr_comment">// Is this a multidimensional array? If so process recursively</em>
+<a class="jxr_linenumber" name="L606" href="#L606">606</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; length; i++) {
+<a class="jxr_linenumber" name="L607" href="#L607">607</a>                 putArray(array[i]);
+<a class="jxr_linenumber" name="L608" href="#L608">608</a>             }
+<a class="jxr_linenumber" name="L609" href="#L609">609</a>         }
+<a class="jxr_linenumber" name="L610" href="#L610">610</a>     }
+<a class="jxr_linenumber" name="L611" href="#L611">611</a> 
+<a class="jxr_linenumber" name="L612" href="#L612">612</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L613" href="#L613">613</a> <em class="jxr_javadoccomment">     * Returns the size of this object as the number of bytes in a FITS binary representation.</em>
+<a class="jxr_linenumber" name="L614" href="#L614">614</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L615" href="#L615">615</a> <em class="jxr_javadoccomment">     * @param  o the object</em>
+<a class="jxr_linenumber" name="L616" href="#L616">616</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L617" href="#L617">617</a> <em class="jxr_javadoccomment">     * @return   the number of bytes in the FITS binary representation of the object or 0 if the object has no FITS</em>
+<a class="jxr_linenumber" name="L618" href="#L618">618</a> <em class="jxr_javadoccomment">     *               representation. (Also elements not known to FITS will count as 0 sized).</em>
+<a class="jxr_linenumber" name="L619" href="#L619">619</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L620" href="#L620">620</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">long</strong> computeSize(Object o) {
+<a class="jxr_linenumber" name="L621" href="#L621">621</a>         <strong class="jxr_keyword">if</strong> (o == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L622" href="#L622">622</a>             <strong class="jxr_keyword">return</strong> 0;
+<a class="jxr_linenumber" name="L623" href="#L623">623</a>         }
+<a class="jxr_linenumber" name="L624" href="#L624">624</a> 
+<a class="jxr_linenumber" name="L625" href="#L625">625</a>         <strong class="jxr_keyword">if</strong> (o instanceof Object[]) {
+<a class="jxr_linenumber" name="L626" href="#L626">626</a>             <strong class="jxr_keyword">long</strong> size = 0;
+<a class="jxr_linenumber" name="L627" href="#L627">627</a>             <strong class="jxr_keyword">for</strong> (Object e : (Object[]) o) {
+<a class="jxr_linenumber" name="L628" href="#L628">628</a>                 size += computeSize(e);
+<a class="jxr_linenumber" name="L629" href="#L629">629</a>             }
+<a class="jxr_linenumber" name="L630" href="#L630">630</a>             <strong class="jxr_keyword">return</strong> size;
+<a class="jxr_linenumber" name="L631" href="#L631">631</a>         }
+<a class="jxr_linenumber" name="L632" href="#L632">632</a> 
+<a class="jxr_linenumber" name="L633" href="#L633">633</a>         <strong class="jxr_keyword">if</strong> (o instanceof <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a>) {
+<a class="jxr_linenumber" name="L634" href="#L634">634</a>             <strong class="jxr_keyword">return</strong> 2 * (o instanceof ComplexValue.Float ? ElementType.FLOAT.size() : ElementType.DOUBLE.size());
+<a class="jxr_linenumber" name="L635" href="#L635">635</a>         }
+<a class="jxr_linenumber" name="L636" href="#L636">636</a> 
+<a class="jxr_linenumber" name="L637" href="#L637">637</a>         Class&lt;?&gt; type = o.getClass();
+<a class="jxr_linenumber" name="L638" href="#L638">638</a>         ElementType&lt;?&gt; eType = type.isArray() ? ElementType.forClass(type.getComponentType()) : ElementType.forClass(type);
 <a class="jxr_linenumber" name="L639" href="#L639">639</a> 
-<a class="jxr_linenumber" name="L640" href="#L640">640</a>         <strong class="jxr_keyword">if</strong> (type.isArray()) {
-<a class="jxr_linenumber" name="L641" href="#L641">641</a>             <strong class="jxr_keyword">return</strong> Array.getLength(o) * eType.size();
-<a class="jxr_linenumber" name="L642" href="#L642">642</a>         }
-<a class="jxr_linenumber" name="L643" href="#L643">643</a> 
-<a class="jxr_linenumber" name="L644" href="#L644">644</a>         <strong class="jxr_keyword">return</strong> eType.size();
-<a class="jxr_linenumber" name="L645" href="#L645">645</a>     }
-<a class="jxr_linenumber" name="L646" href="#L646">646</a> }
+<a class="jxr_linenumber" name="L640" href="#L640">640</a>         <strong class="jxr_keyword">if</strong> (eType == ElementType.UNKNOWN) {
+<a class="jxr_linenumber" name="L641" href="#L641">641</a>             LOG.log(Level.WARNING, <span class="jxr_string">"computeSize() called with unknown type."</span>,
+<a class="jxr_linenumber" name="L642" href="#L642">642</a>                     <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Don't know FITS size of type "</span> + type.getSimpleName()));
+<a class="jxr_linenumber" name="L643" href="#L643">643</a>         }
+<a class="jxr_linenumber" name="L644" href="#L644">644</a> 
+<a class="jxr_linenumber" name="L645" href="#L645">645</a>         <strong class="jxr_keyword">if</strong> (eType.isVariableSize()) {
+<a class="jxr_linenumber" name="L646" href="#L646">646</a>             <strong class="jxr_keyword">return</strong> eType.size(o);
+<a class="jxr_linenumber" name="L647" href="#L647">647</a>         }
+<a class="jxr_linenumber" name="L648" href="#L648">648</a> 
+<a class="jxr_linenumber" name="L649" href="#L649">649</a>         <strong class="jxr_keyword">if</strong> (type.isArray()) {
+<a class="jxr_linenumber" name="L650" href="#L650">650</a>             <strong class="jxr_keyword">return</strong> Array.getLength(o) * eType.size();
+<a class="jxr_linenumber" name="L651" href="#L651">651</a>         }
+<a class="jxr_linenumber" name="L652" href="#L652">652</a> 
+<a class="jxr_linenumber" name="L653" href="#L653">653</a>         <strong class="jxr_keyword">return</strong> eType.size();
+<a class="jxr_linenumber" name="L654" href="#L654">654</a>     }
+<a class="jxr_linenumber" name="L655" href="#L655">655</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2024 nom-tam-fits. All rights reserved.</div>

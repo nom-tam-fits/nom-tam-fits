@@ -523,6 +523,9 @@
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/fits/header/StandardCommentReplacement.html</loc>
     </url>
     <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/fits/header/Stokes.html</loc>
+    </url>
+    <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/fits/header/Synonyms.html</loc>
     </url>
     <url>
@@ -580,19 +583,10 @@
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/fits/utilities/FitsCheckSum.html</loc>
     </url>
     <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/fits/utilities/FitsCopy.html</loc>
-    </url>
-    <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/fits/utilities/FitsLineAppender.html</loc>
     </url>
     <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/fits/utilities/FitsReader.html</loc>
-    </url>
-    <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/fits/utilities/FitsSubString.html</loc>
-    </url>
-    <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/fits/utilities/Main.html</loc>
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/fits/utilities/package-frame.html</loc>
@@ -868,6 +862,9 @@
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/util/OutputWriter.html</loc>
     </url>
     <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/util/Quantizer.html</loc>
+    </url>
+    <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/util/RandomAccess.html</loc>
     </url>
     <url>
@@ -970,6 +967,9 @@
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/overview-summary.html</loc>
     </url>
     <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/AsciiTableNewTest.html</loc>
+    </url>
+    <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/BadData.html</loc>
     </url>
     <url>
@@ -1010,6 +1010,9 @@
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/HeaderTest.html</loc>
+    </url>
+    <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/ImageDataTest.html</loc>
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/ImageProtectedTest.html</loc>
@@ -1156,6 +1159,15 @@
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/doc/package-summary.html</loc>
     </url>
     <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/header/StokesTest.html</loc>
+    </url>
+    <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/header/package-frame.html</loc>
+    </url>
+    <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/header/package-summary.html</loc>
+    </url>
+    <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/test/AsciiTableTest.html</loc>
     </url>
     <url>
@@ -1214,9 +1226,6 @@
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/test/RandomGroupsTest.html</loc>
-    </url>
-    <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/test/TestMain.html</loc>
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/test/TilerTest.html</loc>
@@ -1388,6 +1397,9 @@
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/util/PrimitiveTypeTest.html</loc>
+    </url>
+    <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/util/QuantizerTest.html</loc>
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/util/TestArrayFuncs.html</loc>
