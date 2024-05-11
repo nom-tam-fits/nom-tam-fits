@@ -324,7 +324,7 @@ public class ArrayFuncsTest {
         int[][] sub = (int[][]) ArrayFuncs.slice(array, null, new int[] {-2, -2});
 
         Assert.assertEquals(2, sub.length);
-        Assert.assertEquals(1, sub[0].length);
+        Assert.assertEquals(2, sub[0].length);
 
         Assert.assertEquals(9, sub[0][0]);
         Assert.assertEquals(8, sub[0][1]);

@@ -1138,7 +1138,7 @@ public final class ArrayFuncs {
 
         boolean isReversed = (size != null && size[idx] < 0) || (size == null && step != null && step[idx] < 0);
 
-        int ifrom = from == null ? (isReversed ? l : 0) : from[idx];
+        int ifrom = from == null ? (isReversed ? l - 1 : 0) : from[idx];
         int isize = size == null ? (isReversed ? ifrom - l : l - ifrom) : size[idx];
 
         if (isize == 0) {
@@ -1151,7 +1151,7 @@ public final class ArrayFuncs {
             throw new IndexOutOfBoundsException("Sampled bounds are out of range for original array");
         }
 
-        int istep = step == null ? 1 : Math.abs(isize);
+        int istep = step == null ? 1 : Math.abs(step[idx]);
 
         if (istep == 0) {
             istep = 1;
