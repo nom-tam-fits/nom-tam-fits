@@ -353,8 +353,8 @@ public class ArrayFuncsTest {
 
         int[][] sub = (int[][]) ArrayFuncs.sample(array, 0);
 
-        Assert.assertEquals(2, sub.length);
-        Assert.assertEquals(2, sub[0].length);
+        Assert.assertEquals(3, sub.length);
+        Assert.assertEquals(3, sub[0].length);
 
         Assert.assertEquals(1, sub[0][0]);
         Assert.assertEquals(2, sub[0][1]);
