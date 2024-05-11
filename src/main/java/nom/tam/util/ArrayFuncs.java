@@ -1055,13 +1055,11 @@ public final class ArrayFuncs {
      *                                       most as mant elements as there are array dimensions, but it can also have
      *                                       fewer.
      * @param  size                      The size of the slice. Negative values can indicate moving backwards in the
-     *                                       original array (but forward in the slice -- resulting in a flipped axis).
-     *                                       Zero (values) are understood to mean the full size of the original along
-     *                                       the specific dimension, while a <code>null</code> size argument can be used
-     *                                       to sample the full original. The slice will end at index
-     *                                       <code>from[k] + size[k]</code> in dimension <code>k</code> in the original
-     *                                       (not including the ending index). It should have the same number of
-     *                                       elements as the <code>from</code> argument.
+     *                                       original array (but forward in the slice -- resulting in a flipped axis). A
+     *                                       <code>null</code> size argument can be used to sample the full original.
+     *                                       The slice will end at index <code>from[k] + size[k]</code> in dimension
+     *                                       <code>k</code> in the original (not including the ending index). It should
+     *                                       have the same number of elements as the <code>from</code> argument.
      * 
      * @return                           The requested slice from the original.
      * 
@@ -1091,13 +1089,11 @@ public final class ArrayFuncs {
      *                                       fewer. A <code>null</code> argument can be used to sample from the start or
      *                                       end of the array (depending on the direction).
      * @param  size                      The size of the slice. Negative values can indicate moving backwards in the
-     *                                       original array (but forward in the slice -- resulting in a flipped axis).
-     *                                       Zero (values) are understood to mean the full size of the original along
-     *                                       the specific dimension, while a <code>null</code> size argument can be used
-     *                                       to sample the full original. The slice will end at index
-     *                                       <code>from[k] + size[k]</code> in dimension <code>k</code> in the original
-     *                                       (not including the ending index). It should have the same number of
-     *                                       elements as the <code>from</code> argument.
+     *                                       original array (but forward in the slice -- resulting in a flipped axis). A
+     *                                       <code>null</code> size argument can be used to sample the full original.
+     *                                       The slice will end at index <code>from[k] + size[k]</code> in dimension
+     *                                       <code>k</code> in the original (not including the ending index). It should
+     *                                       have the same number of elements as the <code>from</code> argument.
      * @param  step                      The sampling step size along each dimension for a subsampled slice. Only the
      *                                       absolute values are used since the direction of the slicing is determined
      *                                       by the size argument. 0 values are are automatically bumped to 1 (full
@@ -1129,21 +1125,21 @@ public final class ArrayFuncs {
     private static Object sample(Object orig, int[] from, int[] size, int[] step, int idx)
             throws IllegalArgumentException, IndexOutOfBoundsException {
         if (!orig.getClass().isArray()) {
-            return orig;
+            if (from == null || idx >= from.length) {
+                return orig;
+            }
+            throw new IllegalArgumentException("Not an array: " + orig.getClass().getName());
         }
 
         int l = Array.getLength(orig);
         int[] dims = getDimensions(orig);
+
         int ndim = from == null ? dims.length : from.length;
 
         boolean isReversed = (size != null && size[idx] < 0) || (size == null && step != null && step[idx] < 0);
 
         int ifrom = from == null ? (isReversed ? l - 1 : 0) : from[idx];
         int isize = size == null ? (isReversed ? ifrom - l : l - ifrom) : size[idx];
-
-        if (isize == 0) {
-            isize = dims[idx];
-        }
 
         int ito = ifrom + isize;
 
