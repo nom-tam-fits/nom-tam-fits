@@ -37,9 +37,11 @@ import nom.tam.fits.header.Standard;
 
 /**
  * <p>
- * Quantizes floating point values as integers. FITS allows representing floating-point values as integers, e.g. to
- * allow more compact storage at some tolerable level of precision loss. For example, you may store floating-point
- * values (4 bytes) discretized into 64k levels as 16-bit integers. The conversion involves a linear transformation:
+ * Quantizes floating point values as integers. FITS allows representing
+ * floating-point values as integers, e.g. to allow more compact storage at some
+ * tolerable level of precision loss. For example, you may store floating-point
+ * values (4 bytes) discretized into 64k levels as 16-bit integers. The
+ * conversion involves a linear transformation:
  * </p>
  * 
  * <pre>
@@ -53,22 +55,25 @@ import nom.tam.fits.header.Standard;
  *   {int-value} = round(({float-value} - {offset}) / {scaling})
  * </pre>
  * <p>
- * The latter floating-point to integer conversion naturally results in some loss of precision, comparable to the level
- * of the scaling factor, i.e. the peration of discrete levels at which information is preserved.
+ * The latter floating-point to integer conversion naturally results in some
+ * loss of precision, comparable to the level of the scaling factor, i.e. the
+ * peration of discrete levels at which information is preserved.
  * </p>
  * <p>
- * In addition to the scaling conversion, FITS also allows designating an integer blanking value to indicate missing or
- * invalid data, which is mapped to NaN in the floating point representation.
+ * In addition to the scaling conversion, FITS also allows designating an
+ * integer blanking value to indicate missing or invalid data, which is mapped
+ * to NaN in the floating point representation.
  * </p>
  * <p>
- * Fits allows for quantized representations of floating-point data both in image HDUs and for columns in binary table
- * HDUs. The quantization parameters are stored differently for the two types of HDUs, using the BSCALE, BZERO, and
- * BLANK keywords for images, and the TSCALn, TZEROn, and TNULLn keywords for individual columns in a table.
+ * Fits allows for quantized representations of floating-point data both in
+ * image HDUs and for columns in binary table HDUs. The quantization parameters
+ * are stored differently for the two types of HDUs, using the BSCALE, BZERO,
+ * and BLANK keywords for images, and the TSCALn, TZEROn, and TNULLn keywords
+ * for individual columns in a table.
  * </p>
  * 
  * @author Attila Kovacs
- * 
- * @since  1.20
+ * @since 1.20
  */
 public class Quantizer {
 
@@ -81,10 +86,14 @@ public class Quantizer {
     /**
      * Constructs a new decimal/integer conversion rule.
      * 
-     * @param scale         The scaling value, that is the spacing of the qunatized levels
-     * @param offset        The floating-point value that corresponds to an integer value of 0 (zero).
-     * @param blankingValue The value to use to represent NaN values in the integer representation, that is missing or
-     *                          invalid data.
+     * @param scale
+     *            The scaling value, that is the spacing of the qunatized levels
+     * @param offset
+     *            The floating-point value that corresponds to an integer value
+     *            of 0 (zero).
+     * @param blankingValue
+     *            The value to use to represent NaN values in the integer
+     *            representation, that is missing or invalid data.
      */
     public Quantizer(double scale, double offset, int blankingValue) {
         this(scale, offset, (long) blankingValue);
@@ -93,11 +102,16 @@ public class Quantizer {
     /**
      * Constructs a new decimal/integer conversion rule.
      * 
-     * @param scale         The scaling value, that is the spacing of the qunatized levels
-     * @param offset        The floating-point value that corresponds to an integer value of 0 (zero).
-     * @param blankingValue The value to use to represent NaN values in the integer representation, that is missing or
-     *                          invalid data. It may be <code>null</code> if the floating-point data is not expected to
-     *                          contain NaN values ever.
+     * @param scale
+     *            The scaling value, that is the spacing of the qunatized levels
+     * @param offset
+     *            The floating-point value that corresponds to an integer value
+     *            of 0 (zero).
+     * @param blankingValue
+     *            The value to use to represent NaN values in the integer
+     *            representation, that is missing or invalid data. It may be
+     *            <code>null</code> if the floating-point data is not expected
+     *            to contain NaN values ever.
      */
     public Quantizer(double scale, double offset, Long blankingValue) {
         this.scale = scale;
@@ -106,13 +120,13 @@ public class Quantizer {
     }
 
     /**
-     * Converts a floating point value to its integer representation using the quantization.
+     * Converts a floating point value to its integer representation using the
+     * quantization.
      * 
-     * @param  value the floating point value
-     * 
-     * @return       the corresponding qunatized integer value
-     * 
-     * @see          #toDouble(long)
+     * @param value
+     *            the floating point value
+     * @return the corresponding qunatized integer value
+     * @see #toDouble(long)
      */
     public long toLong(double value) {
         if (!Double.isFinite(value)) {
@@ -125,13 +139,13 @@ public class Quantizer {
     }
 
     /**
-     * Converts an integer value to the floating-point value it represents under the qunatization.
+     * Converts an integer value to the floating-point value it represents under
+     * the qunatization.
      * 
-     * @param  value the integer value
-     * 
-     * @return       the corresponding floating-point value, which may be NaN.
-     * 
-     * @see          #toLong(double)
+     * @param value
+     *            the integer value
+     * @return the corresponding floating-point value, which may be NaN.
+     * @see #toLong(double)
      */
     public double toDouble(long value) {
         if (blankingValue != null && value == blankingValue) {
@@ -141,12 +155,15 @@ public class Quantizer {
     }
 
     /**
-     * Checks if the quantization is the same as the default quantization. For example, maybe we don't need to (want to)
-     * write the quantization keywords into the FITS headers if these are irrelevant and/or not meaningful. So this
-     * method might help us decide when quantization is necessary / meaningful vs when it is irrelevant.
+     * Checks if the quantization is the same as the default quantization. For
+     * example, maybe we don't need to (want to) write the quantization keywords
+     * into the FITS headers if these are irrelevant and/or not meaningful. So
+     * this method might help us decide when quantization is necessary /
+     * meaningful vs when it is irrelevant.
      * 
-     * @return <code>true</code> if the scaling is 1.0, the offset 0.0, and the blanking value is <code>null</code>.
-     *             Otherwise <code>false</code> .
+     * @return <code>true</code> if the scaling is 1.0, the offset 0.0, and the
+     *         blanking value is <code>null</code>. Otherwise <code>false</code>
+     *         .
      */
     public boolean isDefault() {
         return scale == 1.0 && offset == 0.0 && blankingValue == null;
@@ -155,10 +172,10 @@ public class Quantizer {
     /**
      * Adds the quantization parameters to an image header,
      * 
-     * @param h the image header.
-     * 
-     * @see     #fromImageHeader(Header)
-     * @see     #editTableHeader(Header, int)
+     * @param h
+     *            the image header.
+     * @see #fromImageHeader(Header)
+     * @see #editTableHeader(Header, int)
      */
     public void editImageHeader(Header h) {
         h.addValue(Standard.BSCALE, scale);
@@ -174,11 +191,12 @@ public class Quantizer {
     /**
      * Adds the quantization parameters to a binaty table header,
      * 
-     * @param h   the binary table header.
-     * @param col the zero-based Java column index
-     * 
-     * @see       #fromTableHeader(Header, int)
-     * @see       #editImageHeader(Header)
+     * @param h
+     *            the binary table header.
+     * @param col
+     *            the zero-based Java column index
+     * @see #fromTableHeader(Header, int)
+     * @see #editImageHeader(Header)
      */
     public void editTableHeader(Header h, int col) {
         Cursor<String, HeaderCard> c = h.iterator();
@@ -197,14 +215,14 @@ public class Quantizer {
     /**
      * Returns the quantizer that is described by an image header.
      * 
-     * @param  h an image header
-     * 
-     * @return   the quantizer that id described by the header. It may be the default quantizer if the header does not
-     *               contain any of the quantization keywords.
-     * 
-     * @see      #editImageHeader(Header)
-     * @see      #fromTableHeader(Header, int)
-     * @see      #isDefault()
+     * @param h
+     *            an image header
+     * @return the quantizer that id described by the header. It may be the
+     *         default quantizer if the header does not contain any of the
+     *         quantization keywords.
+     * @see #editImageHeader(Header)
+     * @see #fromTableHeader(Header, int)
+     * @see #isDefault()
      */
     public static Quantizer fromImageHeader(Header h) {
         return new Quantizer(h.getDoubleValue(Standard.BSCALE, 1.0), h.getDoubleValue(Standard.BZERO, 0.0), //
@@ -214,15 +232,16 @@ public class Quantizer {
     /**
      * Returns the quantizer that is described by a binary table header.
      * 
-     * @param  h   a binary table header
-     * @param  col the zero-based Java column index
-     * 
-     * @return     the quantizer that id described by the header. It may be the default quantizer if the header does not
-     *                 contain any of the quantization keywords.
-     * 
-     * @see        #editTableHeader(Header, int)
-     * @see        #fromImageHeader(Header)
-     * @see        #isDefault()
+     * @param h
+     *            a binary table header
+     * @param col
+     *            the zero-based Java column index
+     * @return the quantizer that id described by the header. It may be the
+     *         default quantizer if the header does not contain any of the
+     *         quantization keywords.
+     * @see #editTableHeader(Header, int)
+     * @see #fromImageHeader(Header)
+     * @see #isDefault()
      */
     public static Quantizer fromTableHeader(Header h, int col) {
         return new Quantizer(h.getDoubleValue(Standard.TSCALn.n(col + 1), 1.0), //

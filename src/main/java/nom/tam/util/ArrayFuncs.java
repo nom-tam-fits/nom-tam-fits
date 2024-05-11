@@ -968,14 +968,14 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Obtains a sparse sampling of from a one or higher dimensional array.
+     * Obtains a sparse sampling of from an array of one or more dimensions.
      * 
      * @param  orig                      The original array
      * @param  step                      The sampling step size along all dimensions for a subsampled slice. A negative
      *                                       value indicates that the sampling should proceed in the reverse direction
      *                                       along every axis.
      * 
-     * @return                           The requested slice from the original.
+     * @return                           The requested sampling from the original.
      * 
      * @throws IllegalArgumentException  If the input is not an array
      * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
@@ -996,14 +996,14 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Obtains a sparse sampling of from a one or higher dimensional array.
+     * Obtains a sparse sampling of from an array of one or more dimensions.
      * 
      * @param  orig                      The original array
      * @param  step                      The sampling step size along each dimension for a subsampled slice. Negative
      *                                       values indicate that the sampling should proceed in the reverse direction
      *                                       along the given axis.
      * 
-     * @return                           The requested slice from the original.
+     * @return                           The requested sampling from the original.
      * 
      * @throws IllegalArgumentException  If the input is not an array
      * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
@@ -1022,19 +1022,12 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Obtains a slice (subarray) from a one or higher dimensional array.
+     * Obtains a slice (subarray) from an array of one or more dimensions.
      * 
      * @param  orig                      The original array
      * @param  from                      The starting indices for the slice in the original array. It should have at
      *                                       most as mant elements as there are array dimensions, but it can also have
      *                                       fewer.
-     * @param  size                      The size of the slice. Negative values can indicate moving backwards in the
-     *                                       original array (but forward in the slice -- resulting in a flipped axis).
-     *                                       The slice will end at index <code>from[k] + size[k]</code> in dimension
-     *                                       <code>k</code> in the original (not including the ending index). It should
-     *                                       have the same number of elements as from. Zero (values) are understood to
-     *                                       mean the full size of the original along the specific dimension, while a
-     *                                       <code>null</code> size argument can be used to sample the full original.
      * 
      * @return                           The requested slice from the original.
      * 
@@ -1047,6 +1040,41 @@ public final class ArrayFuncs {
      * 
      * @author                           Attila Kovacs
      * 
+     * @see                              #slice(Object, int[], int[])
+     * @see                              #sample(Object, int[], int[], int[])
+     */
+    public static Object slice(Object orig, int[] from) throws IllegalArgumentException, IndexOutOfBoundsException {
+        return slice(orig, from, null);
+    }
+
+    /**
+     * Obtains a slice (subarray) from an array of one or more dimensions.
+     * 
+     * @param  orig                      The original array
+     * @param  from                      The starting indices for the slice in the original array. It should have at
+     *                                       most as mant elements as there are array dimensions, but it can also have
+     *                                       fewer.
+     * @param  size                      The size of the slice. Negative values can indicate moving backwards in the
+     *                                       original array (but forward in the slice -- resulting in a flipped axis).
+     *                                       Zero (values) are understood to mean the full size of the original along
+     *                                       the specific dimension, while a <code>null</code> size argument can be used
+     *                                       to sample the full original. The slice will end at index
+     *                                       <code>from[k] + size[k]</code> in dimension <code>k</code> in the original
+     *                                       (not including the ending index). It should have the same number of
+     *                                       elements as the <code>from</code> argument.
+     * 
+     * @return                           The requested slice from the original.
+     * 
+     * @throws IllegalArgumentException  If the input is not an array
+     * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
+     *                                       original. That is if the original does not fully contain the requested
+     *                                       slice. Or, if the from and size arguments have differing lengths.
+     * 
+     * @since                            1.20
+     * 
+     * @author                           Attila Kovacs
+     * 
+     * @see                              #slice(Object, int[])
      * @see                              #sample(Object, int[], int[], int[])
      */
     public static Object slice(Object orig, int[] from, int[] size)
@@ -1055,7 +1083,7 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Obtains a slice (subarray) from a one or higher dimensional array.
+     * Obtains a sparse sampling from an array of one or more dimensions.
      * 
      * @param  orig                      The original array
      * @param  from                      The starting indices for the slice in the original array. It should have at
@@ -1064,11 +1092,12 @@ public final class ArrayFuncs {
      *                                       end of the array (depending on the direction).
      * @param  size                      The size of the slice. Negative values can indicate moving backwards in the
      *                                       original array (but forward in the slice -- resulting in a flipped axis).
-     *                                       The slice will end at index <code>from[k] + size[k]</code> in dimension
-     *                                       <code>k</code> in the original (not including the ending index). It should
-     *                                       have the same number of elements as from. Zero (values) are understood to
-     *                                       mean the full size of the original along the specific dimension, while a
-     *                                       <code>null</code> size argument can be used to sample the full original.
+     *                                       Zero (values) are understood to mean the full size of the original along
+     *                                       the specific dimension, while a <code>null</code> size argument can be used
+     *                                       to sample the full original. The slice will end at index
+     *                                       <code>from[k] + size[k]</code> in dimension <code>k</code> in the original
+     *                                       (not including the ending index). It should have the same number of
+     *                                       elements as the <code>from</code> argument.
      * @param  step                      The sampling step size along each dimension for a subsampled slice. Only the
      *                                       absolute values are used since the direction of the slicing is determined
      *                                       by the size argument. 0 values are are automatically bumped to 1 (full
@@ -1077,7 +1106,7 @@ public final class ArrayFuncs {
      *                                       of the step argument is used to determine the direction of sampling in the
      *                                       original array.
      * 
-     * @return                           The requested slice from the original.
+     * @return                           The requested sampling from the original.
      * 
      * @throws IllegalArgumentException  If the input is not an array
      * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
@@ -1099,18 +1128,27 @@ public final class ArrayFuncs {
 
     private static Object sample(Object orig, int[] from, int[] size, int[] step, int idx)
             throws IllegalArgumentException, IndexOutOfBoundsException {
-        int l = Array.getLength(orig);
-        int ndim = from == null ? getDimensions(orig).length : from.length;
+        if (!orig.getClass().isArray()) {
+            return orig;
+        }
 
-        boolean isReversed = (step != null && step[idx] < 0) || (size != null && size[idx] < 0);
+        int l = Array.getLength(orig);
+        int[] dims = getDimensions(orig);
+        int ndim = from == null ? dims.length : from.length;
+
+        boolean isReversed = (size != null && size[idx] < 0) || (size == null && step != null && step[idx] < 0);
 
         int ifrom = from == null ? (isReversed ? l : 0) : from[idx];
-        int isize = size == null ? (isReversed ? -l : l) : size[idx];
+        int isize = size == null ? (isReversed ? ifrom - l : l - ifrom) : size[idx];
+
+        if (isize == 0) {
+            isize = dims[idx];
+        }
 
         int ito = ifrom + isize;
 
         if (ifrom < 0 || ito < 0 || ifrom > l || ito > l) {
-            throw new IndexOutOfBoundsException("Slice bounds are out of range for original array");
+            throw new IndexOutOfBoundsException("Sampled bounds are out of range for original array");
         }
 
         int istep = step == null ? 1 : Math.abs(isize);
