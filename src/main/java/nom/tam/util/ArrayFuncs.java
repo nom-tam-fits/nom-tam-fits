@@ -992,7 +992,7 @@ public final class ArrayFuncs {
     public static Object sample(Object orig, int step) throws IllegalArgumentException, IndexOutOfBoundsException {
         int[] n = getDimensions(orig);
         Arrays.fill(n, step);
-        return sample(orig, null, null, n, 0);
+        return sample(orig, n);
     }
 
     /**
@@ -1018,7 +1018,7 @@ public final class ArrayFuncs {
      * @see                              #sample(Object, int[], int[], int[])
      */
     public static Object sample(Object orig, int[] step) throws IllegalArgumentException, IndexOutOfBoundsException {
-        return sample(orig, null, null, step, 0);
+        return sample(orig, null, null, step);
     }
 
     /**
