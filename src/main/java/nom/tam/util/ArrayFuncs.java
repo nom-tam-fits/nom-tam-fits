@@ -1081,7 +1081,7 @@ public final class ArrayFuncs {
 
         if (size != null) {
             step = new int[size.length];
-            for (int i = 0; i < step.length; i++) {
+            for (int i = 0; i < size.length; i++) {
                 step[i] = size[i] < 0 ? -1 : 1;
             }
         }
@@ -1097,14 +1097,16 @@ public final class ArrayFuncs {
      *                                       most as mant elements as there are array dimensions, but it can also have
      *                                       fewer. A <code>null</code> argument can be used to sample from the start or
      *                                       end of the array (depending on the direction).
-     * @param  size                      The size of the returned array along each dimension. A zero value will sample
-     *                                       the full array along the given dimension, while a <code>null</code>
-     *                                       argument will sample the full array in all dimensions.
+     * @param  size                      The size of the returned array along each dimension. The signature of the
+     *                                       values is irrelevant as the direction of sampling is determined by the step
+     *                                       argument. Zero entries can be used to indicate that the full array should
+     *                                       be sampled along the given dimension, while a <code>null</code> argument
+     *                                       will sample the full array in all dimensions.
      * @param  step                      The sampling step size along each dimension for a subsampled slice. Negative
      *                                       values indicate sampling the original in the reverse direction along the
      *                                       given dimension. 0 values are are automatically bumped to 1 (full
      *                                       sampling), and a <code>null</code> argument is understood to mean full
-     *                                       sampling along all axes.
+     *                                       sampling along all dimensions.
      * 
      * @return                           The requested sampling from the original.
      * 
@@ -1144,6 +1146,8 @@ public final class ArrayFuncs {
         int isize = size == null ? 0 : size[idx];
         if (isize == 0) {
             isize = isReversed ? ifrom - l : l - ifrom;
+        } else if (isReversed && isize > 0) {
+            isize = -isize;
         }
 
         int ito = ifrom + isize;
