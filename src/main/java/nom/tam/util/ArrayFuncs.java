@@ -975,7 +975,8 @@ public final class ArrayFuncs {
      *                                       value indicates that the sampling should proceed in the reverse direction
      *                                       along every axis.
      * 
-     * @return                           The requested sampling from the original.
+     * @return                           The requested sampling from the original. The returned array may share data
+     *                                       with the original, and so modifications to either may affect the other.
      * 
      * @throws IllegalArgumentException  If the input is not an array
      * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
@@ -1003,7 +1004,8 @@ public final class ArrayFuncs {
      *                                       values indicate that the sampling should proceed in the reverse direction
      *                                       along the given axis.
      * 
-     * @return                           The requested sampling from the original.
+     * @return                           The requested sampling from the original. The returned array may share data
+     *                                       with the original, and so modifications to either may affect the other.
      * 
      * @throws IllegalArgumentException  If the input is not an array
      * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
@@ -1029,7 +1031,8 @@ public final class ArrayFuncs {
      *                                       most as mant elements as there are array dimensions, but it can also have
      *                                       fewer.
      * 
-     * @return                           The requested slice from the original.
+     * @return                           The requested slice from the original. The returned array may share data with
+     *                                       the original, and so modifications to either may affect the other.
      * 
      * @throws IllegalArgumentException  If the input is not an array
      * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
@@ -1061,7 +1064,8 @@ public final class ArrayFuncs {
      *                                       <code>k</code> in the original (not including the ending index). It should
      *                                       have the same number of elements as the <code>from</code> argument.
      * 
-     * @return                           The requested slice from the original.
+     * @return                           The requested slice from the original. The returned array may share data with
+     *                                       the original, and so modifications to either may affect the other.
      * 
      * @throws IllegalArgumentException  If the input is not an array
      * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
@@ -1097,18 +1101,19 @@ public final class ArrayFuncs {
      *                                       most as mant elements as there are array dimensions, but it can also have
      *                                       fewer. A <code>null</code> argument can be used to sample from the start or
      *                                       end of the array (depending on the direction).
-     * @param  size                      The size of the returned array along each dimension. The signature of the
-     *                                       values is irrelevant as the direction of sampling is determined by the step
-     *                                       argument. Zero entries can be used to indicate that the full array should
-     *                                       be sampled along the given dimension, while a <code>null</code> argument
-     *                                       will sample the full array in all dimensions.
+     * @param  size                      The size of the sampled area in the original along each dimension. The
+     *                                       signature of the values is irrelevant as the direction of sampling is
+     *                                       determined by the step argument. Zero entries can be used to indicate that
+     *                                       the full array should be sampled along the given dimension, while a
+     *                                       <code>null</code> argument will sample the full array in all dimensions.
      * @param  step                      The sampling step size along each dimension for a subsampled slice. Negative
      *                                       values indicate sampling the original in the reverse direction along the
      *                                       given dimension. 0 values are are automatically bumped to 1 (full
      *                                       sampling), and a <code>null</code> argument is understood to mean full
      *                                       sampling along all dimensions.
      * 
-     * @return                           The requested sampling from the original.
+     * @return                           The requested sampling from the original. The returned array may share data
+     *                                       with the original, and so modifications to either may affect the other.
      * 
      * @throws IllegalArgumentException  If the input is not an array
      * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
@@ -1143,39 +1148,36 @@ public final class ArrayFuncs {
         boolean isReversed = (step != null && step[idx] < 0);
 
         int ifrom = from == null ? (isReversed ? l - 1 : 0) : from[idx];
-        int isize = size == null ? 0 : size[idx];
+
+        int isize = size == null ? 0 : Math.abs(size[idx]);
         if (isize == 0) {
-            isize = isReversed ? ifrom - l : l - ifrom;
-        } else if (isReversed && isize > 0) {
-            isize = -isize;
+            isize = l - ifrom;
         }
 
-        int ito = ifrom + isize;
-
-        if (ifrom < 0 || ito < 0 || ifrom > l || ito > l) {
+        int ito = ifrom + (isReversed ? -isize : isize);
+        if (ifrom < 0 || ito < -1 || ifrom >= l || ito > l) {
             throw new IndexOutOfBoundsException("Sampled bounds are out of range for original array");
         }
 
-        int istep = step == null ? 1 : Math.abs(step[idx]);
+        int istep = step == null ? 1 : step[idx];
         if (istep == 0) {
             istep = 1;
         }
 
-        int n = Math.abs((isize + istep - 1) / istep);
+        int astep = Math.abs(istep);
+        int n = Math.abs((isize + astep - 1) / astep);
+
         Object slice = Array.newInstance(orig.getClass().getComponentType(), n);
 
-        if (isReversed) {
-            istep = -istep;
-        } else if (ndim == 1 && istep == 1) {
+        if (!isReversed && ndim == 1 && istep == 1) {
             // Faster special case for in-order slicing along last dim...
             System.arraycopy(orig, ifrom, slice, 0, isize);
-            return slice;
-        }
-
-        // Generic sampling with the parameters...
-        for (int i = 0; i < n; i++) {
-            Object efrom = Array.get(orig, ifrom + i * istep);
-            Array.set(slice, i, sample(efrom, from, size, step, idx + 1));
+        } else {
+            // Generic sampling with the parameters...
+            for (int i = 0; i < n; i++) {
+                Object efrom = Array.get(orig, ifrom + i * istep);
+                Array.set(slice, i, sample(efrom, from, size, step, idx + 1));
+            }
         }
 
         return slice;
