@@ -976,9 +976,9 @@ public final class ArrayFuncs {
      *                                       along every axis.
      * 
      * @return                           The requested sampling from the original. The returned array may share data
-     *                                       with the original, and so modifications to either may affect the other.
+     *                                       with the original, and so modifications to either may affect the other. The
+     *                                       orginal object is returned if it is not an array.
      * 
-     * @throws IllegalArgumentException  If the input is not an array
      * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
      *                                       original. That is if the original does not fully contain the requested
      *                                       slice. Or, if the from and size arguments have differing lengths.
@@ -990,7 +990,7 @@ public final class ArrayFuncs {
      * @see                              #sample(Object, int[])
      * @see                              #sample(Object, int[], int[], int[])
      */
-    public static Object sample(Object orig, int step) throws IllegalArgumentException, IndexOutOfBoundsException {
+    public static Object sample(Object orig, int step) throws IndexOutOfBoundsException {
         int[] n = getDimensions(orig);
         Arrays.fill(n, step);
         return sample(orig, n);
@@ -1005,9 +1005,9 @@ public final class ArrayFuncs {
      *                                       along the given axis.
      * 
      * @return                           The requested sampling from the original. The returned array may share data
-     *                                       with the original, and so modifications to either may affect the other.
+     *                                       with the original, and so modifications to either may affect the other. The
+     *                                       orginal object is returned if it is not an array.
      * 
-     * @throws IllegalArgumentException  If the input is not an array
      * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
      *                                       original. That is if the original does not fully contain the requested
      *                                       slice. Or, if the from and size arguments have differing lengths.
@@ -1019,7 +1019,7 @@ public final class ArrayFuncs {
      * @see                              #sample(Object, int)
      * @see                              #sample(Object, int[], int[], int[])
      */
-    public static Object sample(Object orig, int[] step) throws IllegalArgumentException, IndexOutOfBoundsException {
+    public static Object sample(Object orig, int[] step) throws IndexOutOfBoundsException {
         return sample(orig, null, null, step);
     }
 
@@ -1028,13 +1028,13 @@ public final class ArrayFuncs {
      * 
      * @param  orig                      The original array
      * @param  from                      The starting indices for the slice in the original array. It should have at
-     *                                       most as mant elements as there are array dimensions, but it can also have
+     *                                       most as many elements as there are array dimensions, but it can also have
      *                                       fewer.
      * 
      * @return                           The requested slice from the original. The returned array may share data with
-     *                                       the original, and so modifications to either may affect the other.
+     *                                       the original, and so modifications to either may affect the other. The
+     *                                       orginal object is returned if it is not an array.
      * 
-     * @throws IllegalArgumentException  If the input is not an array
      * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
      *                                       original. That is if the original does not fully contain the requested
      *                                       slice. Or, if the from and size arguments have differing lengths.
@@ -1046,7 +1046,7 @@ public final class ArrayFuncs {
      * @see                              #slice(Object, int[], int[])
      * @see                              #sample(Object, int[], int[], int[])
      */
-    public static Object slice(Object orig, int[] from) throws IllegalArgumentException, IndexOutOfBoundsException {
+    public static Object slice(Object orig, int[] from) throws IndexOutOfBoundsException {
         return slice(orig, from, null);
     }
 
@@ -1055,7 +1055,7 @@ public final class ArrayFuncs {
      * 
      * @param  orig                      The original array
      * @param  from                      The starting indices for the slice in the original array. It should have at
-     *                                       most as mant elements as there are array dimensions, but it can also have
+     *                                       most as many elements as there are array dimensions, but it can also have
      *                                       fewer.
      * @param  size                      The size of the slice. Negative values can indicate moving backwards in the
      *                                       original array (but forward in the slice -- resulting in a flipped axis). A
@@ -1065,9 +1065,9 @@ public final class ArrayFuncs {
      *                                       have the same number of elements as the <code>from</code> argument.
      * 
      * @return                           The requested slice from the original. The returned array may share data with
-     *                                       the original, and so modifications to either may affect the other.
+     *                                       the original, and so modifications to either may affect the other. The
+     *                                       orginal object is returned if it is not an array.
      * 
-     * @throws IllegalArgumentException  If the input is not an array
      * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
      *                                       original. That is if the original does not fully contain the requested
      *                                       slice. Or, if the from and size arguments have differing lengths.
@@ -1079,8 +1079,7 @@ public final class ArrayFuncs {
      * @see                              #slice(Object, int[])
      * @see                              #sample(Object, int[], int[], int[])
      */
-    public static Object slice(Object orig, int[] from, int[] size)
-            throws IllegalArgumentException, IndexOutOfBoundsException {
+    public static Object slice(Object orig, int[] from, int[] size) throws IndexOutOfBoundsException {
         int[] step = null;
 
         if (size != null) {
@@ -1098,7 +1097,7 @@ public final class ArrayFuncs {
      * 
      * @param  orig                      The original array
      * @param  from                      The starting indices for the slice in the original array. It should have at
-     *                                       most as mant elements as there are array dimensions, but it can also have
+     *                                       most as many elements as there are array dimensions, but it can also have
      *                                       fewer. A <code>null</code> argument can be used to sample from the start or
      *                                       end of the array (depending on the direction).
      * @param  size                      The size of the sampled area in the original along each dimension. The
@@ -1113,9 +1112,9 @@ public final class ArrayFuncs {
      *                                       sampling along all dimensions.
      * 
      * @return                           The requested sampling from the original. The returned array may share data
-     *                                       with the original, and so modifications to either may affect the other.
+     *                                       with the original, and so modifications to either may affect the other. The
+     *                                       orginal object is returned if it is not an array.
      * 
-     * @throws IllegalArgumentException  If the input is not an array
      * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
      *                                       original. That is if the original does not fully contain the requested
      *                                       slice. Or, if the from and size arguments have differing lengths.
@@ -1128,13 +1127,12 @@ public final class ArrayFuncs {
      * @see                              #sample(Object, int[])
      * @see                              #slice(Object, int[], int[])
      */
-    public static Object sample(Object orig, int[] from, int[] size, int[] step)
-            throws IllegalArgumentException, IndexOutOfBoundsException {
+    public static Object sample(Object orig, int[] from, int[] size, int[] step) throws IndexOutOfBoundsException {
         return sample(orig, from, size, step, 0);
     }
 
     private static Object sample(Object orig, int[] from, int[] size, int[] step, int idx)
-            throws IllegalArgumentException, IndexOutOfBoundsException {
+            throws IndexOutOfBoundsException {
 
         // If leaf, return it as is...
         if (!orig.getClass().isArray() || (from != null && idx == from.length)) {
