@@ -970,12 +970,12 @@ public final class ArrayFuncs {
     /**
      * Obtains a sparse sampling of from an array of one or more dimensions.
      * 
-     * @param  orig                      The original array
-     * @param  step                      The sampling step size along all dimensions for a subsampled slice. A negative
+     * @param  orig                      the original array
+     * @param  step                      the sampling step size along all dimensions for a subsampled slice. A negative
      *                                       value indicates that the sampling should proceed in the reverse direction
      *                                       along every axis.
      * 
-     * @return                           The requested sampling from the original. The returned array may share data
+     * @return                           the requested sampling from the original. The returned array may share data
      *                                       with the original, and so modifications to either may affect the other. The
      *                                       orginal object is returned if it is not an array.
      * 
@@ -999,12 +999,12 @@ public final class ArrayFuncs {
     /**
      * Obtains a sparse sampling of from an array of one or more dimensions.
      * 
-     * @param  orig                      The original array
-     * @param  step                      The sampling step size along each dimension for a subsampled slice. Negative
+     * @param  orig                      the original array
+     * @param  step                      the sampling step size along each dimension for a subsampled slice. Negative
      *                                       values indicate that the sampling should proceed in the reverse direction
      *                                       along the given axis.
      * 
-     * @return                           The requested sampling from the original. The returned array may share data
+     * @return                           the requested sampling from the original. The returned array may share data
      *                                       with the original, and so modifications to either may affect the other. The
      *                                       orginal object is returned if it is not an array.
      * 
@@ -1026,12 +1026,12 @@ public final class ArrayFuncs {
     /**
      * Obtains a slice (subarray) from an array of one or more dimensions.
      * 
-     * @param  orig                      The original array
-     * @param  from                      The starting indices for the slice in the original array. It should have at
+     * @param  orig                      the original array
+     * @param  from                      the starting indices for the slice in the original array. It should have at
      *                                       most as many elements as there are array dimensions, but it can also have
      *                                       fewer.
      * 
-     * @return                           The requested slice from the original. The returned array may share data with
+     * @return                           the requested slice from the original. The returned array may share data with
      *                                       the original, and so modifications to either may affect the other. The
      *                                       orginal object is returned if it is not an array.
      * 
@@ -1053,18 +1053,18 @@ public final class ArrayFuncs {
     /**
      * Obtains a slice (subarray) from an array of one or more dimensions.
      * 
-     * @param  orig                      The original array
-     * @param  from                      The starting indices for the slice in the original array. It should have at
+     * @param  orig                      the original array
+     * @param  from                      the starting indices for the slice in the original array. It should have at
      *                                       most as many elements as there are array dimensions, but it can also have
      *                                       fewer.
-     * @param  size                      The size of the slice. Negative values can indicate moving backwards in the
+     * @param  size                      the size of the slice. Negative values can indicate moving backwards in the
      *                                       original array (but forward in the slice -- resulting in a flipped axis). A
      *                                       <code>null</code> size argument can be used to sample the full original.
      *                                       The slice will end at index <code>from[k] + size[k]</code> in dimension
      *                                       <code>k</code> in the original (not including the ending index). It should
      *                                       have the same number of elements as the <code>from</code> argument.
      * 
-     * @return                           The requested slice from the original. The returned array may share data with
+     * @return                           the requested slice from the original. The returned array may share data with
      *                                       the original, and so modifications to either may affect the other. The
      *                                       orginal object is returned if it is not an array.
      * 
@@ -1095,23 +1095,23 @@ public final class ArrayFuncs {
     /**
      * Obtains a sparse sampling from an array of one or more dimensions.
      * 
-     * @param  orig                      The original array
-     * @param  from                      The starting indices for the slice in the original array. It should have at
-     *                                       most as many elements as there are array dimensions, but it can also have
-     *                                       fewer. A <code>null</code> argument can be used to sample from the start or
-     *                                       end of the array (depending on the direction).
-     * @param  size                      The size of the sampled area in the original along each dimension. The
+     * @param  orig                      the original array
+     * @param  from                      the starting indices in the original array at which to start sampling. It
+     *                                       should have at most as many elements as there are array dimensions, but it
+     *                                       can also have fewer. A <code>null</code> argument can be used to sample
+     *                                       from the start or end of the array (depending on the direction).
+     * @param  size                      the size of the sampled area in the original along each dimension. The
      *                                       signature of the values is irrelevant as the direction of sampling is
      *                                       determined by the step argument. Zero entries can be used to indicate that
      *                                       the full array should be sampled along the given dimension, while a
      *                                       <code>null</code> argument will sample the full array in all dimensions.
-     * @param  step                      The sampling step size along each dimension for a subsampled slice. Negative
+     * @param  step                      the sampling step size along each dimension for a subsampled slice. Negative
      *                                       values indicate sampling the original in the reverse direction along the
      *                                       given dimension. 0 values are are automatically bumped to 1 (full
      *                                       sampling), and a <code>null</code> argument is understood to mean full
      *                                       sampling along all dimensions.
      * 
-     * @return                           The requested sampling from the original. The returned array may share data
+     * @return                           the requested sampling from the original. The returned array may share data
      *                                       with the original, and so modifications to either may affect the other. The
      *                                       orginal object is returned if it is not an array.
      * 
@@ -1168,7 +1168,7 @@ public final class ArrayFuncs {
         Object slice = Array.newInstance(orig.getClass().getComponentType(), n);
 
         if (!isReversed && ndim == 1 && istep == 1) {
-            // Faster special case for in-order slicing along last dim...
+            // Special case for fast in-order slicing along last dim...
             System.arraycopy(orig, ifrom, slice, 0, isize);
         } else {
             // Generic sampling with the parameters...
