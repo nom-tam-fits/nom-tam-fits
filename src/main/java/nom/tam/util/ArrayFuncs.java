@@ -1077,7 +1077,16 @@ public final class ArrayFuncs {
      */
     public static Object slice(Object orig, int[] from, int[] size)
             throws IllegalArgumentException, IndexOutOfBoundsException {
-        return sample(orig, from, size, null, 0);
+        int[] step = null;
+
+        if (size != null) {
+            step = new int[size.length];
+            for (int i = 0; i < step.length; i++) {
+                step[i] = size[i] < 0 ? -1 : 1;
+            }
+        }
+
+        return sample(orig, from, size, step, 0);
     }
 
     /**
@@ -1088,19 +1097,14 @@ public final class ArrayFuncs {
      *                                       most as mant elements as there are array dimensions, but it can also have
      *                                       fewer. A <code>null</code> argument can be used to sample from the start or
      *                                       end of the array (depending on the direction).
-     * @param  size                      The size of the slice. Negative values can indicate moving backwards in the
-     *                                       original array (but forward in the slice -- resulting in a flipped axis). A
-     *                                       <code>null</code> size argument can be used to sample the full original.
-     *                                       The slice will end at index <code>from[k] + size[k]</code> in dimension
-     *                                       <code>k</code> in the original (not including the ending index). It should
-     *                                       have the same number of elements as the <code>from</code> argument.
-     * @param  step                      The sampling step size along each dimension for a subsampled slice. Only the
-     *                                       absolute values are used since the direction of the slicing is determined
-     *                                       by the size argument. 0 values are are automatically bumped to 1 (full
+     * @param  size                      The size of the returned array along each dimension. A zero value will sample
+     *                                       the full array along the given dimension, while a <code>null</code>
+     *                                       argument will sample the full array in all dimensions.
+     * @param  step                      The sampling step size along each dimension for a subsampled slice. Negative
+     *                                       values indicate sampling the original in the reverse direction along the
+     *                                       given dimension. 0 values are are automatically bumped to 1 (full
      *                                       sampling), and a <code>null</code> argument is understood to mean full
-     *                                       sampling along all axes. If the size argument is <code>null</code> the sign
-     *                                       of the step argument is used to determine the direction of sampling in the
-     *                                       original array.
+     *                                       sampling along all axes.
      * 
      * @return                           The requested sampling from the original.
      * 
@@ -1124,22 +1128,23 @@ public final class ArrayFuncs {
 
     private static Object sample(Object orig, int[] from, int[] size, int[] step, int idx)
             throws IllegalArgumentException, IndexOutOfBoundsException {
-        if (!orig.getClass().isArray()) {
-            if (from == null || idx >= from.length) {
-                return orig;
-            }
-            throw new IllegalArgumentException("Not an array: " + orig.getClass().getName());
+
+        // If leaf, return it as is...
+        if (!orig.getClass().isArray() || (from != null && idx == from.length)) {
+            return orig;
         }
 
         int l = Array.getLength(orig);
-        int[] dims = getDimensions(orig);
+        int ndim = from == null ? getDimensions(orig).length : from.length;
 
-        int ndim = from == null ? dims.length : from.length;
-
-        boolean isReversed = (size != null && size[idx] < 0) || (size == null && step != null && step[idx] < 0);
+        // Check if reverse sampling
+        boolean isReversed = (step != null && step[idx] < 0);
 
         int ifrom = from == null ? (isReversed ? l - 1 : 0) : from[idx];
-        int isize = size == null ? (isReversed ? ifrom - l : l - ifrom) : size[idx];
+        int isize = size == null ? 0 : size[idx];
+        if (isize == 0) {
+            isize = isReversed ? ifrom - l : l - ifrom;
+        }
 
         int ito = ifrom + isize;
 
@@ -1148,7 +1153,6 @@ public final class ArrayFuncs {
         }
 
         int istep = step == null ? 1 : Math.abs(step[idx]);
-
         if (istep == 0) {
             istep = 1;
         }
@@ -1158,11 +1162,16 @@ public final class ArrayFuncs {
 
         if (isReversed) {
             istep = -istep;
+        } else if (ndim == 1 && istep == 1) {
+            // Faster special case for in-order slicing along last dim...
+            System.arraycopy(orig, ifrom, slice, 0, isize);
+            return slice;
         }
 
+        // Generic sampling with the parameters...
         for (int i = 0; i < n; i++) {
             Object efrom = Array.get(orig, ifrom + i * istep);
-            Array.set(slice, i, idx < ndim ? sample(efrom, from, size, step, idx + 1) : efrom);
+            Array.set(slice, i, sample(efrom, from, size, step, idx + 1));
         }
 
         return slice;
