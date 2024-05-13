@@ -303,4 +303,147 @@ public class ArrayFuncsTest {
     public void convertNotArray() throws Exception {
         ArrayFuncs.convertArray("blah", int.class, null);
     }
+
+    @Test
+    public void sliceTest() throws Exception {
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+
+        int[][] sub = (int[][]) ArrayFuncs.slice(array, new int[] {1, 2});
+
+        Assert.assertEquals(2, sub.length);
+        Assert.assertEquals(1, sub[0].length);
+
+        Assert.assertEquals(6, sub[0][0]);
+        Assert.assertEquals(9, sub[1][0]);
+    }
+
+    @Test
+    public void sliceSubTest() throws Exception {
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+
+        int[][] sub = (int[][]) ArrayFuncs.slice(array, new int[] {1}, new int[] {2});
+
+        Assert.assertEquals(2, sub.length);
+        Assert.assertEquals(3, sub[0].length);
+
+        Assert.assertEquals(4, sub[0][0]);
+        Assert.assertEquals(5, sub[0][1]);
+        Assert.assertEquals(7, sub[1][0]);
+        Assert.assertEquals(8, sub[1][1]);
+    }
+
+    @Test
+    public void sliceSubReverseTest() throws Exception {
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+
+        int[][] sub = (int[][]) ArrayFuncs.slice(array, new int[] {1}, new int[] {-2});
+
+        Assert.assertEquals(2, sub.length);
+        Assert.assertEquals(3, sub[0].length);
+
+        Assert.assertEquals(4, sub[0][0]);
+        Assert.assertEquals(5, sub[0][1]);
+        Assert.assertEquals(1, sub[1][0]);
+        Assert.assertEquals(2, sub[1][1]);
+    }
+
+    @Test
+    public void reverseSliceTest() throws Exception {
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+
+        int[][] sub = (int[][]) ArrayFuncs.slice(array, null, new int[] {-2, -2});
+
+        Assert.assertEquals(2, sub.length);
+        Assert.assertEquals(2, sub[0].length);
+
+        Assert.assertEquals(9, sub[0][0]);
+        Assert.assertEquals(8, sub[0][1]);
+        Assert.assertEquals(6, sub[1][0]);
+        Assert.assertEquals(5, sub[1][1]);
+    }
+
+    @Test
+    public void sampleTest() throws Exception {
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+
+        int[][] sub = (int[][]) ArrayFuncs.sample(array, 2);
+
+        Assert.assertEquals(2, sub.length);
+        Assert.assertEquals(2, sub[0].length);
+
+        Assert.assertEquals(1, sub[0][0]);
+        Assert.assertEquals(3, sub[0][1]);
+        Assert.assertEquals(7, sub[1][0]);
+        Assert.assertEquals(9, sub[1][1]);
+    }
+
+    @Test
+    public void sampleTestStep0() throws Exception {
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+
+        int[][] sub = (int[][]) ArrayFuncs.sample(array, 0);
+
+        Assert.assertEquals(3, sub.length);
+        Assert.assertEquals(3, sub[0].length);
+
+        Assert.assertEquals(1, sub[0][0]);
+        Assert.assertEquals(2, sub[0][1]);
+        Assert.assertEquals(4, sub[1][0]);
+        Assert.assertEquals(5, sub[1][1]);
+    }
+
+    @Test
+    public void sampleTestSize0() throws Exception {
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+
+        int[][] sub = (int[][]) ArrayFuncs.sample(array, null, new int[2], null);
+
+        Assert.assertEquals(3, sub.length);
+        Assert.assertEquals(3, sub[0].length);
+
+        Assert.assertEquals(1, sub[0][0]);
+        Assert.assertEquals(2, sub[0][1]);
+        Assert.assertEquals(4, sub[1][0]);
+        Assert.assertEquals(5, sub[1][1]);
+    }
+
+    @Test
+    public void sampleReverseTest() throws Exception {
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+
+        int[][] sub = (int[][]) ArrayFuncs.sample(array, null, new int[] {3, -3}, new int[] {-2, -2});
+
+        Assert.assertEquals(2, sub.length);
+        Assert.assertEquals(2, sub[0].length);
+
+        Assert.assertEquals(9, sub[0][0]);
+        Assert.assertEquals(7, sub[0][1]);
+        Assert.assertEquals(3, sub[1][0]);
+        Assert.assertEquals(1, sub[1][1]);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void sliceFromLow() throws Exception {
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        ArrayFuncs.slice(array, new int[] {-1});
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void sliceFromHigh() throws Exception {
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        ArrayFuncs.slice(array, new int[] {3});
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void sliceToLow() throws Exception {
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        ArrayFuncs.slice(array, null, new int[] {-4});
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void sliceToHigh() throws Exception {
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        ArrayFuncs.slice(array, null, new int[] {4});
+    }
+
 }

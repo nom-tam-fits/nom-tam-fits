@@ -967,4 +967,218 @@ public final class ArrayFuncs {
         return t;
     }
 
+    /**
+     * Obtains a sparse sampling of from an array of one or more dimensions.
+     * 
+     * @param  orig                      the original array
+     * @param  step                      the sampling step size along all dimensions for a subsampled slice. A negative
+     *                                       value indicates that the sampling should proceed in the reverse direction
+     *                                       along every axis.
+     * 
+     * @return                           the requested sampling from the original. The returned array may share data
+     *                                       with the original, and so modifications to either may affect the other. The
+     *                                       orginal object is returned if it is not an array.
+     * 
+     * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
+     *                                       original. That is if the original does not fully contain the requested
+     *                                       slice. Or, if the from and size arguments have differing lengths.
+     * 
+     * @since                            1.20
+     * 
+     * @author                           Attila Kovacs
+     * 
+     * @see                              #sample(Object, int[])
+     * @see                              #sample(Object, int[], int[], int[])
+     */
+    public static Object sample(Object orig, int step) throws IndexOutOfBoundsException {
+        int[] n = getDimensions(orig);
+        Arrays.fill(n, step);
+        return sample(orig, n);
+    }
+
+    /**
+     * Obtains a sparse sampling of from an array of one or more dimensions.
+     * 
+     * @param  orig                      the original array
+     * @param  step                      the sampling step size along each dimension for a subsampled slice. Negative
+     *                                       values indicate that the sampling should proceed in the reverse direction
+     *                                       along the given axis.
+     * 
+     * @return                           the requested sampling from the original. The returned array may share data
+     *                                       with the original, and so modifications to either may affect the other. The
+     *                                       orginal object is returned if it is not an array.
+     * 
+     * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
+     *                                       original. That is if the original does not fully contain the requested
+     *                                       slice. Or, if the from and size arguments have differing lengths.
+     * 
+     * @since                            1.20
+     * 
+     * @author                           Attila Kovacs
+     * 
+     * @see                              #sample(Object, int)
+     * @see                              #sample(Object, int[], int[], int[])
+     */
+    public static Object sample(Object orig, int[] step) throws IndexOutOfBoundsException {
+        return sample(orig, null, null, step);
+    }
+
+    /**
+     * Obtains a slice (subarray) from an array of one or more dimensions.
+     * 
+     * @param  orig                      the original array
+     * @param  from                      the starting indices for the slice in the original array. It should have at
+     *                                       most as many elements as there are array dimensions, but it can also have
+     *                                       fewer.
+     * 
+     * @return                           the requested slice from the original. The returned array may share data with
+     *                                       the original, and so modifications to either may affect the other. The
+     *                                       orginal object is returned if it is not an array.
+     * 
+     * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
+     *                                       original. That is if the original does not fully contain the requested
+     *                                       slice. Or, if the from and size arguments have differing lengths.
+     * 
+     * @since                            1.20
+     * 
+     * @author                           Attila Kovacs
+     * 
+     * @see                              #slice(Object, int[], int[])
+     * @see                              #sample(Object, int[], int[], int[])
+     */
+    public static Object slice(Object orig, int[] from) throws IndexOutOfBoundsException {
+        return slice(orig, from, null);
+    }
+
+    /**
+     * Obtains a slice (subarray) from an array of one or more dimensions.
+     * 
+     * @param  orig                      the original array
+     * @param  from                      the starting indices for the slice in the original array. It should have at
+     *                                       most as many elements as there are array dimensions, but it can also have
+     *                                       fewer.
+     * @param  size                      the size of the slice. Negative values can indicate moving backwards in the
+     *                                       original array (but forward in the slice -- resulting in a flipped axis). A
+     *                                       <code>null</code> size argument can be used to sample the full original.
+     *                                       The slice will end at index <code>from[k] + size[k]</code> in dimension
+     *                                       <code>k</code> in the original (not including the ending index). It should
+     *                                       have the same number of elements as the <code>from</code> argument.
+     * 
+     * @return                           the requested slice from the original. The returned array may share data with
+     *                                       the original, and so modifications to either may affect the other. The
+     *                                       orginal object is returned if it is not an array.
+     * 
+     * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
+     *                                       original. That is if the original does not fully contain the requested
+     *                                       slice. Or, if the from and size arguments have differing lengths.
+     * 
+     * @since                            1.20
+     * 
+     * @author                           Attila Kovacs
+     * 
+     * @see                              #slice(Object, int[])
+     * @see                              #sample(Object, int[], int[], int[])
+     */
+    public static Object slice(Object orig, int[] from, int[] size) throws IndexOutOfBoundsException {
+        int[] step = null;
+
+        if (size != null) {
+            step = new int[size.length];
+            for (int i = 0; i < size.length; i++) {
+                step[i] = size[i] < 0 ? -1 : 1;
+            }
+        }
+
+        return sample(orig, from, size, step, 0);
+    }
+
+    /**
+     * Obtains a sparse sampling from an array of one or more dimensions.
+     * 
+     * @param  orig                      the original array
+     * @param  from                      the starting indices in the original array at which to start sampling. It
+     *                                       should have at most as many elements as there are array dimensions, but it
+     *                                       can also have fewer. A <code>null</code> argument can be used to sample
+     *                                       from the start or end of the array (depending on the direction).
+     * @param  size                      the size of the sampled area in the original along each dimension. The
+     *                                       signature of the values is irrelevant as the direction of sampling is
+     *                                       determined by the step argument. Zero entries can be used to indicate that
+     *                                       the full array should be sampled along the given dimension, while a
+     *                                       <code>null</code> argument will sample the full array in all dimensions.
+     * @param  step                      the sampling step size along each dimension for a subsampled slice. Negative
+     *                                       values indicate sampling the original in the reverse direction along the
+     *                                       given dimension. 0 values are are automatically bumped to 1 (full
+     *                                       sampling), and a <code>null</code> argument is understood to mean full
+     *                                       sampling along all dimensions.
+     * 
+     * @return                           the requested sampling from the original. The returned array may share data
+     *                                       with the original, and so modifications to either may affect the other. The
+     *                                       orginal object is returned if it is not an array.
+     * 
+     * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the
+     *                                       original. That is if the original does not fully contain the requested
+     *                                       slice. Or, if the from and size arguments have differing lengths.
+     * 
+     * @since                            1.20
+     * 
+     * @author                           Attila Kovacs
+     * 
+     * @see                              #sample(Object, int)
+     * @see                              #sample(Object, int[])
+     * @see                              #slice(Object, int[], int[])
+     */
+    public static Object sample(Object orig, int[] from, int[] size, int[] step) throws IndexOutOfBoundsException {
+        return sample(orig, from, size, step, 0);
+    }
+
+    private static Object sample(Object orig, int[] from, int[] size, int[] step, int idx)
+            throws IndexOutOfBoundsException {
+
+        // If leaf, return it as is...
+        if (!orig.getClass().isArray() || (from != null && idx == from.length)) {
+            return orig;
+        }
+
+        int l = Array.getLength(orig);
+        int ndim = from == null ? getDimensions(orig).length : from.length;
+
+        // Check if reverse sampling
+        boolean isReversed = (step != null && step[idx] < 0);
+
+        int ifrom = from == null ? (isReversed ? l - 1 : 0) : from[idx];
+
+        int isize = size == null ? 0 : Math.abs(size[idx]);
+        if (isize == 0) {
+            isize = l - ifrom;
+        }
+
+        int ito = ifrom + (isReversed ? -isize : isize);
+        if (ifrom < 0 || ito < -1 || ifrom >= l || ito > l) {
+            throw new IndexOutOfBoundsException("Sampled bounds are out of range for original array");
+        }
+
+        int istep = step == null ? 1 : step[idx];
+        if (istep == 0) {
+            istep = 1;
+        }
+
+        int astep = Math.abs(istep);
+        int n = Math.abs((isize + astep - 1) / astep);
+
+        Object slice = Array.newInstance(orig.getClass().getComponentType(), n);
+
+        if (!isReversed && ndim == 1 && istep == 1) {
+            // Special case for fast in-order slicing along last dim...
+            System.arraycopy(orig, ifrom, slice, 0, isize);
+        } else {
+            // Generic sampling with the parameters...
+            for (int i = 0; i < n; i++) {
+                Object efrom = Array.get(orig, ifrom + i * istep);
+                Array.set(slice, i, sample(efrom, from, size, step, idx + 1));
+            }
+        }
+
+        return slice;
+    }
+
 }

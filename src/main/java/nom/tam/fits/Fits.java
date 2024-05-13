@@ -1460,7 +1460,6 @@ public class Fits implements Closeable {
      *
      * @throws FitsException if the initialization failed
      */
-    @SuppressWarnings("resource")
     protected void streamInit(InputStream inputStream) throws FitsException {
         dataStr = new FitsInputStream(CompressionManager.decompress(inputStream));
     }
