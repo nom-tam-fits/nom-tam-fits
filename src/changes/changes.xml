@@ -24,16 +24,6 @@
           methods to access the quantizers that handle decimal-integer conversions for images and binary table 
           columns, respectively.
       </action>
-      <action type="add" dev="attipaci" issue="592">
-         ImageData now supports complex valued images, both when constructed programatically from ComplexValue[]... 
-         data; or if so described with an image axis whose type is 'COMPLEX' and contains 2 components (as long as the 
-         complex axis is either the first or last axis). The latter is true even if integer representation is used in 
-         the FITS, e.g. via a quantization. When reading complex valued images, the native ImageData is that of the 
-         stored type (e.g. float[..][..][2]) for compatibility, but ImageData.convertTo(ComplexValue.class) or 
-         .convertTo(ComplexValue.Float.class) can convert these to be true complex valued images in a second step 
-         after reading. (You may also use ImageData.isComplexValued() to check if the data were designated as 
-         complex-valued at origination, by the FITS header or the constructor.)
-      </action>
       <action type="add" dev="attipaci" issue="610">
       	 ImageData.convertTo(Class type) will return the equivalent image data with another storage type (but 
       	 otherwise the same as the original image). Any decimal-integer conversion is handled by the image's own 
@@ -48,14 +38,28 @@
          to numerical type arrays, including ComplexValue type arrays, and can be used for explicit quantization 
          conversions outside of images and table columns.
       </action>
+      <action type="add" dev="attipaci" issue="592">
+         ImageData now supports complex valued images, both when constructed programatically from ComplexValue[]... 
+         data; or if so described with an image axis whose `CTYPEn` header value is 'COMPLEX' and the axis contains 2 
+         components (so long as the complex axis is either the first or last axis). The latter is true even if integer 
+         representation is used in the FITS, e.g. via a quantization. When reading complex valued images, the native 
+         ImageData is that of the stored type (e.g. float[]..[2] or float[2]..[]) for compatibility, but 
+         ImageData.convertTo(ComplexValue.class) or .convertTo(ComplexValue.Float.class) can convert these to be true 
+         complex valued images in a second step after reading. (You may also use ImageData.isComplexValued() to check 
+         if the data were designated as complex-valued at origination, by the FITS header or the constructor.)
+      </action>
+      <action type="add" dev="attipaci" issue="619" due-to="at88mph">
+         New ArrayFuncs.sample() and .slice() methods, to provide generic support for obtaining slices and samplings
+         from arrays in one or more dimensions, with the option of reversed order sampling along selected axes. 
+      </action>
       <action type="update" dev="attipaci" issue="590" due-to="bogdanni">
-          Remove Main class, and main() entry points from JAR, which also clears up a whole lot of junk being added
+          Removed Main class, and main() entry points from JAR, which also clears up a whole lot of junk being added
           to the classpath into MANIFEST.MF.
       </action>
       <action type="update" dev="attipaci" issue="610">
           BinaryTable.getArrayElement(row, col) method to return the table element as an array always (without the 
-          boxing of scalar entries), but still representing FITS logicals as Boolean[]..., FITS bits as 
-          boolean[]..., and complex values a ComplexValue[]... arrays.
+          boxing of scalar entries), similarly to the original .getElement() method except representing FITS logicals 
+          as Boolean[]..., FITS bits as boolean[]..., and complex values a ComplexValue[]... arrays.
       </action>
       <action type="update" dev="attipaci" issue="592">
           ArrayFuncs.convertArray(Object, Class) is now the same as  the new 
@@ -71,6 +75,9 @@
           BinaryTable.getDouble(...) and .getLong(...) and .set(...) methods will now use the specified quantization 
           (as specified in the header or else set explicitly by the user) when converting from decimal to integer 
           types and vice-versa.
+      </action>
+      <action type="update" dev="attipaci">
+          Updated User's Guide (README.md).
       </action>
       <action type="update" dev="attipaci">
           Uses the latest maven build and runtime dependencies.

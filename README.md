@@ -56,11 +56,11 @@ FITS (Flexible Image Transport System) is a binary format of many astronomical d
 
 The library requires a level of familiarity with FITS and its common standards and conventions for effective use. For 
 example, while the library will automatically interpret and populate the mandatory minimum data description in FITS 
-headers, it will not automatically process optional standard or conventional header entries. It is up to the users to 
-extract or complete the description of data to its full extent, for example to include [FITS world coordinate systems 
-(WCS)](https://fits.gsfc.nasa.gov/fits_wcs.html), physical units, etc. Users are encouraged to familiarize themselves 
-with the [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html) and conventions described therein to be 
-effective users of this library. 
+headers, it will not automatically process many optional standard or conventional header entries. It is mostly up to 
+the users to extract or complete the description of data to its full extent, for example to include [FITS world 
+coordinate systems (WCS)](https://fits.gsfc.nasa.gov/fits_wcs.html), physical units, etc. Users are encouraged to 
+familiarize themselves with the [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html) and conventions 
+described therein to be effective users of this library. 
 
 This is an open-source, community maintained, project hosted on github as 
 [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API 
@@ -284,7 +284,7 @@ casting is inevitable if you want to use the data from the FITS files.
 
 #### Converting images to a different type
 
-As of version 1.20, the library provides the means for convert images between numerical types. Let's say the FITS 
+As of version 1.20, the library provides the means for converting images between numerical types. Let's say the FITS 
 stored the images as integer, but we want them as double-precision values. 
 
 ```java
