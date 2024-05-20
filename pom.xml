@@ -589,6 +589,7 @@
 		</script>
 		]]>
   	  </header>
+          <additionalOptions>&#45;&#45;allow-script-in-comments</additionalOptions>
           <show>public</show>
           <excludePackageNames>
             nom.tam.fits.compress:

@@ -725,7 +725,7 @@ public class Fits implements Closeable {
      * @return               The primary header of this FITS file/object.
      * 
      * @throws FitsException If the Fits is empty (does not contain a primary HDU)
-     * @throws IOException
+     * @throws IOException   if there was a problem accessing the FITS from the input
      * 
      * @see                  #getCompleteHeader(int)
      * @see                  BasicHDU#getHeader()

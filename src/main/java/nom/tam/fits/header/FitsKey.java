@@ -55,18 +55,25 @@ import nom.tam.fits.HeaderCard;
  */
 public class FitsKey implements IFitsHeader, Serializable {
 
+    /** Generated serial version ID */
     private static final long serialVersionUID = -8312303744399173040L;
 
+    /** Standard header comment */
     private final String comment;
 
+    /** The type of HDU in which this keyword may appear */
     private final HDU hdu;
 
+    /** The FITS keyword pattern that produces the actual keyword as it appears in the header. */
     private final String key;
 
+    /** Documentation source for the keyword */
     private final SOURCE status;
 
+    /** The type of value expected for this keyword */
     private final VALUE valueType;
 
+    /** A list of known comment-style keyword, which do not take an assigned value */
     private static HashSet<String> commentStyleKeys = new HashSet<>();
 
     /**
