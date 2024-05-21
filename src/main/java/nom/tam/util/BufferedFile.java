@@ -42,7 +42,6 @@ import java.io.IOException;
  * @see        FitsFile
  */
 @Deprecated
-@SuppressWarnings("javadoc")
 public class BufferedFile extends FitsFile {
 
     /**
