@@ -136,7 +136,7 @@ public class CompressTest {
                         newUri = "http://localhost:9999" + uri.substring(end);
                     }
                     System.out.println(newUri);
-                    Response res = new Response(Response.Status.REDIRECT, null, (String) null);
+                    Response res = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, "");
                     res.addHeader("Location", newUri);
                     return res;
                 }

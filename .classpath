@@ -9,8 +9,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/usr/share/java/apache-commons-compress.jar"/>
 	<classpathentry kind="lib" path="/home/pumukli/src/jar/findbugs-annotations-3.0.1.jar"/>
-	<classpathentry kind="lib" path="/home/pumukli/src/jar/nanohttpd-2.1.1.jar"/>
-	<classpathentry kind="lib" path="/home/pumukli/src/jar/nanohttpd-webserver-2.1.1.jar"/>
 	<classpathentry kind="lib" path="/home/pumukli/src/jar/annotations-13.0.jar"/>
 	<classpathentry kind="lib" path="/home/pumukli/src/jar/jmh-core-1.36.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/junit5/junit-jupiter.jar"/>
@@ -27,5 +25,7 @@
 	<classpathentry kind="lib" path="/usr/share/java/junit5/junit-platform-testkit.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/junit5/junit-vintage-engine.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/junit.jar"/>
+	<classpathentry kind="lib" path="/home/pumukli/src/jar/nanohttpd-2.3.1.jar"/>
+	<classpathentry kind="lib" path="/home/pumukli/src/jar/nanohttpd-webserver-2.3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
