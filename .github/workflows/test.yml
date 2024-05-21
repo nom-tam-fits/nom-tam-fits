@@ -1,7 +1,5 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: CI
+name: Testing
 
 on: 
   push:
@@ -9,14 +7,14 @@ on:
       - 'src/main/java/**'
       - 'src/test/java/**'
       - 'pom.xml'
-      - '.github/workflows/maven.yml'
+      - '.github/workflows/test.yml'
 
   pull_request:
     paths:
       - 'src/main/java/**'
       - 'src/test/java/**'
       - 'pom.xml'
-      - '.github/workflows/maven.yml'
+      - '.github/workflows/test.yml'
 
 jobs:
   build:
@@ -35,14 +33,14 @@ jobs:
         repository: nom-tam-fits/blackbox-images
         path: blackbox-images
         
-    - name: Set up JDK 17
+    - name: Set up JDK
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'adopt'
         cache: maven
         
-    - name: Build and test with Maven
+    - name: Build and run tests
       run: mvn -B test jacoco:report --file pom.xml
       working-directory: ./nom-tam-fits
       
@@ -52,7 +50,7 @@ jobs:
         echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
         echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
        
-    - name: Upload coverage to Codecov
+    - name: Upload test coverage to Codecov.io
       uses: codecov/codecov-action@v4
       continue-on-error: true
       with:
@@ -64,8 +62,7 @@ jobs:
         verbose: true
         token: ${{ secrets.CODECOV_TOKEN }}
         
-
-    - name: Upload coverage to Coveralls.io
+    - name: Upload test coverage to Coveralls.io
       continue-on-error: true
       env:
         COVERALLS_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
@@ -77,40 +74,3 @@ jobs:
         fi
       working-directory: ./nom-tam-fits
         
-    - name: Check package
-      run: mvn clean package -Ppublic-api
-      working-directory: ./nom-tam-fits
-        
-  release:
-    name: Publish
-    needs: build
-    runs-on: ubuntu-latest
-    if: ${{ github.repository_owner == 'nom-tam-fits' && github.ref_name == 'master' }}
-    permissions: 
-      contents: read
-    
-    steps:
-    
-    - uses: actions/checkout@v4
-        
-    - name: Set up Java for Publishing to Nexus
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'adopt'
-        cache: maven
-
-    - name: Import GPG key
-      id: import_gpg
-      uses: crazy-max/ghaction-import-gpg@v6
-      with:
-        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-        passphrase: ${{ secrets.GPG_PASSPHRASE }}
-        git_user_signingkey: true
-
-    - name: Publish to Nexus
-      env:
-        NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-        NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-      run: mvn -B deploy -DskipTests -Pnexus-repo --settings settings.xml
-      
