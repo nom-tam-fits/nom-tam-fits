@@ -9,10 +9,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    ignore:
-      - dependency-name: "com.nanohttpd:nanohttpd-webserver"
-        versions:
-          - ">= 2.1.0"
 
   - package-ecosystem: "github-actions"
     directory: "/"
