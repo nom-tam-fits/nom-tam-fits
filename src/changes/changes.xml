@@ -88,6 +88,9 @@
       <action type="update" dev="attipaci" issue="620">
           Fix up POM to cure various build warnings, and allow Google Analytics for online javadoc.
       </action>
+      <action type="update" dev="attipaci" issue="623">
+          Fix up test code to use latest nanohttpd-webserver for unit testing.
+      </action>
       <action type="update" dev="attipaci">
           Uses the latest maven build and runtime dependencies.
       </action>
