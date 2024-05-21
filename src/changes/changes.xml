@@ -1,7 +1,7 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.20.0-rc1" date="2024-04-30" description="Upcoming feature release under development.">
+   <release version="1.20.0-SNAPSHOT" date="2024-05-21" description="Upcoming feature release under development.">
       <action type="fix" dev="attipaci" issue="596" due-to="keastrid">
           Botched compression of multicolumn tables, resulting in extra rows in the compressed table (as many rows as
           there were total table tiles across all columns).
@@ -78,6 +78,12 @@
       </action>
       <action type="update" dev="attipaci">
           Updated User's Guide (README.md).
+      </action>
+      <action type="update" dev="attipaci" issue="620">
+          Updated github.io landing page with history and partial listing of software that uses nom-tam-fits.
+      </action>
+      <action type="update" dev="attipaci" issue="620">
+          Fix up POM to cure various build warnings, and allow Google Analytics for online javadoc.
       </action>
       <action type="update" dev="attipaci">
           Uses the latest maven build and runtime dependencies.
