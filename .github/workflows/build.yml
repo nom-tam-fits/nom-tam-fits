@@ -1,0 +1,47 @@
+
+name: Build
+
+on: 
+  push:
+    paths:
+      - 'src/main/java/**'
+      - 'src/test/java/**'
+      - 'pom.xml'
+      - '.github/workflows/build.yml'
+
+  pull_request:
+    paths:
+      - 'src/main/java/**'
+      - 'src/test/java/**'
+      - 'pom.xml'
+      - '.github/workflows/build.yml'
+
+jobs:
+  build:
+    name: Compile sources with Maven
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        path: nom-tam-fits
+        
+    - name: Check out blackbox images 
+      uses: actions/checkout@v4
+      with:
+        repository: nom-tam-fits/blackbox-images
+        path: blackbox-images
+        
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+        cache: maven
+        
+    - name: Compile
+      run: mvn clean compile
+      working-directory: ./nom-tam-fits
+      
+ 

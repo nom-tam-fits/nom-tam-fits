@@ -1,0 +1,83 @@
+
+name: Sonatype
+
+on: 
+  push:
+    paths:
+      - 'src/main/java/**'
+      - 'src/test/java/**'
+      - 'src/site/**'
+      - 'src/changes/**'
+      - 'pom.xml'
+      - '.github/workflows/nexus.yml'
+
+  pull_request:
+    paths:
+      - 'src/main/java/**'
+      - 'src/test/java/**'
+      - 'src/site/**'
+      - 'src/changes/**'
+      - 'pom.xml'
+      - '.github/workflows/nexus.yml'
+
+jobs:
+  build:
+    name: Build and test package
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        path: nom-tam-fits
+        
+    - name: Check out blackbox images 
+      uses: actions/checkout@v4
+      with:
+        repository: nom-tam-fits/blackbox-images
+        path: blackbox-images
+        
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+        cache: maven
+        
+    - name: Build package
+      run: mvn clean package -Ppublic-api
+      working-directory: ./nom-tam-fits
+        
+  release:
+    name: Publish to Sonatype
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'nom-tam-fits' && github.ref_name == 'master' }}
+    permissions: 
+      contents: read
+    
+    steps:
+    
+    - uses: actions/checkout@v4
+        
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+        cache: maven
+
+    - name: Import GPG key
+      id: import_gpg
+      uses: crazy-max/ghaction-import-gpg@v6
+      with:
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+        passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        git_user_signingkey: true
+
+    - name: Publish package
+      env:
+        NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+        NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      run: mvn -B deploy -DskipTests -Pnexus-repo --settings settings.xml
+      
