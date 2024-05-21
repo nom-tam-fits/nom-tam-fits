@@ -34,29 +34,15 @@ package nom.tam.util.array;
 import java.lang.reflect.Array;
 
 /**
- * @deprecated (<i>)for internal use</i>) Visibility may be reduced to the package level in the future. A
- *                 multi-dimensional array index. Used only by {@link MultiArrayCopier} and {@link MultiArrayIterator}.
+ * @deprecated (<i>)for internal use</i>) Visibility may be reduced to the
+ *             package level in the future. A multi-dimensional array index.
+ *             Used only by {@link MultiArrayCopier} and
+ *             {@link MultiArrayIterator}.
  */
-@SuppressWarnings("javadoc")
 public class MultiArrayPointer {
 
+    /** A dummy object to mark the end. */
     public static final Object END = new Object();
-
-    public static boolean isSubArray(Object element) {
-        if (!(element instanceof Object[])) {
-            return false;
-        }
-
-        for (Object o : (Object[]) element) {
-            if (o != null) {
-                if (o.getClass().isArray()) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
 
     private Object array;
 
@@ -68,10 +54,24 @@ public class MultiArrayPointer {
 
     private MultiArrayPointer backup;
 
+    /**
+     * Constructs a new pointer for an unspecified multi-dimensional array
+     * object.
+     * 
+     * @deprecated (<i>)for internal use</i>) Visibility may be reduced to
+     *             private.
+     */
     public MultiArrayPointer() {
     }
 
+    /**
+     * Constructs a new pointer for the specified multidimensional array object.
+     * 
+     * @param baseArray
+     *            the multidimensional array to iterate over.
+     */
     public MultiArrayPointer(Object baseArray) {
+        this();
         set(baseArray);
     }
 
@@ -87,6 +87,11 @@ public class MultiArrayPointer {
         sub = null;
     }
 
+    /**
+     * Returns the next base element in the array
+     * 
+     * @return the next base element in the array.
+     */
     public Object next() {
         while (true) {
             if (sub != null) {
@@ -107,6 +112,10 @@ public class MultiArrayPointer {
         }
     }
 
+    /**
+     * Resets the pointer such that {@link #next()} will return the first
+     * element again.
+     */
     public void reset() {
         index = 0;
         deactivateSub();
@@ -119,4 +128,29 @@ public class MultiArrayPointer {
         index = 0;
     }
 
+    /**
+     * Checks whether entries in a given element are also arrays themselves.
+     * 
+     * @param element
+     *            the element
+     * @return <code>true</code> if the entries in the given element are also
+     *         arrays, otherwise <code>false</code>.
+     * @deprecated (<i>)for internal use</i>) Visibility may be reduced to
+     *             private.
+     */
+    public static boolean isSubArray(Object element) {
+        if (!(element instanceof Object[])) {
+            return false;
+        }
+
+        for (Object o : (Object[]) element) {
+            if (o != null) {
+                if (o.getClass().isArray()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

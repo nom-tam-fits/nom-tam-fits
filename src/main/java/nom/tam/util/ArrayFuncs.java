@@ -564,7 +564,7 @@ public final class ArrayFuncs {
         if (o instanceof Object[]) {
             long count = 0;
             for (Object e : (Object[]) o) {
-                count += nLElements(e);
+                count += countElements(e);
             }
             return count;
         }

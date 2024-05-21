@@ -33,13 +33,15 @@ package nom.tam.util.array;
 
 import java.lang.reflect.Array;
 
+import nom.tam.util.ArrayFuncs;
+
 /**
  * Multi-dimensional array iterator (<i>primarily for internal use</i>)
  *
  * @param <BaseArray> the generic type of array at the base of a multi-dimensional array object. For example for a
  *                        <code>float[][][]</code> array the base would be <code>float[]</code>.
  */
-@SuppressWarnings({"deprecation", "javadoc"})
+@SuppressWarnings({"deprecation"})
 public class MultiArrayIterator<BaseArray> {
 
     private final BaseArray baseArray;
@@ -63,19 +65,27 @@ public class MultiArrayIterator<BaseArray> {
     }
 
     /**
-     * Returns the element class of the multidimensional array. It is assumed that the array is monolithinc containing
-     * only elements f that type.
+     * <p>
+     * Returns the element class of the multidimensional array. It is assumed that the array is monolithic containing
+     * only elements of that type. This is effectively the same as {@link ArrayFuncs#getBaseClass(Object)}.
+     * </p>
+     * <p>
+     * Note that prior to version 1.20, this did not return the expected type for 3D+ arrays.
+     * </p>
      * 
-     * @return the class of (non-array) elements contained in the array.
+     * @return the class of (non-array) elements contained in the multidimensional array.
+     * 
+     * @see    ArrayFuncs#getBaseClass(Object)
      */
     public Class<?> deepComponentType() {
-        Class<?> clazz = baseArray.getClass();
-        while (clazz.isArray()) {
-            clazz = clazz.getComponentType();
-        }
-        return clazz;
+        return ArrayFuncs.getBaseClass(baseArray);
     }
 
+    /**
+     * Returns the next array element in the top-level array.
+     * 
+     * @return the next array element in the top-level array object.
+     */
     @SuppressWarnings("unchecked")
     public BaseArray next() {
         if (baseIsNoSubArray) {
@@ -95,6 +105,9 @@ public class MultiArrayIterator<BaseArray> {
         return (BaseArray) result;
     }
 
+    /**
+     * Resets the iterator so it can be re-used again.
+     */
     public void reset() {
         if (baseIsNoSubArray) {
             baseNextCalled = false;
@@ -103,12 +116,19 @@ public class MultiArrayIterator<BaseArray> {
         }
     }
 
+    /**
+     * Counts the number of base elements contained. Prior to version 1.20 this returned the number of elements
+     * remaining from the current position, but by iterating over the remaining elements, s.t. a call to {@link #next()}
+     * would always return <code>null</code> afterwards. As of version 1.20, it consistently returns the same based
+     * element count regardless of the state of the iterator (effectively the same as
+     * {@link ArrayFuncs#countElements(Object)}). Note that this call is expensive, especially for large
+     * multidimensional arrays.
+     * 
+     * @return the number of base elements contained.
+     * 
+     * @see    ArrayFuncs#countElements(Object)
+     */
     public int size() {
-        int size = 0;
-        Object next;
-        while ((next = next()) != null) {
-            size += Array.getLength(next);
-        }
-        return size;
+        return (int) ArrayFuncs.countElements(baseArray);
     }
 }

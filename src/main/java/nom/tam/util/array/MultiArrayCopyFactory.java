@@ -47,10 +47,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @Deprecated
 @SuppressFBWarnings(value = "SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", justification = "warning persists despite private constructor")
 public class MultiArrayCopyFactory<Source, Destination> {
-    
+
     private MultiArrayCopyFactory() {
     }
-    
+
     private static final class ByteToChar extends MultiArrayCopyFactory<byte[], char[]> {
 
         @Override
@@ -560,9 +560,13 @@ public class MultiArrayCopyFactory<Source, Destination> {
     }
 
     /**
-     * @deprecated for internal use only. This ought to be private.
+     * @deprecated                for internal use only. This ought to be private.
+     * 
+     * @param      primitiveType  the primitive class of the elements in the source array
+     * @param      primitiveType2 the primitive class of the elements in the destination array
+     * 
+     * @return                    A suitable copier instance.
      */
-    @SuppressWarnings("javadoc")
     public static synchronized MultiArrayCopyFactory<?, ?> select(Class<?> primitiveType, Class<?> primitiveType2) {
         Map<Class<?>, MultiArrayCopyFactory<?, ?>> from = MultiArrayCopyFactory.FACTORIES.get(primitiveType);
         if (from != null) {
@@ -576,8 +580,13 @@ public class MultiArrayCopyFactory<Source, Destination> {
 
     /**
      * See {@link System#arraycopy(Object, int, Object, int, int)}.
+     * 
+     * @param src     the source array
+     * @param srcPos  starting position in the source array
+     * @param dest    the destination array
+     * @param destPos starting position in the destonation array
+     * @param length  the number of elements to copy
      */
-    @SuppressWarnings("javadoc")
     public void arraycopy(Source src, int srcPos, Destination dest, int destPos, int length) {
         System.arraycopy(src, srcPos, dest, destPos, length);
     }

@@ -500,7 +500,7 @@ public class QuantizeOption implements ICompressOption {
      *                       special floating-point value marking missing data. All other floating point values are
      *                       considered valid measurements.
      * 
-     * @param      value
+     * @param      value whether to treat values around 0.0 as special.
      * 
      * @return           itself
      * 

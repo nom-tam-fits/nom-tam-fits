@@ -229,7 +229,11 @@ public class CompressedTableHDU extends BinaryTableHDU {
     }
 
     /**
-     * @deprecated (<i>for internal use</i>) Will reduce visibility in the future
+     * @deprecated     (<i>for internal use</i>) Will reduce visibility in the future
+     * 
+     * @param      hdr the header that describes the compressed HDU
+     * 
+     * @return         a new blank data object created from the header description
      */
     @Deprecated
     public static CompressedTableData manufactureData(Header hdr) throws FitsException {

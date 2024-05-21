@@ -145,6 +145,11 @@ public interface IFitsHeader {
             this.url = url;
         }
 
+        /**
+         * Returns the URL that defines this particular header value, which may be <code>null</code>.
+         * 
+         * @return The URL that contains the keyword specification or <code>null</code> if unknown or undefined.
+         */
         public String url() {
             return url;
         }
