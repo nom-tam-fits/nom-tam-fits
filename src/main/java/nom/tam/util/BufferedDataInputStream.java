@@ -39,13 +39,23 @@ import java.io.InputStream;
  *                 encoding.
  */
 @Deprecated
-@SuppressWarnings("javadoc")
 public class BufferedDataInputStream extends FitsInputStream {
 
+    /**
+     * Constructs a new buffered FITS input stream
+     * 
+     * @param i         the underlying input stream
+     * @param bufLength the size of the buffer in bytes
+     */
     public BufferedDataInputStream(InputStream i, int bufLength) {
         super(i, bufLength);
     }
 
+    /**
+     * Constructs a new buffered FITS input stream with the default buffer size.
+     * 
+     * @param i the underlying input stream
+     */
     public BufferedDataInputStream(InputStream i) {
         super(i);
     }

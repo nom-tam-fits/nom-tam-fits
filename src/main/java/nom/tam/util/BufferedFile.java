@@ -45,26 +45,74 @@ import java.io.IOException;
 @SuppressWarnings("javadoc")
 public class BufferedFile extends FitsFile {
 
+    /**
+     * Constructs a buffered FITS file
+     * 
+     * @param  file        the underlying file
+     * @param  mode        the access mode as a string, e.g. "rw"
+     * @param  bufferSize  the buffer size in bytes
+     * 
+     * @throws IOException if there was an error opening the file
+     */
     public BufferedFile(File file, String mode, int bufferSize) throws IOException {
         super(file, mode, bufferSize);
     }
 
+    /**
+     * Constructs a buffered FITS file with the default buffer size.
+     * 
+     * @param  file        the underlying file
+     * @param  mode        the access mode as a string, e.g. "rw"
+     * 
+     * @throws IOException if there was an error opening the file
+     */
     public BufferedFile(File file, String mode) throws IOException {
         super(file, mode);
     }
 
+    /**
+     * Constructs a buffered FITS file with the default buffer size and default access mode.
+     * 
+     * @param  file        the underlying file
+     * 
+     * @throws IOException if there was an error opening the file
+     */
     public BufferedFile(File file) throws IOException {
         super(file);
     }
 
+    /**
+     * Constructs a buffered FITS file
+     * 
+     * @param  filename    the file name / path
+     * @param  mode        the access mode as a string, e.g. "rw"
+     * @param  bufferSize  the buffer size in bytes
+     * 
+     * @throws IOException if there was an error opening the file
+     */
     public BufferedFile(String filename, String mode, int bufferSize) throws IOException {
         super(filename, mode, bufferSize);
     }
 
+    /**
+     * Constructs a buffered FITS file with the default buffer size
+     * 
+     * @param  filename    the file name / path
+     * @param  mode        the access mode as a string, e.g. "rw"
+     * 
+     * @throws IOException if there was an error opening the file
+     */
     public BufferedFile(String filename, String mode) throws IOException {
         super(filename, mode);
     }
 
+    /**
+     * Constructs a buffered FITS file with the default buffer size and default access mode
+     * 
+     * @param  filename    the file name / path
+     * 
+     * @throws IOException if there was an error opening the file
+     */
     public BufferedFile(String filename) throws IOException {
         super(filename);
     }

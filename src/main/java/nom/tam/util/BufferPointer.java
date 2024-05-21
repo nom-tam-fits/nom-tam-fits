@@ -62,15 +62,36 @@ public class BufferPointer {
      */
     protected int pos;
 
+    /**
+     * Constructs a new buffer pointer with no associated buffer
+     * 
+     * @deprecated Rusty rail implementation only.
+     */
     public BufferPointer() {
     }
 
+    /**
+     * Constructs a new buffer pointer for the specified byte buffer
+     * 
+     * @param      buffer the array containing the bytes of the buffer.
+     * 
+     * @deprecated        Rusty rail implementation only.
+     */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public BufferPointer(byte[] buffer) {
         this();
         this.buffer = buffer;
     }
 
+    /**
+     * (re)initializes the underlying buffer, creating a new buffer of the specified size
+     * 
+     * @param      bufferSize
+     * 
+     * @return                itself
+     * 
+     * @deprecated            Rusty rail implementation only.
+     */
     protected BufferPointer init(int bufferSize) {
         buffer = new byte[bufferSize];
         pos = 0;
@@ -78,15 +99,28 @@ public class BufferPointer {
         return this;
     }
 
+    /**
+     * Invalidates the pointer, setting both the length and the position to zero.
+     */
     protected void invalidate() {
         length = 0;
         pos = 0;
     }
 
+    /**
+     * Returns the current buffer position
+     * 
+     * @return the current position
+     */
     public int position() {
         return pos;
     }
 
+    /**
+     * Returns the current sizeof the buffer
+     * 
+     * @return the size (or accessible limit) of the buffer
+     */
     public int limit() {
         return length;
     }
