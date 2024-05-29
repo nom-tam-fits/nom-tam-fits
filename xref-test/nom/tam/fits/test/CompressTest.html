@@ -144,7 +144,7 @@
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>                         newUri = <span class="jxr_string">"http://localhost:9999"</span> + uri.substring(end);
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>                     }
 <a class="jxr_linenumber" name="L138" href="#L138">138</a>                     System.out.println(newUri);
-<a class="jxr_linenumber" name="L139" href="#L139">139</a>                     Response res = <strong class="jxr_keyword">new</strong> Response(Response.Status.REDIRECT, <strong class="jxr_keyword">null</strong>, (String) <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>                     Response res = newFixedLengthResponse(Response.Status.REDIRECT, MIME_HTML, <span class="jxr_string">""</span>);
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>                     res.addHeader(<span class="jxr_string">"Location"</span>, newUri);
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>                     <strong class="jxr_keyword">return</strong> res;
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>                 }

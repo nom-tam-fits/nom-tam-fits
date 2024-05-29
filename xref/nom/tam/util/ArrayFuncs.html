@@ -572,7 +572,7 @@
 <a class="jxr_linenumber" name="L564" href="#L564">564</a>         <strong class="jxr_keyword">if</strong> (o instanceof Object[]) {
 <a class="jxr_linenumber" name="L565" href="#L565">565</a>             <strong class="jxr_keyword">long</strong> count = 0;
 <a class="jxr_linenumber" name="L566" href="#L566">566</a>             <strong class="jxr_keyword">for</strong> (Object e : (Object[]) o) {
-<a class="jxr_linenumber" name="L567" href="#L567">567</a>                 count += nLElements(e);
+<a class="jxr_linenumber" name="L567" href="#L567">567</a>                 count += countElements(e);
 <a class="jxr_linenumber" name="L568" href="#L568">568</a>             }
 <a class="jxr_linenumber" name="L569" href="#L569">569</a>             <strong class="jxr_keyword">return</strong> count;
 <a class="jxr_linenumber" name="L570" href="#L570">570</a>         }
@@ -975,7 +975,221 @@
 <a class="jxr_linenumber" name="L967" href="#L967">967</a>         <strong class="jxr_keyword">return</strong> t;
 <a class="jxr_linenumber" name="L968" href="#L968">968</a>     }
 <a class="jxr_linenumber" name="L969" href="#L969">969</a> 
-<a class="jxr_linenumber" name="L970" href="#L970">970</a> }
+<a class="jxr_linenumber" name="L970" href="#L970">970</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L971" href="#L971">971</a> <em class="jxr_javadoccomment">     * Obtains a sparse sampling of from an array of one or more dimensions.</em>
+<a class="jxr_linenumber" name="L972" href="#L972">972</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L973" href="#L973">973</a> <em class="jxr_javadoccomment">     * @param  orig                      the original array</em>
+<a class="jxr_linenumber" name="L974" href="#L974">974</a> <em class="jxr_javadoccomment">     * @param  step                      the sampling step size along all dimensions for a subsampled slice. A negative</em>
+<a class="jxr_linenumber" name="L975" href="#L975">975</a> <em class="jxr_javadoccomment">     *                                       value indicates that the sampling should proceed in the reverse direction</em>
+<a class="jxr_linenumber" name="L976" href="#L976">976</a> <em class="jxr_javadoccomment">     *                                       along every axis.</em>
+<a class="jxr_linenumber" name="L977" href="#L977">977</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L978" href="#L978">978</a> <em class="jxr_javadoccomment">     * @return                           the requested sampling from the original. The returned array may share data</em>
+<a class="jxr_linenumber" name="L979" href="#L979">979</a> <em class="jxr_javadoccomment">     *                                       with the original, and so modifications to either may affect the other. The</em>
+<a class="jxr_linenumber" name="L980" href="#L980">980</a> <em class="jxr_javadoccomment">     *                                       orginal object is returned if it is not an array.</em>
+<a class="jxr_linenumber" name="L981" href="#L981">981</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L982" href="#L982">982</a> <em class="jxr_javadoccomment">     * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the</em>
+<a class="jxr_linenumber" name="L983" href="#L983">983</a> <em class="jxr_javadoccomment">     *                                       original. That is if the original does not fully contain the requested</em>
+<a class="jxr_linenumber" name="L984" href="#L984">984</a> <em class="jxr_javadoccomment">     *                                       slice. Or, if the from and size arguments have differing lengths.</em>
+<a class="jxr_linenumber" name="L985" href="#L985">985</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L986" href="#L986">986</a> <em class="jxr_javadoccomment">     * @since                            1.20</em>
+<a class="jxr_linenumber" name="L987" href="#L987">987</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L988" href="#L988">988</a> <em class="jxr_javadoccomment">     * @author                           Attila Kovacs</em>
+<a class="jxr_linenumber" name="L989" href="#L989">989</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L990" href="#L990">990</a> <em class="jxr_javadoccomment">     * @see                              #sample(Object, int[])</em>
+<a class="jxr_linenumber" name="L991" href="#L991">991</a> <em class="jxr_javadoccomment">     * @see                              #sample(Object, int[], int[], int[])</em>
+<a class="jxr_linenumber" name="L992" href="#L992">992</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L993" href="#L993">993</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Object sample(Object orig, <strong class="jxr_keyword">int</strong> step) <strong class="jxr_keyword">throws</strong> IndexOutOfBoundsException {
+<a class="jxr_linenumber" name="L994" href="#L994">994</a>         <strong class="jxr_keyword">int</strong>[] n = getDimensions(orig);
+<a class="jxr_linenumber" name="L995" href="#L995">995</a>         Arrays.fill(n, step);
+<a class="jxr_linenumber" name="L996" href="#L996">996</a>         <strong class="jxr_keyword">return</strong> sample(orig, n);
+<a class="jxr_linenumber" name="L997" href="#L997">997</a>     }
+<a class="jxr_linenumber" name="L998" href="#L998">998</a> 
+<a class="jxr_linenumber" name="L999" href="#L999">999</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1000" href="#L1000">1000</a> <em class="jxr_javadoccomment">     * Obtains a sparse sampling of from an array of one or more dimensions.</em>
+<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a> <em class="jxr_javadoccomment">     * @param  orig                      the original array</em>
+<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a> <em class="jxr_javadoccomment">     * @param  step                      the sampling step size along each dimension for a subsampled slice. Negative</em>
+<a class="jxr_linenumber" name="L1004" href="#L1004">1004</a> <em class="jxr_javadoccomment">     *                                       values indicate that the sampling should proceed in the reverse direction</em>
+<a class="jxr_linenumber" name="L1005" href="#L1005">1005</a> <em class="jxr_javadoccomment">     *                                       along the given axis.</em>
+<a class="jxr_linenumber" name="L1006" href="#L1006">1006</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1007" href="#L1007">1007</a> <em class="jxr_javadoccomment">     * @return                           the requested sampling from the original. The returned array may share data</em>
+<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a> <em class="jxr_javadoccomment">     *                                       with the original, and so modifications to either may affect the other. The</em>
+<a class="jxr_linenumber" name="L1009" href="#L1009">1009</a> <em class="jxr_javadoccomment">     *                                       orginal object is returned if it is not an array.</em>
+<a class="jxr_linenumber" name="L1010" href="#L1010">1010</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1011" href="#L1011">1011</a> <em class="jxr_javadoccomment">     * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the</em>
+<a class="jxr_linenumber" name="L1012" href="#L1012">1012</a> <em class="jxr_javadoccomment">     *                                       original. That is if the original does not fully contain the requested</em>
+<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a> <em class="jxr_javadoccomment">     *                                       slice. Or, if the from and size arguments have differing lengths.</em>
+<a class="jxr_linenumber" name="L1014" href="#L1014">1014</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1015" href="#L1015">1015</a> <em class="jxr_javadoccomment">     * @since                            1.20</em>
+<a class="jxr_linenumber" name="L1016" href="#L1016">1016</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1017" href="#L1017">1017</a> <em class="jxr_javadoccomment">     * @author                           Attila Kovacs</em>
+<a class="jxr_linenumber" name="L1018" href="#L1018">1018</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1019" href="#L1019">1019</a> <em class="jxr_javadoccomment">     * @see                              #sample(Object, int)</em>
+<a class="jxr_linenumber" name="L1020" href="#L1020">1020</a> <em class="jxr_javadoccomment">     * @see                              #sample(Object, int[], int[], int[])</em>
+<a class="jxr_linenumber" name="L1021" href="#L1021">1021</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1022" href="#L1022">1022</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Object sample(Object orig, <strong class="jxr_keyword">int</strong>[] step) <strong class="jxr_keyword">throws</strong> IndexOutOfBoundsException {
+<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a>         <strong class="jxr_keyword">return</strong> sample(orig, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, step);
+<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a>     }
+<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a> 
+<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1027" href="#L1027">1027</a> <em class="jxr_javadoccomment">     * Obtains a slice (subarray) from an array of one or more dimensions.</em>
+<a class="jxr_linenumber" name="L1028" href="#L1028">1028</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a> <em class="jxr_javadoccomment">     * @param  orig                      the original array</em>
+<a class="jxr_linenumber" name="L1030" href="#L1030">1030</a> <em class="jxr_javadoccomment">     * @param  from                      the starting indices for the slice in the original array. It should have at</em>
+<a class="jxr_linenumber" name="L1031" href="#L1031">1031</a> <em class="jxr_javadoccomment">     *                                       most as many elements as there are array dimensions, but it can also have</em>
+<a class="jxr_linenumber" name="L1032" href="#L1032">1032</a> <em class="jxr_javadoccomment">     *                                       fewer.</em>
+<a class="jxr_linenumber" name="L1033" href="#L1033">1033</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1034" href="#L1034">1034</a> <em class="jxr_javadoccomment">     * @return                           the requested slice from the original. The returned array may share data with</em>
+<a class="jxr_linenumber" name="L1035" href="#L1035">1035</a> <em class="jxr_javadoccomment">     *                                       the original, and so modifications to either may affect the other. The</em>
+<a class="jxr_linenumber" name="L1036" href="#L1036">1036</a> <em class="jxr_javadoccomment">     *                                       orginal object is returned if it is not an array.</em>
+<a class="jxr_linenumber" name="L1037" href="#L1037">1037</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1038" href="#L1038">1038</a> <em class="jxr_javadoccomment">     * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the</em>
+<a class="jxr_linenumber" name="L1039" href="#L1039">1039</a> <em class="jxr_javadoccomment">     *                                       original. That is if the original does not fully contain the requested</em>
+<a class="jxr_linenumber" name="L1040" href="#L1040">1040</a> <em class="jxr_javadoccomment">     *                                       slice. Or, if the from and size arguments have differing lengths.</em>
+<a class="jxr_linenumber" name="L1041" href="#L1041">1041</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1042" href="#L1042">1042</a> <em class="jxr_javadoccomment">     * @since                            1.20</em>
+<a class="jxr_linenumber" name="L1043" href="#L1043">1043</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1044" href="#L1044">1044</a> <em class="jxr_javadoccomment">     * @author                           Attila Kovacs</em>
+<a class="jxr_linenumber" name="L1045" href="#L1045">1045</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1046" href="#L1046">1046</a> <em class="jxr_javadoccomment">     * @see                              #slice(Object, int[], int[])</em>
+<a class="jxr_linenumber" name="L1047" href="#L1047">1047</a> <em class="jxr_javadoccomment">     * @see                              #sample(Object, int[], int[], int[])</em>
+<a class="jxr_linenumber" name="L1048" href="#L1048">1048</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1049" href="#L1049">1049</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Object slice(Object orig, <strong class="jxr_keyword">int</strong>[] from) <strong class="jxr_keyword">throws</strong> IndexOutOfBoundsException {
+<a class="jxr_linenumber" name="L1050" href="#L1050">1050</a>         <strong class="jxr_keyword">return</strong> slice(orig, from, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L1051" href="#L1051">1051</a>     }
+<a class="jxr_linenumber" name="L1052" href="#L1052">1052</a> 
+<a class="jxr_linenumber" name="L1053" href="#L1053">1053</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1054" href="#L1054">1054</a> <em class="jxr_javadoccomment">     * Obtains a slice (subarray) from an array of one or more dimensions.</em>
+<a class="jxr_linenumber" name="L1055" href="#L1055">1055</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a> <em class="jxr_javadoccomment">     * @param  orig                      the original array</em>
+<a class="jxr_linenumber" name="L1057" href="#L1057">1057</a> <em class="jxr_javadoccomment">     * @param  from                      the starting indices for the slice in the original array. It should have at</em>
+<a class="jxr_linenumber" name="L1058" href="#L1058">1058</a> <em class="jxr_javadoccomment">     *                                       most as many elements as there are array dimensions, but it can also have</em>
+<a class="jxr_linenumber" name="L1059" href="#L1059">1059</a> <em class="jxr_javadoccomment">     *                                       fewer.</em>
+<a class="jxr_linenumber" name="L1060" href="#L1060">1060</a> <em class="jxr_javadoccomment">     * @param  size                      the size of the slice. Negative values can indicate moving backwards in the</em>
+<a class="jxr_linenumber" name="L1061" href="#L1061">1061</a> <em class="jxr_javadoccomment">     *                                       original array (but forward in the slice -- resulting in a flipped axis). A</em>
+<a class="jxr_linenumber" name="L1062" href="#L1062">1062</a> <em class="jxr_javadoccomment">     *                                       &lt;code&gt;null&lt;/code&gt; size argument can be used to sample the full original.</em>
+<a class="jxr_linenumber" name="L1063" href="#L1063">1063</a> <em class="jxr_javadoccomment">     *                                       The slice will end at index &lt;code&gt;from[k] + size[k]&lt;/code&gt; in dimension</em>
+<a class="jxr_linenumber" name="L1064" href="#L1064">1064</a> <em class="jxr_javadoccomment">     *                                       &lt;code&gt;k&lt;/code&gt; in the original (not including the ending index). It should</em>
+<a class="jxr_linenumber" name="L1065" href="#L1065">1065</a> <em class="jxr_javadoccomment">     *                                       have the same number of elements as the &lt;code&gt;from&lt;/code&gt; argument.</em>
+<a class="jxr_linenumber" name="L1066" href="#L1066">1066</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1067" href="#L1067">1067</a> <em class="jxr_javadoccomment">     * @return                           the requested slice from the original. The returned array may share data with</em>
+<a class="jxr_linenumber" name="L1068" href="#L1068">1068</a> <em class="jxr_javadoccomment">     *                                       the original, and so modifications to either may affect the other. The</em>
+<a class="jxr_linenumber" name="L1069" href="#L1069">1069</a> <em class="jxr_javadoccomment">     *                                       orginal object is returned if it is not an array.</em>
+<a class="jxr_linenumber" name="L1070" href="#L1070">1070</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1071" href="#L1071">1071</a> <em class="jxr_javadoccomment">     * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the</em>
+<a class="jxr_linenumber" name="L1072" href="#L1072">1072</a> <em class="jxr_javadoccomment">     *                                       original. That is if the original does not fully contain the requested</em>
+<a class="jxr_linenumber" name="L1073" href="#L1073">1073</a> <em class="jxr_javadoccomment">     *                                       slice. Or, if the from and size arguments have differing lengths.</em>
+<a class="jxr_linenumber" name="L1074" href="#L1074">1074</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1075" href="#L1075">1075</a> <em class="jxr_javadoccomment">     * @since                            1.20</em>
+<a class="jxr_linenumber" name="L1076" href="#L1076">1076</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1077" href="#L1077">1077</a> <em class="jxr_javadoccomment">     * @author                           Attila Kovacs</em>
+<a class="jxr_linenumber" name="L1078" href="#L1078">1078</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a> <em class="jxr_javadoccomment">     * @see                              #slice(Object, int[])</em>
+<a class="jxr_linenumber" name="L1080" href="#L1080">1080</a> <em class="jxr_javadoccomment">     * @see                              #sample(Object, int[], int[], int[])</em>
+<a class="jxr_linenumber" name="L1081" href="#L1081">1081</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1082" href="#L1082">1082</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Object slice(Object orig, <strong class="jxr_keyword">int</strong>[] from, <strong class="jxr_keyword">int</strong>[] size) <strong class="jxr_keyword">throws</strong> IndexOutOfBoundsException {
+<a class="jxr_linenumber" name="L1083" href="#L1083">1083</a>         <strong class="jxr_keyword">int</strong>[] step = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L1084" href="#L1084">1084</a> 
+<a class="jxr_linenumber" name="L1085" href="#L1085">1085</a>         <strong class="jxr_keyword">if</strong> (size != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L1086" href="#L1086">1086</a>             step = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[size.length];
+<a class="jxr_linenumber" name="L1087" href="#L1087">1087</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; size.length; i++) {
+<a class="jxr_linenumber" name="L1088" href="#L1088">1088</a>                 step[i] = size[i] &lt; 0 ? -1 : 1;
+<a class="jxr_linenumber" name="L1089" href="#L1089">1089</a>             }
+<a class="jxr_linenumber" name="L1090" href="#L1090">1090</a>         }
+<a class="jxr_linenumber" name="L1091" href="#L1091">1091</a> 
+<a class="jxr_linenumber" name="L1092" href="#L1092">1092</a>         <strong class="jxr_keyword">return</strong> sample(orig, from, size, step, 0);
+<a class="jxr_linenumber" name="L1093" href="#L1093">1093</a>     }
+<a class="jxr_linenumber" name="L1094" href="#L1094">1094</a> 
+<a class="jxr_linenumber" name="L1095" href="#L1095">1095</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1096" href="#L1096">1096</a> <em class="jxr_javadoccomment">     * Obtains a sparse sampling from an array of one or more dimensions.</em>
+<a class="jxr_linenumber" name="L1097" href="#L1097">1097</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1098" href="#L1098">1098</a> <em class="jxr_javadoccomment">     * @param  orig                      the original array</em>
+<a class="jxr_linenumber" name="L1099" href="#L1099">1099</a> <em class="jxr_javadoccomment">     * @param  from                      the starting indices in the original array at which to start sampling. It</em>
+<a class="jxr_linenumber" name="L1100" href="#L1100">1100</a> <em class="jxr_javadoccomment">     *                                       should have at most as many elements as there are array dimensions, but it</em>
+<a class="jxr_linenumber" name="L1101" href="#L1101">1101</a> <em class="jxr_javadoccomment">     *                                       can also have fewer. A &lt;code&gt;null&lt;/code&gt; argument can be used to sample</em>
+<a class="jxr_linenumber" name="L1102" href="#L1102">1102</a> <em class="jxr_javadoccomment">     *                                       from the start or end of the array (depending on the direction).</em>
+<a class="jxr_linenumber" name="L1103" href="#L1103">1103</a> <em class="jxr_javadoccomment">     * @param  size                      the size of the sampled area in the original along each dimension. The</em>
+<a class="jxr_linenumber" name="L1104" href="#L1104">1104</a> <em class="jxr_javadoccomment">     *                                       signature of the values is irrelevant as the direction of sampling is</em>
+<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a> <em class="jxr_javadoccomment">     *                                       determined by the step argument. Zero entries can be used to indicate that</em>
+<a class="jxr_linenumber" name="L1106" href="#L1106">1106</a> <em class="jxr_javadoccomment">     *                                       the full array should be sampled along the given dimension, while a</em>
+<a class="jxr_linenumber" name="L1107" href="#L1107">1107</a> <em class="jxr_javadoccomment">     *                                       &lt;code&gt;null&lt;/code&gt; argument will sample the full array in all dimensions.</em>
+<a class="jxr_linenumber" name="L1108" href="#L1108">1108</a> <em class="jxr_javadoccomment">     * @param  step                      the sampling step size along each dimension for a subsampled slice. Negative</em>
+<a class="jxr_linenumber" name="L1109" href="#L1109">1109</a> <em class="jxr_javadoccomment">     *                                       values indicate sampling the original in the reverse direction along the</em>
+<a class="jxr_linenumber" name="L1110" href="#L1110">1110</a> <em class="jxr_javadoccomment">     *                                       given dimension. 0 values are are automatically bumped to 1 (full</em>
+<a class="jxr_linenumber" name="L1111" href="#L1111">1111</a> <em class="jxr_javadoccomment">     *                                       sampling), and a &lt;code&gt;null&lt;/code&gt; argument is understood to mean full</em>
+<a class="jxr_linenumber" name="L1112" href="#L1112">1112</a> <em class="jxr_javadoccomment">     *                                       sampling along all dimensions.</em>
+<a class="jxr_linenumber" name="L1113" href="#L1113">1113</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a> <em class="jxr_javadoccomment">     * @return                           the requested sampling from the original. The returned array may share data</em>
+<a class="jxr_linenumber" name="L1115" href="#L1115">1115</a> <em class="jxr_javadoccomment">     *                                       with the original, and so modifications to either may affect the other. The</em>
+<a class="jxr_linenumber" name="L1116" href="#L1116">1116</a> <em class="jxr_javadoccomment">     *                                       orginal object is returned if it is not an array.</em>
+<a class="jxr_linenumber" name="L1117" href="#L1117">1117</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1118" href="#L1118">1118</a> <em class="jxr_javadoccomment">     * @throws IndexOutOfBoundsException if any of the indices for the requested slice are out of bounds for the</em>
+<a class="jxr_linenumber" name="L1119" href="#L1119">1119</a> <em class="jxr_javadoccomment">     *                                       original. That is if the original does not fully contain the requested</em>
+<a class="jxr_linenumber" name="L1120" href="#L1120">1120</a> <em class="jxr_javadoccomment">     *                                       slice. Or, if the from and size arguments have differing lengths.</em>
+<a class="jxr_linenumber" name="L1121" href="#L1121">1121</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1122" href="#L1122">1122</a> <em class="jxr_javadoccomment">     * @since                            1.20</em>
+<a class="jxr_linenumber" name="L1123" href="#L1123">1123</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1124" href="#L1124">1124</a> <em class="jxr_javadoccomment">     * @author                           Attila Kovacs</em>
+<a class="jxr_linenumber" name="L1125" href="#L1125">1125</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1126" href="#L1126">1126</a> <em class="jxr_javadoccomment">     * @see                              #sample(Object, int)</em>
+<a class="jxr_linenumber" name="L1127" href="#L1127">1127</a> <em class="jxr_javadoccomment">     * @see                              #sample(Object, int[])</em>
+<a class="jxr_linenumber" name="L1128" href="#L1128">1128</a> <em class="jxr_javadoccomment">     * @see                              #slice(Object, int[], int[])</em>
+<a class="jxr_linenumber" name="L1129" href="#L1129">1129</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1130" href="#L1130">1130</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Object sample(Object orig, <strong class="jxr_keyword">int</strong>[] from, <strong class="jxr_keyword">int</strong>[] size, <strong class="jxr_keyword">int</strong>[] step) <strong class="jxr_keyword">throws</strong> IndexOutOfBoundsException {
+<a class="jxr_linenumber" name="L1131" href="#L1131">1131</a>         <strong class="jxr_keyword">return</strong> sample(orig, from, size, step, 0);
+<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a>     }
+<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a> 
+<a class="jxr_linenumber" name="L1134" href="#L1134">1134</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Object sample(Object orig, <strong class="jxr_keyword">int</strong>[] from, <strong class="jxr_keyword">int</strong>[] size, <strong class="jxr_keyword">int</strong>[] step, <strong class="jxr_keyword">int</strong> idx)
+<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a>             <strong class="jxr_keyword">throws</strong> IndexOutOfBoundsException {
+<a class="jxr_linenumber" name="L1136" href="#L1136">1136</a> 
+<a class="jxr_linenumber" name="L1137" href="#L1137">1137</a>         <em class="jxr_comment">// If leaf, return it as is...</em>
+<a class="jxr_linenumber" name="L1138" href="#L1138">1138</a>         <strong class="jxr_keyword">if</strong> (!orig.getClass().isArray() || (from != <strong class="jxr_keyword">null</strong> &amp;&amp; idx == from.length)) {
+<a class="jxr_linenumber" name="L1139" href="#L1139">1139</a>             <strong class="jxr_keyword">return</strong> orig;
+<a class="jxr_linenumber" name="L1140" href="#L1140">1140</a>         }
+<a class="jxr_linenumber" name="L1141" href="#L1141">1141</a> 
+<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a>         <strong class="jxr_keyword">int</strong> l = Array.getLength(orig);
+<a class="jxr_linenumber" name="L1143" href="#L1143">1143</a>         <strong class="jxr_keyword">int</strong> ndim = from == <strong class="jxr_keyword">null</strong> ? getDimensions(orig).length : from.length;
+<a class="jxr_linenumber" name="L1144" href="#L1144">1144</a> 
+<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a>         <em class="jxr_comment">// Check if reverse sampling</em>
+<a class="jxr_linenumber" name="L1146" href="#L1146">1146</a>         <strong class="jxr_keyword">boolean</strong> isReversed = (step != <strong class="jxr_keyword">null</strong> &amp;&amp; step[idx] &lt; 0);
+<a class="jxr_linenumber" name="L1147" href="#L1147">1147</a> 
+<a class="jxr_linenumber" name="L1148" href="#L1148">1148</a>         <strong class="jxr_keyword">int</strong> ifrom = from == <strong class="jxr_keyword">null</strong> ? (isReversed ? l - 1 : 0) : from[idx];
+<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a> 
+<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a>         <strong class="jxr_keyword">int</strong> isize = size == <strong class="jxr_keyword">null</strong> ? 0 : Math.abs(size[idx]);
+<a class="jxr_linenumber" name="L1151" href="#L1151">1151</a>         <strong class="jxr_keyword">if</strong> (isize == 0) {
+<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a>             isize = l - ifrom;
+<a class="jxr_linenumber" name="L1153" href="#L1153">1153</a>         }
+<a class="jxr_linenumber" name="L1154" href="#L1154">1154</a> 
+<a class="jxr_linenumber" name="L1155" href="#L1155">1155</a>         <strong class="jxr_keyword">int</strong> ito = ifrom + (isReversed ? -isize : isize);
+<a class="jxr_linenumber" name="L1156" href="#L1156">1156</a>         <strong class="jxr_keyword">if</strong> (ifrom &lt; 0 || ito &lt; -1 || ifrom &gt;= l || ito &gt; l) {
+<a class="jxr_linenumber" name="L1157" href="#L1157">1157</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IndexOutOfBoundsException(<span class="jxr_string">"Sampled bounds are out of range for original array"</span>);
+<a class="jxr_linenumber" name="L1158" href="#L1158">1158</a>         }
+<a class="jxr_linenumber" name="L1159" href="#L1159">1159</a> 
+<a class="jxr_linenumber" name="L1160" href="#L1160">1160</a>         <strong class="jxr_keyword">int</strong> istep = step == <strong class="jxr_keyword">null</strong> ? 1 : step[idx];
+<a class="jxr_linenumber" name="L1161" href="#L1161">1161</a>         <strong class="jxr_keyword">if</strong> (istep == 0) {
+<a class="jxr_linenumber" name="L1162" href="#L1162">1162</a>             istep = 1;
+<a class="jxr_linenumber" name="L1163" href="#L1163">1163</a>         }
+<a class="jxr_linenumber" name="L1164" href="#L1164">1164</a> 
+<a class="jxr_linenumber" name="L1165" href="#L1165">1165</a>         <strong class="jxr_keyword">int</strong> astep = Math.abs(istep);
+<a class="jxr_linenumber" name="L1166" href="#L1166">1166</a>         <strong class="jxr_keyword">int</strong> n = Math.abs((isize + astep - 1) / astep);
+<a class="jxr_linenumber" name="L1167" href="#L1167">1167</a> 
+<a class="jxr_linenumber" name="L1168" href="#L1168">1168</a>         Object slice = Array.newInstance(orig.getClass().getComponentType(), n);
+<a class="jxr_linenumber" name="L1169" href="#L1169">1169</a> 
+<a class="jxr_linenumber" name="L1170" href="#L1170">1170</a>         <strong class="jxr_keyword">if</strong> (!isReversed &amp;&amp; ndim == 1 &amp;&amp; istep == 1) {
+<a class="jxr_linenumber" name="L1171" href="#L1171">1171</a>             <em class="jxr_comment">// Special case for fast in-order slicing along last dim...</em>
+<a class="jxr_linenumber" name="L1172" href="#L1172">1172</a>             System.arraycopy(orig, ifrom, slice, 0, isize);
+<a class="jxr_linenumber" name="L1173" href="#L1173">1173</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L1174" href="#L1174">1174</a>             <em class="jxr_comment">// Generic sampling with the parameters...</em>
+<a class="jxr_linenumber" name="L1175" href="#L1175">1175</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; n; i++) {
+<a class="jxr_linenumber" name="L1176" href="#L1176">1176</a>                 Object efrom = Array.get(orig, ifrom + i * istep);
+<a class="jxr_linenumber" name="L1177" href="#L1177">1177</a>                 Array.set(slice, i, sample(efrom, from, size, step, idx + 1));
+<a class="jxr_linenumber" name="L1178" href="#L1178">1178</a>             }
+<a class="jxr_linenumber" name="L1179" href="#L1179">1179</a>         }
+<a class="jxr_linenumber" name="L1180" href="#L1180">1180</a> 
+<a class="jxr_linenumber" name="L1181" href="#L1181">1181</a>         <strong class="jxr_keyword">return</strong> slice;
+<a class="jxr_linenumber" name="L1182" href="#L1182">1182</a>     }
+<a class="jxr_linenumber" name="L1183" href="#L1183">1183</a> 
+<a class="jxr_linenumber" name="L1184" href="#L1184">1184</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2024 nom-tam-fits. All rights reserved.</div>

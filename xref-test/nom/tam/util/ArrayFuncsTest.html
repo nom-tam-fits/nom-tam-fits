@@ -311,7 +311,150 @@
 <a class="jxr_linenumber" name="L303" href="#L303">303</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> convertNotArray() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L304" href="#L304">304</a>         ArrayFuncs.convertArray(<span class="jxr_string">"blah"</span>, <strong class="jxr_keyword">int</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L305" href="#L305">305</a>     }
-<a class="jxr_linenumber" name="L306" href="#L306">306</a> }
+<a class="jxr_linenumber" name="L306" href="#L306">306</a> 
+<a class="jxr_linenumber" name="L307" href="#L307">307</a>     @Test
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> sliceTest() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>         <strong class="jxr_keyword">int</strong>[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+<a class="jxr_linenumber" name="L310" href="#L310">310</a> 
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>         <strong class="jxr_keyword">int</strong>[][] sub = (<strong class="jxr_keyword">int</strong>[][]) ArrayFuncs.slice(array, <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {1, 2});
+<a class="jxr_linenumber" name="L312" href="#L312">312</a> 
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>         Assert.assertEquals(2, sub.length);
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>         Assert.assertEquals(1, sub[0].length);
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> 
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>         Assert.assertEquals(6, sub[0][0]);
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>         Assert.assertEquals(9, sub[1][0]);
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>     }
+<a class="jxr_linenumber" name="L319" href="#L319">319</a> 
+<a class="jxr_linenumber" name="L320" href="#L320">320</a>     @Test
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> sliceSubTest() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>         <strong class="jxr_keyword">int</strong>[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> 
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>         <strong class="jxr_keyword">int</strong>[][] sub = (<strong class="jxr_keyword">int</strong>[][]) ArrayFuncs.slice(array, <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {1}, <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {2});
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> 
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>         Assert.assertEquals(2, sub.length);
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>         Assert.assertEquals(3, sub[0].length);
+<a class="jxr_linenumber" name="L328" href="#L328">328</a> 
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>         Assert.assertEquals(4, sub[0][0]);
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>         Assert.assertEquals(5, sub[0][1]);
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>         Assert.assertEquals(7, sub[1][0]);
+<a class="jxr_linenumber" name="L332" href="#L332">332</a>         Assert.assertEquals(8, sub[1][1]);
+<a class="jxr_linenumber" name="L333" href="#L333">333</a>     }
+<a class="jxr_linenumber" name="L334" href="#L334">334</a> 
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>     @Test
+<a class="jxr_linenumber" name="L336" href="#L336">336</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> sliceSubReverseTest() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>         <strong class="jxr_keyword">int</strong>[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+<a class="jxr_linenumber" name="L338" href="#L338">338</a> 
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>         <strong class="jxr_keyword">int</strong>[][] sub = (<strong class="jxr_keyword">int</strong>[][]) ArrayFuncs.slice(array, <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {1}, <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {-2});
+<a class="jxr_linenumber" name="L340" href="#L340">340</a> 
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>         Assert.assertEquals(2, sub.length);
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>         Assert.assertEquals(3, sub[0].length);
+<a class="jxr_linenumber" name="L343" href="#L343">343</a> 
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>         Assert.assertEquals(4, sub[0][0]);
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>         Assert.assertEquals(5, sub[0][1]);
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>         Assert.assertEquals(1, sub[1][0]);
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>         Assert.assertEquals(2, sub[1][1]);
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>     }
+<a class="jxr_linenumber" name="L349" href="#L349">349</a> 
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>     @Test
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> reverseSliceTest() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>         <strong class="jxr_keyword">int</strong>[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+<a class="jxr_linenumber" name="L353" href="#L353">353</a> 
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>         <strong class="jxr_keyword">int</strong>[][] sub = (<strong class="jxr_keyword">int</strong>[][]) ArrayFuncs.slice(array, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {-2, -2});
+<a class="jxr_linenumber" name="L355" href="#L355">355</a> 
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>         Assert.assertEquals(2, sub.length);
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>         Assert.assertEquals(2, sub[0].length);
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> 
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>         Assert.assertEquals(9, sub[0][0]);
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>         Assert.assertEquals(8, sub[0][1]);
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>         Assert.assertEquals(6, sub[1][0]);
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>         Assert.assertEquals(5, sub[1][1]);
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>     }
+<a class="jxr_linenumber" name="L364" href="#L364">364</a> 
+<a class="jxr_linenumber" name="L365" href="#L365">365</a>     @Test
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> sampleTest() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L367" href="#L367">367</a>         <strong class="jxr_keyword">int</strong>[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+<a class="jxr_linenumber" name="L368" href="#L368">368</a> 
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>         <strong class="jxr_keyword">int</strong>[][] sub = (<strong class="jxr_keyword">int</strong>[][]) ArrayFuncs.sample(array, 2);
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> 
+<a class="jxr_linenumber" name="L371" href="#L371">371</a>         Assert.assertEquals(2, sub.length);
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>         Assert.assertEquals(2, sub[0].length);
+<a class="jxr_linenumber" name="L373" href="#L373">373</a> 
+<a class="jxr_linenumber" name="L374" href="#L374">374</a>         Assert.assertEquals(1, sub[0][0]);
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>         Assert.assertEquals(3, sub[0][1]);
+<a class="jxr_linenumber" name="L376" href="#L376">376</a>         Assert.assertEquals(7, sub[1][0]);
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>         Assert.assertEquals(9, sub[1][1]);
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>     }
+<a class="jxr_linenumber" name="L379" href="#L379">379</a> 
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>     @Test
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> sampleTestStep0() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>         <strong class="jxr_keyword">int</strong>[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+<a class="jxr_linenumber" name="L383" href="#L383">383</a> 
+<a class="jxr_linenumber" name="L384" href="#L384">384</a>         <strong class="jxr_keyword">int</strong>[][] sub = (<strong class="jxr_keyword">int</strong>[][]) ArrayFuncs.sample(array, 0);
+<a class="jxr_linenumber" name="L385" href="#L385">385</a> 
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>         Assert.assertEquals(3, sub.length);
+<a class="jxr_linenumber" name="L387" href="#L387">387</a>         Assert.assertEquals(3, sub[0].length);
+<a class="jxr_linenumber" name="L388" href="#L388">388</a> 
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>         Assert.assertEquals(1, sub[0][0]);
+<a class="jxr_linenumber" name="L390" href="#L390">390</a>         Assert.assertEquals(2, sub[0][1]);
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>         Assert.assertEquals(4, sub[1][0]);
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>         Assert.assertEquals(5, sub[1][1]);
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>     }
+<a class="jxr_linenumber" name="L394" href="#L394">394</a> 
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>     @Test
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> sampleTestSize0() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>         <strong class="jxr_keyword">int</strong>[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> 
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>         <strong class="jxr_keyword">int</strong>[][] sub = (<strong class="jxr_keyword">int</strong>[][]) ArrayFuncs.sample(array, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[2], <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> 
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>         Assert.assertEquals(3, sub.length);
+<a class="jxr_linenumber" name="L402" href="#L402">402</a>         Assert.assertEquals(3, sub[0].length);
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> 
+<a class="jxr_linenumber" name="L404" href="#L404">404</a>         Assert.assertEquals(1, sub[0][0]);
+<a class="jxr_linenumber" name="L405" href="#L405">405</a>         Assert.assertEquals(2, sub[0][1]);
+<a class="jxr_linenumber" name="L406" href="#L406">406</a>         Assert.assertEquals(4, sub[1][0]);
+<a class="jxr_linenumber" name="L407" href="#L407">407</a>         Assert.assertEquals(5, sub[1][1]);
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>     }
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> 
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>     @Test
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> sampleReverseTest() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>         <strong class="jxr_keyword">int</strong>[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+<a class="jxr_linenumber" name="L413" href="#L413">413</a> 
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>         <strong class="jxr_keyword">int</strong>[][] sub = (<strong class="jxr_keyword">int</strong>[][]) ArrayFuncs.sample(array, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {3, -3}, <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {-2, -2});
+<a class="jxr_linenumber" name="L415" href="#L415">415</a> 
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>         Assert.assertEquals(2, sub.length);
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>         Assert.assertEquals(2, sub[0].length);
+<a class="jxr_linenumber" name="L418" href="#L418">418</a> 
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>         Assert.assertEquals(9, sub[0][0]);
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>         Assert.assertEquals(7, sub[0][1]);
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>         Assert.assertEquals(3, sub[1][0]);
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>         Assert.assertEquals(1, sub[1][1]);
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>     }
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> 
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>     @Test(expected = IndexOutOfBoundsException.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> sliceFromLow() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L427" href="#L427">427</a>         <strong class="jxr_keyword">int</strong>[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>         ArrayFuncs.slice(array, <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {-1});
+<a class="jxr_linenumber" name="L429" href="#L429">429</a>     }
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> 
+<a class="jxr_linenumber" name="L431" href="#L431">431</a>     @Test(expected = IndexOutOfBoundsException.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L432" href="#L432">432</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> sliceFromHigh() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>         <strong class="jxr_keyword">int</strong>[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>         ArrayFuncs.slice(array, <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {3});
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>     }
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> 
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>     @Test(expected = IndexOutOfBoundsException.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> sliceToLow() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L439" href="#L439">439</a>         <strong class="jxr_keyword">int</strong>[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+<a class="jxr_linenumber" name="L440" href="#L440">440</a>         ArrayFuncs.slice(array, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {-4});
+<a class="jxr_linenumber" name="L441" href="#L441">441</a>     }
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> 
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>     @Test(expected = IndexOutOfBoundsException.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L444" href="#L444">444</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> sliceToHigh() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>         <strong class="jxr_keyword">int</strong>[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>         ArrayFuncs.slice(array, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {4});
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>     }
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> 
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2024 nom-tam-fits. All rights reserved.</div>
