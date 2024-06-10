@@ -1,7 +1,7 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.20.0-rc2" date="2024-05-29" description="Upcoming feature release under development.">
+   <release version="1.20.0" date="2024-05-10" description="Many new features andsome bug fixes also.">
       <action type="fix" dev="attipaci" issue="596" due-to="keastrid">
           Botched compression of multicolumn tables, resulting in extra rows in the compressed table (as many rows as
           there were total table tiles across all columns).
@@ -33,7 +33,10 @@
       	 quantizer (which is either specified in the image header or else set by the user) if it is available.
       </action>
       <action type="add" dev="attipaci" issue="610">
-         BinaryTable.getArrayElementAs(int row, int col, Class asType) method to allow accessing numerical table 
+          New BinaryTable.getArrayElement(row, col) and .getArrayElementAs(int row, int col, Class asType) methods to 
+          return the table element as an array always (without the boxing of scalar entries). The former is similar to 
+          the original .getElement() method except that it represents FITS logicals as Boolean[]..., bits as 
+          boolean[]..., and complex values a ComplexValue[]... arrays. The second form allows accessing numerical table 
          elements as arrays of a desired other numerical type. 
       </action>
       <action type="add" dev="attipaci" issue="610">
@@ -42,14 +45,15 @@
          conversions outside of images and table columns.
       </action>
       <action type="add" dev="attipaci" issue="592">
-         ImageData now supports complex valued images, both when constructed programatically from ComplexValue[]... 
-         data; or if so described with an image axis whose `CTYPEn` header value is 'COMPLEX' and the axis contains 2 
-         components (so long as the complex axis is either the first or last axis). The latter is true even if integer 
-         representation is used in the FITS, e.g. via a quantization. When reading complex valued images, the native 
-         ImageData is that of the stored type (e.g. float[]..[2] or float[2]..[]) for compatibility, but 
-         ImageData.convertTo(ComplexValue.class) or .convertTo(ComplexValue.Float.class) can convert these to be true 
-         complex valued images in a second step after reading. (You may also use ImageData.isComplexValued() to check 
-         if the data were designated as complex-valued at origination, by the FITS header or the constructor.)
+         ImageData now supports complex valued images as per the FITS standard, both when constructed programatically 
+         from ComplexValue[]... data; or if so described with an image axis whose CTYPEn header value is 'COMPLEX' and 
+         the axis contains 2 components (so long as the complex axis is either the first or last axis). The latter is 
+         true even if integer representation is used in the FITS, e.g. via a quantization. When reading complex valued 
+         images, the native ImageData is that of the stored type (e.g. float[]..[2] or float[2]..[]) for 
+         compatibility, but ImageData.convertTo(ComplexValue.class) or .convertTo(ComplexValue.Float.class) can 
+         convert these to be true complex valued images in a second step after reading. (You may also use 
+         ImageData.isComplexValued() to check if the data were designated as complex-valued at origination, by the 
+         FITS header or the constructor.)
       </action>
       <action type="add" dev="attipaci" issue="619" due-to="at88mph">
          New ArrayFuncs.sample() and .slice() methods, to provide generic support for obtaining slices and samplings
@@ -58,11 +62,6 @@
       <action type="update" dev="attipaci" issue="590" due-to="bogdanni">
           Removed Main class, and main() entry points from JAR, which also clears up a whole lot of junk being added
           to the classpath into MANIFEST.MF.
-      </action>
-      <action type="update" dev="attipaci" issue="610">
-          BinaryTable.getArrayElement(row, col) method to return the table element as an array always (without the 
-          boxing of scalar entries), similarly to the original .getElement() method except representing FITS logicals 
-          as Boolean[]..., FITS bits as boolean[]..., and complex values a ComplexValue[]... arrays.
       </action>
       <action type="update" dev="attipaci" issue="592">
           ArrayFuncs.convertArray(Object, Class) is now the same as  the new 
