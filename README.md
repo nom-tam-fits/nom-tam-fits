@@ -290,7 +290,7 @@ As of version 1.20, the library provides the means for converting images between
 stored the images as integer, but we want them as double-precision values. 
 
 ```java
-  double[][] darray = hdu.getData().convertTo(double.class).getKernel();
+  double[][] darray = (double[][]) hdu.getData().convertTo(double.class).getKernel();
 ```
 
 Things get somewhat interesting at this point, because the FITS standard also allows for the integer representation of 
