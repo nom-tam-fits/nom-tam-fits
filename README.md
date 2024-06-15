@@ -345,7 +345,7 @@ complex values in a second step after loading the data:
   // If the complex array convention was used in the header, we can convert the image data
   // to complex-valued as the second step...
   if (data.isComplexValued()) {
-     ComplexValue.Float[][] z = (ComplexValue.Float[][]) data.convertTo(ComplexValue.Float.class).getKernel();
+     ComplexValue[][] z = (ComplexValue[][]) data.convertTo(ComplexValue.class).getKernel();
      ...
   }
 ```
