@@ -555,6 +555,23 @@ public class CompressedTableTest {
         Assert.assertEquals("BLAH", h.getStringValue(Compression.ZCTYPn.n(1)));
     }
 
+    @Test
+    public void testCompressedTableColumnNames() throws Exception {
+        String name = "Test Name";
+        BinaryTable btab = new BinaryTable();
+
+        btab.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(int.class, 6));
+        btab.getDescriptor(0).name(name);
+        Assert.assertEquals(name, btab.getDescriptor(0).name());
+
+        for (int i = 0; i < 100; i++) {
+            btab.addRowEntries(new int[] {i, i + 1, i + 2, i + 3, i + 4, i + 5});
+        }
+
+        CompressedTableHDU chdu = CompressedTableHDU.fromBinaryTableHDU(btab.toHDU(), 0);
+        Assert.assertEquals(name, chdu.getHeader().getStringValue(Standard.TTYPEn.n(1)));
+    }
+
     @Test(expected = IllegalStateException.class)
     public void testBinaryTableTileCompressorError() throws Exception {
         class MyCompressor extends BinaryTableTileCompressor {
