@@ -1,6 +1,12 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
+   <release version="1.20.1-SNAPSHOT" date="2024-06-23" description="Upcoming bug fix release.">
+      <action type="fix" dev="attipaci" issue="636" due-to="keastrid">
+          Compressed table columns lost their column names in 1.20.0.
+      </action>
+   </release>
+
    <release version="1.20.0" date="2024-05-10" description="Many new features andsome bug fixes also.">
       <action type="fix" dev="attipaci" issue="596" due-to="keastrid">
           Botched compression of multicolumn tables, resulting in extra rows in the compressed table (as many rows as
