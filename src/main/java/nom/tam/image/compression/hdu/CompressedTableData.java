@@ -164,6 +164,7 @@ public class CompressedTableData extends BinaryTable {
             // Create compressed columns...
             for (int column = 0; column < ncols; column++) {
                 addColumn(BinaryTable.ColumnDesc.createForVariableSize(byte.class));
+                getDescriptor(column).name(null);
             }
 
             // Initialized compressed rows...
