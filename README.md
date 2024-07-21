@@ -1508,7 +1508,7 @@ For example:
   ImageHDU newHDU = ImageData.from(newImage).toHDU();
   
   // 2. copy over non-conflicting header entries from the original
-  Header.newHeader = newHDU.getHeader();
+  Header newHeader = newHDU.getHeader();
   newHeader.mergeDistinct(origHDU.getHeader());
 
   // 3. Update the WCS for the cropped data...
