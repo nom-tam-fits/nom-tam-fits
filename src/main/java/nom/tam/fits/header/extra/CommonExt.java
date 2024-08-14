@@ -46,20 +46,11 @@ import nom.tam.fits.header.IFitsHeader;
  */
 public enum CommonExt implements IFitsHeader {
 
+    /** Ambient air temperature in degrees Celsius */
+    AMBTEMP(VALUE.REAL, "[C] ambient air temperature"),
+
     /** Image angle in degrees */
     ANGLE(VALUE.REAL, "[deg] image angle"),
-
-    /** Local time of observation (ISO timestamp), e..g "2017-01-03T02:41:24" or "2024-02-24T22:23:33.054" */
-    DATE_LOC("DATE-LOC", VALUE.STRING, "Local time of observation"),
-
-    /** Whether or not the image is flipped */
-    FLIPPED(VALUE.LOGICAL, "is image flipped"),
-
-    /** Focal ratio */
-    FOCRATIO(VALUE.REAL, "focal ratio"),
-
-    /** Camera offset setting. Very common since CMOS cameras became popular */
-    OFFSET(VALUE.INTEGER, "camera offset setting"),
 
     /** X axis binning factor. Synonym for {@link SBFitsExt#XBINNING} */
     CCDXBIN(VALUE.INTEGER, "X axis binning factor"),
@@ -67,66 +58,79 @@ public enum CommonExt implements IFitsHeader {
     /** Y axis binning factor. Synonym for {@link SBFitsExt#YBINNING} */
     CCDYBIN(VALUE.INTEGER, "Y axis binning factor"),
 
-    /** Focuser position in steps. Usually an integer, but not always. Synonymous to {@link MaxImDLExt#FOCUSPOS} */
-    FOCPOS(VALUE.REAL, "[ct] focuser position in steps"),
-
-    /** Focus temperature in degrees Celsius. Synonymous to {@link MaxImDLExt#FOCUSTEM}. */
-    FOCTEMP(VALUE.REAL, "[C] focuser temperature readout"),
-
     /** Cloud cover as percentage */
     CLOUDCVR(VALUE.REAL, "[%] cloud cover"),
 
-    /** Relative humidity as percentage */
-    HUMIDITY(VALUE.REAL, "[%] relative humidity"),
+    /** Local time of observation (ISO timestamp), e..g "2017-01-03T02:41:24" or "2024-02-24T22:23:33.054" */
+    DATE_LOC("DATE-LOC", VALUE.STRING, "Local time of observation"),
 
     /** Dew point in degrees Celsius. */
     DEWPOINT(VALUE.REAL, "[C] dew point"),
 
-    /** Ambient air temperature in degrees Celsius */
-    AMBTEMP(VALUE.REAL, "[C] ambient air temperature"),
-
-    /** Average wind speed in km/h */
-    WINDSPD(VALUE.REAL, "[km/h] wind speed"),
-
-    /** Wind direction clockwise from North [0:360] */
-    WINDDIR(VALUE.REAL, "[deg] wind direction: 0=N, 90=E, 180=S, 270=W"),
-
-    /** Air pressure in hPa. */
-    PRESSURE(VALUE.REAL, "[hPa] air pressure"),
-
-    /** Observatory site, e.g. "Maunakea" */
-    SITENAME(VALUE.STRING, "observatory site"),
-
-    /** Elevation of observing site above sea level in meters */
-    SITEELEV(VALUE.REAL, "[m] elevation at observing site"),
-
-    /** Name of focuser */
-    FOCUSER(VALUE.STRING, "focuser name"),
+    /** Whether or not the image is flipped */
+    FLIPPED(VALUE.LOGICAL, "is image flipped"),
 
     /** Name of focuser. Synonym of {@link #FOCUSER} */
     FOCNAME(VALUE.STRING, "focuser name"),
 
+    /** Focuser position in steps. Usually an integer, but not always. Synonymous to {@link MaxImDLExt#FOCUSPOS} */
+    FOCPOS(VALUE.REAL, "[ct] focuser position in steps"),
+
+    /** Focal ratio */
+    FOCRATIO(VALUE.REAL, "focal ratio"),
+
+    /** Name of focuser */
+    FOCUSER(VALUE.STRING, "focuser name"),
+
+    /** Focus temperature in degrees Celsius. Synonymous to {@link MaxImDLExt#FOCUSTEM}. */
+    FOCTEMP(VALUE.REAL, "[C] focuser temperature readout"),
+
     /** Filter wheel position */
     FWHEEL(VALUE.STRING, "filter wheel position"),
 
-    /**
-     * Plate scale in arcsec / pixel. It may be different from the image scale described by the
-     * {@link nom.tam.fits.header.Standard#CDELTn} keywords, if physical pixels were binned or interpolated for a
-     * different image pixelization.
-     */
-    PIXSCALE(VALUE.REAL, "[arcsec/pixel] plate scale"),
+    /** Camera gain / amplification. Often used the same as {@link #GAINRAW} */
+    GAIN(VALUE.REAL, "camera gain factor"),
 
-    /** Plate scale in arcsec / pixel. Synonym of {@link #PIXSCALE} */
-    SCALE(VALUE.REAL, "[arcsec/pixel] plate scale"),
+    /** Synonym of {@link MaxImDLExt#EGAIN} */
+    GAINADU(VALUE.REAL, "[ct/adu] amplifier gain electrons / ADU"),
+
+    /** Amplifier gain. */
+    GAINRAW(VALUE.REAL, "gain factor"),
+
+    /** Relative humidity as percentage */
+    HUMIDITY(VALUE.REAL, "[%] relative humidity"),
 
     /** Synonym of {@link #ANGLE}. **/
     OBJCTROT(VALUE.REAL, "[deg] image angle"),
 
-    /** Amplifier gain */
-    GAINRAW(VALUE.REAL, "amplifier gain"),
+    /** Camera offset setting. Very common since CMOS cameras became popular */
+    OFFSET(VALUE.INTEGER, "camera offset setting"),
 
-    /** Synonym of {@link MaxImDLExt#EGAIN} */
-    GAINADU(VALUE.REAL, "[ct/adu] amplifier gain electrons / ADU");
+    /**
+     * Image scale in arcsec/pixel. Redundant with {@link nom.tam.fits.header.Standard#CDELTn}.
+     */
+    PIXSCALE(VALUE.REAL, "[arcsec/pixel] image scale"),
+
+    /** Air pressure in hPa. */
+    PRESSURE(VALUE.REAL, "[hPa] air pressure"),
+
+    /**
+     * Image scale in arcsec / pixel. Synonym of {@link #PIXSCALE}, and redundant with
+     * {@link nom.tam.fits.header.Standard#CDELTn}.
+     */
+    SCALE(VALUE.REAL, "[arcsec/pixel] image scale"),
+
+    /** Elevation of observing site above sea level in meters */
+    SITEELEV(VALUE.REAL, "[m] elevation at observing site"),
+
+    /** Observatory site, e.g. "Maunakea" */
+    SITENAME(VALUE.STRING, "observatory site"),
+
+    /** Wind direction clockwise from North [0:360] */
+    WINDDIR(VALUE.REAL, "[deg] wind direction: 0=N, 90=E, 180=S, 270=W"),
+
+    /** Average wind speed in km/h */
+    WINDSPD(VALUE.REAL, "[km/h] wind speed");
 
     private final FitsKey key;
 
