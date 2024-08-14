@@ -356,7 +356,7 @@ public enum STScIExt implements IFitsHeader {
     }
 
     STScIExt(String key, VALUE valueType, String comment) {
-        this.key = new FitsKey(key == null ? name() : key, IFitsHeader.SOURCE.CXC, HDU.ANY, valueType, comment);
+        this.key = new FitsKey(key == null ? name() : key, IFitsHeader.SOURCE.STScI, HDU.ANY, valueType, comment);
     }
 
     @Override

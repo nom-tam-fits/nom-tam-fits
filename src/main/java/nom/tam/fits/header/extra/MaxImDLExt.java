@@ -495,7 +495,7 @@ public enum MaxImDLExt implements IFitsHeader {
     /**
      * Focuser step size in microns, if available.
      */
-    FOCUSSZ(VALUE.REAL, "[um] focuser step size"),
+    FOCUSSSZ(VALUE.REAL, "[um] focuser step size"),
 
     /**
      * Focuser temperature readout in degrees C, if available.
