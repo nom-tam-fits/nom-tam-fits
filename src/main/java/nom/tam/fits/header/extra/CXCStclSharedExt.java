@@ -39,10 +39,13 @@ import nom.tam.fits.header.IFitsHeader;
  * <a href="https://planet4589.org/astro/sds/asc/ps/SDS05.pdf">https://planet4589.org/astro/sds/asc/ps/SDS05.pdf</a> for
  * defititions of these. .
  *
- * @author Richard van Nieuwenhoven and Attila Kovacs
+ * @author     Richard van Nieuwenhoven and Attila Kovacs
  * 
- * @see    STScIExt
- * @see    CXCExt
+ * @deprecated These are available both in the {@link CXCExt} and {@link STScIExt} enums. Visibility may be reduced to
+ *                 the package level in the future.
+ * 
+ * @see        STScIExt
+ * @see        CXCExt
  */
 public enum CXCStclSharedExt implements IFitsHeader {
 
@@ -52,7 +55,7 @@ public enum CXCStclSharedExt implements IFitsHeader {
      * T
      * </p>
      */
-    CLOCKAPP(VALUE.LOGICAL, "Whether clock correction applied"),
+    CLOCKAPP(VALUE.LOGICAL, "is clock correction applied?"),
 
     /**
      * Reference MJD (TT-based), relative to which time values (e.g. TSTART and TSTOP) are measured.
@@ -77,12 +80,12 @@ public enum CXCStclSharedExt implements IFitsHeader {
      * their usage for ground-based observations. TASSIGN has obviously no meaning when TIMESYS = 'TDB'.
      * </p>
      */
-    TASSIGN(VALUE.STRING, "Source of time measurement"),
+    TASSIGN(VALUE.STRING, "location where time was assigned"),
 
     /**
      * Time resolution of data in {@link #TIMEUNIT}.
      */
-    TIMEDEL(VALUE.REAL, "Time resolution of data"),
+    TIMEDEL(VALUE.REAL, "time resolution of data"),
 
     /**
      * Time reference frame.
@@ -92,12 +95,12 @@ public enum CXCStclSharedExt implements IFitsHeader {
      * @see #TIMEREF_HELIOCENTRIC
      * @see #TIMEREF_SOLARSYSTEM
      */
-    TIMEREF(VALUE.STRING, "Time reference frame"),
+    TIMEREF(VALUE.STRING, "time reference frame"),
 
     /**
      * Units of time, for example 's' for seconds. If absent, assume seconds.
      */
-    TIMEUNIT(VALUE.STRING, "Units of time"),
+    TIMEUNIT(VALUE.STRING, "units of time"),
 
     /**
      * Version of time specification convention.
@@ -107,7 +110,7 @@ public enum CXCStclSharedExt implements IFitsHeader {
     /**
      * Clock correction (if not zero), in {@link #TIMEUNIT}.
      */
-    TIMEZERO(VALUE.REAL, "Clock offset"),
+    TIMEZERO(VALUE.REAL, "clock offset"),
 
     /**
      * The value field of this keyword shall contain the value of the start time of data acquisition in units of

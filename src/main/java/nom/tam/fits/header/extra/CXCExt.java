@@ -46,8 +46,9 @@ import nom.tam.fits.header.IFitsHeader;
  * http://cxc.harvard.edu/contrib/arots/fits/content.txt
  * </pre>
  *
- * @author Richard van Nieuwenhoven
+ * @author Richard van Nieuwenhoven and Attila Kovacs
  */
+@SuppressWarnings({"deprecation", "javadoc"})
 public enum CXCExt implements IFitsHeader {
 
     /**
@@ -113,22 +114,22 @@ public enum CXCExt implements IFitsHeader {
     /**
      * Mission specifier, e.g. 'AXAF'
      */
-    MISSION(VALUE.STRING, "Mission"),
+    MISSION(VALUE.STRING, "mission identifier"),
 
     /**
      * Processing version of data
      */
-    REVISION(VALUE.STRING, "Processing version of data"),
+    REVISION(VALUE.STRING, "processing version of data"),
 
     /**
      * Nominal roll angle, deg
      */
-    ROLL_NOM(VALUE.REAL, "[deg] Nominal roll angle"),
+    ROLL_NOM(VALUE.REAL, "[deg] nominal roll angle"),
 
     /**
      * Sequence number
      */
-    SEQ_NUM(VALUE.INTEGER, "Sequence number"),
+    SEQ_NUM(VALUE.INTEGER, "sequence number"),
 
     /**
      * SIM focus pos (mm)
@@ -148,27 +149,27 @@ public enum CXCExt implements IFitsHeader {
     /**
      * Major frame count at start
      */
-    STARTMJF(VALUE.INTEGER, "Major frame count at start"),
+    STARTMJF(VALUE.INTEGER, "major frame count at start"),
 
     /**
      * Minor frame count at start
      */
-    STARTMNF(VALUE.INTEGER, "Minor frame count at start"),
+    STARTMNF(VALUE.INTEGER, "minor frame count at start"),
 
     /**
      * On-Board MET close to STARTMJF and STARTMNF
      */
-    STARTOBT(VALUE.INTEGER, "On-Board MET close to STARTMJF and STARTMNF"),
+    STARTOBT(VALUE.INTEGER, "on-board MET close to STARTMJF and STARTMNF"),
 
     /**
      * Major frame count at stop
      */
-    STOPMJF(VALUE.INTEGER, "Major frame count at stop"),
+    STOPMJF(VALUE.INTEGER, "major frame count at stop"),
 
     /**
      * Minor frame count at stop
      */
-    STOPMNF(VALUE.INTEGER, "Minor frame count at stop"),
+    STOPMNF(VALUE.INTEGER, "minor frame count at stop"),
 
     /**
      * Absolute timing error.
@@ -183,28 +184,119 @@ public enum CXCExt implements IFitsHeader {
     /**
      * Time stamp reference as bin fraction
      */
-    TIMEPIXR(VALUE.REAL, "[bin] Time stamp reference"),
+    TIMEPIXR(VALUE.REAL, "[bin] time stamp reference"),
 
     /**
      * Telemetry revision number (IP&amp;CL)
      */
-    TLMVER(VALUE.STRING, "Telemetry revision number (IP&CL)"),
+    TLMVER(VALUE.STRING, "telemetry revision number (IP&CL)"),
+
+    // Inherited from CXCStscISharedExt ----------------------------------------->
 
     /**
-     * The value field of this keyword shall contain the value of the start time of data acquisition in units of
-     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS
-     * keyword.
+     * Same as {@link CXCStclSharedExt#CLOCKAPP}.
+     * 
+     * @since 1.20.1
      */
-    TSTART(VALUE.REAL, "start time of observation"),
+    CLOCKAPP(CXCStclSharedExt.CLOCKAPP),
 
     /**
-     * The value field of this keyword shall contain the value of the stop time of data acquisition in units of
-     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS
-     * keyword.
+     * Same as {@link CXCStclSharedExt#MJDREF}.
+     * 
+     * @since 1.20.1
      */
-    TSTOP(VALUE.REAL, "start time of observation");
+    MJDREF(CXCStclSharedExt.MJDREF),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TASSIGN}.
+     * 
+     * @since 1.20.1
+     */
+    TASSIGN(CXCStclSharedExt.TASSIGN),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEDEL}.
+     * 
+     * @since 1.20.1
+     */
+    TIMEDEL(CXCStclSharedExt.TIMEDEL),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEREF}.
+     * 
+     * @since 1.20.1
+     * 
+     * @see   #TIMEREF_LOCAL
+     * @see   #TIMEREF_GEOCENTRIC
+     * @see   #TIMEREF_HELIOCENTRIC
+     * @see   #TIMEREF_SOLARSYSTEM
+     */
+    TIMEREF(CXCStclSharedExt.TIMEREF),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEUNIT}.
+     * 
+     * @since 1.20.1
+     */
+    TIMEUNIT(CXCStclSharedExt.TIMEUNIT),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMVERSN}.
+     * 
+     * @since 1.20.1
+     */
+    TIMVERSN(CXCStclSharedExt.TIMVERSN),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEZERO}.
+     * 
+     * @since 1.20.1
+     */
+    TIMEZERO(CXCStclSharedExt.TIMEZERO),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TSTART}.
+     */
+    TSTART(CXCStclSharedExt.TSTART),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TSTOP}.
+     */
+    TSTOP(CXCStclSharedExt.TSTOP);
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEREF_GEOCENTRIC}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_GEOCENTRIC = CXCStclSharedExt.TIMEREF_GEOCENTRIC;
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEREF_HELIOCENTRIC}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_HELIOCENTRIC = CXCStclSharedExt.TIMEREF_HELIOCENTRIC;
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEREF_SOLARSYSTEM}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_SOLARSYSTEM = CXCStclSharedExt.TIMEREF_SOLARSYSTEM;
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEREF_LOCAL}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_LOCAL = CXCStclSharedExt.TIMEREF_LOCAL;
 
     private final FitsKey key;
+
+    CXCExt(IFitsHeader key) {
+        this.key = key.impl();
+    }
 
     CXCExt(VALUE valueType, String comment) {
         key = new FitsKey(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, valueType, comment);

@@ -225,19 +225,19 @@ public enum SBFitsExt implements IFitsHeader {
      */
     YPIXSZ(VALUE.REAL, "[um] pixel height");
 
-    /** Standard IMAETYP value for a light frame. */
+    /** Standard {@link #IMAGETYP} value for a light frame. */
     public static final String IMAGETYP_LIGHT_FRAME = "Light Frame";
 
-    /** Standard IMAETYP value for a bias frame. */
+    /** Standard {@link #IMAGETYP} value for a bias frame. */
     public static final String IMAGETYP_BIAS_FRAME = "Bias Frame";
 
-    /** Standard IMAETYP value for a dark frame. */
+    /** Standard {@link #IMAGETYP} value for a dark frame. */
     public static final String IMAGETYP_DARK_FRAME = "Dark Frame";
 
-    /** Standard IMAETYP value for a flat frame. */
+    /** Standard {@link #IMAGETYP} value for a flat frame. */
     public static final String IMAGETYP_FLAT_FRAME = "Flat Frame";
 
-    /** Standard IMAETYP value for a tricolor image. */
+    /** Standard {@link #IMAGETYP} value for a tricolor image. */
     public static final String IMAGETYP_TRICOLOR_IMAGE = "Tricolor Image";
 
     private final FitsKey key;

@@ -43,8 +43,9 @@ import nom.tam.fits.header.IFitsHeader;
  * "http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>
  * </p>
  *
- * @author Richard van Nieuwenhoven.
+ * @author Richard van Nieuwenhoven and Attila Kovacs
  */
+@SuppressWarnings({"deprecation", "javadoc"})
 public enum STScIExt implements IFitsHeader {
 
     /**
@@ -115,6 +116,21 @@ public enum STScIExt implements IFitsHeader {
      * ?
      */
     JOBNAME(VALUE.STRING, ""),
+
+    /**
+     * Modified Julian date at the start of the exposure. The fractional part of the date is given to better than a
+     * second of time.
+     * <p>
+     * units = 'd'
+     * </p>
+     * <p>
+     * default value = none
+     * </p>
+     * <p>
+     * index = none
+     * </p>
+     */
+    MJD_OBS("MJD-OBS", VALUE.REAL, "[day] MJD of exposure start"),
 
     /**
      * Fractional portion of ephemeris MJD
@@ -214,25 +230,6 @@ public enum STScIExt implements IFitsHeader {
     TIMESYS(VALUE.STRING, "Default time system"),
 
     /**
-     * offset to be applied to TIME column
-     */
-    TIMEZERO(VALUE.REAL, "time offset"),
-
-    /**
-     * The value field of this keyword shall contain the value of the start time of data acquisition in units of
-     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS
-     * keyword.
-     */
-    TSTART(VALUE.STRING, "observation start time"),
-
-    /**
-     * The value field of this keyword shall contain the value of the stop time of data acquisition in units of
-     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS
-     * keyword.
-     */
-    TSTOP(VALUE.STRING, "observation stop time"),
-
-    /**
      * Version of Data Reduction Software
      */
     VERSION(VALUE.STRING, "data reduction software version"),
@@ -247,22 +244,112 @@ public enum STScIExt implements IFitsHeader {
      */
     ZLREMOV(VALUE.LOGICAL, "whether zodiacal light was removed"),
 
+    // Inherited from CXCStscISharedExt ----------------------------------------->
+
     /**
-     * Modified Julian date at the start of the exposure. The fractional part of the date is given to better than a
-     * second of time.
-     * <p>
-     * units = 'd'
-     * </p>
-     * <p>
-     * default value = none
-     * </p>
-     * <p>
-     * index = none
-     * </p>
+     * Same as {@link CXCStclSharedExt#CLOCKAPP}.
+     * 
+     * @since 1.20.1
      */
-    MJD_OBS("MJD-OBS", VALUE.REAL, "[day] MJD of exposure start");
+    CLOCKAPP(CXCStclSharedExt.CLOCKAPP),
+
+    /**
+     * Same as {@link CXCStclSharedExt#MJDREF}.
+     * 
+     * @since 1.20.1
+     */
+    MJDREF(CXCStclSharedExt.MJDREF),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TASSIGN}.
+     * 
+     * @since 1.20.1
+     */
+    TASSIGN(CXCStclSharedExt.TASSIGN),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEDEL}.
+     * 
+     * @since 1.20.1
+     */
+    TIMEDEL(CXCStclSharedExt.TIMEDEL),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEREF}.
+     * 
+     * @since 1.20.1
+     * 
+     * @see   #TIMEREF_LOCAL
+     * @see   #TIMEREF_GEOCENTRIC
+     * @see   #TIMEREF_HELIOCENTRIC
+     * @see   #TIMEREF_SOLARSYSTEM
+     */
+    TIMEREF(CXCStclSharedExt.TIMEREF),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEUNIT}.
+     * 
+     * @since 1.20.1
+     */
+    TIMEUNIT(CXCStclSharedExt.TIMEUNIT),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMVERSN}.
+     * 
+     * @since 1.20.1
+     */
+    TIMVERSN(CXCStclSharedExt.TIMVERSN),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEZERO}.
+     * 
+     * @since 1.20.1
+     */
+    TIMEZERO(CXCStclSharedExt.TIMEZERO),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TSTART}.
+     */
+    TSTART(CXCStclSharedExt.TSTART),
+
+    /**
+     * Same as {@link CXCStclSharedExt#TSTOP}.
+     */
+    TSTOP(CXCStclSharedExt.TSTOP);
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEREF_GEOCENTRIC}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_GEOCENTRIC = CXCStclSharedExt.TIMEREF_GEOCENTRIC;
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEREF_HELIOCENTRIC}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_HELIOCENTRIC = CXCStclSharedExt.TIMEREF_HELIOCENTRIC;
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEREF_SOLARSYSTEM}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_SOLARSYSTEM = CXCStclSharedExt.TIMEREF_SOLARSYSTEM;
+
+    /**
+     * Same as {@link CXCStclSharedExt#TIMEREF_LOCAL}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_LOCAL = CXCStclSharedExt.TIMEREF_LOCAL;
 
     private final FitsKey key;
+
+    STScIExt(IFitsHeader key) {
+        this.key = key.impl();
+    }
 
     STScIExt(VALUE valueType, String comment) {
         this(null, valueType, comment);
