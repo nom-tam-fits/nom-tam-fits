@@ -92,7 +92,41 @@ public enum CommonExt implements IFitsHeader {
     WINDDIR(VALUE.REAL, "[deg] wind direction: 0=N, 90=E, 180=S, 270=W"),
 
     /** Air pressure in hPa. */
-    PRESSURE(VALUE.REAL, "[hPa] air pressure");
+    PRESSURE(VALUE.REAL, "[hPa] air pressure"),
+
+    /** Observatory site, e.g. "Maunakea" */
+    SITENAME(VALUE.STRING, "observatory site"),
+
+    /** Elevation of observing site above sea level in meters */
+    SITEELEV(VALUE.REAL, "[m] elevation at observing site"),
+
+    /** Name of focuser */
+    FOCUSER(VALUE.STRING, "focuser name"),
+
+    /** Name of focuser. Synonym of {@link #FOCUSER} */
+    FOCNAME(VALUE.STRING, "focuser name"),
+
+    /** Filter wheel position */
+    FWHEEL(VALUE.STRING, "filter wheel position"),
+
+    /**
+     * Plate scale in arcsec / pixel. It may be different from the image scale described by the
+     * {@link nom.tam.fits.header.Standard#CDELTn} keywords, if physical pixels were binned or interpolated for a
+     * different image pixelization.
+     */
+    PIXSCALE(VALUE.REAL, "[arcsec/pixel] plate scale"),
+
+    /** Plate scale in arcsec / pixel. Synonym of {@link #PIXSCALE} */
+    SCALE(VALUE.REAL, "[arcsec/pixel] plate scale"),
+
+    /** Synonym of {@link #ANGLE}. **/
+    OBJCTROT(VALUE.REAL, "[deg] image angle"),
+
+    /** Amplifier gain */
+    GAINRAW(VALUE.REAL, "amplifier gain"),
+
+    /** Synonym of {@link MaxImDLExt#EGAIN} */
+    GAINADU(VALUE.REAL, "[ct/adu] amplifier gain electrons / ADU");
 
     private final FitsKey key;
 
