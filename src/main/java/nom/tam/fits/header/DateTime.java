@@ -171,18 +171,20 @@ public enum DateTime implements IFitsHeader {
     JDREF(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[day] reference Julian Date"),
 
     /**
-     * The start time of the observation, in the format specified in the FITS Standard, in the format HH:MM:SS[.s...]'.
+     * The start time of the observation, in the format specified in the FITS Standard, as decimal or in the format
+     * HH:MM:SS[.s...]'.
      * 
      * @since 1.19
      */
-    TSTART(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "start time of observation"),
+    TSTART(SOURCE.RESERVED, HDU.ANY, VALUE.ANY, "start time of observation"),
 
     /**
-     * The end time of the observation, in the format specified in the FITS Standard, in the format HH:MM:SS[.s...]'.
+     * The end time of the observation, in the format specified in the FITS Standard, as decimal or in the format
+     * HH:MM:SS[.s...]'.
      * 
      * @since 1.19
      */
-    TSTOP(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "end time of observation"),
+    TSTOP(SOURCE.RESERVED, HDU.ANY, VALUE.ANY, "end time of observation"),
 
     /**
      * [yr] Besselian epoch of observation

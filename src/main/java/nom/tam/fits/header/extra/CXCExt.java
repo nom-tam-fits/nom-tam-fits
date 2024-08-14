@@ -49,135 +49,165 @@ import nom.tam.fits.header.IFitsHeader;
  * @author Richard van Nieuwenhoven
  */
 public enum CXCExt implements IFitsHeader {
+
     /**
      * ASC-DS processing system revision (release)
      */
-    ASCDSVER("ASC-DS processing system revision (release)"),
+    ASCDSVER(VALUE.STRING, "ASC-DS processing system revision (release)"),
+
     /**
      * Correction applied to Basic Time rate (s)
      */
-    BTIMCORR("Correction applied to Basic Time rate (s)"),
+    BTIMCORR(VALUE.REAL, "[s] time rate correction"),
+
     /**
-     * Basic Time clock drift (s / VCDUcount^2)
+     * Basic Time clock drift (s / VCDUcount<sup>2</sup>)
      */
-    BTIMDRFT("Basic Time clock drift (s / VCDUcount^2)"),
+    BTIMDRFT(VALUE.REAL, "'[s/ct**2] clock drift"),
+
     /**
      * Basic Time offset (s)
      */
-    BTIMNULL("Basic Time offset (s)"),
+    BTIMNULL(VALUE.REAL, "[s] time offset"),
+
     /**
      * Basic Time clock rate (s / VCDUcount)
      */
-    BTIMRATE("Basic Time clock rate (s / VCDUcount)"),
+    BTIMRATE(VALUE.REAL, "[s/ct] clock rate"),
 
     /**
-     * Data product identification '########'
+     * Data product identification
      */
-    CONTENT("Data product identification"),
+    CONTENT(VALUE.STRING, "data product identification"),
+
     /**
-     * ???
+     * The format of the CONVERS keyword is 'i.j.k'. if missing, the default value will be '1.0.0'
      */
-    CONVERS("??"),
+    CONVERS(VALUE.STRING, "version info"),
+
     /**
-     * Data class '########'
+     * Data class
      */
-    DATACLAS("Data class"),
+    DATACLAS(VALUE.STRING, "data class"),
+
     /**
-     * Dead time correction
+     * Dead time correction factor
      */
-    DTCOR("Dead time correction"),
+    DTCOR(VALUE.REAL, "[s] dead time correction factor"),
+
     /**
      * Assumed focal length, mm; Level 1 and up
      */
-    FOC_LEN("Assumed focal length, mm; Level 1 and up"),
+    FOC_LEN(VALUE.REAL, "[mm] assumed focal length"),
+
     /**
-     * ICD reference
+     * ICD reference. E.g. 'HRC Level 1 Data Products ICD, Version 1.1'
      */
-    HDUSPEC("ICD reference"),
+    HDUSPEC(VALUE.STRING, "ICD reference"),
+
     /**
      * The OGIP long string convention may be used.
      */
-    LONGSTRN("The OGIP long string convention may be used."),
+    LONGSTRN(VALUE.STRING, "The OGIP long string convention may be used."),
+
     /**
-     * Mission is AXAF
+     * Mission specifier, e.g. 'AXAF'
      */
-    MISSION("Mission is AXAF"),
+    MISSION(VALUE.STRING, "Mission"),
 
     /**
      * Processing version of data
      */
-    REVISION("Processing version of data"),
+    REVISION(VALUE.STRING, "Processing version of data"),
+
     /**
      * Nominal roll angle, deg
      */
-    ROLL_NOM("Nominal roll angle, deg"),
+    ROLL_NOM(VALUE.REAL, "[deg] Nominal roll angle"),
+
     /**
      * Sequence number
      */
-    SEQ_NUM("Sequence number"),
+    SEQ_NUM(VALUE.INTEGER, "Sequence number"),
+
     /**
      * SIM focus pos (mm)
      */
-    SIM_X("SIM focus pos (mm)"),
+    SIM_X(VALUE.REAL, "[mm] SIM focus pos"),
+
     /**
      * SIM orthogonal axis pos (mm)
      */
-    SIM_Y("SIM orthogonal axis pos (mm)"),
+    SIM_Y(VALUE.REAL, "[mm] SIM orthogonal axis pos"),
+
     /**
      * SIM translation stage pos (mm)
      */
-    SIM_Z("SIM translation stage pos (mm)"),
+    SIM_Z(VALUE.REAL, "[mm] SIM translation stage pos"),
+
     /**
      * Major frame count at start
      */
-    STARTMJF("Major frame count at start"),
+    STARTMJF(VALUE.INTEGER, "Major frame count at start"),
+
     /**
      * Minor frame count at start
      */
-    STARTMNF("Minor frame count at start"),
+    STARTMNF(VALUE.INTEGER, "Minor frame count at start"),
+
     /**
      * On-Board MET close to STARTMJF and STARTMNF
      */
-    STARTOBT("On-Board MET close to STARTMJF and STARTMNF"),
+    STARTOBT(VALUE.INTEGER, "On-Board MET close to STARTMJF and STARTMNF"),
+
     /**
      * Major frame count at stop
      */
-    STOPMJF("Major frame count at stop"),
+    STOPMJF(VALUE.INTEGER, "Major frame count at stop"),
+
     /**
      * Minor frame count at stop
      */
-    STOPMNF("Minor frame count at stop"),
+    STOPMNF(VALUE.INTEGER, "Minor frame count at stop"),
+
     /**
-     * Absolute precision of clock correction
+     * Absolute timing error.
      */
-    TIERABSO("Absolute precision of clock correction"),
+    TIERABSO(VALUE.REAL, "[s] absolute timing error"),
+
     /**
-     * Short-term clock stability
+     * Clock rate error
      */
-    TIERRELA("Short-term clock stability"),
+    TIERRELA(VALUE.REAL, "[s/s] clock rate error"),
 
     /**
      * Time stamp reference as bin fraction
      */
-    TIMEPIXR("Time stamp reference as bin fraction"),
+    TIMEPIXR(VALUE.REAL, "[bin] Time stamp reference"),
 
     /**
      * Telemetry revision number (IP&amp;CL)
      */
-    TLMVER("Telemetry revision number (IP&CL)"),
+    TLMVER(VALUE.STRING, "Telemetry revision number (IP&CL)"),
+
     /**
-     * As in the "TIME" column: raw space craft clock;
+     * The value field of this keyword shall contain the value of the start time of data acquisition in units of
+     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS
+     * keyword.
      */
-    TSTART("As in the \"TIME\" column: raw space craft clock;"),
+    TSTART(VALUE.REAL, "start time of observation"),
+
     /**
-     * add TIMEZERO and MJDREF for absolute TT
+     * The value field of this keyword shall contain the value of the stop time of data acquisition in units of
+     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS
+     * keyword.
      */
-    TSTOP("add TIMEZERO and MJDREF for absolute TT");
+    TSTOP(VALUE.REAL, "start time of observation");
 
     private final FitsKey key;
 
-    CXCExt(String comment) {
-        key = new FitsKey(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
+    CXCExt(VALUE valueType, String comment) {
+        key = new FitsKey(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, valueType, comment);
     }
 
     @Override

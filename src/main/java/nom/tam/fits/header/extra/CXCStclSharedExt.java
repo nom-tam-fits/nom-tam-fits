@@ -35,62 +35,127 @@ import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
- * This is the file represents the common keywords between CXC and STSclExt
+ * This is the file represents the common keywords between CXC and STSclExt. See the ASC keywords at
+ * <a href="https://planet4589.org/astro/sds/asc/ps/SDS05.pdf">https://planet4589.org/astro/sds/asc/ps/SDS05.pdf</a> for
+ * defititions of these. .
  *
- * @author     Richard van Nieuwenhoven
+ * @author Richard van Nieuwenhoven and Attila Kovacs
  * 
- * @deprecated This enum is duplicated by both {@link CXCExt} and {@link STScIExt}, and users would (should) typically
- *                 use one or the other.
+ * @see    STScIExt
+ * @see    CXCExt
  */
 public enum CXCStclSharedExt implements IFitsHeader {
+
     /**
-     * Clock correction applied
+     * Whether clock correction applied (boolean).
      * <p>
      * T
      * </p>
      */
-    CLOCKAPP("Clock correction applied"),
+    CLOCKAPP(VALUE.LOGICAL, "Whether clock correction applied"),
+
     /**
-     * 1998-01-01T00:00:00 (TT) expressed in MJD (TT)
+     * Reference MJD (TT-based), relative to which time values (e.g. TSTART and TSTOP) are measured.
      */
-    MJDREF("1998-01-01T00:00:00 (TT) expressed in MJD"),
+    MJDREF(VALUE.STRING, "[day] MJD reference date"),
+
     /**
-     * Spacecraft clock
+     * <p>
+     * Specifies where the time assignment of the data is done. for example, for EXOSAT time assignment was made at the
+     * Madrid tracking station, so TASSIGN ='Madrid'. Since the document goes on to state that this information is
+     * relevant for barycentric corrections, one assumes that this means what is of interest is not the location of the
+     * computer where time tags where inserted into the telemetry stream, but whether those time tags refer to the
+     * actual photon arrival time or to the time at which the telemetry reached the ground station, etc.
+     * </p>
+     * <p>
+     * For example, for Einstein the time assignment was performed at the ground station but corrected to allow for the
+     * transmission time between satellite and ground, so I presume in this case TASSIGN='SATELLITE'. I believe that for
+     * AXAF, TASSIGN = 'SATELLITE'. OGIP/93-003 also speci es the location for the case of a ground station should be
+     * recorded the keywords GEOLAT, GEOLONG, and ALTITUDE. This is rather unfortunate since it would be nice to reserve
+     * these keywords for the satellite ephemeris position. However, since no ground station is de ned for AXAF, we feel
+     * that we can use GEOLONG, GEOLAT, and ALTITUDE for these purposes, especially since such usage is consistent with
+     * their usage for ground-based observations. TASSIGN has obviously no meaning when TIMESYS = 'TDB'.
+     * </p>
      */
-    TASSIGN("Spacecraft clock"),
+    TASSIGN(VALUE.STRING, "Source of time measurement"),
+
     /**
-     * Time resolution of data (in seconds)
+     * Time resolution of data in {@link #TIMEUNIT}.
      */
-    TIMEDEL("Time resolution of data (in seconds)"),
+    TIMEDEL(VALUE.REAL, "Time resolution of data"),
+
     /**
-     * No pathlength corrections
+     * Time reference frame.
+     * 
+     * @see #TIMEREF_LOCAL
+     * @see #TIMEREF_GEOCENTRIC
+     * @see #TIMEREF_HELIOCENTRIC
+     * @see #TIMEREF_SOLARSYSTEM
      */
-    TIMEREF("No pathlength corrections"),
+    TIMEREF(VALUE.STRING, "Time reference frame"),
+
     /**
-     * Units of time e.g. 's'
+     * Units of time, for example 's' for seconds. If absent, assume seconds.
      */
-    TIMEUNIT("Units of time "),
+    TIMEUNIT(VALUE.STRING, "Units of time"),
+
     /**
-     * AXAF FITS design document
+     * Version of time specification convention.
      */
-    TIMVERSN("AXAF FITS design document"),
+    TIMVERSN(VALUE.STRING, ""),
+
     /**
-     * Clock correction (if not zero)
+     * Clock correction (if not zero), in {@link #TIMEUNIT}.
      */
-    TIMEZERO("Clock correction (if not zero)"),
+    TIMEZERO(VALUE.REAL, "Clock offset"),
+
     /**
-     * As in the "TIME" column: raw space craft clock;
+     * The value field of this keyword shall contain the value of the start time of data acquisition in units of
+     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS
+     * keyword.
      */
-    TSTART("As in the \"TIME\" column: raw space craft clock;"),
+    TSTART(VALUE.REAL, "start time of observartion"),
+
     /**
-     * add TIMEZERO and MJDREF for absolute TT
+     * The value field of this keyword shall contain the value of the stop time of data acquisition in units of
+     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS
+     * keyword.
      */
-    TSTOP("add TIMEZERO and MJDREF for absolute TT");
+    TSTOP(VALUE.REAL, "stop time of observation");
+
+    /**
+     * Time is reported when detected wavefront passed the center of Earth, a standard value for {@link #TIMEREF}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_GEOCENTRIC = "GEOCENTRIC";
+
+    /**
+     * Time is reported when detected wavefront passed the center of the Sun, a standard value for {@link #TIMEREF}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_HELIOCENTRIC = "HELIOCENTRIC";
+
+    /**
+     * Time is reported when detected wavefront passed the Solar System barycenter, a standard value for
+     * {@link #TIMEREF}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_SOLARSYSTEM = "SOLARSYSTEM";
+
+    /**
+     * Time reported is actual time of detection, a standard value for {@link #TIMEREF}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_LOCAL = "LOCAL";
 
     private final FitsKey key;
 
-    CXCStclSharedExt(String comment) {
-        key = new FitsKey(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
+    CXCStclSharedExt(VALUE valueType, String comment) {
+        key = new FitsKey(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, valueType, comment);
     }
 
     @Override

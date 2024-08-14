@@ -46,161 +46,207 @@ import nom.tam.fits.header.IFitsHeader;
  * @author Richard van Nieuwenhoven.
  */
 public enum STScIExt implements IFitsHeader {
+
     /**
-     * approach vectors
+     * Type approach vectors. E.g. 'COMBINED'
      */
-    APPVEC("approach vectors"),
+    APPVEC(VALUE.STRING, "type of approach vectors"),
+
     /**
-     * Telemetry rate
+     * Telemetry data rate (baud).
      */
-    BIT_RATE("Telemetry rate"),
+    BIT_RATE(VALUE.REAL, "[bit/s] telemetry rate"),
+
     /**
-     * date of initial data represented (dd/mm/yy)
+     * date of initial data represented (yy/mm/dd)
+     * 
+     * @see nom.tam.fits.header.DateTime#DATE_BEG
      */
-    DATE_BEG("DATE-BEG", "date of initial data represented."),
+    DATE_BEG("DATE-BEG", VALUE.STRING, "date of initial data represented."),
+
     /**
-     * Date of original file creation (dd/mm/yy)
+     * Date of original file creation (yy/mm/dd)
      */
-    DATE_MAP("DATE-MAP", "Date of original file creation"),
+    DATE_MAP("DATE-MAP", VALUE.STRING, "date of original file creation"),
+
     /**
-     * File standard deviation of DEC (degrees)
+     * Pointing error DEC (degrees; 1-sigma)
      */
-    DEC_PNTE(""),
+    DEC_PNTE(VALUE.REAL, "[deg] declination pointing error "),
     /**
      * Detector X field of view (mm)
      */
-    FOV_X_MM("Detector X field of view (mm)"),
+    FOV_X_MM(VALUE.REAL, "[mm] detector X field of view"),
     /**
      * Detector X field of view (mm)
      */
-    FOV_Y_MM("Detector Y field of view (mm)"),
+    FOV_Y_MM(VALUE.REAL, "[mm] detector Y field of view"),
+
     /**
-     * BITS/PIXEL OF IPPS RASTER. In truth this is an illegal FITS keyword, as the character '/' is not allowed in
-     * standard FITS keywords. If possible, avoid using it since it may result in FITS that is not readable by some
-     * software.
+     * BITS/PIXEL OF IPPS RASTER.
+     * 
+     * @deprecated In truth this is an illegal FITS keyword, as the character '/' is not allowed in standard FITS
+     *                 keywords. If possible, avoid using it since it may result in FITS that is not readable by some
+     *                 software.
      */
-    IPPS_B_P("IPPS-B/P", "BITS/PIXEL OF IPPS RASTER."),
+    IPPS_B_P("IPPS-B/P", VALUE.INTEGER, "[bits/pixel] of IPPS raster."),
+
     /**
-     * IPPS identification.
+     * IPPS identification, such as target name, possibly including IPPS configuration
      */
-    IPPS_ID("IPPS-ID", ""),
+    IPPS_ID("IPPS-ID", VALUE.STRING, "IPPS ID"),
+
     /**
-     * MAXIMUM VALUE IN RASTER
+     * Maximum value in raster
      */
-    IPPS_MAX("IPPS-MAX", "MAXIMUM VALUE IN RASTER"),
+    IPPS_MAX("IPPS-MAX", VALUE.REAL, "maximum value in raster"),
+
     /**
-     * MINIMUM VALUE IN RASTER
+     * Minimum value in raster
      */
-    IPPS_MIN("IPPS-MIN", "MINIMUM VALUE IN RASTER"),
+    IPPS_MIN("IPPS-MIN", VALUE.REAL, "minimum value in raster"),
+
     /**
-     * RASTER LFN/RASTER ORDINAL
+     * Raster LFN / raster ordinal
      */
-    IPPS_RF("IPPS-RF", "RASTER LFN/RASTER ORDINAL"),
+    IPPS_RF("IPPS-RF", VALUE.STRING, "raster LFN / raster ordinal"),
+
     /**
      * ?
      */
-    JOBNAME(""),
+    JOBNAME(VALUE.STRING, ""),
+
     /**
      * Fractional portion of ephemeris MJD
      */
-    MJDREFF("Fractional portion of ephemeris MJD"),
+    MJDREFF(VALUE.REAL, "fractional portion of ephemeris MJD"),
+
     /**
      * Integer portion of ephemeris MJD
      */
-    MJDREFI("Integer portion of ephemeris MJD"),
+    MJDREFI(VALUE.INTEGER, "integer portion of ephemeris MJD"),
+
     /**
      * Modal Configuration ID
      */
-    MODAL_ID("Modal Configuration ID"),
+    MODAL_ID(VALUE.STRING, "modal Configuration ID"),
+
     /**
-     * optical attribute number is id.
+     * Optical axis position in both linearized detector coordinates and sky coordinates.
      */
-    OPTICn(""),
+    OPTICn(VALUE.REAL, "Optical axis position along coordinate"),
+
     /**
      * beginning orbit number
      */
-    ORBITBEG("beginning orbit number"),
+    ORBITBEG(VALUE.INTEGER, "beginning orbit number"),
     /**
      * ending orbit number
      */
-    ORBITEND("ending orbit number"),
+    ORBITEND(VALUE.INTEGER, "ending orbit number"),
     /**
-     * File standard deviation of ROLL (degrees)
+     * Pointing error in position angle (degrees; 1-sigma)
      */
-    PA_PNTE("File standard deviation of ROLL"),
+    PA_PNTE(VALUE.REAL, "[deg] position angle error"),
+
     /**
      * Quad tree pixel resolution
      */
-    PIXRESOL("Quad tree pixel resolution"),
+    PIXRESOL(VALUE.REAL, "quad tree pixel resolution"),
+
     /**
      * Processing script version
      */
-    PROCVER("Processing script version"),
+    PROCVER(VALUE.STRING, "processing script version"),
+
     /**
-     * ?
+     * Data product description?
      */
-    PRODUCT(""),
+    PRODUCT(VALUE.STRING, ""),
+
     /**
-     * File standard deviation of RA (degrees)
+     * Pointing error in RA (degrees, 1-sigma)
      */
-    RA_PNTE("File standard deviation of RA "),
+    RA_PNTE(VALUE.REAL, "R.A. pointing error"),
+
     /**
      * Sequential number from ODB
      */
-    SEQNUM("Sequential number from ODB"),
+    SEQNUM(VALUE.INTEGER, "sequential number from ODB"),
+
     /**
      * Number of times sequence processed
      */
-    SEQPNUM("Number of times sequence processed"),
+    SEQPNUM(VALUE.INTEGER, "number of times sequence processed"),
+
     /**
-     * solar elongations included
+     * solar elongations included. E.g. 'ALL'
      */
-    SOLELONG("solar elongations included"),
+    SOLELONG(VALUE.STRING, "selection of solar elongations"),
+
     /**
-     * ?
+     * @deprecated Use the standard {@link nom.tam.fits.header.WCS#TCDLTn} instead.
      */
-    TCDLTn(""),
+    TCDLTn(VALUE.REAL, ""),
+
     /**
-     * ?
+     * @deprecated Use the standard {@link nom.tam.fits.header.WCS#TCRPXn} instead.
      */
-    TCRPXn(""),
+    TCRPXn(VALUE.REAL, ""),
+
     /**
-     * ?
+     * @deprecated Use the standard {@link nom.tam.fits.header.WCS#TCRVLn} instead.
      */
-    TCRVLn(""),
+
+    TCRVLn(VALUE.REAL, ""),
+
     /**
-     * ?
+     * @deprecated Use the standard {@link nom.tam.fits.header.WCS#TCTYPn} instead
      */
-    TCTYPn(""),
+    TCTYPn(VALUE.STRING, ""),
+
     /**
      * Default time system. All times which do not have a "timesys" element associated with them in this dictionary
-     * default to this keyword. time system (same as IRAS)
+     * default to this keyword. time system (same as IRAS).
+     * 
+     * @deprecated Use the standatd {@link nom.tam.fits.header.DateTime#TIMESYS} instead.
      */
-    TIMESYS("Default time system"),
+    TIMESYS(VALUE.STRING, "Default time system"),
+
     /**
      * offset to be applied to TIME column
      */
-    TIMEZERO("offset to be applied to TIME column"),
+    TIMEZERO(VALUE.REAL, "time offset"),
+
     /**
-     * observation start time in TIMESYS system .
+     * The value field of this keyword shall contain the value of the start time of data acquisition in units of
+     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS
+     * keyword.
      */
-    TSTART("observation start time"),
+    TSTART(VALUE.STRING, "observation start time"),
+
     /**
-     * observation stop time in TIMESYS system .
+     * The value field of this keyword shall contain the value of the stop time of data acquisition in units of
+     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS
+     * keyword.
      */
-    TSTOP("observation stop time"),
+    TSTOP(VALUE.STRING, "observation stop time"),
+
     /**
      * Version of Data Reduction Software
      */
-    VERSION("Version of Data Reduction Software "),
+    VERSION(VALUE.STRING, "data reduction software version"),
+
     /**
-     * nominal wavelength of Band n
+     * nominal wavelength of band <i>n</i>, value + unit. For example '140. microns'.
      */
-    WAVEn("nominal wavelength of Band"),
+    WAVEn(VALUE.STRING, "band wavelength and unit"),
+
     /**
-     * signal from zodiacal dust remains in map
+     * Whether map was corrected for zodiacal light
      */
-    ZLREMOV("signal from zodiacal dust remains in map"),
+    ZLREMOV(VALUE.LOGICAL, "whether zodiacal light was removed"),
+
     /**
      * Modified Julian date at the start of the exposure. The fractional part of the date is given to better than a
      * second of time.
@@ -214,16 +260,16 @@ public enum STScIExt implements IFitsHeader {
      * index = none
      * </p>
      */
-    MJD_OBS("MJD-OBS", "MJD of exposure start");
+    MJD_OBS("MJD-OBS", VALUE.REAL, "[day] MJD of exposure start");
 
     private final FitsKey key;
 
-    STScIExt(String comment) {
-        this(null, comment);
+    STScIExt(VALUE valueType, String comment) {
+        this(null, valueType, comment);
     }
 
-    STScIExt(String key, String comment) {
-        this.key = new FitsKey(key == null ? name() : key, IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
+    STScIExt(String key, VALUE valueType, String comment) {
+        this.key = new FitsKey(key == null ? name() : key, IFitsHeader.SOURCE.CXC, HDU.ANY, valueType, comment);
     }
 
     @Override
