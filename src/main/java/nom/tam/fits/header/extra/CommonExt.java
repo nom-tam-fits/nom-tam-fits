@@ -88,8 +88,14 @@ public enum CommonExt implements IFitsHeader {
     /** Filter wheel position */
     FWHEEL(VALUE.STRING, "filter wheel position"),
 
-    /** Camera gain / amplification. Often used the same as {@link #GAINRAW} */
-    GAIN(VALUE.REAL, "camera gain factor"),
+    /**
+     * Camera gain / amplification. Often used the same as {@link #GAINRAW}. There may be many different conventions on
+     * using this keyword. For example itmay represent a multiplicative gain factor or gain defined as decibels, or
+     * strings such as 'HI'/'LO', or even as a boolean T/F. Therefore, this definition does not restrict the type of
+     * value this keyword can be used with. It is up to the user to ensure they follow the convention that makes most
+     * sense to their application, and for the tools they intend to use.
+     */
+    GAIN(VALUE.ANY, "camera gain"),
 
     /** Synonym of {@link MaxImDLExt#EGAIN} */
     GAINADU(VALUE.REAL, "[ct/adu] amplifier gain electrons / ADU"),
