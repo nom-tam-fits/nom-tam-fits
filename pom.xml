@@ -126,6 +126,9 @@
     <contributor>
       <name>Jonathan Cook</name>
     </contributor>
+    <contributor>
+      <name>John Murphy</name>
+    </contributor>
   </contributors>
   <scm>
     <connection>scm:git:https://github.com/nom-tam-fits/nom-tam-fits.git</connection>

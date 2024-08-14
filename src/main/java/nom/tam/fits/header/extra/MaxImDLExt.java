@@ -46,7 +46,7 @@ import nom.tam.fits.header.IFitsHeader;
  * http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm
  * </pre>
  *
- * @author Richard van Nieuwenhoven and Attila Kovacs
+ * @author Richard van Nieuwenhoven, Attila Kovacs, and John Murphy
  * 
  * @see    SBFitsExt
  */
@@ -331,7 +331,8 @@ public enum MaxImDLExt implements IFitsHeader {
     AOCFWHM(VALUE.REAL, "[arcsec] seeing FWHM"),
 
     /**
-     * if present the image has a valid Bayer color pattern.
+     * if present the image has a valid Bayer color pattern. For example, "RGGB", "GRBG", "GBRG", "BGGR", "RGBG",
+     * "GRGB", "GBGR", or "BGRG"
      */
     BAYERPAT(VALUE.STRING, "Bayer color pattern"),
 
@@ -452,7 +453,7 @@ public enum MaxImDLExt implements IFitsHeader {
     DAVWINDD(VALUE.REAL, "[deg] wind direction"),
 
     /**
-     * status of pier flip for German Equatorial mounts.
+     * Status of pier flip for German Equatorial mounts.
      */
     FLIPSTAT(VALUE.STRING, "status of pier flip"),
 
@@ -527,12 +528,19 @@ public enum MaxImDLExt implements IFitsHeader {
     OBJCTHA(VALUE.REAL, "[h] nominal hour angle of center of image"),
 
     /**
-     * indicates side-of-pier status when connected to a German Equatorial mount.
+     * Indicates side-of-pier status when connected to a German Equatorial mount. Usually 'East' or 'West'.
+     * 
+     * @see #PIERSIDE_EAST
+     * @see #PIERSIDE_WEST
      */
     PIERSIDE(VALUE.STRING, "side-of-pier status"),
 
     /**
-     * records the selected Readout Mode (if any) for the camera.
+     * Records the selected Readout Mode (if any) for the camera. We define constants for some commonly used readout
+     * modes, but other modes beyond these may be valid and can be used also.
+     * 
+     * @see #READOUTM_RAW
+     * @see #READOUTM_LONG_EXPOSURE_MODE
      */
     READOUTM(VALUE.STRING, "readout Mode for the camera"),
 
@@ -633,6 +641,34 @@ public enum MaxImDLExt implements IFitsHeader {
      * @since 1.20.1
      */
     public static final String IMAGETYP_TRICOLOR_IMAGE = "Tricolor Image";
+
+    /**
+     * Standard {@link #PIERSIDE} value for East side of mount.
+     * 
+     * @since 1.20.1
+     */
+    public static final String PIERSIDE_EAST = "East";
+
+    /**
+     * Standard {@link #PIERSIDE} value for West side of mount.
+     * 
+     * @since 1.20.1
+     */
+    public static final String PIERSIDE_WEST = "West";
+
+    /**
+     * Standard {@link #READOUTM} value for raw readout mode.
+     * 
+     * @since 1.20.1
+     */
+    public static final String READOUTM_RAW = "Raw";
+
+    /**
+     * Standard {@link #READOUTM} value for long exposure mode.
+     * 
+     * @since 1.20.1
+     */
+    public static final String READOUTM_LONG_EXPOSURE_MODE = "Long Exposure Mode";
 
     private final FitsKey key;
 
