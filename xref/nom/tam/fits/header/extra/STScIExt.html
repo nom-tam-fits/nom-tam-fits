@@ -8,238 +8,545 @@
 <div id="overview"><a href="../../../../../../apidocs/nom/tam/fits/header/extra/STScIExt.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> nom.tam.fits.header.extra;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * #%L</em>
-<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * nom.tam FITS library</em>
-<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2024 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> nom.tam.fits.header.DateTime;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * #%L</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * nom.tam FITS library</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * Anyone is free to copy, modify, publish, use, compile, sell, or</em>
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * distribute this software, either in source code form or as a compiled</em>
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * binary, for any purpose, commercial or non-commercial, and by any</em>
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * means.</em>
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> * In jurisdictions that recognize copyright laws, the author or authors</em>
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> * of this software dedicate any and all copyright interest in the</em>
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_comment"> * software to the public domain. We make this dedication for the benefit</em>
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_comment"> * of the public at large and to the detriment of our heirs and</em>
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_comment"> * successors. We intend this dedication to be an overt act of</em>
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> * relinquishment in perpetuity of all present and future rights to this</em>
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment"> * software under copyright law.</em>
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment"> * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,</em>
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_comment"> * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment"> * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</em>
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_comment"> * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR</em>
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_comment"> * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,</em>
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_comment"> * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR</em>
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_comment"> * OTHER DEALINGS IN THE SOFTWARE.</em>
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_comment"> * #L%</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_comment"> */</em>
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.FitsKey;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.IFitsHeader;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> * This keyword dictionary gathered form STScI.</em>
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2024 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * %%</em>
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * Anyone is free to copy, modify, publish, use, compile, sell, or</em>
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * distribute this software, either in source code form or as a compiled</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> * binary, for any purpose, commercial or non-commercial, and by any</em>
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> * means.</em>
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_comment"> * In jurisdictions that recognize copyright laws, the author or authors</em>
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_comment"> * of this software dedicate any and all copyright interest in the</em>
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_comment"> * software to the public domain. We make this dedication for the benefit</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> * of the public at large and to the detriment of our heirs and</em>
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment"> * successors. We intend this dedication to be an overt act of</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> * relinquishment in perpetuity of all present and future rights to this</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment"> * software under copyright law.</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment"> * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_comment"> * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_comment"> * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_comment"> * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR</em>
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_comment"> * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_comment"> * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_comment"> * OTHER DEALINGS IN THE SOFTWARE.</em>
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_comment"> * #L%</em>
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_comment"> */</em>
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.FitsKey;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.IFitsHeader;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.WCS;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment"> * See &lt;a href=</em>
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment"> * "<a href="http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html" target="alexandria_uri">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>"&gt;<a href="http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html" target="alexandria_uri">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>&lt;/a&gt;</em>
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment"> * @author Richard van Nieuwenhoven.</em>
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">public</strong> enum <a name="STScIExt" href="../../../../../nom/tam/fits/header/extra/STScIExt.html#STScIExt">STScIExt</a> <strong class="jxr_keyword">implements</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> {
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment">     * approach vectors</em>
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>      APPVEC(<span class="jxr_string">"approach vectors"</span>),
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">     * Telemetry rate</em>
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>      BIT_RATE(<span class="jxr_string">"Telemetry rate"</span>),
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">     * date of initial data represented (dd/mm/yy)</em>
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>      DATE_BEG(<span class="jxr_string">"DATE-BEG"</span>, <span class="jxr_string">"date of initial data represented."</span>),
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment">     * Date of original file creation (dd/mm/yy)</em>
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>      DATE_MAP(<span class="jxr_string">"DATE-MAP"</span>, <span class="jxr_string">"Date of original file creation"</span>),
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment"> * This keyword dictionary gathered form STScI.</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment"> * See &lt;a href=</em>
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment"> * "<a href="http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html" target="alexandria_uri">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>"&gt;<a href="http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html" target="alexandria_uri">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>&lt;/a&gt;.</em>
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment"> * Additional keywords added in 1.20.1 based on the</em>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> * &lt;a href="<a href="https://outerspace.stsci.edu/display/MASTDOCS/Required+Metadata" target="alexandria_uri">https://outerspace.stsci.edu/display/MASTDOCS/Required+Metadata</a>"&gt;HLSP Contributor Guide&lt;/a&gt;</em>
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment"> * @author Attila Kovacs and Richard van Nieuwenhoven</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">public</strong> enum <a name="STScIExt" href="../../../../../nom/tam/fits/header/extra/STScIExt.html#STScIExt">STScIExt</a> <strong class="jxr_keyword">implements</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> {
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">     * Type approach vectors. E.g. 'COMBINED'</em>
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>      APPVEC(VALUE.STRING, <span class="jxr_string">"type of approach vectors"</span>),
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment">     * Telemetry data rate (baud).</em>
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>      BIT_RATE(VALUE.REAL, <span class="jxr_string">"[bit/s] telemetry rate"</span>),
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">     * File standard deviation of DEC (degrees)</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>      DEC_PNTE(<span class="jxr_string">""</span>),
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">     * Detector X field of view (mm)</em>
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>      FOV_X_MM(<span class="jxr_string">"Detector X field of view (mm)"</span>),
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">     * Whether clock correction applied (boolean).</em>
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">     * T</em>
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>      CLOCKAPP(VALUE.LOGICAL, <span class="jxr_string">"is clock correction applied?"</span>),
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     * Detector X field of view (mm)</em>
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>      FOV_Y_MM(<span class="jxr_string">"Detector Y field of view (mm)"</span>),
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">     * BITS/PIXEL OF IPPS RASTER. In truth this is an illegal FITS keyword, as the character '/' is not allowed in</em>
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment">     * standard FITS keywords. If possible, avoid using it since it may result in FITS that is not readable by some</em>
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  <em class="jxr_javadoccomment">     * software.</em>
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>      IPPS_B_P(<span class="jxr_string">"IPPS-B/P"</span>, <span class="jxr_string">"BITS/PIXEL OF IPPS RASTER."</span>),
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_javadoccomment">     * IPPS identification.</em>
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>      IPPS_ID(<span class="jxr_string">"IPPS-ID"</span>, <span class="jxr_string">""</span>),
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment">     * MAXIMUM VALUE IN RASTER</em>
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>      IPPS_MAX(<span class="jxr_string">"IPPS-MAX"</span>, <span class="jxr_string">"MAXIMUM VALUE IN RASTER"</span>),
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  <em class="jxr_javadoccomment">     * MINIMUM VALUE IN RASTER</em>
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>      IPPS_MIN(<span class="jxr_string">"IPPS-MIN"</span>, <span class="jxr_string">"MINIMUM VALUE IN RASTER"</span>),
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     * date of initial data represented (yy/mm/dd)</em>
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment">     * @see nom.tam.fits.header.DateTime#DATE_BEG</em>
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>      DATE_BEG(<span class="jxr_string">"DATE-BEG"</span>, VALUE.STRING, HDU.ANY, <span class="jxr_string">"date of initial data represented."</span>),
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  <em class="jxr_javadoccomment">     * Date of original file creation (yy/mm/dd)</em>
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>      DATE_MAP(<span class="jxr_string">"DATE-MAP"</span>, VALUE.STRING, HDU.ANY, <span class="jxr_string">"date of original file creation"</span>),
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment">     * Pointing error in declination (degrees; 1-sigma)</em>
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>      DEC_PNTE(VALUE.REAL, <span class="jxr_string">"[deg] declination pointing error "</span>),
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  <em class="jxr_javadoccomment">     * Detector X field of view (mm)</em>
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>      FOV_X_MM(VALUE.REAL, <span class="jxr_string">"[mm] detector X field of view"</span>),
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  <em class="jxr_javadoccomment">     * RASTER LFN/RASTER ORDINAL</em>
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  <em class="jxr_javadoccomment">     * Detector X field of view (mm)</em>
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>      IPPS_RF(<span class="jxr_string">"IPPS-RF"</span>, <span class="jxr_string">"RASTER LFN/RASTER ORDINAL"</span>),
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L100" href="#L100">100</a> <em class="jxr_javadoccomment">     * ?</em>
-<a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>     JOBNAME(<span class="jxr_string">""</span>),
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L104" href="#L104">104</a> <em class="jxr_javadoccomment">     * Fractional portion of ephemeris MJD</em>
-<a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>     MJDREFF(<span class="jxr_string">"Fractional portion of ephemeris MJD"</span>),
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     * Integer portion of ephemeris MJD</em>
-<a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>     MJDREFI(<span class="jxr_string">"Integer portion of ephemeris MJD"</span>),
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L112" href="#L112">112</a> <em class="jxr_javadoccomment">     * Modal Configuration ID</em>
-<a class="jxr_linenumber" name="L113" href="#L113">113</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>     MODAL_ID(<span class="jxr_string">"Modal Configuration ID"</span>),
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L116" href="#L116">116</a> <em class="jxr_javadoccomment">     * optical attribute number is id.</em>
-<a class="jxr_linenumber" name="L117" href="#L117">117</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>     OPTICn(<span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>      FOV_Y_MM(VALUE.REAL, <span class="jxr_string">"[mm] detector Y field of view"</span>),
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">     * BITS/PIXEL OF IPPS RASTER.</em>
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">     * @deprecated In truth this is an illegal FITS keyword, as the character '/' is not allowed in standard FITS</em>
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> <em class="jxr_javadoccomment">     *                 keywords. If possible, avoid using it since it may result in FITS that is not readable by some</em>
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     *                 software.</em>
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>     IPPS_B_P(<span class="jxr_string">"IPPS-B/P"</span>, VALUE.INTEGER, HDU.ANY, <span class="jxr_string">"[bits/pixel] of IPPS raster."</span>),
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> 
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">     * IPPS identification, such as target name, possibly including IPPS configuration</em>
+<a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>     IPPS_ID(<span class="jxr_string">"IPPS-ID"</span>, VALUE.STRING, HDU.ANY, <span class="jxr_string">"IPPS ID"</span>),
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> 
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L115" href="#L115">115</a> <em class="jxr_javadoccomment">     * Maximum value in raster</em>
+<a class="jxr_linenumber" name="L116" href="#L116">116</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>     IPPS_MAX(<span class="jxr_string">"IPPS-MAX"</span>, VALUE.REAL, HDU.ANY, <span class="jxr_string">"maximum value in raster"</span>),
+<a class="jxr_linenumber" name="L118" href="#L118">118</a> 
 <a class="jxr_linenumber" name="L119" href="#L119">119</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L120" href="#L120">120</a> <em class="jxr_javadoccomment">     * beginning orbit number</em>
+<a class="jxr_linenumber" name="L120" href="#L120">120</a> <em class="jxr_javadoccomment">     * Minimum value in raster</em>
 <a class="jxr_linenumber" name="L121" href="#L121">121</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L122" href="#L122">122</a>     ORBITBEG(<span class="jxr_string">"beginning orbit number"</span>),
-<a class="jxr_linenumber" name="L123" href="#L123">123</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L124" href="#L124">124</a> <em class="jxr_javadoccomment">     * ending orbit number</em>
-<a class="jxr_linenumber" name="L125" href="#L125">125</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>     ORBITEND(<span class="jxr_string">"ending orbit number"</span>),
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L128" href="#L128">128</a> <em class="jxr_javadoccomment">     * File standard deviation of ROLL (degrees)</em>
-<a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>     PA_PNTE(<span class="jxr_string">"File standard deviation of ROLL"</span>),
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L132" href="#L132">132</a> <em class="jxr_javadoccomment">     * Quad tree pixel resolution</em>
-<a class="jxr_linenumber" name="L133" href="#L133">133</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>     PIXRESOL(<span class="jxr_string">"Quad tree pixel resolution"</span>),
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L136" href="#L136">136</a> <em class="jxr_javadoccomment">     * Processing script version</em>
-<a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>     PROCVER(<span class="jxr_string">"Processing script version"</span>),
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>     IPPS_MIN(<span class="jxr_string">"IPPS-MIN"</span>, VALUE.REAL, HDU.ANY, <span class="jxr_string">"minimum value in raster"</span>),
+<a class="jxr_linenumber" name="L123" href="#L123">123</a> 
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L125" href="#L125">125</a> <em class="jxr_javadoccomment">     * Raster LFN / raster ordinal</em>
+<a class="jxr_linenumber" name="L126" href="#L126">126</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>     IPPS_RF(<span class="jxr_string">"IPPS-RF"</span>, VALUE.STRING, HDU.ANY, <span class="jxr_string">"raster LFN / raster ordinal"</span>),
+<a class="jxr_linenumber" name="L128" href="#L128">128</a> 
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     * ?</em>
+<a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>     JOBNAME(VALUE.STRING, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L133" href="#L133">133</a> 
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_javadoccomment">     * @deprecated Use the standard {@link DateTime#MJD_OBS} instead.</em>
+<a class="jxr_linenumber" name="L136" href="#L136">136</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>     MJD_OBS(DateTime.MJD_OBS),
+<a class="jxr_linenumber" name="L138" href="#L138">138</a> 
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     * ?</em>
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     * @deprecated Use the standard {@link DateTime#MJDREF} instead.</em>
 <a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>     PRODUCT(<span class="jxr_string">""</span>),
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L144" href="#L144">144</a> <em class="jxr_javadoccomment">     * File standard deviation of RA (degrees)</em>
-<a class="jxr_linenumber" name="L145" href="#L145">145</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>     RA_PNTE(<span class="jxr_string">"File standard deviation of RA "</span>),
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">     * Sequential number from ODB</em>
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L150" href="#L150">150</a>     SEQNUM(<span class="jxr_string">"Sequential number from ODB"</span>),
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_javadoccomment">     * Number of times sequence processed</em>
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>     SEQPNUM(<span class="jxr_string">"Number of times sequence processed"</span>),
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L156" href="#L156">156</a> <em class="jxr_javadoccomment">     * solar elongations included</em>
-<a class="jxr_linenumber" name="L157" href="#L157">157</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>     SOLELONG(<span class="jxr_string">"solar elongations included"</span>),
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>     MJDREF(DateTime.MJDREF),
+<a class="jxr_linenumber" name="L143" href="#L143">143</a> 
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> <em class="jxr_javadoccomment">     * Fractional portion of ephemeris MJD</em>
+<a class="jxr_linenumber" name="L146" href="#L146">146</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>     MJDREFF(VALUE.REAL, <span class="jxr_string">"[day] fractional portion of ephemeris MJD"</span>),
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> 
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     * Integer portion of ephemeris MJD</em>
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>     MJDREFI(VALUE.INTEGER, <span class="jxr_string">"[day] integer portion of ephemeris MJD"</span>),
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> 
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> <em class="jxr_javadoccomment">     * Modal Configuration ID</em>
+<a class="jxr_linenumber" name="L156" href="#L156">156</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>     MODAL_ID(VALUE.STRING, <span class="jxr_string">"modal Configuration ID"</span>),
+<a class="jxr_linenumber" name="L158" href="#L158">158</a> 
 <a class="jxr_linenumber" name="L159" href="#L159">159</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">     * ?</em>
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">     * Optical axis position in both linearized detector coordinates and sky coordinates.</em>
 <a class="jxr_linenumber" name="L161" href="#L161">161</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>     TCDLTn(<span class="jxr_string">""</span>),
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L164" href="#L164">164</a> <em class="jxr_javadoccomment">     * ?</em>
-<a class="jxr_linenumber" name="L165" href="#L165">165</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>     TCRPXn(<span class="jxr_string">""</span>),
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L168" href="#L168">168</a> <em class="jxr_javadoccomment">     * ?</em>
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>     TCRVLn(<span class="jxr_string">""</span>),
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L172" href="#L172">172</a> <em class="jxr_javadoccomment">     * ?</em>
-<a class="jxr_linenumber" name="L173" href="#L173">173</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>     TCTYPn(<span class="jxr_string">""</span>),
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     * Default time system. All times which do not have a "timesys" element associated with them in this dictionary</em>
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">     * default to this keyword. time system (same as IRAS)</em>
-<a class="jxr_linenumber" name="L178" href="#L178">178</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>     TIMESYS(<span class="jxr_string">"Default time system"</span>),
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L181" href="#L181">181</a> <em class="jxr_javadoccomment">     * offset to be applied to TIME column</em>
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>     TIMEZERO(<span class="jxr_string">"offset to be applied to TIME column"</span>),
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>     OPTICn(VALUE.REAL, <span class="jxr_string">"optical axis position along coordinate"</span>),
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> 
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> <em class="jxr_javadoccomment">     * beginning orbit number</em>
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>     ORBITBEG(VALUE.INTEGER, <span class="jxr_string">"beginning orbit number"</span>),
+<a class="jxr_linenumber" name="L168" href="#L168">168</a> 
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> <em class="jxr_javadoccomment">     * ending orbit number</em>
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>     ORBITEND(VALUE.INTEGER, <span class="jxr_string">"ending orbit number"</span>),
+<a class="jxr_linenumber" name="L173" href="#L173">173</a> 
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">     * Pointing error in position angle (degrees; 1-sigma)</em>
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>     PA_PNTE(VALUE.REAL, <span class="jxr_string">"[deg] position angle error"</span>),
+<a class="jxr_linenumber" name="L178" href="#L178">178</a> 
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L180" href="#L180">180</a> <em class="jxr_javadoccomment">     * Quad tree pixel resolution</em>
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>     PIXRESOL(VALUE.REAL, <span class="jxr_string">"quad tree pixel resolution"</span>),
+<a class="jxr_linenumber" name="L183" href="#L183">183</a> 
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> <em class="jxr_javadoccomment">     * observation start time in TIMESYS system .</em>
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> <em class="jxr_javadoccomment">     * Processing script version</em>
 <a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L187" href="#L187">187</a>     TSTART(<span class="jxr_string">"observation start time"</span>),
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     * observation stop time in TIMESYS system .</em>
-<a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>     TSTOP(<span class="jxr_string">"observation stop time"</span>),
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L193" href="#L193">193</a> <em class="jxr_javadoccomment">     * Version of Data Reduction Software</em>
-<a class="jxr_linenumber" name="L194" href="#L194">194</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>     VERSION(<span class="jxr_string">"Version of Data Reduction Software "</span>),
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L197" href="#L197">197</a> <em class="jxr_javadoccomment">     * nominal wavelength of Band n</em>
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>     WAVEn(<span class="jxr_string">"nominal wavelength of Band"</span>),
-<a class="jxr_linenumber" name="L200" href="#L200">200</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">     * signal from zodiacal dust remains in map</em>
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>     ZLREMOV(<span class="jxr_string">"signal from zodiacal dust remains in map"</span>),
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>     PROCVER(VALUE.STRING, <span class="jxr_string">"processing script version"</span>),
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> 
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">     * Data product description?</em>
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>     PRODUCT(VALUE.STRING, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L193" href="#L193">193</a> 
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_javadoccomment">     * Pointing error in right ascension (degrees, 1-sigma)</em>
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>     RA_PNTE(VALUE.REAL, <span class="jxr_string">"R.A. pointing error"</span>),
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> 
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">     * Sequential number from ODB</em>
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>     SEQNUM(VALUE.INTEGER, <span class="jxr_string">"sequential number from ODB"</span>),
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> 
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">     * Modified Julian date at the start of the exposure. The fractional part of the date is given to better than a</em>
-<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">     * second of time.</em>
-<a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_javadoccomment">     * units = 'd'</em>
-<a class="jxr_linenumber" name="L209" href="#L209">209</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">     * default value = none</em>
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">     * index = none</em>
-<a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">     * Number of times sequence processed</em>
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>     SEQPNUM(VALUE.INTEGER, <span class="jxr_string">"number of times sequence processed"</span>),
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> 
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">     * solar elongations included. E.g. 'ALL'</em>
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>     SOLELONG(VALUE.STRING, <span class="jxr_string">"selection of solar elongations"</span>),
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> 
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">     * @deprecated Use the standard {@link WCS#TCDLTn} instead.</em>
 <a class="jxr_linenumber" name="L216" href="#L216">216</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L217" href="#L217">217</a>     MJD_OBS(<span class="jxr_string">"MJD-OBS"</span>, <span class="jxr_string">"MJD of exposure start"</span>);
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>     TCDLTn(WCS.TCDLTn),
 <a class="jxr_linenumber" name="L218" href="#L218">218</a> 
-<a class="jxr_linenumber" name="L219" href="#L219">219</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="FitsKey" href="../../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a> key;
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> 
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>     <a name="STScIExt" href="../../../../../nom/tam/fits/header/extra/STScIExt.html#STScIExt">STScIExt</a>(String comment) {
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>         <strong class="jxr_keyword">this</strong>(<strong class="jxr_keyword">null</strong>, comment);
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>     }
-<a class="jxr_linenumber" name="L224" href="#L224">224</a> 
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>     <a name="STScIExt" href="../../../../../nom/tam/fits/header/extra/STScIExt.html#STScIExt">STScIExt</a>(String key, String comment) {
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsKey" href="../../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a>(key == <strong class="jxr_keyword">null</strong> ? name() : key, IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>     }
-<a class="jxr_linenumber" name="L228" href="#L228">228</a> 
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>     @Override
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="FitsKey" href="../../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a> impl() {
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>         <strong class="jxr_keyword">return</strong> key;
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>     }
-<a class="jxr_linenumber" name="L233" href="#L233">233</a> 
-<a class="jxr_linenumber" name="L234" href="#L234">234</a> }
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L220" href="#L220">220</a> <em class="jxr_javadoccomment">     * @deprecated Use the standard {@link WCS#TCRPXn} instead.</em>
+<a class="jxr_linenumber" name="L221" href="#L221">221</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>     TCRPXn(WCS.TCRPXn),
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     * @deprecated Use the standard {@link WCS#TCRVLn} instead.</em>
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> 
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>     TCRVLn(WCS.TCRVLn),
+<a class="jxr_linenumber" name="L229" href="#L229">229</a> 
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_javadoccomment">     * @deprecated Use the standard {@link WCS#TCTYPn} instead</em>
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>     TCTYPn(WCS.TCTYPn),
+<a class="jxr_linenumber" name="L234" href="#L234">234</a> 
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">     * Specifies where the time assignment of the data is done. for example, for EXOSAT time assignment was made at the</em>
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     * Madrid tracking station, so TASSIGN ='Madrid'. Since the document goes on to state that this information is</em>
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     * relevant for barycentric corrections, one assumes that this means what is of interest is not the location of the</em>
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     * computer where time tags where inserted into the telemetry stream, but whether those time tags refer to the</em>
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> <em class="jxr_javadoccomment">     * actual photon arrival time or to the time at which the telemetry reached the ground station, etc.</em>
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L243" href="#L243">243</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> <em class="jxr_javadoccomment">     * For example, for Einstein the time assignment was performed at the ground station but corrected to allow for the</em>
+<a class="jxr_linenumber" name="L245" href="#L245">245</a> <em class="jxr_javadoccomment">     * transmission time between satellite and ground, so I presume in this case TASSIGN='SATELLITE'. I believe that for</em>
+<a class="jxr_linenumber" name="L246" href="#L246">246</a> <em class="jxr_javadoccomment">     * AXAF, TASSIGN = 'SATELLITE'. OGIP/93-003 also speci es the location for the case of a ground station should be</em>
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> <em class="jxr_javadoccomment">     * recorded the keywords GEOLAT, GEOLONG, and ALTITUDE. This is rather unfortunate since it would be nice to reserve</em>
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> <em class="jxr_javadoccomment">     * these keywords for the satellite ephemeris position. However, since no ground station is de ned for AXAF, we feel</em>
+<a class="jxr_linenumber" name="L249" href="#L249">249</a> <em class="jxr_javadoccomment">     * that we can use GEOLONG, GEOLAT, and ALTITUDE for these purposes, especially since such usage is consistent with</em>
+<a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">     * their usage for ground-based observations. TASSIGN has obviously no meaning when TIMESYS = 'TDB'.</em>
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>     TASSIGN(VALUE.STRING, <span class="jxr_string">"location where time was assigned"</span>),
+<a class="jxr_linenumber" name="L254" href="#L254">254</a> 
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> <em class="jxr_javadoccomment">     * Time reference frame.</em>
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> <em class="jxr_javadoccomment">     * @see #TIMEREF_LOCAL</em>
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> <em class="jxr_javadoccomment">     * @see #TIMEREF_GEOCENTRIC</em>
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> <em class="jxr_javadoccomment">     * @see #TIMEREF_HELIOCENTRIC</em>
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> <em class="jxr_javadoccomment">     * @see #TIMEREF_SOLARSYSTEM</em>
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L263" href="#L263">263</a>     TIMEREF(VALUE.STRING, <span class="jxr_string">"time reference frame"</span>),
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> 
+<a class="jxr_linenumber" name="L265" href="#L265">265</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> <em class="jxr_javadoccomment">     * Units of time, for example 's' for seconds. If absent, assume seconds.</em>
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>     TIMEUNIT(VALUE.STRING, <span class="jxr_string">"units of time"</span>),
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> 
+<a class="jxr_linenumber" name="L270" href="#L270">270</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">     * Version of time specification convention.</em>
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L273" href="#L273">273</a>     TIMVERSN(VALUE.STRING, <span class="jxr_string">"version of time convention"</span>),
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> 
+<a class="jxr_linenumber" name="L275" href="#L275">275</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> <em class="jxr_javadoccomment">     * Clock correction (if not zero), in {@link #TIMEUNIT}.</em>
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>     TIMEZERO(VALUE.REAL, <span class="jxr_string">"clock offset"</span>),
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> 
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L281" href="#L281">281</a> <em class="jxr_javadoccomment">     * The value field of this keyword shall contain the value of the start time of data acquisition in units of</em>
+<a class="jxr_linenumber" name="L282" href="#L282">282</a> <em class="jxr_javadoccomment">     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS</em>
+<a class="jxr_linenumber" name="L283" href="#L283">283</a> <em class="jxr_javadoccomment">     * keyword. Similar to {@link DateTime#TSTART} except that it strictly uses decimal values.</em>
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>     TSTART(VALUE.REAL, <span class="jxr_string">"start time of observartion"</span>),
+<a class="jxr_linenumber" name="L286" href="#L286">286</a> 
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L288" href="#L288">288</a> <em class="jxr_javadoccomment">     * The value field of this keyword shall contain the value of the stop time of data acquisition in units of</em>
+<a class="jxr_linenumber" name="L289" href="#L289">289</a> <em class="jxr_javadoccomment">     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS</em>
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> <em class="jxr_javadoccomment">     * keyword. Similar to {@link DateTime#TSTOP} except that it strictly uses decimal values.</em>
+<a class="jxr_linenumber" name="L291" href="#L291">291</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>     TSTOP(VALUE.REAL, <span class="jxr_string">"stop time of observation"</span>),
+<a class="jxr_linenumber" name="L293" href="#L293">293</a> 
+<a class="jxr_linenumber" name="L294" href="#L294">294</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L295" href="#L295">295</a> <em class="jxr_javadoccomment">     * Version of Data Reduction Software</em>
+<a class="jxr_linenumber" name="L296" href="#L296">296</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>     VERSION(VALUE.STRING, <span class="jxr_string">"data reduction software version"</span>),
+<a class="jxr_linenumber" name="L298" href="#L298">298</a> 
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L300" href="#L300">300</a> <em class="jxr_javadoccomment">     * nominal wavelength of band &lt;i&gt;n&lt;/i&gt;, value + unit. For example '140. microns'.</em>
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>     WAVEn(VALUE.STRING, <span class="jxr_string">"band wavelength and unit"</span>),
+<a class="jxr_linenumber" name="L303" href="#L303">303</a> 
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L305" href="#L305">305</a> <em class="jxr_javadoccomment">     * Whether map was corrected for zodiacal light</em>
+<a class="jxr_linenumber" name="L306" href="#L306">306</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L307" href="#L307">307</a>     ZLREMOV(VALUE.LOGICAL, <span class="jxr_string">"whether zodiacal light was removed"</span>),
+<a class="jxr_linenumber" name="L308" href="#L308">308</a> 
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>     <em class="jxr_comment">// -------------------------------------------------------------&gt;</em>
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>     <em class="jxr_comment">// from https://outerspace.stsci.edu/display/MASTDOCS/Common+Metadata</em>
+<a class="jxr_linenumber" name="L311" href="#L311">311</a> 
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L313" href="#L313">313</a> <em class="jxr_javadoccomment">     * Digital Object Identifier for the HLSP data collection</em>
+<a class="jxr_linenumber" name="L314" href="#L314">314</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L316" href="#L316">316</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>     DOI(VALUE.STRING, HDU.PRIMARY, <span class="jxr_string">"DOI of HLSP data collection"</span>),
+<a class="jxr_linenumber" name="L318" href="#L318">318</a> 
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">     * The identifier (acronym) for this HLSP collection.</em>
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>     HLSPID(VALUE.STRING, HDU.PRIMARY, <span class="jxr_string">"HLSP collection ID"</span>),
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> 
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">     * Full name of HLSP project lead</em>
+<a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L330" href="#L330">330</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>     HLSPLEAD(VALUE.STRING, HDU.PRIMARY, <span class="jxr_string">"HLSP project lead"</span>),
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> 
+<a class="jxr_linenumber" name="L333" href="#L333">333</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L334" href="#L334">334</a> <em class="jxr_javadoccomment">     * Title for HLSP project, long form</em>
+<a class="jxr_linenumber" name="L335" href="#L335">335</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L336" href="#L336">336</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L337" href="#L337">337</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>     HLSPNAME(VALUE.STRING, HDU.PRIMARY, <span class="jxr_string">"HLSP project title"</span>),
+<a class="jxr_linenumber" name="L339" href="#L339">339</a> 
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L341" href="#L341">341</a> <em class="jxr_javadoccomment">     * Designation of the target(s) or field(s) for this HLSP</em>
+<a class="jxr_linenumber" name="L342" href="#L342">342</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L343" href="#L343">343</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L344" href="#L344">344</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>     HLSPTARG(VALUE.STRING, HDU.PRIMARY, <span class="jxr_string">"HLSP target fields"</span>),
+<a class="jxr_linenumber" name="L346" href="#L346">346</a> 
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L348" href="#L348">348</a> <em class="jxr_javadoccomment">     * Version identifier for this HLSP product</em>
+<a class="jxr_linenumber" name="L349" href="#L349">349</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L350" href="#L350">350</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L351" href="#L351">351</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>     HLSPVER(VALUE.STRING, HDU.PRIMARY, <span class="jxr_string">"HLSP product version"</span>),
+<a class="jxr_linenumber" name="L353" href="#L353">353</a> 
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L355" href="#L355">355</a> <em class="jxr_javadoccomment">     * License for use of these data, with the value 'CC BY 4.0'</em>
+<a class="jxr_linenumber" name="L356" href="#L356">356</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> <em class="jxr_javadoccomment">     * @see   #LICENURL</em>
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>     LICENSE(VALUE.STRING, HDU.PRIMARY, <span class="jxr_string">"data license"</span>),
+<a class="jxr_linenumber" name="L362" href="#L362">362</a> 
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">     * Data license URL, with the value '<a href="https://creativecommons.org/licenses/by/4.0/'" target="alexandria_uri">https://creativecommons.org/licenses/by/4.0/'</a></em>
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">     * @see   #LICENSE</em>
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L369" href="#L369">369</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>     LICENURL(VALUE.STRING, HDU.PRIMARY, <span class="jxr_string">"data license URL"</span>),
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> 
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L373" href="#L373">373</a> <em class="jxr_javadoccomment">     * Observatory program/proposal identifier, if applicable</em>
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>     PROPOSID(VALUE.STRING, HDU.PRIMARY, <span class="jxr_string">"program/proposal ID"</span>),
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> 
+<a class="jxr_linenumber" name="L379" href="#L379">379</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> <em class="jxr_javadoccomment">     * Duration of exposure, exclusive of dead time, in seconds.</em>
+<a class="jxr_linenumber" name="L381" href="#L381">381</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>     XPOSURE(VALUE.REAL, <span class="jxr_string">"[s] exposure time excl. dead time"</span>),
+<a class="jxr_linenumber" name="L383" href="#L383">383</a> 
+<a class="jxr_linenumber" name="L384" href="#L384">384</a>     <em class="jxr_comment">// -------------------------------------------------------------&gt;</em>
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>     <em class="jxr_comment">// https://outerspace.stsci.edu/display/MASTDOCS/Image+Metadata</em>
+<a class="jxr_linenumber" name="L386" href="#L386">386</a> 
+<a class="jxr_linenumber" name="L387" href="#L387">387</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L388" href="#L388">388</a> <em class="jxr_javadoccomment">     * ID of detector used for exposure</em>
+<a class="jxr_linenumber" name="L389" href="#L389">389</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L391" href="#L391">391</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>     DETECTOR(VALUE.STRING, <span class="jxr_string">"ID of detector used for exposure"</span>),
+<a class="jxr_linenumber" name="L393" href="#L393">393</a> 
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L395" href="#L395">395</a> <em class="jxr_javadoccomment">     * Name(s) of filter(s) used to define the passband, if more than one was used, with nn incrementing from 1 (and</em>
+<a class="jxr_linenumber" name="L396" href="#L396">396</a> <em class="jxr_javadoccomment">     * zero-pad if nn &gt;9). As such for a passband index of 4, you might use &lt;code&gt;FILTERnn.n(0).n(4)&lt;/code&gt; to construct</em>
+<a class="jxr_linenumber" name="L397" href="#L397">397</a> <em class="jxr_javadoccomment">     * 'FILTER04'. It is similar to the more standard {@link nom.tam.fits.header.InstrumentDescription#FILTERn} keyword</em>
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> <em class="jxr_javadoccomment">     * except for the 2-digit, zero-padded, indexing for bands 1--9.</em>
+<a class="jxr_linenumber" name="L399" href="#L399">399</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L402" href="#L402">402</a>     FILTERnn(VALUE.STRING, <span class="jxr_string">"filter of passband n"</span>),
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> 
+<a class="jxr_linenumber" name="L404" href="#L404">404</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">     * Declination coordinate of the target or field, in degrees</em>
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>     DEC_TARG(VALUE.REAL, <span class="jxr_string">"[deg] target/field declination"</span>),
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> 
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">     * Typical spatial extent of the point-spread function, in pix</em>
+<a class="jxr_linenumber" name="L413" href="#L413">413</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L414" href="#L414">414</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L415" href="#L415">415</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>     PSFSIZE(VALUE.REAL, <span class="jxr_string">"[pix] Width of point-spread function"</span>),
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> 
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_javadoccomment">     * Right Ascension coordinate of the target or field, in degrees</em>
+<a class="jxr_linenumber" name="L420" href="#L420">420</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L421" href="#L421">421</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>     RA_TARG(VALUE.REAL, <span class="jxr_string">"[deg] target/field right ascension"</span>),
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> 
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>     <em class="jxr_comment">// -------------------------------------------------------------&gt;</em>
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>     <em class="jxr_comment">// https://outerspace.stsci.edu/display/MASTDOCS/Spectral+Metadata</em>
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> 
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> <em class="jxr_javadoccomment">     * Name of dispersive element used, or 'MULTI' if more than one defined the passband.</em>
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">     * @see   #DISPRSR_MULTI</em>
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>     DISPRSR(VALUE.STRING, <span class="jxr_string">"dispersive element used"</span>),
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> 
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     * Name(s) of dispersive element(s) used for exposure if more than one was used, with nn (zero-padded) incrementing</em>
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     * from 1. Note that this information can alternatively be represented in a PROVENANCE extension. See Provenance</em>
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">     * Metadata for details. As such for a passband index of 4, you might use &lt;code&gt;DISPRnn.n(0).n(4)&lt;/code&gt; to</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * construct 'DISPR04'.</em>
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>     DISPRnn(VALUE.STRING, <span class="jxr_string">"dispersive element n"</span>),
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> 
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>     <em class="jxr_comment">// -------------------------------------------------------------&gt;</em>
+<a class="jxr_linenumber" name="L448" href="#L448">448</a>     <em class="jxr_comment">// https://outerspace.stsci.edu/display/MASTDOCS/Provenance+Metadata</em>
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> 
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> <em class="jxr_javadoccomment">     * File name or observatory-unique identifier of the contributing observation. For products from MAST missions,</em>
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> <em class="jxr_javadoccomment">     * provide the Observation ID so that the contributing data may be linked within MAST.</em>
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>     FILE_ID(VALUE.STRING, <span class="jxr_string">"File name or obervation UID"</span>);
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> 
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> <em class="jxr_javadoccomment">     * Time is reported when detected wavefront passed the center of Earth, a standard value for {@link #TIMEREF}.</em>
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L461" href="#L461">461</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String TIMEREF_GEOCENTRIC = <span class="jxr_string">"GEOCENTRIC"</span>;
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> 
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">     * Time is reported when detected wavefront passed the center of the Sun, a standard value for {@link #TIMEREF}.</em>
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L470" href="#L470">470</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String TIMEREF_HELIOCENTRIC = <span class="jxr_string">"HELIOCENTRIC"</span>;
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> 
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> <em class="jxr_javadoccomment">     * Time is reported when detected wavefront passed the Solar System barycenter, a standard value for</em>
+<a class="jxr_linenumber" name="L474" href="#L474">474</a> <em class="jxr_javadoccomment">     * {@link #TIMEREF}.</em>
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String TIMEREF_SOLARSYSTEM = <span class="jxr_string">"SOLARSYSTEM"</span>;
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> 
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L481" href="#L481">481</a> <em class="jxr_javadoccomment">     * Time reported is actual time of detection, a standard value for {@link #TIMEREF}.</em>
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L483" href="#L483">483</a> <em class="jxr_javadoccomment">     * @since 1.20.1</em>
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L485" href="#L485">485</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String TIMEREF_LOCAL = <span class="jxr_string">"LOCAL"</span>;
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> 
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> <em class="jxr_javadoccomment">     * Standard {@link nom.tam.fits.header.InstrumentDescription#FILTER} value if multiple passbands are used.</em>
+<a class="jxr_linenumber" name="L489" href="#L489">489</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String FILTER_MULTI = <span class="jxr_string">"MULTI"</span>;
+<a class="jxr_linenumber" name="L491" href="#L491">491</a> 
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> <em class="jxr_javadoccomment">     * Standard {@link #DISPRSR} value if multiple passbands are used.</em>
+<a class="jxr_linenumber" name="L494" href="#L494">494</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L495" href="#L495">495</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String DISPRSR_MULTI = <span class="jxr_string">"MULTI"</span>;
+<a class="jxr_linenumber" name="L496" href="#L496">496</a> 
+<a class="jxr_linenumber" name="L497" href="#L497">497</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L498" href="#L498">498</a> <em class="jxr_javadoccomment">     * Data quality (binary) flags, with zero indicating no anthologies</em>
+<a class="jxr_linenumber" name="L499" href="#L499">499</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L500" href="#L500">500</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COLNAME_FLAGS = <span class="jxr_string">"FLAGS"</span>;
+<a class="jxr_linenumber" name="L501" href="#L501">501</a> 
+<a class="jxr_linenumber" name="L502" href="#L502">502</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> <em class="jxr_javadoccomment">     * Could also be called "FLUX_DENSITY" or something similar, depending upon the quantity stored. Flux(es) for the</em>
+<a class="jxr_linenumber" name="L504" href="#L504">504</a> <em class="jxr_javadoccomment">     * associated wavelength(s), in units of the value of the TUNIT keyword for this column.</em>
+<a class="jxr_linenumber" name="L505" href="#L505">505</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L506" href="#L506">506</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COLNAME_FLUX = <span class="jxr_string">"FLUX"</span>;
+<a class="jxr_linenumber" name="L507" href="#L507">507</a> 
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L509" href="#L509">509</a> <em class="jxr_javadoccomment">     * Variance in the flux(es) at the associated wavelength(s)</em>
+<a class="jxr_linenumber" name="L510" href="#L510">510</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L511" href="#L511">511</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COLNAME_VARIANCE = <span class="jxr_string">"VARIANCE"</span>;
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> 
+<a class="jxr_linenumber" name="L513" href="#L513">513</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L514" href="#L514">514</a> <em class="jxr_javadoccomment">     * Wavelength(s) for the associated flux(es), in units of the TUNIT keyword for this column.</em>
+<a class="jxr_linenumber" name="L515" href="#L515">515</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COLNAME_WAVELENGTH = <span class="jxr_string">"WAVELENGTH"</span>;
+<a class="jxr_linenumber" name="L517" href="#L517">517</a> 
+<a class="jxr_linenumber" name="L518" href="#L518">518</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="FitsKey" href="../../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a> key;
+<a class="jxr_linenumber" name="L519" href="#L519">519</a> 
+<a class="jxr_linenumber" name="L520" href="#L520">520</a>     <a name="STScIExt" href="../../../../../nom/tam/fits/header/extra/STScIExt.html#STScIExt">STScIExt</a>(<a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key) {
+<a class="jxr_linenumber" name="L521" href="#L521">521</a>         <strong class="jxr_keyword">this</strong>.key = key.impl();
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>     }
+<a class="jxr_linenumber" name="L523" href="#L523">523</a> 
+<a class="jxr_linenumber" name="L524" href="#L524">524</a>     <a name="STScIExt" href="../../../../../nom/tam/fits/header/extra/STScIExt.html#STScIExt">STScIExt</a>(VALUE valueType, String comment) {
+<a class="jxr_linenumber" name="L525" href="#L525">525</a>         <strong class="jxr_keyword">this</strong>(<strong class="jxr_keyword">null</strong>, valueType, HDU.ANY, comment);
+<a class="jxr_linenumber" name="L526" href="#L526">526</a>     }
+<a class="jxr_linenumber" name="L527" href="#L527">527</a> 
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>     <a name="STScIExt" href="../../../../../nom/tam/fits/header/extra/STScIExt.html#STScIExt">STScIExt</a>(VALUE valueType, HDU hduType, String comment) {
+<a class="jxr_linenumber" name="L529" href="#L529">529</a>         <strong class="jxr_keyword">this</strong>(<strong class="jxr_keyword">null</strong>, valueType, hduType, comment);
+<a class="jxr_linenumber" name="L530" href="#L530">530</a>     }
+<a class="jxr_linenumber" name="L531" href="#L531">531</a> 
+<a class="jxr_linenumber" name="L532" href="#L532">532</a>     <a name="STScIExt" href="../../../../../nom/tam/fits/header/extra/STScIExt.html#STScIExt">STScIExt</a>(String key, VALUE valueType, HDU hduType, String comment) {
+<a class="jxr_linenumber" name="L533" href="#L533">533</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsKey" href="../../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a>(key == <strong class="jxr_keyword">null</strong> ? name() : key, IFitsHeader.SOURCE.STScI, hduType, valueType, comment);
+<a class="jxr_linenumber" name="L534" href="#L534">534</a>     }
+<a class="jxr_linenumber" name="L535" href="#L535">535</a> 
+<a class="jxr_linenumber" name="L536" href="#L536">536</a>     @Override
+<a class="jxr_linenumber" name="L537" href="#L537">537</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="FitsKey" href="../../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a> impl() {
+<a class="jxr_linenumber" name="L538" href="#L538">538</a>         <strong class="jxr_keyword">return</strong> key;
+<a class="jxr_linenumber" name="L539" href="#L539">539</a>     }
+<a class="jxr_linenumber" name="L540" href="#L540">540</a> 
+<a class="jxr_linenumber" name="L541" href="#L541">541</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2024 nom-tam-fits. All rights reserved.</div>
