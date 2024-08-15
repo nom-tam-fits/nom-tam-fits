@@ -36,9 +36,7 @@ import nom.tam.fits.header.IFitsHeader;
 
 /**
  * <p>
- * A Set of commonly used keywords in the astronomy community. Many of these are semi-officially recognised by HEASARC
- * and listed in the <a href="https://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html">Dictionary of Commonly Used FITS
- * Keywords</a>, while others are commonly used in the amateur astronomy community.
+ * A Set of commonly used keywords in the amateur astronomy community.
  * </p>
  *
  * @author John Murphy and Attila Kovacs
@@ -51,7 +49,7 @@ public enum CommonExt implements IFitsHeader {
     AMBTEMP(VALUE.REAL, "[C] ambient air temperature"),
 
     /** Synonym of {@link #OBJCTROT}. */
-    ANGLE(VALUE.REAL, "[deg] image rotation angle"),
+    ANGLE(VALUE.REAL, HDU.IMAGE, "[deg] image rotation angle"),
 
     /** X axis binning factor. Synonym for {@link SBFitsExt#XBINNING} */
     CCDXBIN(VALUE.INTEGER, "X axis binning factor"),
@@ -69,7 +67,7 @@ public enum CommonExt implements IFitsHeader {
     DEWPOINT(VALUE.REAL, "[C] dew point"),
 
     /** Whether or not the image is flipped */
-    FLIPPED(VALUE.LOGICAL, "is image flipped"),
+    FLIPPED(VALUE.LOGICAL, HDU.IMAGE, "is image flipped"),
 
     /** Name of focuser. Synonym of {@link #FOCUSER} */
     FOCNAME(VALUE.STRING, "focuser name"),
@@ -108,7 +106,7 @@ public enum CommonExt implements IFitsHeader {
     HUMIDITY(VALUE.REAL, "[%] relative humidity"),
 
     /** Image rotation angle in degrees. **/
-    OBJCTROT(VALUE.REAL, "[deg] image rotation angle"),
+    OBJCTROT(VALUE.REAL, HDU.IMAGE, "[deg] image rotation angle"),
 
     /** Camera offset setting. Very common since CMOS cameras became popular */
     OFFSET(VALUE.INTEGER, "camera offset setting"),
@@ -116,7 +114,7 @@ public enum CommonExt implements IFitsHeader {
     /**
      * Image scale in arcsec/pixel. Redundant with {@link nom.tam.fits.header.Standard#CDELTn}.
      */
-    PIXSCALE(VALUE.REAL, "[arcsec/pixel] image scale"),
+    PIXSCALE(VALUE.REAL, HDU.IMAGE, "[arcsec/pixel] image scale"),
 
     /** Air pressure in hPa. */
     PRESSURE(VALUE.REAL, "[hPa] air pressure"),
@@ -125,7 +123,7 @@ public enum CommonExt implements IFitsHeader {
      * Image scale in arcsec / pixel. Synonym of {@link #PIXSCALE}, and redundant with
      * {@link nom.tam.fits.header.Standard#CDELTn}.
      */
-    SCALE(VALUE.REAL, "[arcsec/pixel] image scale"),
+    SCALE(VALUE.REAL, HDU.IMAGE, "[arcsec/pixel] image scale"),
 
     /** Elevation of observing site above sea level in meters */
     SITEELEV(VALUE.REAL, "[m] elevation at observing site"),
@@ -145,12 +143,16 @@ public enum CommonExt implements IFitsHeader {
         this(null, valueType, comment);
     }
 
-    CommonExt(String key, VALUE valueType, String comment) {
-        this(key, valueType, SOURCE.UNKNOWN, HDU.ANY, comment);
+    CommonExt(VALUE valueType, HDU hduType, String comment) {
+        this(null, valueType, hduType, comment);
     }
 
-    CommonExt(String key, VALUE valueType, SOURCE source, HDU hduType, String comment) {
-        this.key = new FitsKey(key == null ? name() : key, source, hduType, valueType, comment);
+    CommonExt(String key, VALUE valueType, String comment) {
+        this(key, valueType, HDU.ANY, comment);
+    }
+
+    CommonExt(String key, VALUE valueType, HDU hduType, String comment) {
+        this.key = new FitsKey(key == null ? name() : key, SOURCE.UNKNOWN, hduType, valueType, comment);
     }
 
     @Override

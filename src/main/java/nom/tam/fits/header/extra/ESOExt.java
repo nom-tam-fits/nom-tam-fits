@@ -97,10 +97,6 @@ public enum ESOExt implements IFitsHeader {
 
     private final FitsKey key;
 
-    ESOExt(IFitsHeader key) {
-        this.key = key.impl();
-    }
-
     ESOExt(VALUE valueType, String comment) {
         this(null, valueType, comment);
     }

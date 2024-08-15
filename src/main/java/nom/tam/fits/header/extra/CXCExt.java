@@ -315,28 +315,28 @@ public enum CXCExt implements IFitsHeader {
      * 
      * @since 1.20.1
      */
-    CNAMEn(VALUE.STRING, "coordinate axis name"),
+    CNAMEn(VALUE.STRING, HDU.IMAGE, "coordinate axis name"),
 
     /**
      * List of 'preferred cols' for making image from table
      * 
      * @since 1.20.1
      */
-    CPREF(VALUE.STRING, "list of image columns"),
+    CPREF(VALUE.STRING, HDU.TABLE, "list of image columns"),
 
     /**
      * Data Subspace column name for column <i>n</i>.
      * 
      * @since 1.20.1
      */
-    DSTYPn(VALUE.STRING, "data subspace column name"),
+    DSTYPn(VALUE.STRING, HDU.TABLE, "data subspace column name"),
 
     /**
      * Data Subspace data type name (optional) for column <i>n</i>.
      * 
      * @since 1.20.1
      */
-    DSFORMn(VALUE.STRING, "data subspace data type"),
+    DSFORMn(VALUE.STRING, HDU.TABLE, "data subspace data type"),
 
     /**
      * Data Subspace unit name (optional) for column <i>n</i>.
@@ -350,7 +350,7 @@ public enum CXCExt implements IFitsHeader {
      * 
      * @since 1.20.1
      */
-    DSVALn(VALUE.STRING, "data subspace filter list"),
+    DSVALn(VALUE.STRING, HDU.TABLE, "data subspace filter list"),
 
     /**
      * Data Subspace filter list for component <i>i</i> (leading index) and column <i>n</i> (trailing index).
@@ -359,14 +359,14 @@ public enum CXCExt implements IFitsHeader {
      * 
      * @see   #DSVALn
      */
-    nDSVALn(VALUE.STRING, "data subspace filter list for component"),
+    nDSVALn(VALUE.STRING, HDU.TABLE, "data subspace filter list for component"),
 
     /**
      * Data Subspace table pointer for column <i>n</i>.
      * 
      * @since 1.20.1
      */
-    DSREFn(VALUE.STRING, "data subspace table pointer"),
+    DSREFn(VALUE.STRING, HDU.TABLE, "data subspace table pointer"),
 
     /**
      * Data Subspace table pointer for component <i>i</i> (leading index) and column <i>n</i> (trailing index).
@@ -375,7 +375,7 @@ public enum CXCExt implements IFitsHeader {
      * 
      * @see   #DSVALn
      */
-    nDSREFn(VALUE.STRING, "data subspace table pointer for component"),
+    nDSREFn(VALUE.STRING, HDU.TABLE, "data subspace table pointer for component"),
 
     /**
      * Name for composite long-named keyword (f. CFITSIO HIERARCH) for column <i>n</i>. Also used to de ne array
@@ -397,7 +397,7 @@ public enum CXCExt implements IFitsHeader {
      * 
      * @since 1.20.1
      */
-    DVALn(VALUE.ANY, "composite keyword value"),
+    DVALn(VALUE.ANY, HDU.TABLE, "composite keyword value"),
 
     /**
      * Gives a name to an HDU. If not present, you should use EXTNAME/EXTVER.
@@ -411,42 +411,42 @@ public enum CXCExt implements IFitsHeader {
      * 
      * @since 1.20.1
      */
-    METYPn(VALUE.STRING, "composite column type"),
+    METYPn(VALUE.STRING, HDU.TABLE, "composite column type"),
 
     /**
      * Comma-separated list of column names making up composite col (with {@link #MTYPEn}).
      * 
      * @since 1.20.1
      */
-    MFORMn(VALUE.STRING, "column names for composite column"),
+    MFORMn(VALUE.STRING, HDU.TABLE, "column names for composite column"),
 
     /**
      * Composite column name (paired with {@link #MFORMn}).
      * 
      * @since 1.20.1
      */
-    MTYPEn(VALUE.STRING, "composite column name"),
+    MTYPEn(VALUE.STRING, HDU.TABLE, "composite column name"),
 
     /**
      * Override {@link nom.tam.fits.header.WCS#TCTYPn} table oordinate axis name.
      * 
      * @since 1.20.1
      */
-    TCNAMn(VALUE.STRING, "column coordinate axis name"),
+    TCNAMn(VALUE.STRING, HDU.TABLE, "column coordinate axis name"),
 
     /**
      * Default binning factor for table column
      * 
      * @since 1.20.1
      */
-    TDBINn(VALUE.REAL, "Default binning factor for table column"),
+    TDBINn(VALUE.REAL, HDU.TABLE, "Default binning factor for table column"),
 
     /**
      * Floating point <code>null</code> value other than NaN
      * 
      * @since 1.20.1
      */
-    TDNULLn(VALUE.REAL, "designated null value");
+    TDNULLn(VALUE.REAL, HDU.TABLE, "designated null value");
 
     /**
      * Standard {@link #DATACLAS} value 'observed'.
@@ -518,7 +518,11 @@ public enum CXCExt implements IFitsHeader {
     }
 
     CXCExt(VALUE valueType, String comment) {
-        key = new FitsKey(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, valueType, comment);
+        this(valueType, HDU.ANY, comment);
+    }
+
+    CXCExt(VALUE valueType, HDU hduType, String comment) {
+        key = new FitsKey(name(), IFitsHeader.SOURCE.CXC, hduType, valueType, comment);
     }
 
     @Override

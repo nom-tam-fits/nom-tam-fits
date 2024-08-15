@@ -86,10 +86,12 @@ public enum STScIExt implements IFitsHeader {
      * Pointing error in declination (degrees; 1-sigma)
      */
     DEC_PNTE(VALUE.REAL, "[deg] declination pointing error "),
+
     /**
      * Detector X field of view (mm)
      */
     FOV_X_MM(VALUE.REAL, "[mm] detector X field of view"),
+
     /**
      * Detector X field of view (mm)
      */
