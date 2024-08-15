@@ -84,8 +84,8 @@ public enum CommonExt implements IFitsHeader {
     /** Focus temperature in degrees Celsius. Synonymous to {@link MaxImDLExt#FOCUSTEM}. */
     FOCTEMP(VALUE.REAL, "[C] focuser temperature readout"),
 
-    /** Filter wheel position */
-    FWHEEL(VALUE.STRING, "filter wheel position"),
+    /** Filter wheel name */
+    FWHEEL(VALUE.STRING, "filter wheel name"),
 
     /**
      * Camera gain / amplification. Often used the same as {@link #GAINRAW}. There may be many different conventions on
