@@ -42,7 +42,7 @@ public enum ESOExt implements IFitsHeader {
      * modifications. HDRVER must not be present in files ingested into archive. In particular, HDRVER must be actively
      * removed prior to ingestion from the headers of products.
      */
-    HDRVER(VALUE.STRING, "modification timestamp"),
+    HDRVER(VALUE.STRING, "header modification timestamp"),
 
     /**
      * UTC seconds since midnight.
