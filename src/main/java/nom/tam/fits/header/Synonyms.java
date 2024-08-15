@@ -2,7 +2,6 @@ package nom.tam.fits.header;
 
 import java.util.Arrays;
 
-import nom.tam.fits.header.extra.CXCExt;
 import nom.tam.fits.header.extra.CommonExt;
 import nom.tam.fits.header.extra.MaxImDLExt;
 import nom.tam.fits.header.extra.NOAOExt;
@@ -51,9 +50,6 @@ public enum Synonyms {
 
     /** EQUINOX is now preferred over the old EPOCH */
     EQUINOX(Standard.EQUINOX, Standard.EPOCH),
-
-    /** TIMESYS appears in multiple conventions */
-    TIMESYS(NOAOExt.TIMESYS, STScIExt.TIMESYS),
 
     /** RADESYS is now preferred over the old RADECSYS */
     RADESYS(Standard.RADESYS, Standard.RADECSYS),
@@ -120,7 +116,7 @@ public enum Synonyms {
     /**
      * EXTNAME and HDUNAME are synonymous, but EXTNAME is part of the standard since 1.19
      */
-    EXTNAME(Standard.EXTNAME, DataDescription.HDUNAME, CXCExt.HDUNAME),
+    EXTNAME(Standard.EXTNAME, DataDescription.HDUNAME),
 
     /**
      * EXTVER and HDUVER are synonymous, but EXTVER is part of the standard since 1.19
@@ -138,7 +134,7 @@ public enum Synonyms {
      * @see DateTime#XPOSURE
      */
     EXPOSURE(ObservationDurationDescription.EXPOSURE, ObservationDurationDescription.EXPTIME,
-            ObservationDurationDescription.ONTIME),
+            ObservationDurationDescription.ONTIME, STScIExt.XPOSURE),
 
     /**
      * Variants for recording the start time of observation in HH:MM:SS[.s...] format
@@ -270,14 +266,14 @@ public enum Synonyms {
      * 
      * @since 1.20.1
      */
-    CREATOR(DataDescription.CREATOR, CommonExt.PROGRAM),
+    CREATOR(DataDescription.CREATOR, DataDescription.PROGRAM),
 
     /**
      * Clock time duration of observation.
      * 
      * @since 1.20.1
      */
-    TELAPSE(CommonExt.TELAPSE, CommonExt.ELAPTIME);
+    TELAPSE(DateTime.TELAPSE, ObservationDurationDescription.ELAPTIME);
 
     private final IFitsHeader primaryKeyword;
 

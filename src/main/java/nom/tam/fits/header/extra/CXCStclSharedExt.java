@@ -1,5 +1,7 @@
 package nom.tam.fits.header.extra;
 
+import nom.tam.fits.header.DateTime;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -39,8 +41,8 @@ import nom.tam.fits.header.IFitsHeader;
  * <a href="https://planet4589.org/astro/sds/asc/ps/SDS05.pdf">https://planet4589.org/astro/sds/asc/ps/SDS05.pdf</a> for
  * defititions of these. .
  * 
- * @deprecated These are available both in the {@link CXCExt} and {@link STScIExt} enums. Visibility may be reduced to
- *                 the package level in the future.
+ * @deprecated These are available both in the {@link CXCExt} and {@link STScIExt} enums. This class may be removed in
+ *                 the future.
  * 
  * @see        STScIExt
  * @see        CXCExt
@@ -50,115 +52,59 @@ import nom.tam.fits.header.IFitsHeader;
 public enum CXCStclSharedExt implements IFitsHeader {
 
     /**
-     * Whether clock correction applied (boolean).
-     * <p>
-     * T
-     * </p>
+     * Same as {@link STScIExt#CLOCKAPP}.
      */
-    CLOCKAPP(VALUE.LOGICAL, "is clock correction applied?"),
+    CLOCKAPP(STScIExt.CLOCKAPP),
 
     /**
-     * Reference MJD (TT-based), relative to which time values (e.g. TSTART and TSTOP) are measured.
+     * Same as {@link STScIExt#MJDREF}.
      */
-    MJDREF(VALUE.STRING, "[day] MJD reference date"),
+    MJDREF(STScIExt.MJDREF),
 
     /**
-     * <p>
-     * Specifies where the time assignment of the data is done. for example, for EXOSAT time assignment was made at the
-     * Madrid tracking station, so TASSIGN ='Madrid'. Since the document goes on to state that this information is
-     * relevant for barycentric corrections, one assumes that this means what is of interest is not the location of the
-     * computer where time tags where inserted into the telemetry stream, but whether those time tags refer to the
-     * actual photon arrival time or to the time at which the telemetry reached the ground station, etc.
-     * </p>
-     * <p>
-     * For example, for Einstein the time assignment was performed at the ground station but corrected to allow for the
-     * transmission time between satellite and ground, so I presume in this case TASSIGN='SATELLITE'. I believe that for
-     * AXAF, TASSIGN = 'SATELLITE'. OGIP/93-003 also speci es the location for the case of a ground station should be
-     * recorded the keywords GEOLAT, GEOLONG, and ALTITUDE. This is rather unfortunate since it would be nice to reserve
-     * these keywords for the satellite ephemeris position. However, since no ground station is de ned for AXAF, we feel
-     * that we can use GEOLONG, GEOLAT, and ALTITUDE for these purposes, especially since such usage is consistent with
-     * their usage for ground-based observations. TASSIGN has obviously no meaning when TIMESYS = 'TDB'.
-     * </p>
+     * Same as {@link STScIExt#TASSIGN}.
      */
-    TASSIGN(VALUE.STRING, "location where time was assigned"),
+    TASSIGN(STScIExt.TASSIGN),
 
     /**
-     * Time resolution of data in {@link #TIMEUNIT}.
+     * Same as {@link DateTime#TIMEDEL}.
      */
-    TIMEDEL(VALUE.REAL, "time resolution of data"),
+    TIMEDEL(DateTime.TIMEDEL),
 
     /**
-     * Time reference frame.
-     * 
-     * @see #TIMEREF_LOCAL
-     * @see #TIMEREF_GEOCENTRIC
-     * @see #TIMEREF_HELIOCENTRIC
-     * @see #TIMEREF_SOLARSYSTEM
+     * Same as {@link STScIExt#TIMEREF}.
      */
-    TIMEREF(VALUE.STRING, "time reference frame"),
+    TIMEREF(STScIExt.TIMEREF),
 
     /**
-     * Units of time, for example 's' for seconds. If absent, assume seconds.
+     * Same as {@link STScIExt#TIMEUNIT}.
      */
-    TIMEUNIT(VALUE.STRING, "units of time"),
+    TIMEUNIT(STScIExt.TIMEUNIT),
 
     /**
-     * Version of time specification convention.
+     * Same as {@link STScIExt#TIMVERSN}.
      */
-    TIMVERSN(VALUE.STRING, ""),
+    TIMVERSN(STScIExt.TIMVERSN),
 
     /**
-     * Clock correction (if not zero), in {@link #TIMEUNIT}.
+     * Same as {@link STScIExt#TIMEZERO}.
      */
-    TIMEZERO(VALUE.REAL, "clock offset"),
+    TIMEZERO(STScIExt.TIMEZERO),
 
     /**
-     * The value field of this keyword shall contain the value of the start time of data acquisition in units of
-     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS
-     * keyword.
+     * Same as {@link STScIExt#TSTART}.
      */
-    TSTART(VALUE.REAL, "start time of observartion"),
+    TSTART(STScIExt.TSTART),
 
     /**
-     * The value field of this keyword shall contain the value of the stop time of data acquisition in units of
-     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS
-     * keyword.
+     * Same as {@link CXCStclSharedExt#TSTOP}.
      */
-    TSTOP(VALUE.REAL, "stop time of observation");
-
-    /**
-     * Time is reported when detected wavefront passed the center of Earth, a standard value for {@link #TIMEREF}.
-     * 
-     * @since 1.20.1
-     */
-    public static final String TIMEREF_GEOCENTRIC = "GEOCENTRIC";
-
-    /**
-     * Time is reported when detected wavefront passed the center of the Sun, a standard value for {@link #TIMEREF}.
-     * 
-     * @since 1.20.1
-     */
-    public static final String TIMEREF_HELIOCENTRIC = "HELIOCENTRIC";
-
-    /**
-     * Time is reported when detected wavefront passed the Solar System barycenter, a standard value for
-     * {@link #TIMEREF}.
-     * 
-     * @since 1.20.1
-     */
-    public static final String TIMEREF_SOLARSYSTEM = "SOLARSYSTEM";
-
-    /**
-     * Time reported is actual time of detection, a standard value for {@link #TIMEREF}.
-     * 
-     * @since 1.20.1
-     */
-    public static final String TIMEREF_LOCAL = "LOCAL";
+    TSTOP(STScIExt.TSTOP);
 
     private final FitsKey key;
 
-    CXCStclSharedExt(VALUE valueType, String comment) {
-        key = new FitsKey(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, valueType, comment);
+    CXCStclSharedExt(IFitsHeader orig) {
+        key = orig.impl();
     }
 
     @Override

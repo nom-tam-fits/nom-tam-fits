@@ -1,5 +1,7 @@
 package nom.tam.fits.header.extra;
 
+import nom.tam.fits.header.DateTime;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -33,6 +35,7 @@ package nom.tam.fits.header.extra;
 
 import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.WCS;
 
 /**
  * <p>
@@ -47,7 +50,6 @@ import nom.tam.fits.header.IFitsHeader;
  *
  * @author Attila Kovacs and Richard van Nieuwenhoven
  */
-@SuppressWarnings({"deprecation", "javadoc"})
 public enum STScIExt implements IFitsHeader {
 
     /**
@@ -59,6 +61,14 @@ public enum STScIExt implements IFitsHeader {
      * Telemetry data rate (baud).
      */
     BIT_RATE(VALUE.REAL, "[bit/s] telemetry rate"),
+
+    /**
+     * Whether clock correction applied (boolean).
+     * <p>
+     * T
+     * </p>
+     */
+    CLOCKAPP(VALUE.LOGICAL, "is clock correction applied?"),
 
     /**
      * date of initial data represented (yy/mm/dd)
@@ -120,29 +130,24 @@ public enum STScIExt implements IFitsHeader {
     JOBNAME(VALUE.STRING, ""),
 
     /**
-     * Modified Julian date at the start of the exposure. The fractional part of the date is given to better than a
-     * second of time.
-     * <p>
-     * units = 'd'
-     * </p>
-     * <p>
-     * default value = none
-     * </p>
-     * <p>
-     * index = none
-     * </p>
+     * @deprecated Use the standard {@link DateTime#MJD_OBS} instead.
      */
-    MJD_OBS("MJD-OBS", VALUE.REAL, HDU.ANY, "[day] MJD of exposure start"),
+    MJD_OBS(DateTime.MJD_OBS),
+
+    /**
+     * @deprecated Use the standard {@link DateTime#MJDREF} instead.
+     */
+    MJDREF(DateTime.MJDREF),
 
     /**
      * Fractional portion of ephemeris MJD
      */
-    MJDREFF(VALUE.REAL, "fractional portion of ephemeris MJD"),
+    MJDREFF(VALUE.REAL, "[day] fractional portion of ephemeris MJD"),
 
     /**
      * Integer portion of ephemeris MJD
      */
-    MJDREFI(VALUE.INTEGER, "integer portion of ephemeris MJD"),
+    MJDREFI(VALUE.INTEGER, "[day] integer portion of ephemeris MJD"),
 
     /**
      * Modal Configuration ID
@@ -152,7 +157,7 @@ public enum STScIExt implements IFitsHeader {
     /**
      * Optical axis position in both linearized detector coordinates and sky coordinates.
      */
-    OPTICn(VALUE.REAL, "Optical axis position along coordinate"),
+    OPTICn(VALUE.REAL, "optical axis position along coordinate"),
 
     /**
      * beginning orbit number
@@ -205,33 +210,84 @@ public enum STScIExt implements IFitsHeader {
     SOLELONG(VALUE.STRING, "selection of solar elongations"),
 
     /**
-     * @deprecated Use the standard {@link nom.tam.fits.header.WCS#TCDLTn} instead.
+     * @deprecated Use the standard {@link WCS#TCDLTn} instead.
      */
-    TCDLTn(VALUE.REAL, ""),
+    TCDLTn(WCS.TCDLTn),
 
     /**
-     * @deprecated Use the standard {@link nom.tam.fits.header.WCS#TCRPXn} instead.
+     * @deprecated Use the standard {@link WCS#TCRPXn} instead.
      */
-    TCRPXn(VALUE.REAL, ""),
+    TCRPXn(WCS.TCRPXn),
 
     /**
-     * @deprecated Use the standard {@link nom.tam.fits.header.WCS#TCRVLn} instead.
+     * @deprecated Use the standard {@link WCS#TCRVLn} instead.
      */
 
-    TCRVLn(VALUE.REAL, ""),
+    TCRVLn(WCS.TCRVLn),
 
     /**
-     * @deprecated Use the standard {@link nom.tam.fits.header.WCS#TCTYPn} instead
+     * @deprecated Use the standard {@link WCS#TCTYPn} instead
      */
-    TCTYPn(VALUE.STRING, ""),
+    TCTYPn(WCS.TCTYPn),
 
     /**
-     * Default time system. All times which do not have a "timesys" element associated with them in this dictionary
-     * default to this keyword. time system (same as IRAS).
+     * <p>
+     * Specifies where the time assignment of the data is done. for example, for EXOSAT time assignment was made at the
+     * Madrid tracking station, so TASSIGN ='Madrid'. Since the document goes on to state that this information is
+     * relevant for barycentric corrections, one assumes that this means what is of interest is not the location of the
+     * computer where time tags where inserted into the telemetry stream, but whether those time tags refer to the
+     * actual photon arrival time or to the time at which the telemetry reached the ground station, etc.
+     * </p>
+     * <p>
+     * For example, for Einstein the time assignment was performed at the ground station but corrected to allow for the
+     * transmission time between satellite and ground, so I presume in this case TASSIGN='SATELLITE'. I believe that for
+     * AXAF, TASSIGN = 'SATELLITE'. OGIP/93-003 also speci es the location for the case of a ground station should be
+     * recorded the keywords GEOLAT, GEOLONG, and ALTITUDE. This is rather unfortunate since it would be nice to reserve
+     * these keywords for the satellite ephemeris position. However, since no ground station is de ned for AXAF, we feel
+     * that we can use GEOLONG, GEOLAT, and ALTITUDE for these purposes, especially since such usage is consistent with
+     * their usage for ground-based observations. TASSIGN has obviously no meaning when TIMESYS = 'TDB'.
+     * </p>
+     */
+    TASSIGN(VALUE.STRING, "location where time was assigned"),
+
+    /**
+     * Time reference frame.
      * 
-     * @deprecated Use the standatd {@link nom.tam.fits.header.DateTime#TIMESYS} instead.
+     * @see #TIMEREF_LOCAL
+     * @see #TIMEREF_GEOCENTRIC
+     * @see #TIMEREF_HELIOCENTRIC
+     * @see #TIMEREF_SOLARSYSTEM
      */
-    TIMESYS(VALUE.STRING, "Default time system"),
+    TIMEREF(VALUE.STRING, "time reference frame"),
+
+    /**
+     * Units of time, for example 's' for seconds. If absent, assume seconds.
+     */
+    TIMEUNIT(VALUE.STRING, "units of time"),
+
+    /**
+     * Version of time specification convention.
+     */
+    TIMVERSN(VALUE.STRING, "version of time convention"),
+
+    /**
+     * Clock correction (if not zero), in {@link #TIMEUNIT}.
+     */
+    TIMEZERO(VALUE.REAL, "clock offset"),
+
+    /**
+     * The value field of this keyword shall contain the value of the start time of data acquisition in units of
+     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS
+     * keyword. Similar to {@link DateTime#TSTART} except that it strictly uses decimal values.
+     */
+    TSTART(VALUE.REAL, "start time of observartion"),
+
+    /**
+     * The value field of this keyword shall contain the value of the stop time of data acquisition in units of
+     * TIMEUNIT, relative to MJDREF, JDREF, or DATEREF and TIMEOFFS, in the time system specified by the TIMESYS
+     * keyword. Similar to {@link DateTime#TSTOP} except that it strictly uses decimal values.
+     */
+    TSTOP(VALUE.REAL, "stop time of observation"),
 
     /**
      * Version of Data Reduction Software
@@ -247,79 +303,6 @@ public enum STScIExt implements IFitsHeader {
      * Whether map was corrected for zodiacal light
      */
     ZLREMOV(VALUE.LOGICAL, "whether zodiacal light was removed"),
-
-    // Inherited from CXCStscISharedExt ----------------------------------------->
-
-    /**
-     * Same as {@link CXCStclSharedExt#CLOCKAPP}.
-     * 
-     * @since 1.20.1
-     */
-    CLOCKAPP(CXCStclSharedExt.CLOCKAPP),
-
-    /**
-     * Same as {@link CXCStclSharedExt#MJDREF}.
-     * 
-     * @since 1.20.1
-     */
-    MJDREF(CXCStclSharedExt.MJDREF),
-
-    /**
-     * Same as {@link CXCStclSharedExt#TASSIGN}.
-     * 
-     * @since 1.20.1
-     */
-    TASSIGN(CXCStclSharedExt.TASSIGN),
-
-    /**
-     * Same as {@link CXCStclSharedExt#TIMEDEL}.
-     * 
-     * @since 1.20.1
-     */
-    TIMEDEL(CXCStclSharedExt.TIMEDEL),
-
-    /**
-     * Same as {@link CXCStclSharedExt#TIMEREF}.
-     * 
-     * @since 1.20.1
-     * 
-     * @see   #TIMEREF_LOCAL
-     * @see   #TIMEREF_GEOCENTRIC
-     * @see   #TIMEREF_HELIOCENTRIC
-     * @see   #TIMEREF_SOLARSYSTEM
-     */
-    TIMEREF(CXCStclSharedExt.TIMEREF),
-
-    /**
-     * Same as {@link CXCStclSharedExt#TIMEUNIT}.
-     * 
-     * @since 1.20.1
-     */
-    TIMEUNIT(CXCStclSharedExt.TIMEUNIT),
-
-    /**
-     * Same as {@link CXCStclSharedExt#TIMVERSN}.
-     * 
-     * @since 1.20.1
-     */
-    TIMVERSN(CXCStclSharedExt.TIMVERSN),
-
-    /**
-     * Same as {@link CXCStclSharedExt#TIMEZERO}.
-     * 
-     * @since 1.20.1
-     */
-    TIMEZERO(CXCStclSharedExt.TIMEZERO),
-
-    /**
-     * Same as {@link CXCStclSharedExt#TSTART}.
-     */
-    TSTART(CXCStclSharedExt.TSTART),
-
-    /**
-     * Same as {@link CXCStclSharedExt#TSTOP}.
-     */
-    TSTOP(CXCStclSharedExt.TSTOP),
 
     // ------------------------------------------------------------->
     // from https://outerspace.stsci.edu/display/MASTDOCS/Common+Metadata
@@ -400,13 +383,6 @@ public enum STScIExt implements IFitsHeader {
     // https://outerspace.stsci.edu/display/MASTDOCS/Image+Metadata
 
     /**
-     * Name of aperture used for exposure (if any)
-     * 
-     * @since 1.20.1
-     */
-    APERTURE(VALUE.STRING, "aperture name"),
-
-    /**
      * ID of detector used for exposure
      * 
      * @since 1.20.1
@@ -414,18 +390,10 @@ public enum STScIExt implements IFitsHeader {
     DETECTOR(VALUE.STRING, "ID of detector used for exposure"),
 
     /**
-     * Name of filter used, or 'MULTI' if more than one defined the passband
-     * 
-     * @see   #FILTER_MULTI
-     * 
-     * @since 1.20.1
-     */
-    FILTER(VALUE.STRING, "Filer/passband name"),
-
-    /**
      * Name(s) of filter(s) used to define the passband, if more than one was used, with nn incrementing from 1 (and
      * zero-pad if nn >9). As such for a passband index of 4, you might use <code>FILTERnn.n(0).n(4)<code> to construct
-     * 'FILTER04'.
+     * 'FILTER04'. It is similar to the more standard {@link nom.tam.fits.header.InstrumentDescription#FILTERn} keyword
+     * except for the 2-digit, zero-padded, indexing for bands 1--9.
      * 
      * @since 1.20.1
      */
@@ -486,7 +454,36 @@ public enum STScIExt implements IFitsHeader {
     FILE_ID(VALUE.STRING, "File name or obervation UID");
 
     /**
-     * Standard {@link #FILTER} value if multiple passbands are used.
+     * Time is reported when detected wavefront passed the center of Earth, a standard value for {@link #TIMEREF}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_GEOCENTRIC = "GEOCENTRIC";
+
+    /**
+     * Time is reported when detected wavefront passed the center of the Sun, a standard value for {@link #TIMEREF}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_HELIOCENTRIC = "HELIOCENTRIC";
+
+    /**
+     * Time is reported when detected wavefront passed the Solar System barycenter, a standard value for
+     * {@link #TIMEREF}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_SOLARSYSTEM = "SOLARSYSTEM";
+
+    /**
+     * Time reported is actual time of detection, a standard value for {@link #TIMEREF}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_LOCAL = "LOCAL";
+
+    /**
+     * Standard {@link nom.tam.fits.header.InstrumentDescription#FILTER} value if multiple passbands are used.
      */
     public static final String FILTER_MULTI = "MULTI";
 
@@ -515,33 +512,6 @@ public enum STScIExt implements IFitsHeader {
      * Wavelength(s) for the associated flux(es), in units of the TUNIT keyword for this column.
      */
     public static final String COLNAME_WAVELENGTH = "WAVELENGTH";
-    /**
-     * Same as {@link CXCStclSharedExt#TIMEREF_GEOCENTRIC}.
-     * 
-     * @since 1.20.1
-     */
-    public static final String TIMEREF_GEOCENTRIC = CXCStclSharedExt.TIMEREF_GEOCENTRIC;
-
-    /**
-     * Same as {@link CXCStclSharedExt#TIMEREF_HELIOCENTRIC}.
-     * 
-     * @since 1.20.1
-     */
-    public static final String TIMEREF_HELIOCENTRIC = CXCStclSharedExt.TIMEREF_HELIOCENTRIC;
-
-    /**
-     * Same as {@link CXCStclSharedExt#TIMEREF_SOLARSYSTEM}.
-     * 
-     * @since 1.20.1
-     */
-    public static final String TIMEREF_SOLARSYSTEM = CXCStclSharedExt.TIMEREF_SOLARSYSTEM;
-
-    /**
-     * Same as {@link CXCStclSharedExt#TIMEREF_LOCAL}.
-     * 
-     * @since 1.20.1
-     */
-    public static final String TIMEREF_LOCAL = CXCStclSharedExt.TIMEREF_LOCAL;
 
     private final FitsKey key;
 

@@ -1,5 +1,7 @@
 package nom.tam.fits.header.extra;
 
+import nom.tam.fits.header.DateTime;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -33,6 +35,7 @@ package nom.tam.fits.header.extra;
 
 import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.InstrumentDescription;
 
 /**
  * This is the file content.txt that presents a comprehensive compilation of all classes of data products in the Chandra
@@ -48,7 +51,6 @@ import nom.tam.fits.header.IFitsHeader;
  * 
  * @author Attila Kovacs and Richard van Nieuwenhoven
  */
-@SuppressWarnings({"deprecation", "javadoc"})
 public enum CXCExt implements IFitsHeader {
 
     /**
@@ -197,35 +199,28 @@ public enum CXCExt implements IFitsHeader {
     // Inherited from CXCStscISharedExt ----------------------------------------->
 
     /**
-     * Same as {@link CXCStclSharedExt#CLOCKAPP}.
+     * Same as {@link STScIExt#CLOCKAPP}.
      * 
      * @since 1.20.1
      */
-    CLOCKAPP(CXCStclSharedExt.CLOCKAPP),
+    CLOCKAPP(STScIExt.CLOCKAPP),
 
     /**
-     * Same as {@link CXCStclSharedExt#MJDREF}.
+     * Same as {@link STScIExt#TASSIGN}.
      * 
      * @since 1.20.1
      */
-    MJDREF(CXCStclSharedExt.MJDREF),
+    TASSIGN(STScIExt.TASSIGN),
 
     /**
-     * Same as {@link CXCStclSharedExt#TASSIGN}.
+     * Same as {@link DateTime#TIMEDEL}.
      * 
      * @since 1.20.1
      */
-    TASSIGN(CXCStclSharedExt.TASSIGN),
+    TIMEDEL(DateTime.TIMEDEL),
 
     /**
-     * Same as {@link CXCStclSharedExt#TIMEDEL}.
-     * 
-     * @since 1.20.1
-     */
-    TIMEDEL(CXCStclSharedExt.TIMEDEL),
-
-    /**
-     * Same as {@link CXCStclSharedExt#TIMEREF}.
+     * Same as {@link STScIExt#TIMEREF}.
      * 
      * @since 1.20.1
      * 
@@ -234,50 +229,43 @@ public enum CXCExt implements IFitsHeader {
      * @see   #TIMEREF_HELIOCENTRIC
      * @see   #TIMEREF_SOLARSYSTEM
      */
-    TIMEREF(CXCStclSharedExt.TIMEREF),
+    TIMEREF(STScIExt.TIMEREF),
 
     /**
-     * Same as {@link CXCStclSharedExt#TIMEUNIT}.
+     * Same as {@link STScIExt#TIMEUNIT}.
      * 
      * @since 1.20.1
      */
-    TIMEUNIT(CXCStclSharedExt.TIMEUNIT),
+    TIMEUNIT(STScIExt.TIMEUNIT),
 
     /**
-     * Same as {@link CXCStclSharedExt#TIMVERSN}.
+     * Same as {@link STScIExt#TIMVERSN}.
      * 
      * @since 1.20.1
      */
-    TIMVERSN(CXCStclSharedExt.TIMVERSN),
+    TIMVERSN(STScIExt.TIMVERSN),
 
     /**
-     * Same as {@link CXCStclSharedExt#TIMEZERO}.
+     * Same as {@link STScIExt#TIMEZERO}.
      * 
      * @since 1.20.1
      */
-    TIMEZERO(CXCStclSharedExt.TIMEZERO),
+    TIMEZERO(STScIExt.TIMEZERO),
 
     /**
-     * Same as {@link CXCStclSharedExt#TSTART}.
+     * Same as {@link STScIExt#TSTART}.
      */
-    TSTART(CXCStclSharedExt.TSTART),
+    TSTART(STScIExt.TSTART),
 
     /**
-     * Same as {@link CXCStclSharedExt#TSTOP}.
+     * Same as {@link STScIExt#TSTOP}.
      */
-    TSTOP(CXCStclSharedExt.TSTOP),
+    TSTOP(STScIExt.TSTOP),
 
     // ---- Added in 1.20.1 from the CXC Data Model specification ------------>
 
     // Standard header keywords
     // MISSION(VALUE.STRING, "Grouping of related telesopes"),
-
-    /**
-     * Observation ID
-     * 
-     * @since 1.20.1
-     */
-    OBS_ID(VALUE.STRING, "Observation ID"),
 
     // SEQ_NUM(VALUE.INTEGER, "Sequence_number"),
 
@@ -293,24 +281,6 @@ public enum CXCExt implements IFitsHeader {
     // FOC_LEN(VALUE.REAL, "Telessope focal length in mm"),
 
     /**
-     * Observing mode: "pointing", "slewing", or "ground cal".
-     * 
-     * @see   #OBSMODE_POINTING
-     * @see   #OBSMODE_SLEWING
-     * @see   #OBSMODE_GROUND_CAL
-     * 
-     * @since 1.20.1
-     */
-    OBS_MODE(VALUE.STRING, "observing mode"),
-
-    /**
-     * Configuration of on-board processing
-     * 
-     * @since 1.20.1
-     */
-    DATAMODE(VALUE.STRING, "on-board processing config"),
-
-    /**
      * Configuration of instrument
      * 
      * @since 1.20.1
@@ -323,13 +293,6 @@ public enum CXCExt implements IFitsHeader {
     // ONTIME(VALUE.REAL, "Sum of GTIs"),
 
     // DTCOR(VALUE.REAL, "Dead time corretion [0.0:1.0]"),
-
-    /**
-     * {@link #ONTIME} times {@link #DTCOR}
-     * 
-     * @since 1.20.1
-     */
-    LIVETIME(VALUE.REAL, "ONTIME times DTCOR"),
 
     /**
      * CALDB file for gain corretion
@@ -348,7 +311,7 @@ public enum CXCExt implements IFitsHeader {
     // Data model keywords
 
     /**
-     * Override {@link Standard#CTYPEn} image coordinate axis name
+     * Override {@link nom.tam.fits.header.Standard#CTYPEn} image coordinate axis name
      * 
      * @since 1.20.1
      */
@@ -451,21 +414,21 @@ public enum CXCExt implements IFitsHeader {
     METYPn(VALUE.STRING, "composite column type"),
 
     /**
-     * Comma-separated list of column names making up composite col (with {@link #MTYPE}).
+     * Comma-separated list of column names making up composite col (with {@link #MTYPEn}).
      * 
      * @since 1.20.1
      */
-    MFORMk(VALUE.STRING, "column names for composite column"),
+    MFORMn(VALUE.STRING, "column names for composite column"),
 
     /**
-     * Composite column name (paired with {@link #MFORM}).
+     * Composite column name (paired with {@link #MFORMn}).
      * 
      * @since 1.20.1
      */
-    MTYPEk(VALUE.STRING, "composite column name"),
+    MTYPEn(VALUE.STRING, "composite column name"),
 
     /**
-     * Override {@link Standard#TCTYPn} table oordinate axis name.
+     * Override {@link nom.tam.fits.header.WCS#TCTYPn} table oordinate axis name.
      * 
      * @since 1.20.1
      */
@@ -485,43 +448,68 @@ public enum CXCExt implements IFitsHeader {
      */
     TDNULLn(VALUE.REAL, "designated null value");
 
+    /**
+     * Standard {@link #DATACLAS} value 'observed'.
+     * 
+     * @since 1.20.1
+     */
     public static final String DATACLAS_OBSERVED = "observed";
 
+    /**
+     * Standard {@link #DATACLAS} value 'simulated'.
+     * 
+     * @since 1.20.1
+     */
     public static final String DATACLAS_SIMULATED = "simulated";
 
-    public static final String OBSMODE_POINTING = "pointing";
-
-    public static final String OBSMODE_SLEWING = "slewing";
-
-    public static final String OBSMODE_GROUND_CAL = "ground cal";
-
     /**
-     * Same as {@link CXCStclSharedExt#TIMEREF_GEOCENTRIC}.
+     * Standard {@link InstrumentDescription#OBS_MODE} value for pointing observations.
      * 
      * @since 1.20.1
      */
-    public static final String TIMEREF_GEOCENTRIC = CXCStclSharedExt.TIMEREF_GEOCENTRIC;
+    public static final String OBS_MODE_POINTING = "pointing";
 
     /**
-     * Same as {@link CXCStclSharedExt#TIMEREF_HELIOCENTRIC}.
+     * Standard {@link InstrumentDescription#OBS_MODE} value while slewing.
      * 
      * @since 1.20.1
      */
-    public static final String TIMEREF_HELIOCENTRIC = CXCStclSharedExt.TIMEREF_HELIOCENTRIC;
+    public static final String OBS_MODE_SLEWING = "slewing";
 
     /**
-     * Same as {@link CXCStclSharedExt#TIMEREF_SOLARSYSTEM}.
+     * Standard {@link InstrumentDescription#OBS_MODE} value for ground cal observations.
      * 
      * @since 1.20.1
      */
-    public static final String TIMEREF_SOLARSYSTEM = CXCStclSharedExt.TIMEREF_SOLARSYSTEM;
+    public static final String OBS_MODE_GROUND_CAL = "ground cal";
 
     /**
-     * Same as {@link CXCStclSharedExt#TIMEREF_LOCAL}.
+     * Same as {@link STScIExt#TIMEREF_GEOCENTRIC}.
      * 
      * @since 1.20.1
      */
-    public static final String TIMEREF_LOCAL = CXCStclSharedExt.TIMEREF_LOCAL;
+    public static final String TIMEREF_GEOCENTRIC = STScIExt.TIMEREF_GEOCENTRIC;
+
+    /**
+     * Same as {@link STScIExt#TIMEREF_HELIOCENTRIC}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_HELIOCENTRIC = STScIExt.TIMEREF_HELIOCENTRIC;
+
+    /**
+     * Same as {@link STScIExt#TIMEREF_SOLARSYSTEM}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_SOLARSYSTEM = STScIExt.TIMEREF_SOLARSYSTEM;
+
+    /**
+     * Same as {@link STScIExt#TIMEREF_LOCAL}.
+     * 
+     * @since 1.20.1
+     */
+    public static final String TIMEREF_LOCAL = STScIExt.TIMEREF_LOCAL;
 
     private final FitsKey key;
 

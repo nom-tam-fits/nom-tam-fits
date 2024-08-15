@@ -59,9 +59,9 @@ public enum ObservationDurationDescription implements IFitsHeader {
     DATE_END("DATE-END", SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "date of the end of observation"),
     /**
      * The value field shall contain a floating point number giving the difference between the stop and start times of
-     * the observation in units of seconds. This keyword is synonymous with the TELAPSE keyword.
+     * the observation in units of seconds. This keyword is synonymous with the {@link #TELAPSE} keyword.
      * 
-     * @see DateTime#TELAPSE
+     * @see #TELAPSE
      */
     ELAPTIME(SOURCE.UCOLICK, HDU.ANY, VALUE.REAL, "[s] elapsed time of the observation"),
     /**
