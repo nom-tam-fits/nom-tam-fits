@@ -141,24 +141,12 @@ public enum CommonExt implements IFitsHeader {
 
     private final FitsKey key;
 
-    CommonExt(IFitsHeader key) {
-        this.key = key.impl();
-    }
-
     CommonExt(VALUE valueType, String comment) {
         this(null, valueType, comment);
     }
 
-    CommonExt(VALUE valueType, SOURCE source, String comment) {
-        this(null, valueType, source, HDU.ANY, comment);
-    }
-
     CommonExt(String key, VALUE valueType, String comment) {
         this(key, valueType, SOURCE.UNKNOWN, HDU.ANY, comment);
-    }
-
-    CommonExt(VALUE valueType, SOURCE source, HDU hduType, String comment) {
-        this(null, valueType, source, hduType, comment);
     }
 
     CommonExt(String key, VALUE valueType, SOURCE source, HDU hduType, String comment) {
