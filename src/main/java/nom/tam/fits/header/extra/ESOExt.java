@@ -106,7 +106,7 @@ public enum ESOExt implements IFitsHeader {
     }
 
     ESOExt(String name, VALUE valueType, String comment) {
-        key = new FitsKey(name, IFitsHeader.SOURCE.ESO, HDU.ANY, valueType, comment);
+        this.key = new FitsKey(name == null ? name() : name, IFitsHeader.SOURCE.ESO, HDU.ANY, valueType, comment);
     }
 
     @Override
