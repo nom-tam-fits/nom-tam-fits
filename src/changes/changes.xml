@@ -1,9 +1,34 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.20.1-rc1" date="2024-07-29" description="Bug fix release candidate.">
+   <release version="1.20.1-rc2" date="2024-08-15" description="Bug fix release candidate.">
       <action type="fix" dev="attipaci" issue="636" due-to="keastrid">
           Compressed table columns lost their column names in 1.20.0.
+      </action>
+      <action type="fix" dev="attipaci" issue="656" due-to="johnmurphyastro">
+          Fixed incorrect value types in several FITS keywords extension dictionaries.
+      </action>
+      <action type="add" dev="attipaci" issue="657">
+          Added ESOExt enum with ESO-specific standard FITS keywords, and CommonExt for commonly used keywords in 
+          the amateur astronomy community. 
+      </action>
+      <action type="add" dev="attipaci" issue="657">
+      	  Added more standard keywords to CXCEXt, STScIEXT, MaxImDLExt, and SBFitsExt dictionaries based on the 
+      	  available documentation online.
+      </action>
+      <action type="add" dev="attipaci" issue="657">
+      	  Additional keyword synonyms in Synonyms enum.
+      </action>
+      <action type="update" dev="attipaci" issue="657">
+      	  Deprecated the CXCStclShareExt enum. Not only it's name was completely botched, its definitions are now 
+      	  included properly in the CXCExt and STScIExt dictionaries (without reduntant definitions).
+      </action>
+      <action type="update" dev="attipaci" issue="657">
+      	  Deprecated a few extension keywords, which are either part of the standard or are recognised by HEASARC as
+      	  commonly used keywords. The mentioned more common definitions should be used instead going forward.
+      </action>      
+      <action type="update" dev="attipaci" issue="657">
+      	  Updated comment fields and Javadoc for many extension keywords in the nom.tam.fits.header.extra package.
       </action>
       <action type="update" dev="attipaci">
           Uses the latest maven build and runtime dependencies.

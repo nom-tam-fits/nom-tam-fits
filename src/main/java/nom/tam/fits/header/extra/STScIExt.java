@@ -393,7 +393,7 @@ public enum STScIExt implements IFitsHeader {
 
     /**
      * Name(s) of filter(s) used to define the passband, if more than one was used, with nn incrementing from 1 (and
-     * zero-pad if nn >9). As such for a passband index of 4, you might use <code>FILTERnn.n(0).n(4)<code> to construct
+     * zero-pad if nn >9). As such for a passband index of 4, you might use <code>FILTERnn.n(0).n(4)</code> to construct
      * 'FILTER04'. It is similar to the more standard {@link nom.tam.fits.header.InstrumentDescription#FILTERn} keyword
      * except for the 2-digit, zero-padded, indexing for bands 1--9.
      * 
@@ -437,8 +437,8 @@ public enum STScIExt implements IFitsHeader {
     /**
      * Name(s) of dispersive element(s) used for exposure if more than one was used, with nn (zero-padded) incrementing
      * from 1. Note that this information can alternatively be represented in a PROVENANCE extension. See Provenance
-     * Metadata for details. As such for a passband index of 4, you might use <code>DISPRnn.n(0).n(4)<code> to construct
-     * 'DISPR04'.
+     * Metadata for details. As such for a passband index of 4, you might use <code>DISPRnn.n(0).n(4)</code> to
+     * construct 'DISPR04'.
      * 
      * @since 1.20.1
      */
