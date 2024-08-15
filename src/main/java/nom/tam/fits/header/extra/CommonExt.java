@@ -49,8 +49,8 @@ public enum CommonExt implements IFitsHeader {
     /** Ambient air temperature in degrees Celsius */
     AMBTEMP(VALUE.REAL, "[C] ambient air temperature"),
 
-    /** Image angle in degrees */
-    ANGLE(VALUE.REAL, "[deg] image angle"),
+    /** Synonym of {@link #ANGLE}. */
+    ANGLE(VALUE.REAL, "[deg] image rotation angle"),
 
     /** X axis binning factor. Synonym for {@link SBFitsExt#XBINNING} */
     CCDXBIN(VALUE.INTEGER, "X axis binning factor"),
@@ -100,14 +100,14 @@ public enum CommonExt implements IFitsHeader {
     /** Synonym of {@link MaxImDLExt#EGAIN} */
     GAINADU(VALUE.REAL, "[ct/adu] amplifier gain electrons / ADU"),
 
-    /** Amplifier gain. */
+    /** Amplifier gain. Synonym of {@link MaxImDLExt#ISOSPEED} */
     GAINRAW(VALUE.REAL, "gain factor"),
 
     /** Relative humidity as percentage */
     HUMIDITY(VALUE.REAL, "[%] relative humidity"),
 
-    /** Synonym of {@link #ANGLE}. **/
-    OBJCTROT(VALUE.REAL, "[deg] image angle"),
+    /** Image rotation angle in degrees. **/
+    OBJCTROT(VALUE.REAL, "[deg] image rotation angle"),
 
     /** Camera offset setting. Very common since CMOS cameras became popular */
     OFFSET(VALUE.INTEGER, "camera offset setting"),

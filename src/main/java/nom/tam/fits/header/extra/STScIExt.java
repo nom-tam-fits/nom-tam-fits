@@ -71,7 +71,7 @@ public enum STScIExt implements IFitsHeader {
     DATE_MAP("DATE-MAP", VALUE.STRING, "date of original file creation"),
 
     /**
-     * Pointing error DEC (degrees; 1-sigma)
+     * Pointing error in declination (degrees; 1-sigma)
      */
     DEC_PNTE(VALUE.REAL, "[deg] declination pointing error "),
     /**
@@ -156,10 +156,12 @@ public enum STScIExt implements IFitsHeader {
      * beginning orbit number
      */
     ORBITBEG(VALUE.INTEGER, "beginning orbit number"),
+
     /**
      * ending orbit number
      */
     ORBITEND(VALUE.INTEGER, "ending orbit number"),
+
     /**
      * Pointing error in position angle (degrees; 1-sigma)
      */
@@ -181,7 +183,7 @@ public enum STScIExt implements IFitsHeader {
     PRODUCT(VALUE.STRING, ""),
 
     /**
-     * Pointing error in RA (degrees, 1-sigma)
+     * Pointing error in right ascension (degrees, 1-sigma)
      */
     RA_PNTE(VALUE.REAL, "R.A. pointing error"),
 
