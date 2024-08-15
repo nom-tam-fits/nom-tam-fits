@@ -92,7 +92,7 @@ public enum CommonExt implements IFitsHeader {
      */
     DATA_MODE(VALUE.STRING, SOURCE.HEASARC, "pre-processor data mode"),
 
-    /** Local time of observation (ISO timestamp), e..g "2017-01-03T02:41:24" or "2024-02-24T22:23:33.054" */
+    /** Local time of observation (ISO timestamp), e.g. "2017-01-03T02:41:24" or "2024-02-24T22:23:33.054" */
     DATE_LOC("DATE-LOC", VALUE.STRING, "Local time of observation"),
 
     /**
@@ -220,7 +220,7 @@ public enum CommonExt implements IFitsHeader {
 
     /**
      * Camera gain / amplification. Often used the same as {@link #GAINRAW}. There may be many different conventions on
-     * using this keyword. For example itmay represent a multiplicative gain factor or gain defined as decibels, or
+     * using this keyword. For example it may represent a multiplicative gain factor or gain defined as decibels, or
      * strings such as 'HI'/'LO', or even as a boolean T/F. Therefore, this definition does not restrict the type of
      * value this keyword can be used with. It is up to the user to ensure they follow the convention that makes most
      * sense to their application, and for the tools they intend to use.

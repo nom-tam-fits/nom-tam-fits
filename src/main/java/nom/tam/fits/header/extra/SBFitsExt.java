@@ -158,6 +158,7 @@ public enum SBFitsExt implements IFitsHeader {
 
     /**
      * This is the setpoint of the cooling in degrees Celsius. If it is not specified the setpoint is assumed to be the
+     * ambient temperature.
      */
     SET_TEMP("SET-TEMP", VALUE.REAL, "[C] setpoint of the cooling"),
 
