@@ -2,6 +2,7 @@ package nom.tam.fits.header;
 
 import java.util.Arrays;
 
+import nom.tam.fits.header.extra.CXCExt;
 import nom.tam.fits.header.extra.CommonExt;
 import nom.tam.fits.header.extra.MaxImDLExt;
 import nom.tam.fits.header.extra.NOAOExt;
@@ -119,7 +120,7 @@ public enum Synonyms {
     /**
      * EXTNAME and HDUNAME are synonymous, but EXTNAME is part of the standard since 1.19
      */
-    EXTNAME(Standard.EXTNAME, DataDescription.HDUNAME),
+    EXTNAME(Standard.EXTNAME, DataDescription.HDUNAME, CXCExt.HDUNAME),
 
     /**
      * EXTVER and HDUVER are synonymous, but EXTVER is part of the standard since 1.19
@@ -262,7 +263,21 @@ public enum Synonyms {
      *
      * @since 1.20.1
      */
-    PRESSURE(CommonExt.PRESSURE, MaxImDLExt.AOCBAROM, MaxImDLExt.DAVBAROM);
+    PRESSURE(CommonExt.PRESSURE, MaxImDLExt.AOCBAROM, MaxImDLExt.DAVBAROM),
+
+    /**
+     * Software that created the original FITS file.
+     * 
+     * @since 1.20.1
+     */
+    CREATOR(DataDescription.CREATOR, CommonExt.PROGRAM),
+
+    /**
+     * Clock time duration of observation.
+     * 
+     * @since 1.20.1
+     */
+    TELAPSE(CommonExt.TELAPSE, CommonExt.ELAPTIME);
 
     private final IFitsHeader primaryKeyword;
 

@@ -35,17 +35,17 @@ import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
- * This is the file represents the common keywords between CXC and STSclExt. See the ASC keywords at
+ * This is the file represents the common keywords between CXC and STSclExt. See e.g. the ASC keywords at
  * <a href="https://planet4589.org/astro/sds/asc/ps/SDS05.pdf">https://planet4589.org/astro/sds/asc/ps/SDS05.pdf</a> for
  * defititions of these. .
- *
- * @author     Richard van Nieuwenhoven and Attila Kovacs
  * 
  * @deprecated These are available both in the {@link CXCExt} and {@link STScIExt} enums. Visibility may be reduced to
  *                 the package level in the future.
  * 
  * @see        STScIExt
  * @see        CXCExt
+ * 
+ * @author     Attila Kovacs and Richard van Nieuwenhoven
  */
 public enum CXCStclSharedExt implements IFitsHeader {
 

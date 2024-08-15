@@ -40,10 +40,12 @@ import nom.tam.fits.header.IFitsHeader;
  * </p>
  * <p>
  * See <a href=
- * "http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>
+ * "http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>.
+ * Additional keywords added in 1.20.1 based on the
+ * <a href="https://outerspace.stsci.edu/display/MASTDOCS/Required+Metadata">HLSP Contributor Guide</a>
  * </p>
  *
- * @author Richard van Nieuwenhoven and Attila Kovacs
+ * @author Attila Kovacs and Richard van Nieuwenhoven
  */
 @SuppressWarnings({"deprecation", "javadoc"})
 public enum STScIExt implements IFitsHeader {
@@ -63,12 +65,12 @@ public enum STScIExt implements IFitsHeader {
      * 
      * @see nom.tam.fits.header.DateTime#DATE_BEG
      */
-    DATE_BEG("DATE-BEG", VALUE.STRING, "date of initial data represented."),
+    DATE_BEG("DATE-BEG", VALUE.STRING, HDU.ANY, "date of initial data represented."),
 
     /**
      * Date of original file creation (yy/mm/dd)
      */
-    DATE_MAP("DATE-MAP", VALUE.STRING, "date of original file creation"),
+    DATE_MAP("DATE-MAP", VALUE.STRING, HDU.ANY, "date of original file creation"),
 
     /**
      * Pointing error in declination (degrees; 1-sigma)
@@ -90,27 +92,27 @@ public enum STScIExt implements IFitsHeader {
      *                 keywords. If possible, avoid using it since it may result in FITS that is not readable by some
      *                 software.
      */
-    IPPS_B_P("IPPS-B/P", VALUE.INTEGER, "[bits/pixel] of IPPS raster."),
+    IPPS_B_P("IPPS-B/P", VALUE.INTEGER, HDU.ANY, "[bits/pixel] of IPPS raster."),
 
     /**
      * IPPS identification, such as target name, possibly including IPPS configuration
      */
-    IPPS_ID("IPPS-ID", VALUE.STRING, "IPPS ID"),
+    IPPS_ID("IPPS-ID", VALUE.STRING, HDU.ANY, "IPPS ID"),
 
     /**
      * Maximum value in raster
      */
-    IPPS_MAX("IPPS-MAX", VALUE.REAL, "maximum value in raster"),
+    IPPS_MAX("IPPS-MAX", VALUE.REAL, HDU.ANY, "maximum value in raster"),
 
     /**
      * Minimum value in raster
      */
-    IPPS_MIN("IPPS-MIN", VALUE.REAL, "minimum value in raster"),
+    IPPS_MIN("IPPS-MIN", VALUE.REAL, HDU.ANY, "minimum value in raster"),
 
     /**
      * Raster LFN / raster ordinal
      */
-    IPPS_RF("IPPS-RF", VALUE.STRING, "raster LFN / raster ordinal"),
+    IPPS_RF("IPPS-RF", VALUE.STRING, HDU.ANY, "raster LFN / raster ordinal"),
 
     /**
      * ?
@@ -130,7 +132,7 @@ public enum STScIExt implements IFitsHeader {
      * index = none
      * </p>
      */
-    MJD_OBS("MJD-OBS", VALUE.REAL, "[day] MJD of exposure start"),
+    MJD_OBS("MJD-OBS", VALUE.REAL, HDU.ANY, "[day] MJD of exposure start"),
 
     /**
      * Fractional portion of ephemeris MJD
@@ -317,8 +319,202 @@ public enum STScIExt implements IFitsHeader {
     /**
      * Same as {@link CXCStclSharedExt#TSTOP}.
      */
-    TSTOP(CXCStclSharedExt.TSTOP);
+    TSTOP(CXCStclSharedExt.TSTOP),
 
+    // ------------------------------------------------------------->
+    // from https://outerspace.stsci.edu/display/MASTDOCS/Common+Metadata
+
+    /**
+     * Digital Object Identifier for the HLSP data collection
+     * 
+     * @since 1.20.1
+     */
+    DOI(VALUE.STRING, HDU.PRIMARY, "DOI of HLSP data collection"),
+
+    /**
+     * The identifier (acronym) for this HLSP collection.
+     * 
+     * @since 1.20.1
+     */
+    HLSPID(VALUE.STRING, HDU.PRIMARY, "HLSP collection ID"),
+
+    /**
+     * Full name of HLSP project lead
+     * 
+     * @since 1.20.1
+     */
+    HLSPLEAD(VALUE.STRING, HDU.PRIMARY, "HLSP project lead"),
+
+    /**
+     * Title for HLSP project, long form
+     * 
+     * @since 1.20.1
+     */
+    HLSPNAME(VALUE.STRING, HDU.PRIMARY, "HLSP project title"),
+
+    /**
+     * Designation of the target(s) or field(s) for this HLSP
+     * 
+     * @since 1.20.1
+     */
+    HLSPTARG(VALUE.STRING, HDU.PRIMARY, "HLSP target fields"),
+
+    /**
+     * Version identifier for this HLSP product
+     * 
+     * @since 1.20.1
+     */
+    HLSPVER(VALUE.STRING, HDU.PRIMARY, "HLSP product version"),
+
+    /**
+     * License for use of these data, with the value 'CC BY 4.0'
+     * 
+     * @see   #LICENURL
+     * 
+     * @since 1.20.1
+     */
+    LICENSE(VALUE.STRING, HDU.PRIMARY, "data license"),
+
+    /**
+     * Data license URL, with the value 'https://creativecommons.org/licenses/by/4.0/'
+     * 
+     * @see   #LICENSE
+     * 
+     * @since 1.20.1
+     */
+    LICENURL(VALUE.STRING, HDU.PRIMARY, "data license URL"),
+
+    /**
+     * Observatory program/proposal identifier, if applicable
+     * 
+     * @since 1.20.1
+     */
+    PROPOSID(VALUE.STRING, HDU.PRIMARY, "program/proposal ID"),
+
+    /**
+     * Duration of exposure, exclusive of dead time, in seconds.
+     */
+    XPOSURE(VALUE.REAL, "[s] exposure time excl. dead time"),
+
+    // ------------------------------------------------------------->
+    // https://outerspace.stsci.edu/display/MASTDOCS/Image+Metadata
+
+    /**
+     * Name of aperture used for exposure (if any)
+     * 
+     * @since 1.20.1
+     */
+    APERTURE(VALUE.STRING, "aperture name"),
+
+    /**
+     * ID of detector used for exposure
+     * 
+     * @since 1.20.1
+     */
+    DETECTOR(VALUE.STRING, "ID of detector used for exposure"),
+
+    /**
+     * Name of filter used, or 'MULTI' if more than one defined the passband
+     * 
+     * @see   #FILTER_MULTI
+     * 
+     * @since 1.20.1
+     */
+    FILTER(VALUE.STRING, "Filer/passband name"),
+
+    /**
+     * Name(s) of filter(s) used to define the passband, if more than one was used, with nn incrementing from 1 (and
+     * zero-pad if nn >9). As such for a passband index of 4, you might use <code>FILTERnn.n(0).n(4)<code> to construct
+     * 'FILTER04'.
+     * 
+     * @since 1.20.1
+     */
+    FILTERnn(VALUE.STRING, "filter of passband n"),
+
+    /**
+     * Declination coordinate of the target or field, in degrees
+     * 
+     * @since 1.20.1
+     */
+    DEC_TARG(VALUE.REAL, "[deg] target/field declination"),
+
+    /**
+     * Typical spatial extent of the point-spread function, in pix
+     * 
+     * @since 1.20.1
+     */
+    PSFSIZE(VALUE.REAL, "[pix] Width of point-spread function"),
+
+    /**
+     * Right Ascension coordinate of the target or field, in degrees
+     * 
+     * @since 1.20.1
+     */
+    RA_TARG(VALUE.REAL, "[deg] target/field right ascension"),
+
+    // ------------------------------------------------------------->
+    // https://outerspace.stsci.edu/display/MASTDOCS/Spectral+Metadata
+
+    /**
+     * Name of dispersive element used, or 'MULTI' if more than one defined the passband.
+     * 
+     * @see   #DISPRSR_MULTI
+     * 
+     * @since 1.20.1
+     */
+    DISPRSR(VALUE.STRING, "dispersive element used"),
+
+    /**
+     * Name(s) of dispersive element(s) used for exposure if more than one was used, with nn (zero-padded) incrementing
+     * from 1. Note that this information can alternatively be represented in a PROVENANCE extension. See Provenance
+     * Metadata for details. As such for a passband index of 4, you might use <code>DISPRnn.n(0).n(4)<code> to construct
+     * 'DISPR04'.
+     * 
+     * @since 1.20.1
+     */
+    DISPRnn(VALUE.STRING, "dispersive element n"),
+
+    // ------------------------------------------------------------->
+    // https://outerspace.stsci.edu/display/MASTDOCS/Provenance+Metadata
+
+    /**
+     * File name or observatory-unique identifier of the contributing observation. For products from MAST missions,
+     * provide the Observation ID so that the contributing data may be linked within MAST.
+     * 
+     * @since 1.20.1
+     */
+    FILE_ID(VALUE.STRING, "File name or obervation UID");
+
+    /**
+     * Standard {@link #FILTER} value if multiple passbands are used.
+     */
+    public static final String FILTER_MULTI = "MULTI";
+
+    /**
+     * Standard {@link #DISPRSR} value if multiple passbands are used.
+     */
+    public static final String DISPRSR_MULTI = "MULTI";
+
+    /**
+     * Data quality (binary) flags, with zero indicating no anthologies
+     */
+    public static final String COLNAME_FLAGS = "FLAGS";
+
+    /**
+     * Could also be called "FLUX_DENSITY" or something similar, depending upon the quantity stored. Flux(es) for the
+     * associated wavelength(s), in units of the value of the TUNIT keyword for this column.
+     */
+    public static final String COLNAME_FLUX = "FLUX";
+
+    /**
+     * Variance in the flux(es) at the associated wavelength(s)
+     */
+    public static final String COLNAME_VARIANCE = "VARIANCE";
+
+    /**
+     * Wavelength(s) for the associated flux(es), in units of the TUNIT keyword for this column.
+     */
+    public static final String COLNAME_WAVELENGTH = "WAVELENGTH";
     /**
      * Same as {@link CXCStclSharedExt#TIMEREF_GEOCENTRIC}.
      * 
@@ -354,11 +550,15 @@ public enum STScIExt implements IFitsHeader {
     }
 
     STScIExt(VALUE valueType, String comment) {
-        this(null, valueType, comment);
+        this(null, valueType, HDU.ANY, comment);
     }
 
-    STScIExt(String key, VALUE valueType, String comment) {
-        this.key = new FitsKey(key == null ? name() : key, IFitsHeader.SOURCE.STScI, HDU.ANY, valueType, comment);
+    STScIExt(VALUE valueType, HDU hduType, String comment) {
+        this(null, valueType, hduType, comment);
+    }
+
+    STScIExt(String key, VALUE valueType, HDU hduType, String comment) {
+        this.key = new FitsKey(key == null ? name() : key, IFitsHeader.SOURCE.STScI, hduType, valueType, comment);
     }
 
     @Override

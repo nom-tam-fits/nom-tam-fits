@@ -46,7 +46,7 @@ import nom.tam.fits.header.IFitsHeader;
  * http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm
  * </pre>
  *
- * @author Richard van Nieuwenhoven, Attila Kovacs, and John Murphy
+ * @author Attila Kovacs, John Murphy, and Richard van Nieuwenhoven
  * 
  * @see    SBFitsExt
  */

@@ -47,7 +47,7 @@ import nom.tam.fits.header.IFitsHeader;
  * https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf</a>
  * </p>
  *
- * @author Richard van Nieuwenhoven and Attila Kovacs
+ * @author Attila Kovacs and Richard van Nieuwenhoven
  * 
  * @see    MaxImDLExt
  */

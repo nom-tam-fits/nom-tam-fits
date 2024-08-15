@@ -41,12 +41,12 @@ import nom.tam.fits.header.IFitsHeader;
  * <p>
  * All files are identified by the CONTENT value of their principal HDUs.
  * </p>
- *
- * <pre>
- * http://cxc.harvard.edu/contrib/arots/fits/content.txt
- * </pre>
- *
- * @author Richard van Nieuwenhoven and Attila Kovacs
+ * Originally based on the <a href="http://cxc.harvard.edu/contrib/arots/fits/content.txt">Guide to Chandra Data
+ * Products</a>, with additional keyword entries added in 1.20.1 based on the
+ * <a href="https://planet4589.org/astro/sds/asc/ps/sds73.pdf">FITS Keyword Conventions in CXC Data Model files
+ * SDS-7.3</a>.
+ * 
+ * @author Attila Kovacs and Richard van Nieuwenhoven
  */
 @SuppressWarnings({"deprecation", "javadoc"})
 public enum CXCExt implements IFitsHeader {
@@ -87,14 +87,17 @@ public enum CXCExt implements IFitsHeader {
     CONVERS(VALUE.STRING, "version info"),
 
     /**
-     * Data class
+     * Data class: 'observed' or 'simulated'
+     * 
+     * @see #DATACLAS_OBSERVED
+     * @see #DATACLAS_SIMULATED
      */
-    DATACLAS(VALUE.STRING, "data class"),
+    DATACLAS(VALUE.STRING, "observed or simulated"),
 
     /**
-     * Dead time correction factor
+     * Dead time correction factor [0.0:1.0].
      */
-    DTCOR(VALUE.REAL, "[s] dead time correction factor"),
+    DTCOR(VALUE.REAL, "[s] dead time correction [0.0:1.0]"),
 
     /**
      * Assumed focal length, mm; Level 1 and up
@@ -262,7 +265,235 @@ public enum CXCExt implements IFitsHeader {
     /**
      * Same as {@link CXCStclSharedExt#TSTOP}.
      */
-    TSTOP(CXCStclSharedExt.TSTOP);
+    TSTOP(CXCStclSharedExt.TSTOP),
+
+    // ---- Added in 1.20.1 from the CXC Data Model specification ------------>
+
+    // Standard header keywords
+    // MISSION(VALUE.STRING, "Grouping of related telesopes"),
+
+    /**
+     * Observation ID
+     * 
+     * @since 1.20.1
+     */
+    OBS_ID(VALUE.STRING, "Observation ID"),
+
+    // SEQ_NUM(VALUE.INTEGER, "Sequence_number"),
+
+    // ASCDSVER(VALUE.STRING, "Processing system revision"),
+
+    /**
+     * Defocus distance of instrument in mm rel to best.
+     * 
+     * @since 1.20.1
+     */
+    DEFOCUS(VALUE.REAL, "[mm] Defocus distance from best"),
+
+    // FOC_LEN(VALUE.REAL, "Telessope focal length in mm"),
+
+    /**
+     * Observing mode: "pointing", "slewing", or "ground cal".
+     * 
+     * @see   #OBSMODE_POINTING
+     * @see   #OBSMODE_SLEWING
+     * @see   #OBSMODE_GROUND_CAL
+     * 
+     * @since 1.20.1
+     */
+    OBS_MODE(VALUE.STRING, "observing mode"),
+
+    /**
+     * Configuration of on-board processing
+     * 
+     * @since 1.20.1
+     */
+    DATAMODE(VALUE.STRING, "on-board processing config"),
+
+    /**
+     * Configuration of instrument
+     * 
+     * @since 1.20.1
+     */
+    READMODE(VALUE.STRING, "instrument config"),
+
+    /** Data class "observed" or "simulated". */
+    // DATACLAS(VALUE.STRING, "observed or simulated"),
+
+    // ONTIME(VALUE.REAL, "Sum of GTIs"),
+
+    // DTCOR(VALUE.REAL, "Dead time corretion [0.0:1.0]"),
+
+    /**
+     * {@link #ONTIME} times {@link #DTCOR}
+     * 
+     * @since 1.20.1
+     */
+    LIVETIME(VALUE.REAL, "ONTIME times DTCOR"),
+
+    /**
+     * CALDB file for gain corretion
+     * 
+     * @since 1.20.1
+     */
+    GAINFILE(VALUE.STRING, "CALDB file for gain correction"),
+
+    /**
+     * CALDB file for grade correction
+     * 
+     * @since 1.20.1
+     */
+    GRD_FILE(VALUE.STRING, "CALDB file for grade correction"),
+
+    // Data model keywords
+
+    /**
+     * Override {@link Standard#CTYPEn} image coordinate axis name
+     * 
+     * @since 1.20.1
+     */
+    CNAMEn(VALUE.STRING, "coordinate axis name"),
+
+    /**
+     * List of 'preferred cols' for making image from table
+     * 
+     * @since 1.20.1
+     */
+    CPREF(VALUE.STRING, "list of image columns"),
+
+    /**
+     * Data Subspace column name for column <i>n</i>.
+     * 
+     * @since 1.20.1
+     */
+    DSTYPn(VALUE.STRING, "data subspace column name"),
+
+    /**
+     * Data Subspace data type name (optional) for column <i>n</i>.
+     * 
+     * @since 1.20.1
+     */
+    DSFORMn(VALUE.STRING, "data subspace data type"),
+
+    /**
+     * Data Subspace unit name (optional) for column <i>n</i>.
+     * 
+     * @since 1.20.1
+     */
+    DSUNITn(VALUE.STRING, "data subspace unit"),
+
+    /**
+     * Data Subspace filter list for column <i>n</i>.
+     * 
+     * @since 1.20.1
+     */
+    DSVALn(VALUE.STRING, "data subspace filter list"),
+
+    /**
+     * Data Subspace filter list for component <i>i</i> (leading index) and column <i>n</i> (trailing index).
+     * 
+     * @since 1.20.1
+     * 
+     * @see   #DSVALn
+     */
+    nDSVALn(VALUE.STRING, "data subspace filter list for component"),
+
+    /**
+     * Data Subspace table pointer for column <i>n</i>.
+     * 
+     * @since 1.20.1
+     */
+    DSREFn(VALUE.STRING, "data subspace table pointer"),
+
+    /**
+     * Data Subspace table pointer for component <i>i</i> (leading index) and column <i>n</i> (trailing index).
+     * 
+     * @since 1.20.1
+     * 
+     * @see   #DSVALn
+     */
+    nDSREFn(VALUE.STRING, "data subspace table pointer for component"),
+
+    /**
+     * Name for composite long-named keyword (f. CFITSIO HIERARCH) for column <i>n</i>. Also used to de ne array
+     * keywords.
+     * 
+     * @since 1.20.1
+     */
+    DTYPEn(VALUE.STRING, "composite keyword name"),
+
+    /**
+     * Unit for composite long-named keyword for column <i>n</i>.
+     * 
+     * @since 1.20.1
+     */
+    DUNITn(VALUE.STRING, "composite keyword unit"),
+
+    /**
+     * Value for composite long-named keyword for column <i>n</i>.
+     * 
+     * @since 1.20.1
+     */
+    DVALn(VALUE.ANY, "composite keyword value"),
+
+    /**
+     * Gives a name to an HDU. If not present, you should use EXTNAME/EXTVER.
+     * 
+     * @since 1.20.1
+     */
+    HDUNAME(VALUE.STRING, "HDU name"),
+
+    /**
+     * Type of composite column (not yet supported)
+     * 
+     * @since 1.20.1
+     */
+    METYPn(VALUE.STRING, "composite column type"),
+
+    /**
+     * Comma-separated list of column names making up composite col (with {@link #MTYPE}).
+     * 
+     * @since 1.20.1
+     */
+    MFORMk(VALUE.STRING, "column names for composite column"),
+
+    /**
+     * Composite column name (paired with {@link #MFORM}).
+     * 
+     * @since 1.20.1
+     */
+    MTYPEk(VALUE.STRING, "composite column name"),
+
+    /**
+     * Override {@link Standard#TCTYPn} table oordinate axis name.
+     * 
+     * @since 1.20.1
+     */
+    TCNAMn(VALUE.STRING, "column coordinate axis name"),
+
+    /**
+     * Default binning factor for table column
+     * 
+     * @since 1.20.1
+     */
+    TDBINn(VALUE.REAL, "Default binning factor for table column"),
+
+    /**
+     * Floating point <code>null</code> value other than NaN
+     * 
+     * @since 1.20.1
+     */
+    TDNULLn(VALUE.REAL, "designated null value");
+
+    public static final String DATACLAS_OBSERVED = "observed";
+
+    public static final String DATACLAS_SIMULATED = "simulated";
+
+    public static final String OBSMODE_POINTING = "pointing";
+
+    public static final String OBSMODE_SLEWING = "slewing";
+
+    public static final String OBSMODE_GROUND_CAL = "ground cal";
 
     /**
      * Same as {@link CXCStclSharedExt#TIMEREF_GEOCENTRIC}.
