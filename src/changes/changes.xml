@@ -13,7 +13,7 @@
           the amateur astronomy community. 
       </action>
       <action type="add" dev="attipaci" issue="657">
-      	  Added more standard keywords to CXCEXt, STScIEXT, MaxImDLExt, and SBFitsExt dictionaries based on the 
+      	  Added more standard keywords to CXCEXt, STScIExt, MaxImDLExt, and SBFitsExt dictionaries based on the 
       	  available documentation online.
       </action>
       <action type="add" dev="attipaci" issue="657">
