@@ -38,7 +38,7 @@ import nom.tam.fits.header.IFitsHeader;
  * <p>
  * A Set of commonly used keywords in the astronomy community. Many of these are semi-officially recognised by HEASARC
  * and listed in the <a href="https://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html">Dictionary of Commonly Used FITS
- * Keywords</a>, while other are commonly used by amateur astronomers.
+ * Keywords</a>, while others are commonly used in the amateur astronomy community.
  * </p>
  *
  * @author John Murphy and Attila Kovacs
