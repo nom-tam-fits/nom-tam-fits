@@ -44,7 +44,7 @@
 </li>
       <li><a href="index.html" title="nom.tam.fits">nom.tam.fits</a><span class="divider">/</span></li>
     <li class="active ">Tag List report</li>
-      <li id="projectVersion" class="pull-right">Version: 1.20.1-rc2</li>
+      <li id="projectVersion" class="pull-right">Version: 1.20.1-rc1</li>
           </ul>
         </div>
       </header>
@@ -100,11 +100,11 @@
 <th>Tag strings used by tag class</th></tr>
 <tr class="b">
 <td><a href="#tag_class_1">Deprecated API</a></td>
-<td>357</td>
+<td>342</td>
 <td>@deprecated</td></tr></table>
 <p>Each tag is detailed below:</p><section>
 <h3><a name="Deprecated_API"></a><a name="tag_class_1">Deprecated API</a></h3>
-<p><b>Number of occurrences found in the code: 357</b></p>
+<p><b>Number of occurrences found in the code: 342</b></p>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>nom.tam.fits.AbstractTableData</th>
@@ -882,25 +882,25 @@
 <th>Line</th></tr>
 <tr class="a">
 <td>Use {@link Standard#TDMAXn} instead.</td>
-<td><a href="./xref/nom/tam/fits/header/DataDescription.html#L154">154</a></td></tr>
+<td><a href="./xref/nom/tam/fits/header/DataDescription.html#L146">146</a></td></tr>
 <tr class="b">
 <td>Use {@link Standard#TDMINn} instead.</td>
-<td><a href="./xref/nom/tam/fits/header/DataDescription.html#L163">163</a></td></tr>
+<td><a href="./xref/nom/tam/fits/header/DataDescription.html#L154">154</a></td></tr>
 <tr class="a">
 <td>Use {@link Standard#TLMAXn} instead.</td>
-<td><a href="./xref/nom/tam/fits/header/DataDescription.html#L180">180</a></td></tr>
+<td><a href="./xref/nom/tam/fits/header/DataDescription.html#L169">169</a></td></tr>
 <tr class="b">
 <td>Use {@link Standard#TLMINn} instead.</td>
-<td><a href="./xref/nom/tam/fits/header/DataDescription.html#L191">191</a></td></tr>
+<td><a href="./xref/nom/tam/fits/header/DataDescription.html#L179">179</a></td></tr>
 <tr class="a">
 <th>nom.tam.fits.header.DateTime</th>
 <th>Line</th></tr>
 <tr class="b">
 <td>Deprecated by the FITS standard, use {@link #TIMESYS_TAI} instead. </td>
-<td><a href="./xref/nom/tam/fits/header/DateTime.html#L313">313</a></td></tr>
+<td><a href="./xref/nom/tam/fits/header/DateTime.html#L311">311</a></td></tr>
 <tr class="a">
 <td>Greenwich Mean time (GMT) timescale value; deprecated by the FITS standard, use {@link #TIMESYS_UTC} instead.</td>
-<td><a href="./xref/nom/tam/fits/header/DateTime.html#L323">323</a></td></tr>
+<td><a href="./xref/nom/tam/fits/header/DateTime.html#L321">321</a></td></tr>
 <tr class="b">
 <th>nom.tam.fits.header.FitsHeaderImpl</th>
 <th>Line</th></tr>
@@ -1001,459 +1001,408 @@
 <th>nom.tam.fits.header.extra.CXCStclSharedExt</th>
 <th>Line</th></tr>
 <tr class="a">
-<td>These are available both in the {@link CXCExt} and {@link STScIExt} enums. This class may be removed in the future.</td>
-<td><a href="./xref/nom/tam/fits/header/extra/CXCStclSharedExt.html#L44">44</a></td></tr>
+<td>This enum is duplicated by both {@link CXCExt} and {@link STScIExt}, and users would (should) typically use one or the other.</td>
+<td><a href="./xref/nom/tam/fits/header/extra/CXCStclSharedExt.html#L42">42</a></td></tr>
 <tr class="b">
-<th>nom.tam.fits.header.extra.MaxImDLExt</th>
-<th>Line</th></tr>
-<tr class="a">
-<td>Not part of the current MaxIm DL specification</td>
-<td><a href="./xref/nom/tam/fits/header/extra/MaxImDLExt.html#L432">432</a></td></tr>
-<tr class="b">
-<td>Not part of the current MaxIm DL specification</td>
-<td><a href="./xref/nom/tam/fits/header/extra/MaxImDLExt.html#L439">439</a></td></tr>
-<tr class="a">
-<td>Not part of the current MaxIm DL specification</td>
-<td><a href="./xref/nom/tam/fits/header/extra/MaxImDLExt.html#L446">446</a></td></tr>
-<tr class="b">
-<td>Not part of the current MaxIm DL specification</td>
-<td><a href="./xref/nom/tam/fits/header/extra/MaxImDLExt.html#L453">453</a></td></tr>
-<tr class="a">
-<td>Not part of the current MaxIm DL specification</td>
-<td><a href="./xref/nom/tam/fits/header/extra/MaxImDLExt.html#L460">460</a></td></tr>
-<tr class="b">
-<td>Not part of the current MaxIm DL specification</td>
-<td><a href="./xref/nom/tam/fits/header/extra/MaxImDLExt.html#L467">467</a></td></tr>
-<tr class="a">
-<td>Not part of the current MaxIm DL specification</td>
-<td><a href="./xref/nom/tam/fits/header/extra/MaxImDLExt.html#L474">474</a></td></tr>
-<tr class="b">
-<td>Not part of the current MaxIm DL specification</td>
-<td><a href="./xref/nom/tam/fits/header/extra/MaxImDLExt.html#L481">481</a></td></tr>
-<tr class="a">
-<th>nom.tam.fits.header.extra.STScIExt</th>
-<th>Line</th></tr>
-<tr class="b">
-<td>In truth this is an illegal FITS keyword, as the character '/' is not allowed in standard FITS keywords. If possible, avoid using it since it may result in FITS that is not readable by some software.</td>
-<td><a href="./xref/nom/tam/fits/header/extra/STScIExt.html#L103">103</a></td></tr>
-<tr class="a">
-<td>Use the standard {@link DateTime#MJD_OBS} instead.</td>
-<td><a href="./xref/nom/tam/fits/header/extra/STScIExt.html#L135">135</a></td></tr>
-<tr class="b">
-<td>Use the standard {@link DateTime#MJDREF} instead.</td>
-<td><a href="./xref/nom/tam/fits/header/extra/STScIExt.html#L140">140</a></td></tr>
-<tr class="a">
-<td>Use the standard {@link WCS#TCDLTn} instead.</td>
-<td><a href="./xref/nom/tam/fits/header/extra/STScIExt.html#L215">215</a></td></tr>
-<tr class="b">
-<td>Use the standard {@link WCS#TCRPXn} instead.</td>
-<td><a href="./xref/nom/tam/fits/header/extra/STScIExt.html#L220">220</a></td></tr>
-<tr class="a">
-<td>Use the standard {@link WCS#TCRVLn} instead.</td>
-<td><a href="./xref/nom/tam/fits/header/extra/STScIExt.html#L225">225</a></td></tr>
-<tr class="b">
-<td>Use the standard {@link WCS#TCTYPn} instead</td>
-<td><a href="./xref/nom/tam/fits/header/extra/STScIExt.html#L231">231</a></td></tr>
-<tr class="a">
 <th>nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>Non-standard HIERARCH keyword formatter that separates hierarchical keyword component by multiple while spaces. Otherwise, it is similar to {@link StandardIHierarchKeyFormatter}. Its use over the more standard formatter is discouraged.</td>
 <td><a href="./xref/nom/tam/fits/header/hierarch/BlanksDotHierarchKeyFormatter.html#L41">41</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.fits.utilities.FitsCheckSum</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link #encode(long, boolean)} instead.</td>
 <td><a href="./xref/nom/tam/fits/utilities/FitsCheckSum.html#L387">387</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>Not foolproof, because of the carry over handling in checksums, some additionas are not reversible. E.g. 0xffffffff + 0xffffffff = 0xffffffff, but 0xffffffff - 0xffffffff = 0;</td>
 <td><a href="./xref/nom/tam/fits/utilities/FitsCheckSum.html#L548">548</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>Not very useful, since it has no meaning other than ensuring that the checksum of the HDU yields &lt;code&gt;(int) -1&lt;/code&gt; (that is &lt;code&gt;0xffffffff&lt;/code&gt;) after including this value for the CHECKSUM keyword in the header. It will be removed in the future.</td>
 <td><a href="./xref/nom/tam/fits/utilities/FitsCheckSum.html#L645">645</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.fits.utilities.FitsLineAppender</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Replaced by the package-level &lt;code&gt;nom.tam.fits.HeaderCardFormatter&lt;/code&gt;.</td>
 <td><a href="./xref/nom/tam/fits/utilities/FitsLineAppender.html#L49">49</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.fits.utilities.FitsSubString</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Was used by {@link FitsLineAppender} only.</td>
 <td><a href="./xref/nom/tam/fits/utilities/FitsSubString.html#L40">40</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.image.compression.bintable.BinaryTableTile</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt; for internal use&lt;/i&gt;) No longer used.</td>
 <td><a href="./xref/nom/tam/image/compression/bintable/BinaryTableTile.html#L93">93</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.image.compression.bintable.BinaryTableTileCompressor</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Its visibility will be reduced in the future, not to mention that it should take a BinaryTable as its argument with heap and all. It cannot be used for compressing binary tables with variable-length columns.</td>
 <td><a href="./xref/nom/tam/image/compression/bintable/BinaryTableTileCompressor.html#L69">69</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.image.compression.bintable.BinaryTableTileDecompressor</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) The visibility will be reduced in the future, not to mention that it should take a binary table as its argument, with heap and all. It cannot be used for decompressing binary tables with variable-length columns.</td>
 <td><a href="./xref/nom/tam/image/compression/bintable/BinaryTableTileDecompressor.html#L61">61</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.image.compression.hdu.CompressedImageHDU</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Will reduce visibility in the future</td>
 <td><a href="./xref/nom/tam/image/compression/hdu/CompressedImageHDU.html#L198">198</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Will reduce visibility in the future</td>
 <td><a href="./xref/nom/tam/image/compression/hdu/CompressedImageHDU.html#L218">218</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) There is no reason why this should be exposed to users. Use {@link #asImageHDU()} instead. Future release may restrict the visibility to private.</td>
 <td><a href="./xref/nom/tam/image/compression/hdu/CompressedImageHDU.html#L455">455</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.image.compression.hdu.CompressedTableData</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) This should only be called by {@link CompressedTableHDU}, and its visibility will be reduced accordingly in the future, not to mention that it should take a BinaryTable as its argument.</td>
 <td><a href="./xref/nom/tam/image/compression/hdu/CompressedTableData.html#L150">150</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.image.compression.hdu.CompressedTableHDU</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Will reduce visibility in the future</td>
 <td><a href="./xref/nom/tam/image/compression/hdu/CompressedTableHDU.html#L220">220</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Will reduce visibility in the future</td>
 <td><a href="./xref/nom/tam/image/compression/hdu/CompressedTableHDU.html#L232">232</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.image.compression.tile.mask.AbstractNullPixelMask</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Visibility may be reduced to package level in the future.</td>
 <td><a href="./xref/nom/tam/image/compression/tile/mask/AbstractNullPixelMask.html#L96">96</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.image.tile.operation.AbstractTiledImageOperation</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) This constructor should have protected visibility.</td>
 <td><a href="./xref/nom/tam/image/tile/operation/AbstractTiledImageOperation.html#L70">70</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.image.tile.operation.buffer.TileBufferFactory</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>for internal use only</td>
 <td><a href="./xref/nom/tam/image/tile/operation/buffer/TileBufferFactory.html#L46">46</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.image.tile.operation.buffer.TileBufferRowBased</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>Use {@link TileBufferFactory} instead to construct and access via {@link TileBuffer} interface. Its visiv=bility should be reduced to the package level in the future.</td>
 <td><a href="./xref/nom/tam/image/tile/operation/buffer/TileBufferRowBased.html#L44">44</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.util.ArrayDataInput</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>Use {@link #readLArray(Object)} instead.</td>
 <td><a href="./xref/nom/tam/util/ArrayDataInput.html#L317">317</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>This call is handled by {@link #skipAllBytes(long)}, without the need for a separate implementation. Skips a number of bytes from the input. See {@link #skipAllBytes(long)}.</td>
 <td><a href="./xref/nom/tam/util/ArrayDataInput.html#L447">447</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.util.ArrayFuncs</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link FitsEncoder#computeSize(Object)} instead.</td>
 <td><a href="./xref/nom/tam/util/ArrayFuncs.html#L119">119</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>Use {@link FitsEncoder#computeSize(Object)} instead.</td>
 <td><a href="./xref/nom/tam/util/ArrayFuncs.html#L132">132</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;)</td>
 <td><a href="./xref/nom/tam/util/ArrayFuncs.html#L204">204</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>May silently underestimate size if number is &amp;gt; 2 G.</td>
 <td><a href="./xref/nom/tam/util/ArrayFuncs.html#L517">517</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>Use the more aptly named {@link #countElements(Object)} instead.</td>
 <td><a href="./xref/nom/tam/util/ArrayFuncs.html#L546">546</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.util.AsciiFuncs</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link Character#isWhitespace(char)} instead.</td>
 <td><a href="./xref/nom/tam/util/AsciiFuncs.html#L92">92</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.util.BufferDecoder</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link FitsDecoder} instead which provides a similar function but in a more consistent way and with a less misleading name. This is a rusty rail implementation for of an older abandoned class only, unsafe for general use. For reading non-FITS encoding you may also use {@link InputDecoder} as a base for implementing efficient custom decoding of binary inputs in general.</td>
 <td><a href="./xref/nom/tam/util/BufferDecoder.html#L38">38</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>No longer used internally, kept only for back-compatibility since it used to be a needed abstract method. It's safest if you never override or call this method from your code!</td>
 <td><a href="./xref/nom/tam/util/BufferDecoder.html#L102">102</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>No longer used internally, kept only for back-compatibility since it used to be a needed abstract method.</td>
 <td><a href="./xref/nom/tam/util/BufferDecoder.html#L121">121</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.util.BufferEncoder</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link FitsEncoder} instead which provides a similar function but in a more consistent way and with a less misleading name. This is a rusty rail implementation for of an older abandoned class only, unsafe for general use. For writing non-FITS encoding you may also use {@link OutputEncoder} as a base for implementing efficient custom encoding of binary outputs in general.</td>
 <td><a href="./xref/nom/tam/util/BufferEncoder.html#L37">37</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>No longer used internally, kept only for back-compatibility since it used to be a needed abstract method. It's safest if you never override or call this method from your code!</td>
 <td><a href="./xref/nom/tam/util/BufferEncoder.html#L93">93</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.util.BufferPointer</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) It is a rusty-rail compatibility implementation only, unsafe for general use. No longer used within the FITS package itself. If you do attempt to use it with the deprecated APIs, beware that no data will be filled into the buffer of this object ever by the library, although its length and position fields may be updated to pretend as if the buffer were always hall full / half available...</td>
 <td><a href="./xref/nom/tam/util/BufferPointer.html#L37">37</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>Rusty rail implementation only.</td>
 <td><a href="./xref/nom/tam/util/BufferPointer.html#L67">67</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>Rusty rail implementation only.</td>
 <td><a href="./xref/nom/tam/util/BufferPointer.html#L77">77</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>Rusty rail implementation only.</td>
 <td><a href="./xref/nom/tam/util/BufferPointer.html#L92">92</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.util.BufferedDataInputStream</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link FitsInputStream} instead which provides the same functionality with a less misleading name, or else use {@link ArrayInputStream} as a base for a more generic implementation for any (non-FITS) encoding.</td>
 <td><a href="./xref/nom/tam/util/BufferedDataInputStream.html#L37">37</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.util.BufferedDataOutputStream</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link FitsOutputStream}, which provides the exact same functionality but with a less misleading name, or else use {@link ArrayOutputStream} as a base for an implementation with any (non-FITS) encoding.</td>
 <td><a href="./xref/nom/tam/util/BufferedDataOutputStream.html#L39">39</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>No longer used internally, but kept for back compatibility (and it does exactly nothing)</td>
 <td><a href="./xref/nom/tam/util/BufferedDataOutputStream.html#L66">66</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.util.BufferedFile</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>Use {@link FitsFile} instead, which replaces the old &lt;code&gt;BufferedFile&lt;/code&gt; with a less misleading name, or else {@link ArrayDataFile}, which provides a base for a more more generic implementation for efficient reading/writing arrays using any (non-FITS) encoding.</td>
 <td><a href="./xref/nom/tam/util/BufferedFile.html#L38">38</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.util.ByteFormatter</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>This class should not be exposed in the public API and is intended for internal use only in ASCII tables. Also, it may have overlapping functionality with other classes, which should probably be eliminated for simplicity's sake (and thus less chance of nasty bugs).</td>
 <td><a href="./xref/nom/tam/util/ByteFormatter.html#L51">51</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.util.ByteParser</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>This class should not be exposed in the public API and is intended for internal use only in ASCII tables. Also, it may have overlapping functionality with other classes, which should probably be eliminated for simplicity's sake (and thus less chance of nasty bugs).</td>
 <td><a href="./xref/nom/tam/util/ByteParser.html#L52">52</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.util.ColumnTable</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>Use {@link #getElementClass(int)} instead. This method may be removed in the future.</td>
 <td><a href="./xref/nom/tam/util/ColumnTable.html#L592">592</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) No longer used, will be removed in the future.</td>
 <td><a href="./xref/nom/tam/util/ColumnTable.html#L682">682</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>Use {@link #getElementSize(int)} instead. This method may be removed in the future.</td>
 <td><a href="./xref/nom/tam/util/ColumnTable.html#L732">732</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link #getTypeChar(int)} instead. This method may be removed in the future.</td>
 <td><a href="./xref/nom/tam/util/ColumnTable.html#L762">762</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) No longer used, will be removed in the future. We used the extra state to carry properties of an enclosing class in this enclosed object, so we could inherit those to new enclosing class instances. This is bad practie. If one needs data from the enclosing object, it should be handled by passing the enclsing object, and not this enclosed table.</td>
 <td><a href="./xref/nom/tam/util/ColumnTable.html#L890">890</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.util.Cursor</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>Use {@link #add(Object)} instead</td>
 <td><a href="./xref/nom/tam/util/Cursor.html#L50">50</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.util.FitsDecoder</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsDecoder.html#L116">116</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsDecoder.html#L130">130</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsDecoder.html#L148">148</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsDecoder.html#L165">165</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsDecoder.html#L178">178</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsDecoder.html#L196">196</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsDecoder.html#L210">210</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsDecoder.html#L225">225</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsDecoder.html#L240">240</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsDecoder.html#L255">255</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsDecoder.html#L270">270</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.util.FitsEncoder</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsEncoder.html#L100">100</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsEncoder.html#L113">113</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsEncoder.html#L306">306</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsEncoder.html#L319">319</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsEncoder.html#L333">333</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsEncoder.html#L347">347</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsEncoder.html#L361">361</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) Low-level reading/writing should be handled internally as arrays by this library only.</td>
 <td><a href="./xref/nom/tam/util/FitsEncoder.html#L375">375</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.util.FitsInputStream</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>use {@link #readLArray(Object)} instead</td>
 <td><a href="./xref/nom/tam/util/FitsInputStream.html#L213">213</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.util.FitsOutputStream</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>use {@link #writeArray(Object)} instead</td>
 <td><a href="./xref/nom/tam/util/FitsOutputStream.html#L207">207</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.util.SafeClose</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>Use &lt;b&gt;try-with-resources&lt;/b&gt; constructs of Java 8+ instead.</td>
 <td><a href="./xref/nom/tam/util/SafeClose.html#L40">40</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.util.array.MultiArrayCopyFactory</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) use {@link MultiArrayCopier} instead. Make copies of multi-dimensional arrays.</td>
 <td><a href="./xref/nom/tam/util/array/MultiArrayCopyFactory.html#L41">41</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>for internal use only. This ought to be private.</td>
 <td><a href="./xref/nom/tam/util/array/MultiArrayCopyFactory.html#L563">563</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.util.array.MultiArrayPointer</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;)for internal use&lt;/i&gt;) Visibility may be reduced to the package level in the future. A multi-dimensional array index. Used only by {@link MultiArrayCopier} and {@link MultiArrayIterator}.</td>
 <td><a href="./xref/nom/tam/util/array/MultiArrayPointer.html#L37">37</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>(&lt;i&gt;)for internal use&lt;/i&gt;) Visibility may be reduced to private.</td>
 <td><a href="./xref/nom/tam/util/array/MultiArrayPointer.html#L61">61</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;)for internal use&lt;/i&gt;) Visibility may be reduced to private.</td>
 <td><a href="./xref/nom/tam/util/array/MultiArrayPointer.html#L138">138</a></td></tr>
-<tr class="b">
+<tr class="a">
 <th>nom.tam.util.type.ElementType</th>
 <th>Line</th></tr>
-<tr class="a">
+<tr class="b">
 <td>(&lt;i&gt;for internal use&lt;/i&gt;) It's visibility may be reduced to the package level in the future.</td>
 <td><a href="./xref/nom/tam/util/type/ElementType.html#L64">64</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link #isVariableSize()} instead.</td>
 <td><a href="./xref/nom/tam/util/type/ElementType.html#L244">244</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.util.type.PrimitiveType</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link ElementType} instead.</td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveType.html#L37">37</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.util.type.PrimitiveTypeBase</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link ElementType} instead.</td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypeBase.html#L37">37</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.util.type.PrimitiveTypeHandler</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>Use equivalent static methods of {@link ElementType} instead.</td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypeHandler.html#L37">37</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>Use {@link ElementType#forDataID(char)} instead.</td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypeHandler.html#L43">43</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link ElementType#forClass(Class)} instead.</td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypeHandler.html#L55">55</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>Use {@link ElementType#forBitpix(int)} instead.</td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypeHandler.html#L69">69</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link ElementType#forNearestBitpix(int)} instead.</td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypeHandler.html#L81">81</a></td></tr>
-<tr class="a">
+<tr class="b">
 <th>nom.tam.util.type.PrimitiveTypes</th>
 <th>Line</th></tr>
-<tr class="b">
+<tr class="a">
 <td>Use identical static fields of {@link ElementType} instead.</td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypes.html#L43">43</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>Use {@link ElementType#BOOLEAN} instead </td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypes.html#L48">48</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link ElementType#BYTE} instead </td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypes.html#L52">52</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>Use {@link ElementType#CHAR} instead </td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypes.html#L56">56</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link ElementType#DOUBLE} instead </td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypes.html#L60">60</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>Use {@link ElementType#FLOAT} instead </td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypes.html#L64">64</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link ElementType#INT} instead </td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypes.html#L68">68</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>Use {@link ElementType#LONG} instead </td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypes.html#L72">72</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link ElementType#SHORT} instead </td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypes.html#L76">76</a></td></tr>
-<tr class="a">
+<tr class="b">
 <td>Use {@link ElementType#STRING} instead </td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypes.html#L80">80</a></td></tr>
-<tr class="b">
+<tr class="a">
 <td>Use {@link ElementType#UNKNOWN} instead </td>
 <td><a href="./xref/nom/tam/util/type/PrimitiveTypes.html#L84">84</a></td></tr></table></section></section>
         </main>

@@ -44,7 +44,7 @@
 </li>
       <li><a href="index.html" title="nom.tam.fits">nom.tam.fits</a><span class="divider">/</span></li>
     <li class="active ">CPD Results</li>
-      <li id="projectVersion" class="pull-right">Version: 1.20.1-rc2</li>
+      <li id="projectVersion" class="pull-right">Version: 1.20.1-rc1</li>
           </ul>
         </div>
       </header>
@@ -779,7 +779,7 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/header/DateTime.java</td>
-<td><a href="./xref/nom/tam/fits/header/DateTime.html#L447">447</a></td></tr>
+<td><a href="./xref/nom/tam/fits/header/DateTime.html#L445">445</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/header/WCS.java</td>
 <td><a href="./xref/nom/tam/fits/header/WCS.html#L950">950</a></td></tr>
@@ -905,76 +905,6 @@
             throw new HeaderCardException(&quot;Cannot represent &quot; + value + &quot; in FITS headers.&quot;);
         }
         set(key, value.toBoundedString(spaceForValue(key)), comment, ComplexValue.class);</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
-<td align="left">nom/tam/fits/header/extra/CXCExt.java</td>
-<td><a href="./xref/nom/tam/fits/header/extra/CXCExt.html#L206">206</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/fits/header/extra/CXCStclSharedExt.java</td>
-<td><a href="./xref/nom/tam/fits/header/extra/CXCStclSharedExt.html#L62">62</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">CLOCKAPP(STScIExt.CLOCKAPP),
-
-    /**
-     * Same as {@link STScIExt#TASSIGN}.
-     * 
-     * @since 1.20.1
-     */
-    TASSIGN(STScIExt.TASSIGN),
-
-    /**
-     * Same as {@link DateTime#TIMEDEL}.
-     * 
-     * @since 1.20.1
-     */
-    TIMEDEL(DateTime.TIMEDEL),
-
-    /**
-     * Same as {@link STScIExt#TIMEREF}.
-     * 
-     * @since 1.20.1
-     * 
-     * @see   #TIMEREF_LOCAL
-     * @see   #TIMEREF_GEOCENTRIC
-     * @see   #TIMEREF_HELIOCENTRIC
-     * @see   #TIMEREF_SOLARSYSTEM
-     */
-    TIMEREF(STScIExt.TIMEREF),
-
-    /**
-     * Same as {@link STScIExt#TIMEUNIT}.
-     * 
-     * @since 1.20.1
-     */
-    TIMEUNIT(STScIExt.TIMEUNIT),
-
-    /**
-     * Same as {@link STScIExt#TIMVERSN}.
-     * 
-     * @since 1.20.1
-     */
-    TIMVERSN(STScIExt.TIMVERSN),
-
-    /**
-     * Same as {@link STScIExt#TIMEZERO}.
-     * 
-     * @since 1.20.1
-     */
-    TIMEZERO(STScIExt.TIMEZERO),
-
-    /**
-     * Same as {@link STScIExt#TSTART}.
-     */
-    TSTART(STScIExt.TSTART),
-
-    /**
-     * Same as {@link STScIExt#TSTOP}.
-     */
-    TSTOP(STScIExt.TSTOP),</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>

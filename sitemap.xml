@@ -571,12 +571,6 @@
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/apidocs/nom/tam/fits/header/extra/CXCStclSharedExt.html</loc>
     </url>
     <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/apidocs/nom/tam/fits/header/extra/CommonExt.html</loc>
-    </url>
-    <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/apidocs/nom/tam/fits/header/extra/ESOExt.html</loc>
-    </url>
-    <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/apidocs/nom/tam/fits/header/extra/MaxImDLExt.html</loc>
     </url>
     <url>
@@ -602,12 +596,6 @@
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/apidocs/nom/tam/fits/header/extra/class-use/CXCStclSharedExt.html</loc>
-    </url>
-    <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/apidocs/nom/tam/fits/header/extra/class-use/CommonExt.html</loc>
-    </url>
-    <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/apidocs/nom/tam/fits/header/extra/class-use/ESOExt.html</loc>
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/apidocs/nom/tam/fits/header/extra/class-use/MaxImDLExt.html</loc>
@@ -1579,12 +1567,6 @@
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/fits/header/extra/CXCStclSharedExt.html</loc>
     </url>
     <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/fits/header/extra/CommonExt.html</loc>
-    </url>
-    <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/fits/header/extra/ESOExt.html</loc>
-    </url>
-    <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/fits/header/extra/MaxImDLExt.html</loc>
     </url>
     <url>
@@ -2207,18 +2189,6 @@
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/header/package-summary.html</loc>
-    </url>
-    <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/header/extra/CommonExtTest.html</loc>
-    </url>
-    <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/header/extra/ESOExtTest.html</loc>
-    </url>
-    <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/header/extra/package-frame.html</loc>
-    </url>
-    <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/header/extra/package-summary.html</loc>
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/test/AsciiTableTest.html</loc>
