@@ -52,6 +52,7 @@ public enum DataDescription implements IFitsHeader {
      * version of a single program.
      */
     CONFIGUR(SOURCE.UNKNOWN, HDU.ANY, VALUE.STRING, "software configuration used to process the data"),
+
     /**
      * The value field shall contain a character string giving the name, and optionally, the version of the program that
      * originally created the current FITS HDU. This keyword is synonymous with the PROGRAM keyword. Example: 'TASKNAME
@@ -96,6 +97,7 @@ public enum DataDescription implements IFitsHeader {
      * should not both be given in the same HDU key, but if they are, then the HDULEVEL keyword will have precedence.
      */
     HDULEVEL(SOURCE.UNKNOWN, HDU.ANY, VALUE.INTEGER, "hierarchical level of the HDU"),
+
     /**
      * This keyword is synonymous to the standard EXTNAME keyword except. It is recommended that the HDUNAME and EXTNAME
      * keywords should not both be given in the same HDU key, but if they are, then the HDUNAME keyword will have
@@ -108,28 +110,33 @@ public enum DataDescription implements IFitsHeader {
      * should not both be given in the same HDU key, but if they are, then the HDUVER keyword will have precedence.
      */
     HDUVER(SOURCE.UNKNOWN, HDU.ANY, VALUE.INTEGER, "version number of the HDU"),
+
     /**
      * The value field shall contain a character string that gives the specific version of the document referenced by
      * HDUDOC.
      */
     HDUVERS(SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "specific version of the document referenced by HDUDOC"),
+
     /**
      * The value field shall contain an integer giving the number of standard extensions contained in the FITS file.
      * This keyword may only be used in the primary array key.
      */
     NEXTEND(SOURCE.STScI, HDU.PRIMARY, VALUE.INTEGER, "Number of standard extensions"),
+
     /**
      * The value field shall contain a character string giving the name, and optionally, the version of the program that
      * originally created the current FITS HDU. This keyword is synonymous with the CREATOR keyword. Example: 'TASKNAME
      * V1.2.3'
      */
     PROGRAM(SOURCE.UCOLICK, HDU.ANY, VALUE.STRING, "the name of the software task that created the file"),
+
     /**
      * The value field shall contain a character string giving the root of the host file name. The full file name
      * typically consists of the root name followed by a file type suffix (see FILETYPE), separated by the period ('.')
      * character.
      */
     ROOTNAME(SOURCE.UNKNOWN, HDU.ANY, VALUE.STRING, "rootname of the file"),
+
     /**
      * The value field of this indexed keyword shall contain a floating point number specifying the suggested bin size
      * when producing a histogram of the values in column n. This keyword is typically used in conjunction the TLMINn
@@ -138,6 +145,7 @@ public enum DataDescription implements IFitsHeader {
      * 'BINTABLE' extensions.
      */
     TDBINn(SOURCE.CXC, HDU.TABLE, VALUE.REAL, "default histogram bin size for the column"),
+
     /**
      * The value field of this indexed keyword shall contain a floating point number specifying the maximum valid
      * physical value represented in column n of the table, exclusive of any special values. This keyword may only be
@@ -146,6 +154,7 @@ public enum DataDescription implements IFitsHeader {
      * @deprecated Use {@link Standard#TDMAXn} instead.
      */
     TDMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "maximum value in the column"),
+
     /**
      * The value field of this indexed keyword shall contain a floating point number specifying the minimum valid
      * physical value represented in column n of the table, exclusive of any special values. This keyword may only be
@@ -154,11 +163,13 @@ public enum DataDescription implements IFitsHeader {
      * @deprecated Use {@link Standard#TDMINn} instead.
      */
     TDMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "minimum value in the column"),
+
     /**
      * The value field shall contain a character string giving a title that is suitable for display purposes, e.g., for
      * annotation on images or plots of the data contained in the HDU.
      */
     TITLE(SOURCE.ROSAT, HDU.ANY, VALUE.STRING, "title for the observation or data"),
+
     /**
      * The value field of this indexed keyword shall contain a floating point number specifying the upper bound of the
      * legal range of physical values that may be represented in column n of the table. The column may contain values
@@ -168,6 +179,7 @@ public enum DataDescription implements IFitsHeader {
      * 
      * @deprecated Use {@link Standard#TLMAXn} instead.
      */
+
     TLMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "maximum legal value in the column"),
     /**
      * The value field of this indexed keyword shall contain a floating point number specifying the lower bound of the
@@ -178,6 +190,7 @@ public enum DataDescription implements IFitsHeader {
      * 
      * @deprecated Use {@link Standard#TLMINn} instead.
      */
+
     TLMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "minimum legal value in the column"),
     /**
      * The value field shall contain a character string that defines the order in which the rows in the current FITS

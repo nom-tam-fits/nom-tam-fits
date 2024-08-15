@@ -99,6 +99,20 @@ public enum InstrumentDescription implements IFitsHeader {
      */
     SATURATE(SOURCE.STScI, HDU.ANY, VALUE.INTEGER, "data value at which saturation occurs");
 
+    /**
+     * Standard {@link #FILTER} name when no filter was used.
+     * 
+     * @since 1.20.1
+     */
+    public static final String FILTER_NONE = "NONE";
+
+    /**
+     * Standard {@link #GRATING} name when no filter was used.
+     * 
+     * @since 1.20.1
+     */
+    public static final String GRATING_NONE = "NONE";
+
     private final FitsKey key;
 
     InstrumentDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {

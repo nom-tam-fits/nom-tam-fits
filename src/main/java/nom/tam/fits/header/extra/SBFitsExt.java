@@ -47,40 +47,50 @@ import nom.tam.fits.header.IFitsHeader;
  * https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf</a>
  * </p>
  *
- * @author Richard van Nieuwenhoven.
+ * @author Attila Kovacs and Richard van Nieuwenhoven
+ * 
+ * @see    MaxImDLExt
  */
 public enum SBFitsExt implements IFitsHeader {
+
     /**
      * Aperture Area of the Telescope used in square millimeters. Note that we are specifying the area as well as the
      * diameter because we want to be able to correct for any central obstruction.
      */
-    APTAREA(VALUE.REAL, "Aperture Area of the Telescope"),
+    APTAREA(VALUE.REAL, "[mm**2] telescope aperture area"),
+
     /**
      * Aperture Diameter of the Telescope used in millimeters.
      */
-    APTDIA(VALUE.REAL, "Aperture Diameter of the Telescope"),
+    APTDIA(VALUE.REAL, "[mm] telescope aperture diameter"),
+
     /**
      * Upon initial display of this image use this ADU level for the Black level.
      */
-    CBLACK(VALUE.INTEGER, "use this ADU level for the Black"),
+    CBLACK(VALUE.REAL, "[adu] black level counts"),
+
     /**
      * Temperature of CCD when exposure taken.
      */
-    CCD_TEMP("CCD-TEMP", VALUE.REAL, "Temperature of CCD"),
+    CCD_TEMP("CCD-TEMP", VALUE.REAL, "[C] temperature of CCD"),
+
     /**
-     * Altitude in degrees of the center of the image in degrees. Format is the same as the OBJCTDEC keyword.
+     * Altitude of the center of the image in +DDD MM SS.SSS format.
      */
-    CENTALT(VALUE.STRING, "Altitude of the center of the image"),
+    CENTALT(VALUE.STRING, "DMS altitude of the center of the image"),
+
     /**
-     * Azimuth in degrees of the center of the image in degrees. Format is the same as the OBJCTDEC keyword.
+     * Azimuth of the center of the image in +DDD MM SS.SSS format.
      */
-    CENTAZ(VALUE.STRING, "Azimuth of the center of the image"),
+    CENTAZ(VALUE.STRING, "DMS azimuth of the center of the image"),
+
     /**
      * Upon initial display of this image use this ADU level as the White level. For the SBIG method of displaying
      * images using Background and Range the following conversions would be used: Background = CBLACK Range = CWHITE -
      * CBLACK.
      */
-    CWHITE(VALUE.INTEGER, "use this ADU level for the White"),
+    CWHITE(VALUE.REAL, "[adu] white level counts"),
+
     /**
      * Total dark time of the observation. This is the total time during which dark current is collected by the
      * detector. If the times in the extension are different the primary HDU gives one of the extension times.
@@ -94,104 +104,142 @@ public enum SBFitsExt implements IFitsHeader {
      * index = none
      * </p>
      */
-    DARKTIME(VALUE.REAL, "Dark time"),
+    DARKTIME(VALUE.REAL, "[s] dark time"),
+
     /**
      * Electronic gain in e-/ADU.
      */
-    EGAIN(VALUE.REAL, "Electronic gain in e-/ADU"),
+    EGAIN(VALUE.REAL, "[ct/adu] electronic gain in electrons/ADU"),
+
     /*
      * Optional Keywords <p> The following Keywords are not defined in the FITS Standard but are defined in this
      * Standard. They may or may not be included by AIP Software Packages adhering to this Standard. Any of these
      * keywords read by an AIP Package must be preserved in files written. </p>
      */
+
     /**
      * Focal Length of the Telescope used in millimeters.
      */
-    FOCALLEN(VALUE.REAL, "Focal Length of the Telescope"),
+    FOCALLEN(VALUE.REAL, "[mm] focal length of telescope"),
+
     /**
-     * This indicates the type of image and should be one of the following: Light Frame Dark Frame Bias Frame Flat
-     * Field.
+     * This indicates the type of image and should be one of the following: 'Light Frame', 'Dark Frame', 'Bias Frame',
+     * 'Flat Field', or 'Tricolor Image'.
+     * 
+     * @see #IMAGETYP_LIGHT_FRAME
+     * @see #IMAGETYP_DARK_FRAME
+     * @see #IMAGETYP_FLAT_FRAME
+     * @see #IMAGETYP_BIAS_FRAME
+     * @see #IMAGETYP_TRICOLOR_IMAGE
      */
     IMAGETYP(VALUE.STRING, "type of image"),
+
     /**
-     * This is the Declination of the center of the image in degrees. The format for this is ‘+25 12 34.111’ (SDD MM
-     * SS.SSS) using a space as the separator. For the sign, North is + and South is -.
+     * This is the Declination of the center of the image in +DDD MM SS.SSS format. E.g. ‘+25 12 34.111’. North is + and
+     * South is -.
      */
-    OBJCTDEC(VALUE.STRING, "Declination of the center of the image"),
+    OBJCTDEC(VALUE.STRING, "DMS declination of image center"),
+
     /**
-     * This is the Right Ascension of the center of the image in hours, minutes and secon ds. The format for this is ’12
-     * 24 23.123’ (HH MM SS.SSS) using a space as the separator.
+     * This is the Right Ascension of the center of the image in HH MM SS.SSS format. E.g. ’12 24 23.123’.
      */
-    OBJCTRA(VALUE.STRING, "Right Ascension of the center of the image"),
+    OBJCTRA(VALUE.STRING, "HMS right ascension of image center"),
+
     /**
-     * Add this ADU count to each pixel value to get to a zero - based ADU. For example in SBIG images we add 100 ADU to
-     * each pixel to stop underflow at Zero ADU from noise. We would set PEDESTAL to - 100 in this case.
+     * Add this ADU count to each pixel value to get to a zero-based ADU. For example in SBIG images we add 100 ADU to
+     * each pixel to stop underflow at Zero ADU from noise. We would set PEDESTAL to -100 in this case.
      */
-    PEDESTAL(VALUE.INTEGER, "ADU count to each pixel value to get to a zero"),
+    PEDESTAL(VALUE.REAL, "[adu] zero level counts"),
+
     /**
      * This string indicates the version of this standard that the image was created to ie ‘SBFITSEXT Version 1.0’.
      */
     SBSTDVER(VALUE.STRING, "version of this standard"),
-    /**
-     * This is the setpoint of the cooling in degrees C. If it is not specified the setpoint is assumed to be the
-     */
-    SET_TEMP("SET-TEMP", VALUE.REAL, "setpoint of the cooling in degrees C"),
-    /**
-     * Latitude of the imaging location in degrees. Format is the same as the OBJCTDEC key word.
-     */
-    SITELAT(VALUE.STRING, "Latitude of the imaging location"),
 
     /**
-     * Longitude of the imaging location in degrees. Format is the same as the OBJCTDEC keyword.
+     * This is the setpoint of the cooling in degrees Celsius. If it is not specified the setpoint is assumed to be the
+     * ambient temperature.
      */
-    SITELONG(VALUE.STRING, "Longitude of the imaging location"),
+    SET_TEMP("SET-TEMP", VALUE.REAL, "[C] setpoint of the cooling"),
+
     /**
-     * Number of images combined to make this image as in Track and Accumulate or Co - Added images.
+     * Latitude of the imaging location in +DDD MM SS.SSS format. E.g. ‘+25 12 34.111’. North is + and South is -.
      */
-    SNAPSHOT(VALUE.INTEGER, "Number of images combined"),
+    SITELAT(VALUE.STRING, "DMS latitude of the imaging location"),
+
+    /**
+     * Longitude of the imaging location in +DDD MM SS.SSS format. E.g. ‘+25 12 34.111’. East is + and West is -.
+     */
+    SITELONG(VALUE.STRING, "DMS longitude of the imaging location"),
+
+    /**
+     * Number of images combined to make this image as in track and accumulate or coadded images.
+     */
+    SNAPSHOT(VALUE.INTEGER, "number of images combined"),
+
     /**
      * This indicates the name and version of the Software that initially created this file ie ‘SBIGs CCDOps Version
      * 5.10’.
      */
-    SWCREATE(VALUE.STRING, "created version of the Software"),
+    SWCREATE(VALUE.STRING, "software name and version that created file"),
+
     /**
      * This indicates the name and version of the Software that modified this file ie ‘SBIGs CCDOps Version 5.10’ and
      * the re can be multiple copies of this keyword. Only add this keyword if you actually modified the image and we
      * suggest placing this above the HISTORY keywords corresponding to the modifications made to the image.
      */
-    SWMODIFY(VALUE.STRING, "modified version of the Software"),
+    SWMODIFY(VALUE.STRING, "list of software that modified file"),
 
     /**
      * If the image was auto-guided this is the exposure time in seconds of the tracker used to acquire this image. If
      * this keyword is not present then the image was unguided or hand guided.
      */
-    TRAKTIME(VALUE.REAL, "exposure time in seconds of the tracker"),
+    TRAKTIME(VALUE.REAL, "[s] exposure time of the tracker"),
 
     /**
      * Binning factor in width.
      */
-    XBINNING(VALUE.INTEGER, "Binning factor in width"),
+    XBINNING(VALUE.INTEGER, "binning factor in width"),
+
     /**
      * Sub frame X position of upper left pixel relative to whole frame in binned pixel units.
      */
-    XORGSUBF(VALUE.INTEGER, "Sub frame X position"),
+    XORGSUBF(VALUE.INTEGER, "[pix] sub frame X position"),
 
     /**
      * Pixel width in microns (after binning).
      */
-    XPIXSZ(VALUE.REAL, "Pixel width in microns"),
+    XPIXSZ(VALUE.REAL, "[um] pixel width"),
+
     /**
      * Binning factor in height.
      */
-    YBINNING(VALUE.INTEGER, "Binning factor in height"),
+    YBINNING(VALUE.INTEGER, "binning factor in height"),
+
     /**
      * Sub frame Y position of upper left pixel relative to whole frame in binned pixel units.
      */
-    YORGSUBF(VALUE.INTEGER, "Sub frame Y position"),
+    YORGSUBF(VALUE.INTEGER, "[pix] sub frame Y position"),
+
     /**
      * Pixel height in microns (after binning).
      */
-    YPIXSZ(VALUE.REAL, "Pixel height in microns");
+    YPIXSZ(VALUE.REAL, "[um] pixel height");
+
+    /** Standard {@link #IMAGETYP} value for a light frame. */
+    public static final String IMAGETYP_LIGHT_FRAME = "Light Frame";
+
+    /** Standard {@link #IMAGETYP} value for a bias frame. */
+    public static final String IMAGETYP_BIAS_FRAME = "Bias Frame";
+
+    /** Standard {@link #IMAGETYP} value for a dark frame. */
+    public static final String IMAGETYP_DARK_FRAME = "Dark Frame";
+
+    /** Standard {@link #IMAGETYP} value for a flat frame. */
+    public static final String IMAGETYP_FLAT_FRAME = "Flat Frame";
+
+    /** Standard {@link #IMAGETYP} value for a tricolor image. */
+    public static final String IMAGETYP_TRICOLOR_IMAGE = "Tricolor Image";
 
     private final FitsKey key;
 

@@ -2,6 +2,8 @@ package nom.tam.fits.header;
 
 import java.util.Arrays;
 
+import nom.tam.fits.header.extra.CommonExt;
+import nom.tam.fits.header.extra.MaxImDLExt;
 import nom.tam.fits.header.extra.NOAOExt;
 import nom.tam.fits.header.extra.SBFitsExt;
 import nom.tam.fits.header.extra.STScIExt;
@@ -41,16 +43,13 @@ import nom.tam.fits.header.extra.STScIExt;
  * This enum wil try to list synonyms inside or over different dictionaries. So please use always the highest level
  * keyword you can find.
  *
- * @author Richard van Nieuwenhoven
+ * @author Richard van Nieuwenhoven, Attila Kovacs, and John Murphy
  */
 @SuppressWarnings("deprecation")
 public enum Synonyms {
 
     /** EQUINOX is now preferred over the old EPOCH */
     EQUINOX(Standard.EQUINOX, Standard.EPOCH),
-
-    /** TIMESYS appears in multiple conventions */
-    TIMESYS(NOAOExt.TIMESYS, STScIExt.TIMESYS),
 
     /** RADESYS is now preferred over the old RADECSYS */
     RADESYS(Standard.RADESYS, Standard.RADECSYS),
@@ -135,7 +134,7 @@ public enum Synonyms {
      * @see DateTime#XPOSURE
      */
     EXPOSURE(ObservationDurationDescription.EXPOSURE, ObservationDurationDescription.EXPTIME,
-            ObservationDurationDescription.ONTIME),
+            ObservationDurationDescription.ONTIME, STScIExt.XPOSURE),
 
     /**
      * Variants for recording the start time of observation in HH:MM:SS[.s...] format
@@ -148,7 +147,133 @@ public enum Synonyms {
     TSTOP(DateTime.TSTOP, ObservationDurationDescription.TIME_END),
 
     /** DARKTIME appears in multiple conventions */
-    DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);
+    DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME),
+
+    /**
+     * Image rotation angle in degrees
+     * 
+     * @since 1.20.1
+     */
+    OBJCTROT(CommonExt.OBJCTROT, CommonExt.ANGLE),
+
+    /**
+     * Electronic gain -- electrons per ADU
+     * 
+     * @since 1.20.1
+     */
+    EGAIN(SBFitsExt.EGAIN, CommonExt.GAINADU),
+
+    /**
+     * Focuser name
+     * 
+     * @since 1.20.1
+     */
+    FOCUSER(CommonExt.FOCUSER, CommonExt.FOCNAME),
+
+    /**
+     * Focus position steps
+     * 
+     * @since 1.20.1
+     */
+    FOCUSPOS(MaxImDLExt.FOCUSPOS, CommonExt.FOCPOS),
+
+    /**
+     * Focus temperature in degrees Celsius.
+     * 
+     * @since 1.20.1
+     */
+    FOCUSTEM(MaxImDLExt.FOCUSTEM, CommonExt.FOCTEMP),
+
+    /**
+     * Camera gain / ISO speed
+     * 
+     * @since 1.20.1
+     */
+    ISOSPEED(MaxImDLExt.ISOSPEED, CommonExt.GAINRAW),
+
+    /**
+     * Pixel binning in X direction
+     * 
+     * @since 1.20.1
+     */
+    XBINNING(SBFitsExt.XBINNING, CommonExt.CCDXBIN),
+
+    /**
+     * Pixel binning in Y direction
+     * 
+     * @since 1.20.1
+     */
+    YBINNING(SBFitsExt.YBINNING, CommonExt.CCDYBIN),
+
+    /**
+     * Image scale (arcsec/pixel)
+     *
+     * @since 1.20.1
+     */
+    PIXSCALE(CommonExt.PIXSCALE, CommonExt.SCALE),
+
+    /**
+     * Cloud cover percentage
+     *
+     * @since 1.20.1
+     */
+    CLOUDCVR(CommonExt.CLOUDCVR, MaxImDLExt.AOCCLOUD),
+
+    /**
+     * Relative humidity in percent
+     *
+     * @since 1.20.1
+     */
+    HUMIDITY(CommonExt.HUMIDITY, MaxImDLExt.AOCHUM, MaxImDLExt.BOLTHUM, MaxImDLExt.DAVHUM),
+
+    /**
+     * Dew point in degrees Celsius
+     * 
+     * @since 1.20.1
+     */
+    DEWPOINT(CommonExt.DEWPOINT, MaxImDLExt.AOCDEW, MaxImDLExt.BOLTDEW, MaxImDLExt.DAVDEW),
+
+    /**
+     * Ambient temperature in degrees Celsius
+     * 
+     * @since 1.20.1
+     */
+    AMBTEMP(CommonExt.AMBTEMP, MaxImDLExt.AOCAMBT, MaxImDLExt.BOLTAMBT, MaxImDLExt.DAVAMBT),
+
+    /**
+     * Wind speed in km/h
+     *
+     * @since 1.20.1
+     */
+    WINDSPD(CommonExt.WINDSPD, MaxImDLExt.BOLTWIND, MaxImDLExt.DAVWIND), // MaxImDLExt.AOCWIND, uses different units
+
+    /**
+     * Wind direction in degrees, clockwise from North
+     * 
+     * @since 1.20.1
+     */
+    WINDDIR(CommonExt.WINDDIR, MaxImDLExt.AOCWINDD, MaxImDLExt.DAVWINDD),
+
+    /**
+     * Atmospheric pressure in hPA
+     *
+     * @since 1.20.1
+     */
+    PRESSURE(CommonExt.PRESSURE, MaxImDLExt.AOCBAROM, MaxImDLExt.DAVBAROM),
+
+    /**
+     * Software that created the original FITS file.
+     * 
+     * @since 1.20.1
+     */
+    CREATOR(DataDescription.CREATOR, DataDescription.PROGRAM),
+
+    /**
+     * Clock time duration of observation.
+     * 
+     * @since 1.20.1
+     */
+    TELAPSE(DateTime.TELAPSE, ObservationDurationDescription.ELAPTIME);
 
     private final IFitsHeader primaryKeyword;
 
@@ -183,10 +308,10 @@ public enum Synonyms {
      * 
      * @param  key the standard or conventional header keyword.
      * 
-     * @return        the primary (or preferred) FITS header keyword form to use
+     * @return     the primary (or preferred) FITS header keyword form to use
      * 
-     * @see           #primaryKeyword(String)
-     * @see           #primaryKeyword()
+     * @see        #primaryKeyword(String)
+     * @see        #primaryKeyword()
      */
     public static IFitsHeader primaryKeyword(IFitsHeader key) {
         for (Synonyms synonym : values()) {

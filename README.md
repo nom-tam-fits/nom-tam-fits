@@ -1155,13 +1155,16 @@ commonly used keyword, which as also collected in the `nom.tam.fits.header` pack
  
 Finally, many organisations (or groups of organisations) have defined their own sets of FITS keywords. Some of 
 these can be found under the `nom.tam.fits-header.extra` package, such as:
- 
+
+ * `CommonExt` -- Commonly used keywords in the amateur astronomy community
+ * `CXCExt` -- [keywords defined for the Chandra X-ray Observatory](https://cxc.harvard.edu/contrib/arots/fits/content.txt) 
+ * `ESOExt` -- keywords specific to the ESO 
+    [DataInterface Control Document](https://archive.eso.org/cms/tools-documentation/dicb/ESO-044156_7_DataInterfaceControlDocument.pdf)
  * `NOAOExt` -- keywords used by the National Optical Astronomy Observatory (_no longer available since the IRAF 
     project is no longer supported_) 
  * `SBFitsExt` -- [Santa Barbara Instrument Group FITS Extension 
-   (SBFITSEXT)](https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf)
+   (SBFITSEXT)](https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf), a.k.a. SBIG keywords.
    * `MaxImDLExt` -- [MaxIm DL Astronomy and Scientific Imaging Solutions](https://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm)
- * `CXCExt` -- [keywords defined for the Chandra X-ray Observatory](https://cxc.harvard.edu/contrib/arots/fits/content.txt)
  * `STScIExt` -- [keywords used by the Space Telescope Science Institute](https://outerspace.stsci.edu/display/MASTDOCS/Required+Metadata)
 
 You can use the standardized keywords contained in these enums to populate headers or access header values. For 

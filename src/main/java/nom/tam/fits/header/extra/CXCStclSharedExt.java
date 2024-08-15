@@ -1,5 +1,7 @@
 package nom.tam.fits.header.extra;
 
+import nom.tam.fits.header.DateTime;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -35,62 +37,74 @@ import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
- * This is the file represents the common keywords between CXC and STSclExt
- *
- * @author     Richard van Nieuwenhoven
+ * This is the file represents the common keywords between CXC and STSclExt. See e.g. the ASC keywords at
+ * <a href="https://planet4589.org/astro/sds/asc/ps/SDS05.pdf">https://planet4589.org/astro/sds/asc/ps/SDS05.pdf</a> for
+ * defititions of these. .
  * 
- * @deprecated This enum is duplicated by both {@link CXCExt} and {@link STScIExt}, and users would (should) typically
- *                 use one or the other.
+ * @deprecated These are available both in the {@link CXCExt} and {@link STScIExt} enums. This class may be removed in
+ *                 the future.
+ * 
+ * @see        STScIExt
+ * @see        CXCExt
+ * 
+ * @author     Attila Kovacs and Richard van Nieuwenhoven
  */
 public enum CXCStclSharedExt implements IFitsHeader {
+
     /**
-     * Clock correction applied
-     * <p>
-     * T
-     * </p>
+     * Same as {@link STScIExt#CLOCKAPP}.
      */
-    CLOCKAPP("Clock correction applied"),
+    CLOCKAPP(STScIExt.CLOCKAPP),
+
     /**
-     * 1998-01-01T00:00:00 (TT) expressed in MJD (TT)
+     * Same as {@link STScIExt#MJDREF}.
      */
-    MJDREF("1998-01-01T00:00:00 (TT) expressed in MJD"),
+    MJDREF(STScIExt.MJDREF),
+
     /**
-     * Spacecraft clock
+     * Same as {@link STScIExt#TASSIGN}.
      */
-    TASSIGN("Spacecraft clock"),
+    TASSIGN(STScIExt.TASSIGN),
+
     /**
-     * Time resolution of data (in seconds)
+     * Same as {@link DateTime#TIMEDEL}.
      */
-    TIMEDEL("Time resolution of data (in seconds)"),
+    TIMEDEL(DateTime.TIMEDEL),
+
     /**
-     * No pathlength corrections
+     * Same as {@link STScIExt#TIMEREF}.
      */
-    TIMEREF("No pathlength corrections"),
+    TIMEREF(STScIExt.TIMEREF),
+
     /**
-     * Units of time e.g. 's'
+     * Same as {@link STScIExt#TIMEUNIT}.
      */
-    TIMEUNIT("Units of time "),
+    TIMEUNIT(STScIExt.TIMEUNIT),
+
     /**
-     * AXAF FITS design document
+     * Same as {@link STScIExt#TIMVERSN}.
      */
-    TIMVERSN("AXAF FITS design document"),
+    TIMVERSN(STScIExt.TIMVERSN),
+
     /**
-     * Clock correction (if not zero)
+     * Same as {@link STScIExt#TIMEZERO}.
      */
-    TIMEZERO("Clock correction (if not zero)"),
+    TIMEZERO(STScIExt.TIMEZERO),
+
     /**
-     * As in the "TIME" column: raw space craft clock;
+     * Same as {@link STScIExt#TSTART}.
      */
-    TSTART("As in the \"TIME\" column: raw space craft clock;"),
+    TSTART(STScIExt.TSTART),
+
     /**
-     * add TIMEZERO and MJDREF for absolute TT
+     * Same as {@link CXCStclSharedExt#TSTOP}.
      */
-    TSTOP("add TIMEZERO and MJDREF for absolute TT");
+    TSTOP(STScIExt.TSTOP);
 
     private final FitsKey key;
 
-    CXCStclSharedExt(String comment) {
-        key = new FitsKey(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
+    CXCStclSharedExt(IFitsHeader orig) {
+        key = orig.impl();
     }
 
     @Override
