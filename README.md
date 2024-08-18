@@ -141,7 +141,7 @@ extended Unicode characters (and also ASCII beyond the `0x20` -- `0x7E` range) i
 FITS.
 
 
-
+-----------------------------------------------------------------------------
 
 <a name="deprecated-methods"></a>
 ## Compatibility with prior releases
