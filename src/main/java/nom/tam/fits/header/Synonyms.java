@@ -266,7 +266,7 @@ public enum Synonyms {
      * 
      * @since 1.20.1
      */
-    CREATOR(DataDescription.CREATOR, DataDescription.PROGRAM),
+    CREATOR(DataDescription.CREATOR, DataDescription.PROGRAM, SBFitsExt.SWCREATE),
 
     /**
      * Clock time duration of observation.
