@@ -51,9 +51,6 @@ You may find the following links useful:
 <a name="introduction"></a>
 ## Introduction
 
- - [FITS data (HDU) types](#fits-data-type)
- - [FITS vs Java data types](#fits-vs-java-data-types)
-
 FITS (Flexible Image Transport System) is a binary format of many astronomical datasets and images.
 
 The library requires a level of familiarity with FITS and its common standards and conventions for effective use. For 
@@ -118,29 +115,6 @@ The current FITS standard (4.0) recognizes the following principal HDU / data ty
 
 
 
-<a name="fits-vs-java-data-types"></a>
-### FITS vs Java data types
-
-#### Signed vs unsigned bytes
-
-Java bytes are signed, but FITS bytes are not. If any arithmetic processing is to be done on byte-valued data,
-users may need to be careful of Java’s automated conversion of signed bytes to widened integers. Whereas, a value of 
-`0xFF` signifies 255 in FITS, it has a Java value of -1. To preserve the FITS meaning, we may upconvert FITS bytes
- to `short` as:
-
-```java
-  short shortValue = (byteValue & 0xFF);
-```
-
-#### Strings
-
-FITS generally represents character strings as byte arrays of ASCII characters, with legal values between `0x20` and 
-`0x7E` (inclusive). The library automatically converts between Java `String`s and their FITS representations, by the 
-appropriate narrowing conversion of 16-bit Unicode `char` to `byte`. Therefore, you should be careful to avoid using 
-extended Unicode characters (and also ASCII beyond the `0x20` -- `0x7E` range) in `String`s, when including these in 
-FITS.
-
-
 -----------------------------------------------------------------------------
 
 <a name="deprecated-methods"></a>
@@ -182,12 +156,24 @@ future releases prior to version __2.0__ of the library.
 <a name="reading-fits-files"></a>
 ## Reading FITS files
 
-
+ - [FITS vs Java bytes](#fits-vs-java-bytes)
  - [Deferred reading](#deferred-reading)
  - [Tolerance to standard violations in 3rd party FITS files](#read-tolerance)
  - [Reading images](#reading-images)
  - [Reading tables](#reading-tables)
 
+
+<a name="fits-vs-java-bytes"></a>
+### FITS vs Java bytes
+
+Java bytes are signed, but FITS bytes are not. If any arithmetic processing is to be done on byte-valued data,
+users may need to be careful of Java’s automated conversion of signed bytes to widened integers. Whereas, a value of 
+`0xFF` signifies 255 in FITS, it has a Java value of -1. To preserve the FITS meaning, you may want to upconvert FITS 
+bytes to Java `short` values as:
+
+```java
+  short shortValue = (byteValue & 0xFF);
+```
 
 
 <a name="deferred-reading"></a>
@@ -605,11 +591,20 @@ numerical types, such as `byte.class`, `short.class`, `int.class`, `long.class`,
 <a name="writing-data"></a>
 ## Writing FITS data
 
+ - [Java strings vs FITS strings](#java-strings-vs-FITS-strings)
  - [Writing complete FITS files](#writing-files)
  - [Writing one HDU at a time](#incremental-writing)
  - [Low-level writes](#low-level-writes)
 
 
+<a name="java-strings-vs-FITS-strings"></a>
+### Java strings vs FITS strings
+
+FITS generally represents character strings as byte arrays of ASCII characters, with legal values between `0x20` and 
+`0x7E` (inclusive). The library automatically converts between Java `String`s and their FITS representations, by the 
+appropriate narrowing conversion of 16-bit Unicode `char` to `byte`. Therefore, you should be careful to avoid using 
+extended Unicode characters (and also ASCII beyond the `0x20` -- `0x7E` range) in `String`s, when including these in 
+FITS.
 
 <a name="writing-files"></a>
 ### Writing complete FITS files
