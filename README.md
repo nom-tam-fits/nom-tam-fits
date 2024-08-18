@@ -123,17 +123,14 @@ The current FITS standard (4.0) recognizes the following principal HDU / data ty
 
 #### Signed vs unsigned bytes
 
-Java bytes are signed, but FITS bytes are not. If any arithmetic processing is to be done on byte valued data,
-users may need to be careful of Java’s automated conversion of signed bytes to widened integers. Thus, a value of 
-`0xFF`would signify 255 in FITS, but has a Java value of -1. To preserve the FITS meaning, we may upconvert it to 
-`short` as:
+Java bytes are signed, but FITS bytes are not. If any arithmetic processing is to be done on byte-valued data,
+users may need to be careful of Java’s automated conversion of signed bytes to widened integers. Whereas, a value of 
+`0xFF` signifies 255 in FITS, it has a Java value of -1. To preserve the FITS meaning, we may upconvert FITS bytes
+ to `short` as:
 
 ```java
   short shortValue = (byteValue & 0xFF);
 ```
-    
-This idiom of AND-ing the byte values with `0xFF` before a widening conversion is generally the way to prevent 
-undesired sign extension of bytes.
 
 #### Strings
 
@@ -276,7 +273,7 @@ The simplest example of reading an image contained in the first HDU is given bel
   int[][] image = (int[][]) hdu.getKernel();
 ```
 
-First we create a new instance of `Fits` with the filename. Then we can get first HDU using the `getHDU()` method. 
+First we create a new instance of `Fits` with the filename. Then we can get the first HDU using the `getHDU()` method. 
 
 Note the casting into an `ImageHDU`. When reading FITS data using the nom.tam library the user will often need to cast 
 the results to the appropriate type. Given that the FITS file may contain many different kinds of data and that Java 
@@ -287,14 +284,14 @@ casting is inevitable if you want to use the data from the FITS files.
 #### Converting images to a different type
 
 As of version 1.20, the library provides the means for converting images between numerical types. Let's say the FITS 
-stored the images as integer, but we want them as double-precision values. 
+stored the image as integers, but we want them as double-precision values. 
 
 ```java
   double[][] darray = (double[][]) hdu.getData().convertTo(double.class).getKernel();
 ```
 
 Things get somewhat interesting at this point, because the FITS standard also allows for the integer representation of 
-floating-point values as integers, via quantization. The quantization has the following parameters:
+floating-point values, via quantization. The quantization has the following parameters:
 
  - A scaling factor, i.e. the separation of discrete levels in the floating point data (defaults to 1.0)
  - an offset, i.e. the floating point value that corresponds to an integer value of 0 (defaults to 0.0).
@@ -334,9 +331,9 @@ As of version 1.20, this library recognises when the convention is used when rea
 only handle the convention if the 'COMPLEX' axis is the first or last image axis -- which should cover all but some 
 very pathological use cases.) 
 
-However, images recorded this way will continue to read back as their storage type (e.g. `float[4][3][2]`) for back 
-compatibility with previous releases. But, you can check if the data is meant to be complex (or not) and convert it to 
-complex values in a second step after loading the data:
+However, complex-valued images will continue to read back as their raw storage type (e.g. `float[4][3][2]`) for back 
+compatibility with previous releases. But, you can asily check if the data is meant to be complex (or not) and convert 
+them to complex values in a second step after loading the data. E.g.:
 
 ```java
   // Get the data in the stored data format as some primitive array...
