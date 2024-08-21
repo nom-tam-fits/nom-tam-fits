@@ -389,6 +389,17 @@ public class ChecksumTest {
     }
 
     @Test
+    public void testCheckSumMissingDatasum() throws Exception {
+        Header h = new Header();
+        h.setSimple(true);
+        h.setBitpix(Bitpix.INTEGER);
+        h.setNaxes(0);
+        h.addValue(CHECKSUM, "blah");
+        h.validate(true);
+        assertFalse(h.containsKey(CHECKSUM));
+    }
+
+    @Test
     public void testCheckSumSubtract() throws Exception {
         long a = 20220829;
         long b = 19740131;
