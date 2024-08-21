@@ -202,7 +202,6 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         type = null;
 
         String card = readOneHeaderLine(dis);
-
         HeaderCardParser parsed = new HeaderCardParser(card);
 
         // extract the key

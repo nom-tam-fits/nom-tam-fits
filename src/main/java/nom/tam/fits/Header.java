@@ -16,9 +16,11 @@ import java.util.logging.Logger;
 
 import nom.tam.fits.FitsFactory.FitsSettings;
 import nom.tam.fits.header.Bitpix;
+import nom.tam.fits.header.Checksum;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.fits.header.Standard;
+import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
@@ -196,6 +198,8 @@ public class Header implements FitsElement {
     private Comparator<String> headerSorter;
 
     private BasicHDU<?> owner;
+
+    private boolean validating = false;
 
     /**
      * Keyword checking mode when adding standardized keywords via the {@link IFitsHeader} interface.
@@ -2202,6 +2206,7 @@ public class Header implements FitsElement {
         }
 
         FitsUtil.reposition(dos, fileOffset);
+
         write(dos);
         dos.flush();
     }
@@ -2384,6 +2389,33 @@ public class Header implements FitsElement {
         updateLine(key.key(), card);
     }
 
+    private void updateValue(IFitsHeader key, Boolean value) {
+        HeaderCard prior = cards.get(key.key());
+        if (prior != null) {
+            prior.setValue(value);
+        } else {
+            addValue(key, value);
+        }
+    }
+
+    private void updateValue(IFitsHeader key, Number value) {
+        HeaderCard prior = cards.get(key.key());
+        if (prior != null) {
+            prior.setValue(value);
+        } else {
+            addValue(key, value);
+        }
+    }
+
+    private void updateValue(IFitsHeader key, String value) {
+        HeaderCard prior = cards.get(key.key());
+        if (prior != null) {
+            prior.setValue(value);
+        } else {
+            addValue(key, value);
+        }
+    }
+
     /**
      * Update an existing card in situ, without affecting the current position, or else add a new card at the current
      * position.
@@ -2470,7 +2502,7 @@ public class Header implements FitsElement {
             }
 
             // Make sure we have SIMPLE
-            addValue(SIMPLE, true);
+            updateValue(SIMPLE, true);
         } else {
             // Delete keys that cannot be in extensions
             deleteKey(SIMPLE);
@@ -2479,25 +2511,25 @@ public class Header implements FitsElement {
             deleteKey(EXTEND);
 
             // Make sure we have XTENSION
-            addValue(XTENSION, xType);
+            updateValue(XTENSION, xType);
         }
 
         // Make sure we have BITPIX
-        addValue(BITPIX, getIntValue(BITPIX, Bitpix.VALUE_FOR_INT));
+        updateValue(BITPIX, getIntValue(BITPIX, Bitpix.VALUE_FOR_INT));
 
         int naxes = getIntValue(NAXIS, 0);
-        addValue(NAXIS, naxes);
+        updateValue(NAXIS, naxes);
 
         for (int i = 1; i <= naxes; i++) {
             IFitsHeader naxisi = NAXISn.n(i);
-            addValue(naxisi, getIntValue(naxisi, 1));
+            updateValue(naxisi, getIntValue(naxisi, 1));
         }
 
         if (xType == null) {
-            addValue(EXTEND, true);
+            updateValue(EXTEND, true);
         } else {
-            addValue(PCOUNT, getIntValue(PCOUNT, 0));
-            addValue(GCOUNT, getIntValue(GCOUNT, 1));
+            updateValue(PCOUNT, getIntValue(PCOUNT, 0));
+            updateValue(GCOUNT, getIntValue(GCOUNT, 1));
         }
     }
 
@@ -2528,36 +2560,69 @@ public class Header implements FitsElement {
         if (headerSorter != null) {
             cards.sort(headerSorter);
         }
+
         checkBeginning();
         checkEnd();
+
+        updateChecksum();
+    }
+
+    private void updateChecksum() throws FitsException {
+        if (containsKey(Checksum.CHECKSUM)) {
+            HeaderCard dsum = getCard(Checksum.DATASUM);
+            if (dsum != null) {
+                FitsCheckSum.setDatasum(this, dsum.getValue(Long.class, 0L));
+            } else {
+                deleteKey(Checksum.CHECKSUM);
+            }
+        }
+    }
+
+    /**
+     * Similar to {@link #write(ArrayDataOutput)}, but writes the header as is, without ensuring that mandatory keys are
+     * present, and in the correct order, or that checksums are updated.
+     * 
+     * @param  out           The output file or stream to which to write
+     * 
+     * @throws FitsException if there was a violation of the FITS standard
+     * @throws IOException   if the output was not accessible
+     * 
+     * @since                1.20.1
+     *
+     * @see                  #write(ArrayDataOutput)
+     * @see                  #validate(boolean)
+     */
+    public void writeUnchecked(ArrayDataOutput out) throws FitsException, IOException {
+        FitsSettings settings = FitsFactory.current();
+        fileOffset = FitsUtil.findOffset(out);
+
+        Cursor<String, HeaderCard> writeIterator = cards.iterator(0);
+
+        int size = 0;
+
+        while (writeIterator.hasNext()) {
+            HeaderCard card = writeIterator.next();
+            byte[] b = AsciiFuncs.getBytes(card.toString(settings));
+            size += b.length;
+
+            if (END.key().equals(card.getKey()) && minCards * HeaderCard.FITS_HEADER_CARD_SIZE > size) {
+                // AK: Add preallocated blank header space before the END key.
+                writeBlankCards(out, minCards - size / HeaderCard.FITS_HEADER_CARD_SIZE);
+                size = minCards * HeaderCard.FITS_HEADER_CARD_SIZE;
+            }
+
+            out.write(b);
+        }
+        FitsUtil.pad(out, size, (byte) ' ');
+        out.flush();
     }
 
     @Override
-    public void write(ArrayDataOutput dos) throws FitsException {
+    public void write(ArrayDataOutput out) throws FitsException {
         validate();
 
-        FitsSettings settings = FitsFactory.current();
-        fileOffset = FitsUtil.findOffset(dos);
-
-        Cursor<String, HeaderCard> writeIterator = cards.iterator(0);
         try {
-            int size = 0;
-
-            while (writeIterator.hasNext()) {
-                HeaderCard card = writeIterator.next();
-                byte[] b = AsciiFuncs.getBytes(card.toString(settings));
-                size += b.length;
-
-                if (END.key().equals(card.getKey()) && minCards * HeaderCard.FITS_HEADER_CARD_SIZE > size) {
-                    // AK: Add preallocated blank header space before the END key.
-                    writeBlankCards(dos, minCards - size / HeaderCard.FITS_HEADER_CARD_SIZE);
-                    size = minCards * HeaderCard.FITS_HEADER_CARD_SIZE;
-                }
-
-                dos.write(b);
-            }
-            FitsUtil.pad(dos, size, (byte) ' ');
-            dos.flush();
+            writeUnchecked(out);
         } catch (IOException e) {
             throw new FitsException("IO Error writing header", e);
         }

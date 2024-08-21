@@ -45,6 +45,7 @@ import java.util.Arrays;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Data;
+import nom.tam.fits.FitsDate;
 import nom.tam.fits.FitsElement;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
@@ -153,7 +154,11 @@ public final class FitsCheckSum {
         public void run() {
             exception = null;
             try (FitsOutputStream fos = new FitsOutputStream(out)) {
-                data.write(fos);
+                if (data instanceof Header) {
+                    ((Header) data).writeUnchecked(fos);
+                } else {
+                    data.write(fos);
+                }
             } catch (Exception e) {
                 exception = e;
             }
@@ -248,7 +253,6 @@ public final class FitsCheckSum {
             writer.start();
 
             long sum = checksum(in);
-            in.close();
 
             writer.join();
             if (writer.getException() != null) {
@@ -269,75 +273,65 @@ public final class FitsCheckSum {
      * will always calculate the checksum for the data in memory, and as such load deferred mode data into RAM as
      * necessary to perform the calculation. If you rather not load a huge amount of data into RAM, you might consider
      * using {@link #checksum(RandomAccess, long, long)} instead.
+     * 
+     * @deprecated               Use {@link BasicHDU#verifyIntegrity()} instead.
      *
-     * @param  data          The FITS data object for which to calculate a checksum
+     * @param      data          The FITS data object for which to calculate a checksum
      *
-     * @return               The checksum of the data
+     * @return                   The checksum of the data
      *
-     * @throws FitsException If there was an error serializing the data object
+     * @throws     FitsException If there was an error serializing the data object
      *
-     * @see                  Data#calcChecksum()
-     * @see                  BasicHDU#verifyDataIntegrity()
-     * @see                  #checksum(RandomAccess, long, long)
-     * @see                  #setDatasum(Header, long)
-     * @see                  #setChecksum(BasicHDU)
+     * @see                      Data#calcChecksum()
+     * @see                      BasicHDU#verifyDataIntegrity()
+     * @see                      #checksum(RandomAccess, long, long)
+     * @see                      #setDatasum(Header, long)
+     * @see                      #setChecksum(BasicHDU)
      *
-     * @since                1.17
+     * @since                    1.17
      */
     public static long checksum(Data data) throws FitsException {
         return compute(data);
     }
 
     /**
-     * Computes the checksum for a FITS header object. If the header already contained a CHECKSUM card, it will be kept.
-     * Otherwise, it will add a CHECKSUM card to the header with the newly calculated sum.
+     * Computes the checksum for a FITS header. It returns the checksum for the header as is, without attempting to
+     * validate the header, or modifying it in any way.
+     * 
+     * @deprecated               Use {@link BasicHDU#verifyIntegrity()} instead.
      *
-     * @param  header        The FITS header object for which to calculate a checksum
+     * @param      header        The FITS header object for which to calculate a checksum
      *
-     * @return               The checksum of the data
+     * @return                   The checksum of the data
      *
-     * @throws FitsException If there was an error serializing the FITS header
+     * @throws     FitsException If there was an error serializing the FITS header
      *
-     * @see                  #checksum(Data)
+     * @see                      #checksum(Data)
      *
-     * @since                1.17
+     * @since                    1.17
      */
     public static long checksum(Header header) throws FitsException {
-        HeaderCard hc = header.getCard(CHECKSUM);
-        String prior = null;
-
-        if (hc != null) {
-            prior = hc.getValue();
-            hc.setValue(CHECKSUM_DEFAULT);
-            hc.setComment(CHECKSUM.comment()); // Reset comment in case it contained a timestamp
-        } else {
-            header.seekTail();
-            hc = header.addValue(CHECKSUM, CHECKSUM_DEFAULT);
-        }
-
-        long sum = compute(header);
-
-        hc.setValue(prior == null ? encode(sum) : prior);
-
-        return sum;
+        return compute(header);
     }
 
     /**
      * Calculates the FITS checksum for a HDU, e.g to compare agains the value stored under the CHECKSUM header keyword.
      * The
      *
-     * @param  hdu           The Fits HDU for which to calculate a checksum, including both the header and data
-     *                           segments.
+     * @param      hdu           The Fits HDU for which to calculate a checksum, including both the header and data
+     *                               segments.
      *
-     * @return               The calculated checksum for the given HDU.
+     * @return                   The calculated checksum for the given HDU.
      *
-     * @throws FitsException if there was an error accessing the contents of the HDU.
+     * @throws     FitsException if there was an error accessing the contents of the HDU.
      *
-     * @see                  BasicHDU#verifyIntegrity()
-     * @see                  #checksum(Data)
-     * @see                  #sumOf(long...)
+     * @see                      BasicHDU#verifyIntegrity()
+     * @see                      #checksum(Data)
+     * @see                      #sumOf(long...)
      *
-     * @since                1.17
+     * @deprecated               Use {@link BasicHDU#verifyIntegrity()} instead to verify checksums.
+     *
+     * @since                    1.17
      */
     public static long checksum(BasicHDU<?> hdu) throws FitsException {
         return sumOf(checksum(hdu.getHeader()), checksum(hdu.getData()));
@@ -448,8 +442,8 @@ public final class FitsCheckSum {
             }
 
             for (int j = 0; j < CHECKSUM_BLOCK_SIZE; j++) {
-                int k = CHECKSUM_BLOCK_SIZE * j + i;
-                k = (k == CHECKSUM_STRING_SIZE - 1) ? 0 : k + 1; // rotate right
+                int k = CHECKSUM_BLOCK_SIZE * j + i + 1;
+                k = (k < CHECKSUM_STRING_SIZE) ? k : 0; // rotate right
                 asc[k] = ch[j];
             }
         }
@@ -582,7 +576,20 @@ public final class FitsCheckSum {
      */
     public static void setDatasum(Header header, long datasum) throws FitsException {
         // Add the freshly calculated datasum to the header, before calculating the checksum
-        header.addValue(DATASUM, Long.toString(datasum));
+        header.seekTail();
+        header.updateLine(DATASUM,
+                new HeaderCard(DATASUM.key(), Long.toString(datasum), "data checksum at " + FitsDate.getFitsDateString()));
+
+        HeaderCard hc = header.getCard(CHECKSUM);
+
+        if (hc != null) {
+            hc.setValue(CHECKSUM_DEFAULT);
+            hc.setComment("HDU checksum at " + FitsDate.getFitsDateString());
+        } else {
+            header.seekTail();
+            header.addValue(CHECKSUM, CHECKSUM_DEFAULT);
+        }
+
         long hsum = checksum(header);
         header.getCard(CHECKSUM).setValue(encode(sumOf(hsum, datasum)));
     }

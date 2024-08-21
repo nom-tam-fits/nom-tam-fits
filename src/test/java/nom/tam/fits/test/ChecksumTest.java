@@ -139,7 +139,7 @@ public class ChecksumTest {
         fits.read();
         in.close();
         fits.setChecksum();
-        assertEquals("Bd5LEb5LBb5LBb5L", fits.getHDU(0).getHeader().getStringValue("CHECKSUM"));
+        assertEquals(FitsIO.INTEGER_MASK, fits.getHDU(0).calcChecksum());
     }
 
     // TODO This test fails in the CI for some reason, but not locally.
@@ -166,14 +166,13 @@ public class ChecksumTest {
         fits.setChecksum();
         assertTrue("deferrred after checksum", im.getData().isDeferred());
         String sum1 = im.getHeader().getStringValue(CHECKSUM);
+        assertEquals(FitsIO.INTEGER_MASK, im.calcChecksum());
 
         // Now load the data in RAM and repeat.
         im.getData().getData();
         assertFalse("loaded before checksum", im.getData().isDeferred());
         fits.setChecksum();
-
-        String sum2 = im.getHeader().getStringValue(CHECKSUM);
-        assertEquals(sum1, sum2);
+        assertEquals(FitsIO.INTEGER_MASK, im.calcChecksum());
     }
 
     @Test
@@ -322,13 +321,12 @@ public class ChecksumTest {
 
         // Deferred read
         assertEquals(FitsCheckSum.checksum(im.getData()), im.getStoredDatasum());
-        assertEquals(FitsCheckSum.checksum(im), im.getStoredChecksum());
-        assertEquals(fits.calcChecksum(0), im.getStoredChecksum());
+        assertEquals(FitsIO.INTEGER_MASK, im.calcChecksum());
 
         // in-memory
         im.setChecksum();
         assertEquals(im.getData().calcChecksum(), im.getStoredDatasum());
-        assertEquals(im.calcChecksum(), im.getStoredChecksum());
+        assertEquals(FitsIO.INTEGER_MASK, im.calcChecksum());
     }
 
     @Test
@@ -375,7 +373,7 @@ public class ChecksumTest {
         h.setBitpix(Bitpix.INTEGER);
         h.setNaxes(0);
         FitsCheckSum.checksum(h);
-        assertTrue(h.containsKey(CHECKSUM));
+        assertFalse(h.containsKey(CHECKSUM));
     }
 
     @Test
@@ -384,9 +382,21 @@ public class ChecksumTest {
         h.setSimple(true);
         h.setBitpix(Bitpix.INTEGER);
         h.setNaxes(0);
+        h.addValue(DATASUM, "0");
         h.addValue(CHECKSUM, "blah");
         FitsCheckSum.checksum(h);
         assertEquals("blah", h.getStringValue(CHECKSUM));
+    }
+
+    @Test
+    public void testCheckSumMissingDatasum() throws Exception {
+        Header h = new Header();
+        h.setSimple(true);
+        h.setBitpix(Bitpix.INTEGER);
+        h.setNaxes(0);
+        h.addValue(CHECKSUM, "blah");
+        h.validate(true);
+        assertFalse(h.containsKey(CHECKSUM));
     }
 
     @Test
@@ -486,5 +496,15 @@ public class ChecksumTest {
         fits = new Fits("target/checksumRangeTest.fits");
         assertEquals(sum, fits.calcDatasum(0));
         fits.close();
+    }
+
+    @Test
+    public void testChecksumEncode() throws Exception {
+        assertEquals("hcHjjc9ghcEghc9g", FitsCheckSum.encode(868229149L));
+    }
+
+    @Test
+    public void testChecksumDecode() throws Exception {
+        assertEquals(868229149L, FitsCheckSum.decode("hcHjjc9ghcEghc9g"));
     }
 }
