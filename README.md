@@ -175,7 +175,6 @@ bytes to Java `short` values as:
   short shortValue = (byteValue & 0xFF);
 ```
 
-
 <a name="deferred-reading"></a>
 ### Deferred reading
 
@@ -605,6 +604,7 @@ FITS generally represents character strings as byte arrays of ASCII characters, 
 appropriate narrowing conversion of 16-bit Unicode `char` to `byte`. Therefore, you should be careful to avoid using 
 extended Unicode characters (and also ASCII beyond the `0x20` -- `0x7E` range) in `String`s, when including these in 
 FITS.
+
 
 <a name="writing-files"></a>
 ### Writing complete FITS files
@@ -1405,7 +1405,7 @@ the output. (In reality it may accommodate somewhat more than that because of th
 reserved / used by any header object at any point). 
 
 Once the space has been reserved, the header can be written to the output, and one may begin recording data after it.
-The header can be completed later, up to the number of additional card specified (and sometimes beyond), and the 
+The header can be completed later, up to the number of additional cards specified (and sometimes beyond), and the 
 updated header can be rewritten place at a later time with the additional entries.
 
 

@@ -1,12 +1,16 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.20.1-rc2" date="2024-08-15" description="Bug fix release candidate.">
+   <release version="1.20.1-SNAPSHOT" date="2024-08-21" description="Bug fix release candidate.">
       <action type="fix" dev="attipaci" issue="636" due-to="keastrid">
           Compressed table columns lost their column names in 1.20.0.
       </action>
       <action type="fix" dev="attipaci" issue="656" due-to="johnmurphyastro">
           Fixed incorrect value types in several FITS keywords extension dictionaries.
+      </action>
+      <action type="fix" dev="attipaci" issue="664" due-to="johnmurphyastro">
+          Recalculate stored checksums when writing headers to avoid invalid checksums being set by setChecksum() 
+          methods.
       </action>
       <action type="add" dev="attipaci" issue="657">
           Added ESOExt enum with ESO-specific standard FITS keywords, and CommonExt for commonly used keywords in 
@@ -29,6 +33,17 @@
       </action>      
       <action type="update" dev="attipaci" issue="657">
       	  Updated comment fields and Javadoc for many extension keywords in the nom.tam.fits.header.extra package.
+      </action>
+      <action type="update" dev="attipaci" issue="665">
+          Keep original comments for mandatory keywords when writing headers that were previously read from an input.
+      </action>
+      <action type="update" dev="attipaci" issue="665">
+          CHECKSUM and DATASUM comments now store timestamp when checksums were calculated, as is the recommended
+          practice by the checksumming standard.
+      </action>
+      <action type="update" dev="attipaci" issue="665">
+          Deprecated some checksuming methods that are no longer useful, as they do not offer a mean to verify FITS
+          files. Users might want to use BasicHDU.verifyIntegrity() or Fits.verifyIntegrity() instead.
       </action>
       <action type="update" dev="attipaci">
           Uses the latest maven build and runtime dependencies.
