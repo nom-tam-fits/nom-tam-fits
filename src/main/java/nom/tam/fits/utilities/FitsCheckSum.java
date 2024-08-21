@@ -583,7 +583,7 @@ public final class FitsCheckSum {
             hc.setComment("HDU checksum at " + FitsDate.getFitsDateString());
         } else {
             header.seekTail();
-            hc = header.addValue(CHECKSUM, CHECKSUM_DEFAULT);
+            header.addValue(CHECKSUM, CHECKSUM_DEFAULT);
         }
 
         long hsum = checksum(header);
