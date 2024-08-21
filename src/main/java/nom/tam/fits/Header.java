@@ -16,9 +16,11 @@ import java.util.logging.Logger;
 
 import nom.tam.fits.FitsFactory.FitsSettings;
 import nom.tam.fits.header.Bitpix;
+import nom.tam.fits.header.Checksum;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.fits.header.Standard;
+import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
@@ -2202,6 +2204,8 @@ public class Header implements FitsElement {
         }
 
         FitsUtil.reposition(dos, fileOffset);
+
+        updateChecksum();
         write(dos);
         dos.flush();
     }
@@ -2384,6 +2388,33 @@ public class Header implements FitsElement {
         updateLine(key.key(), card);
     }
 
+    private void updateValue(IFitsHeader key, Boolean value) {
+        HeaderCard prior = cards.get(key.key());
+        if (prior != null) {
+            prior.setValue(value);
+        } else {
+            addValue(key, value);
+        }
+    }
+
+    private void updateValue(IFitsHeader key, Number value) {
+        HeaderCard prior = cards.get(key.key());
+        if (prior != null) {
+            prior.setValue(value);
+        } else {
+            addValue(key, value);
+        }
+    }
+
+    private void updateValue(IFitsHeader key, String value) {
+        HeaderCard prior = cards.get(key.key());
+        if (prior != null) {
+            prior.setValue(value);
+        } else {
+            addValue(key, value);
+        }
+    }
+
     /**
      * Update an existing card in situ, without affecting the current position, or else add a new card at the current
      * position.
@@ -2470,7 +2501,7 @@ public class Header implements FitsElement {
             }
 
             // Make sure we have SIMPLE
-            addValue(SIMPLE, true);
+            updateValue(SIMPLE, true);
         } else {
             // Delete keys that cannot be in extensions
             deleteKey(SIMPLE);
@@ -2479,25 +2510,25 @@ public class Header implements FitsElement {
             deleteKey(EXTEND);
 
             // Make sure we have XTENSION
-            addValue(XTENSION, xType);
+            updateValue(XTENSION, xType);
         }
 
         // Make sure we have BITPIX
-        addValue(BITPIX, getIntValue(BITPIX, Bitpix.VALUE_FOR_INT));
+        updateValue(BITPIX, getIntValue(BITPIX, Bitpix.VALUE_FOR_INT));
 
         int naxes = getIntValue(NAXIS, 0);
-        addValue(NAXIS, naxes);
+        updateValue(NAXIS, naxes);
 
         for (int i = 1; i <= naxes; i++) {
             IFitsHeader naxisi = NAXISn.n(i);
-            addValue(naxisi, getIntValue(naxisi, 1));
+            updateValue(naxisi, getIntValue(naxisi, 1));
         }
 
         if (xType == null) {
-            addValue(EXTEND, true);
+            updateValue(EXTEND, true);
         } else {
-            addValue(PCOUNT, getIntValue(PCOUNT, 0));
-            addValue(GCOUNT, getIntValue(GCOUNT, 1));
+            updateValue(PCOUNT, getIntValue(PCOUNT, 0));
+            updateValue(GCOUNT, getIntValue(GCOUNT, 1));
         }
     }
 
@@ -2517,6 +2548,17 @@ public class Header implements FitsElement {
         validate();
     }
 
+    void updateChecksum() throws FitsException {
+        if (containsKey(Checksum.CHECKSUM)) {
+            HeaderCard dsum = getCard(Checksum.DATASUM);
+            if (dsum != null) {
+                FitsCheckSum.setDatasum(this, dsum.getValue(Long.class, 0L));
+            } else {
+                deleteKey(Checksum.CHECKSUM);
+            }
+        }
+    }
+
     /**
      * Validates the header making sure it has the required keywords and that the essential keywords appeat in the in
      * the required order
@@ -2528,21 +2570,23 @@ public class Header implements FitsElement {
         if (headerSorter != null) {
             cards.sort(headerSorter);
         }
+
         checkBeginning();
         checkEnd();
     }
 
     @Override
-    public void write(ArrayDataOutput dos) throws FitsException {
+    public void write(ArrayDataOutput out) throws FitsException {
         validate();
 
         FitsSettings settings = FitsFactory.current();
-        fileOffset = FitsUtil.findOffset(dos);
+        fileOffset = FitsUtil.findOffset(out);
 
         Cursor<String, HeaderCard> writeIterator = cards.iterator(0);
-        try {
-            int size = 0;
 
+        int size = 0;
+
+        try {
             while (writeIterator.hasNext()) {
                 HeaderCard card = writeIterator.next();
                 byte[] b = AsciiFuncs.getBytes(card.toString(settings));
@@ -2550,14 +2594,14 @@ public class Header implements FitsElement {
 
                 if (END.key().equals(card.getKey()) && minCards * HeaderCard.FITS_HEADER_CARD_SIZE > size) {
                     // AK: Add preallocated blank header space before the END key.
-                    writeBlankCards(dos, minCards - size / HeaderCard.FITS_HEADER_CARD_SIZE);
+                    writeBlankCards(out, minCards - size / HeaderCard.FITS_HEADER_CARD_SIZE);
                     size = minCards * HeaderCard.FITS_HEADER_CARD_SIZE;
                 }
 
-                dos.write(b);
+                out.write(b);
             }
-            FitsUtil.pad(dos, size, (byte) ' ');
-            dos.flush();
+            FitsUtil.pad(out, size, (byte) ' ');
+            out.flush();
         } catch (IOException e) {
             throw new FitsException("IO Error writing header", e);
         }

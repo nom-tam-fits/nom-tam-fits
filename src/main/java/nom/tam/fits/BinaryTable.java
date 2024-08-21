@@ -4041,9 +4041,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @throws FitsException if there was an error accessing the header.
      */
     void fillHeader(Header h, boolean updateColumns) throws FitsException {
-        h.deleteKey(Standard.SIMPLE);
-        h.deleteKey(Standard.EXTEND);
-
         Standard.context(BinaryTable.class);
 
         Cursor<String, HeaderCard> c = h.iterator();

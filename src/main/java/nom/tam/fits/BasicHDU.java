@@ -975,6 +975,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
             setPrimaryHDU(canBePrimary() && isFirst);
         }
 
+        myHeader.updateChecksum();
         myHeader.write(stream);
 
         if (myData != null) {
