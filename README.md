@@ -1309,8 +1309,7 @@ checksums. The checksums will be calculated directly from the file (as of __1.17
 mode. Thus, it is possible to checksum or verify huge FITS files without having to load large volumes of data into RAM 
 at any point.
 
-Setting the checksums (`CHECKSUM` and `DATASUM` keywords) should be the last modification to the FITS object or HDU 
-before writing. Here is an example of settting a checksum for an HDU before you write it to disk:
+You can set the checksums (`CHECKSUM` and `DATASUM` keywords) before you write the FITS or the HDU it to disk:
 
 ```java
   BasicHDU<?> hdu;
@@ -1324,20 +1323,20 @@ before writing. Here is an example of settting a checksum for an HDU before you 
 Or you can set checksums for all HDUs in your `Fits` in one go before writing the entire `Fits` object out to disk:
 
 ```java
-  Fits f;
+  Fits fits;
   
   // ... Compose the FITS with the HDUs ...
   
-  f.setChecksum();
-  f.write(...);
+  fits.setChecksum();
+  fits.write(...);
 ```
 
 Then later, as of version __1.18.1__, you can verify the integrity of FITS files using the stored checksums (or data 
 sums) just as easily too:
 
 ```java
-  try (Fits f = new Fits("huge-file.fits")) {
-      f.verifyIntegrity();
+  try (Fits fits = new Fits("huge-file.fits")) {
+      fits.verifyIntegrity();
   } catch (FitsIntegrityException e) {
       // Failed integrity check
   } catch (...)
@@ -1355,10 +1354,10 @@ You can also verify the integrity of HDUs or their data segments individually, v
 Finally, you might want to update the checksums for a FITS you modify in place:
 
 ```java
-  Fits f = new Fits("my.fits");
+  Fits fits = new Fits("my.fits");
   
   // We'll modify the fist HDU...
-  ImageHDU im = (ImageHDU) f.readHDU();
+  ImageHDU im = (ImageHDU) fits.readHDU();
   float[][] data = (float[][]) im.getData():
   
   // Offset the data by 1.12
@@ -1375,9 +1374,9 @@ Or, (re)calculate and set checksums for all HDUs in a FITS file, once again leav
 and computing the checksums for these directly from disk:
 
 ```java
-  Fits f = new Fits("my.fits");
-  f.setChecksum();
-  f.rewrite();
+  Fits fits = new Fits("my.fits");
+  fits.setChecksum();
+  fits.rewrite();
 ```
 
 The above will work as expected provided the original FITS already had `CHECKSUM` and `DATASUM` keys in the HDUs, 
