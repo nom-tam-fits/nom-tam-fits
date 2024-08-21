@@ -154,7 +154,11 @@ public final class FitsCheckSum {
         public void run() {
             exception = null;
             try (FitsOutputStream fos = new FitsOutputStream(out)) {
-                data.write(fos);
+                if (data instanceof Header) {
+                    ((Header) data).writeUnchecked(fos);
+                } else {
+                    data.write(fos);
+                }
             } catch (Exception e) {
                 exception = e;
             }
@@ -292,7 +296,7 @@ public final class FitsCheckSum {
 
     /**
      * Computes the checksum for a FITS header. It returns the checksum for the header as is, without attempting to
-     * validate the header.
+     * validate the header, or modifying it in any way.
      * 
      * @deprecated               Use {@link BasicHDU#verifyIntegrity()} instead.
      *

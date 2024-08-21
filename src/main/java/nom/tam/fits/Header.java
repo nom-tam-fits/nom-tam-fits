@@ -199,6 +199,8 @@ public class Header implements FitsElement {
 
     private BasicHDU<?> owner;
 
+    private boolean validating = false;
+
     /**
      * Keyword checking mode when adding standardized keywords via the {@link IFitsHeader} interface.
      * 
@@ -2205,7 +2207,6 @@ public class Header implements FitsElement {
 
         FitsUtil.reposition(dos, fileOffset);
 
-        updateChecksum();
         write(dos);
         dos.flush();
     }
@@ -2548,17 +2549,6 @@ public class Header implements FitsElement {
         validate();
     }
 
-    void updateChecksum() throws FitsException {
-        if (containsKey(Checksum.CHECKSUM)) {
-            HeaderCard dsum = getCard(Checksum.DATASUM);
-            if (dsum != null) {
-                FitsCheckSum.setDatasum(this, dsum.getValue(Long.class, 0L));
-            } else {
-                deleteKey(Checksum.CHECKSUM);
-            }
-        }
-    }
-
     /**
      * Validates the header making sure it has the required keywords and that the essential keywords appeat in the in
      * the required order
@@ -2573,12 +2563,36 @@ public class Header implements FitsElement {
 
         checkBeginning();
         checkEnd();
+
+        updateChecksum();
     }
 
-    @Override
-    public void write(ArrayDataOutput out) throws FitsException {
-        validate();
+    private void updateChecksum() throws FitsException {
+        if (containsKey(Checksum.CHECKSUM)) {
+            HeaderCard dsum = getCard(Checksum.DATASUM);
+            if (dsum != null) {
+                FitsCheckSum.setDatasum(this, dsum.getValue(Long.class, 0L));
+            } else {
+                deleteKey(Checksum.CHECKSUM);
+            }
+        }
+    }
 
+    /**
+     * Similar to {@link #write(ArrayDataOutput)}, but writes the header as is, without ensuring that mandatory keys are
+     * present, and in the correct order, or that checksums are updated.
+     * 
+     * @param  out           The output file or stream to which to write
+     * 
+     * @throws FitsException if there was a violation of the FITS standard
+     * @throws IOException   if the output was not accessible
+     * 
+     * @since                1.20.1
+     *
+     * @see                  #write(ArrayDataOutput)
+     * @see                  #validate(boolean)
+     */
+    public void writeUnchecked(ArrayDataOutput out) throws FitsException, IOException {
         FitsSettings settings = FitsFactory.current();
         fileOffset = FitsUtil.findOffset(out);
 
@@ -2586,22 +2600,29 @@ public class Header implements FitsElement {
 
         int size = 0;
 
-        try {
-            while (writeIterator.hasNext()) {
-                HeaderCard card = writeIterator.next();
-                byte[] b = AsciiFuncs.getBytes(card.toString(settings));
-                size += b.length;
+        while (writeIterator.hasNext()) {
+            HeaderCard card = writeIterator.next();
+            byte[] b = AsciiFuncs.getBytes(card.toString(settings));
+            size += b.length;
 
-                if (END.key().equals(card.getKey()) && minCards * HeaderCard.FITS_HEADER_CARD_SIZE > size) {
-                    // AK: Add preallocated blank header space before the END key.
-                    writeBlankCards(out, minCards - size / HeaderCard.FITS_HEADER_CARD_SIZE);
-                    size = minCards * HeaderCard.FITS_HEADER_CARD_SIZE;
-                }
-
-                out.write(b);
+            if (END.key().equals(card.getKey()) && minCards * HeaderCard.FITS_HEADER_CARD_SIZE > size) {
+                // AK: Add preallocated blank header space before the END key.
+                writeBlankCards(out, minCards - size / HeaderCard.FITS_HEADER_CARD_SIZE);
+                size = minCards * HeaderCard.FITS_HEADER_CARD_SIZE;
             }
-            FitsUtil.pad(out, size, (byte) ' ');
-            out.flush();
+
+            out.write(b);
+        }
+        FitsUtil.pad(out, size, (byte) ' ');
+        out.flush();
+    }
+
+    @Override
+    public void write(ArrayDataOutput out) throws FitsException {
+        validate();
+
+        try {
+            writeUnchecked(out);
         } catch (IOException e) {
             throw new FitsException("IO Error writing header", e);
         }

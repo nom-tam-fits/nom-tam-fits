@@ -382,6 +382,7 @@ public class ChecksumTest {
         h.setSimple(true);
         h.setBitpix(Bitpix.INTEGER);
         h.setNaxes(0);
+        h.addValue(DATASUM, "0");
         h.addValue(CHECKSUM, "blah");
         FitsCheckSum.checksum(h);
         assertEquals("blah", h.getStringValue(CHECKSUM));
