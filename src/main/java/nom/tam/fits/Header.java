@@ -2579,8 +2579,8 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Similar to {@link #write(ArrayDataOutput)}, but writes the header as is, without ensuring that mandatory keys are
-     * present, and in the correct order, or that checksums are updated.
+     * (<i>for internal use</i>) Similar to {@link #write(ArrayDataOutput)}, but writes the header as is, without
+     * ensuring that mandatory keys are present, and in the correct order, or that checksums are updated.
      * 
      * @param  out           The output file or stream to which to write
      * 
