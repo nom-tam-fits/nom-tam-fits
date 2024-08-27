@@ -532,141 +532,11 @@
               <!-- <report>index</report> -->
               <report>dependencies</report>
               <report>team</report>
-              <report>mailing-lists</report>
-              <report>ci-management</report>
               <report>issue-management</report>
               <report>licenses</report>
             </reports>
           </reportSet>
         </reportSets>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.4.0</version>
-        <configuration>
-          <configLocation>${project.basedir}/src/main/checkstyle/nom-tam-fits-style.xml</configLocation>
-          <suppressionsLocation>${project.basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
-          <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
-          <encoding>UTF-8</encoding>
-          <consoleOutput>true</consoleOutput>
-          <failsOnError>true</failsOnError>
-          <linkXRef>true</linkXRef>
-        </configuration>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>checkstyle</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.8.0</version>
-        <configuration>
-          <source>8</source>
-          <failOnError>false</failOnError>
-          <aggregate>false</aggregate>
-          <doctitle>
-            ${project.name} ${project.version} Public User API
-          </doctitle>
-          <windowtitle>
-            ${project.name} ${project.version} Public User API
-          </windowtitle>
-          <keywords>
-            astronomy software, Java library, FITS file, FITS format, datasets, data analysis, image processing
-          </keywords>
-          <header>
-          	<![CDATA[
-          	<meta name="description" content="A full-featured pure Java library for reading, writing, and modifying FITS files." />
-          	<meta name="robots" content="index,follow" />
-          	<link rel="shortcut icon" type="image/x-icon" href="/nom-tam-fits/images/favicon.ico" />
-		<script async src="https://www.googletagmanager.com/gtag/js?id=G-4TM8JE0R8J"></script>
-		<script>
-  			window.dataLayer = window.dataLayer || [];
-  			function gtag(){dataLayer.push(arguments);}
-  			gtag('js', new Date());
-
-		 	gtag('config', 'G-4TM8JE0R8J');
-		</script>
-		]]>
-  	  </header>
-          <additionalOptions>&#45;&#45;allow-script-in-comments</additionalOptions>
-          <show>public</show>
-          <excludePackageNames>
-            nom.tam.fits.compress:
-            nom.tam.fits.compression.algorithm.gzip:
-            nom.tam.fits.compression.algorithm.gzip2:
-            nom.tam.fits.compression.algorithm.plio:
-            nom.tam.fits.compression.algorithm.uncompressed:
-            nom.tam.fits.compression.provider:
-            nom.tam.fits.compression.provider.param.*:
-            nom.tam.image.compression.bintable:
-            nom.tam.image.compression.tile:
-            nom.tam.image.compression.tile.mask:
-            nom.tam.image.tile.*
-          </excludePackageNames>
-          <sourceFileExcludes>
-            <exclude>**/CompressionLibLoaderProtection.java</exclude>
-            <exclude>**/CloseIS.java</exclude>
-            <exclude>**/ICompressor*.java</exclude>
-            <exclude>**/HCompress.java</exclude>
-            <exclude>**/HDecompress.java</exclude>
-            <exclude>**/HCompressor.java</exclude>
-            <exclude>**/RiceCompressor.java</exclude>
-            <exclude>**/BitBuffer.java</exclude>
-            <exclude>**/Quantize.java</exclude>
-            <exclude>**/QuantizeProcessor.java</exclude>
-            <exclude>**/FitsCopy.java</exclude>
-            <exclude>**/FitsReader.java</exclude>
-            <exclude>**/Main.java</exclude>
-            <exclude>**/FitsLineAppender.java</exclude>
-            <exclude>**/FitsSubstring.java</exclude>
-            <exclude>**/AsciiTableData.java</exclude>
-            <exclude>**/HeaderCommentsMap.java</exclude>
-            <exclude>**/HeaderCardCountingArrayDataInput</exclude>
-            <exclude>**/HeaderOrder.java</exclude>
-	    <exclude>**/StandardCommentReplacement.java</exclude>
-            <!-- Deprecated classes to document still
-            <exclude>**/FitsHeaderImpl.java</exclude>
-            <exclude>**/GenericKey.java</exclude>
-            <exclude>**/BlanksDotHierarchKeyFormatter.java</exclude>
-            <exclude>**/BufferDecoder.java</exclude>
-            <exclude>**/BufferEncoder.java</exclude>
-            <exclude>**/BufferPointer.java</exclude>
-            <exclude>**/BufferedData*putStream.java</exclude>
-            <exclude>**/BufferedFile.java</exclude>
-            <exclude>**/ByteFormatter.java</exclude>
-            <exclude>**/ByteParser.java</exclude>
-            <exclude>**/SafeClose.java</exclude>
-            <exclude>**/MultiArrayCopyFactory.java</exclude>
-            <exclude>**/MultiArrayPointer.java</exclude>
-            <exclude>**/PrimitiveType*.java</exclude>
-            <exclude>**/CXCStclSharedExt.java</exclude>
-            <exclude>**/HCompressorQuantizeOption.java</exclude>
-            <exclude>**/RiceQuantizeCompressOption.java</exclude>
-            -->
-          </sourceFileExcludes>
-        </configuration>
-        <reportSets>
-          <reportSet>
-            <!-- by default, id = "default" -->
-            <reports>
-              <!-- select non-aggregate reports -->
-              <report>javadoc-no-fork</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <version>3.5.0</version>
-        <configuration>
-          <linkJavadoc>true</linkJavadoc>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -681,39 +551,6 @@
         </reportSets>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.24.0</version>
-        <configuration>
-          <linkXref>true</linkXref>
-          <sourceEncoding>UTF-8</sourceEncoding>
-          <targetJdk>1.8</targetJdk>
-          <sourceJdk>1.8</sourceJdk>
-          <skipEmptyReport>false</skipEmptyReport>
-          <minimumTokens>50</minimumTokens>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>taglist-maven-plugin</artifactId>
-        <version>3.1.0</version>
-        <configuration>
-          <tagListOptions>
-            <tagClasses>
-              <tagClass>
-                <displayName>Deprecated API</displayName>
-                <tags>
-                  <tag>
-                    <matchString>@deprecated</matchString>
-                    <matchType>ignoreCase</matchType>
-                  </tag>
-                </tags>
-              </tagClass>
-            </tagClasses>
-          </tagListOptions>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
         <version>4.8.6.2</version>
@@ -724,19 +561,6 @@
                when throwing exceptions in constructors -->
           <omitVisitors>FindReturnRef,ConstructorThrow</omitVisitors>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.12</version>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <!-- select non-aggregate reports -->
-              <report>report</report>
-            </reports>
-          </reportSet>
-        </reportSets>
       </plugin>
     </plugins>
   </reporting>
