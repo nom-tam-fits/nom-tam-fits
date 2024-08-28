@@ -12,31 +12,31 @@ Bug fix release candidate.
 
 ### Fixed
 
- - [636] Compressed table columns lost their column names in 1.20.0. (by @attipaci, thanks to @keastrid)
+ - [#636] Compressed table columns lost their column names in 1.20.0. (by @attipaci, thanks to @keastrid)
 
- - [656] Fixed incorrect value types in several FITS keywords extension dictionaries. (by @attipaci, thanks to @johnmurphyastro)
+ - [#656] Fixed incorrect value types in several FITS keywords extension dictionaries. (by @attipaci, thanks to @johnmurphyastro)
 
- - [664] Recalculate stored checksums when writing headers to avoid invalid checksums being set by `setChecksum()` methods. (by @attipaci, thanks to @johnmurphyastro)
+ - [#664] Recalculate stored checksums when writing headers to avoid invalid checksums being set by `setChecksum()` methods. (by @attipaci, thanks to @johnmurphyastro)
 
 
 ### Added
 
- - [657] Added `ESOExt` enum with ESO-specific standard FITS keywords, and `CommonExt` for commonly used keywords in the amateur astronomy community. (by @attipaci)
+ - [#657] Added `ESOExt` enum with ESO-specific standard FITS keywords, and `CommonExt` for commonly used keywords in the amateur astronomy community. (by @attipaci)
 
- - [657] Added more standard keywords to `CXCEXt`, `STScIExt`, `MaxImDLExt`, and `SBFitsExt` dictionaries based on the available documentation online. (by @attipaci)
+ - [#657] Added more standard keywords to `CXCEXt`, `STScIExt`, `MaxImDLExt`, and `SBFitsExt` dictionaries based on the available documentation online. (by @attipaci)
 
- - [657] Additional keyword synonyms in `Synonyms` enum. (by @attipaci)
+ - [#657] Additional keyword synonyms in `Synonyms` enum. (by @attipaci)
 
 
 ### Changed
 
- - [657] Updated comment fields and Javadoc for many extension keywords in the `nom.tam.fits.header.extra` package. (by @attipaci)
+ - [#657] Updated comment fields and Javadoc for many extension keywords in the `nom.tam.fits.header.extra` package. (by @attipaci)
 
- - [665] Keep original comments for mandatory keywords when writing headers that were previously read from an input. (by @attipaci)
+ - [#665] Keep original comments for mandatory keywords when writing headers that were previously read from an input. (by @attipaci)
 
- - [665] `CHECKSUM` and `DATASUM` comments now store timestamp when checksums were calculated, as is the recommended practice by the checksumming standard. (by @attipaci)
+ - [#665] `CHECKSUM` and `DATASUM` comments now store timestamp when checksums were calculated, as is the recommended practice by the checksumming standard. (by @attipaci)
 
- - [672] Switched to markdown [keep a changelog](https://keepachangelog.com/en/1.1.0/).
+ - [#672] Switched to markdown [keep a changelog](https://keepachangelog.com/en/1.1.0/).
 
  - Do not generate reports that have very little use. (by @attipaci)
 
@@ -45,11 +45,11 @@ Bug fix release candidate.
 
 ### Deprecated
 
- - [657] Deprecated the `CXCStclShareExt` enum. Not only its name was completely botched, its definitions are now included properly in the `CXCExt` and `STScIExt` dictionaries (without reduntant definitions). (by @attipaci)
+ - [#657] Deprecated the `CXCStclShareExt` enum. Not only its name was completely botched, its definitions are now included properly in the `CXCExt` and `STScIExt` dictionaries (without reduntant definitions). (by @attipaci)
 
- - [657] Deprecated a few extension keywords, which are either part of the standard or are recognised by HEASARC as commonly used keywords. The mentioned more common definitions should be used instead going forward. (by @attipaci)
+ - [#657] Deprecated a few extension keywords, which are either part of the standard or are recognised by HEASARC as commonly used keywords. The mentioned more common definitions should be used instead going forward. (by @attipaci)
 
- - [665] Deprecated some checksuming methods that are no longer useful, as they do not offer a mean to verify FITS files. Users might want to use `BasicHDU.verifyIntegrity()` or `Fits.verifyIntegrity()` instead. (by @attipaci)
+ - [#665] Deprecated some checksuming methods that are no longer useful, as they do not offer a mean to verify FITS files. Users might want to use `BasicHDU.verifyIntegrity()` or `Fits.verifyIntegrity()` instead. (by @attipaci)
 
 
 ## [1.20.0] - 2024-05-10
@@ -59,47 +59,47 @@ Image quantization, slicing and sampling, and more.
 
 ### Fixed
 
- - [596] Botched compression of multicolumn tables, resulting in extra rows in the compressed table (as many rows as there were total table tiles across all columns). (by @attipaci, thanks to @keastrid)
+ - [#596] Botched compression of multicolumn tables, resulting in extra rows in the compressed table (as many rows as there were total table tiles across all columns). (by @attipaci, thanks to @keastrid)
 
- - [610] `Standard.TNULLn` keyword can take any argument type (was previously restricted to strings only). (by @attipaci)
+ - [#610] `Standard.TNULLn` keyword can take any argument type (was previously restricted to strings only). (by @attipaci)
 
- - [621] `MultiArrayIterator` fixes to `size()` and `deepComponentType()` methods. (by @attipaci)
+ - [#621] `MultiArrayIterator` fixes to `size()` and `deepComponentType()` methods. (by @attipaci)
 
 
 ### Added
 
- - [586] Default column names. Some tools, including (C)FITSIO have issues dealing with table columns that have no `CTYPEn` keywords set to define column names. Therefore to enhance interoperability we will use 'Column N' type naming, until the user sets a column name otherwise. (by @attipaci)
+ - [#586] Default column names. Some tools, including (C)FITSIO have issues dealing with table columns that have no `CTYPEn` keywords set to define column names. Therefore to enhance interoperability we will use 'Column N' type naming, until the user sets a column name otherwise. (by @attipaci)
 
- - [611] New `Quantizer` class to handle generic decimal-integer conversions in line with the FITS specification for integer representation of floating-point data. The new class will interpret the necessary header keywords for both images and tables, and can fill the required values in FITS headers. (by @attipaci)
+ - [#611] New `Quantizer` class to handle generic decimal-integer conversions in line with the FITS specification for integer representation of floating-point data. The new class will interpret the necessary header keywords for both images and tables, and can fill the required values in FITS headers. (by @attipaci)
 
- - [611] `ImageData.setQuantizer()` / `.getQuantizer()` and `BinaryTable.ColumnDesc.setQuantizer()` / `.getQuantizer()` methods to access the quantizers that handle decimal-integer conversions for images and binary table columns, respectively. (by @attipaci)
+ - [#611] `ImageData.setQuantizer()` / `.getQuantizer()` and `BinaryTable.ColumnDesc.setQuantizer()` / `.getQuantizer()` methods to access the quantizers that handle decimal-integer conversions for images and binary table columns, respectively. (by @attipaci)
 
- - [610] `ImageData.convertTo(Class type)` will return the equivalent image data with another storage type (but otherwise the same as the original image). Any decimal-integer conversion is handled by the image's own quantizer (which is either specified in the image header or else set by the user) if it is available. (by @attipaci)
+ - [#610] `ImageData.convertTo(Class type)` will return the equivalent image data with another storage type (but otherwise the same as the original image). Any decimal-integer conversion is handled by the image's own quantizer (which is either specified in the image header or else set by the user) if it is available. (by @attipaci)
 
- - [610] New `BinaryTable.getArrayElement(row, col)` and `.getArrayElementAs(int row, int col, Class asType)` methods to return the table element as an array always (without the boxing of scalar entries). The former is similar to the original `.getElement()` method except that it represents FITS logicals as `Boolean[]...`, bits as `boolean[]...`, and complex values a `ComplexValue[]...` arrays. The second form allows accessing numerical table elements as arrays of a desired other numerical type. (by @attipaci)
+ - [#610] New `BinaryTable.getArrayElement(row, col)` and `.getArrayElementAs(int row, int col, Class asType)` methods to return the table element as an array always (without the boxing of scalar entries). The former is similar to the original `.getElement()` method except that it represents FITS logicals as `Boolean[]...`, bits as `boolean[]...`, and complex values a `ComplexValue[]...` arrays. The second form allows accessing numerical table elements as arrays of a desired other numerical type. (by @attipaci)
 
- - [610] `ArrayFuncs.convertArray(Object array, Class newType, Quantizer quant)` method provides generic conversions to numerical type arrays, including `ComplexValue` type arrays, and can be used for explicit quantization conversions outside of images and table columns. (by @attipaci)
+ - [#610] `ArrayFuncs.convertArray(Object array, Class newType, Quantizer quant)` method provides generic conversions to numerical type arrays, including `ComplexValue` type arrays, and can be used for explicit quantization conversions outside of images and table columns. (by @attipaci)
 
- - [592] `ImageData` now supports complex valued images as per the FITS standard, both when constructed programatically from `ComplexValue[]...` data; or if so described with an image axis whose `CTYPEn` header value is 'COMPLEX' and the axis contains 2 components (so long as the complex axis is either the first or last axis). The latter is true even if integer representation is used in the FITS, e.g. via a quantization. When reading complex valued images, the native `ImageData` is that of the stored type (e.g. `float[]..[2]` or `float[2]..[]`) for compatibility, but `ImageData.convertTo(ComplexValue.class)` or `.convertTo(ComplexValue.Float.class)` can convert these to be true complex valued images in a second step after reading. (You may also use `ImageData.isComplexValued()` to check if the data were designated as complex-valued at origination, by the FITS header or the constructor.) (by @attipaci)
+ - [#592] `ImageData` now supports complex valued images as per the FITS standard, both when constructed programatically from `ComplexValue[]...` data; or if so described with an image axis whose `CTYPEn` header value is 'COMPLEX' and the axis contains 2 components (so long as the complex axis is either the first or last axis). The latter is true even if integer representation is used in the FITS, e.g. via a quantization. When reading complex valued images, the native `ImageData` is that of the stored type (e.g. `float[]..[2]` or `float[2]..[]`) for compatibility, but `ImageData.convertTo(ComplexValue.class)` or `.convertTo(ComplexValue.Float.class)` can convert these to be true complex valued images in a second step after reading. (You may also use `ImageData.isComplexValued()` to check if the data were designated as complex-valued at origination, by the FITS header or the constructor.) (by @attipaci)
 
- - [619] New `ArrayFuncs.sample()` and `.slice()` methods, to provide generic support for obtaining slices and samplings from arrays in one or more dimensions, with the option of reversed order sampling along selected axes. (by @attipaci, thanks to @at88mph)
+ - [#619] New `ArrayFuncs.sample()` and `.slice()` methods, to provide generic support for obtaining slices and samplings from arrays in one or more dimensions, with the option of reversed order sampling along selected axes. (by @attipaci, thanks to @at88mph)
 
 
 ### Changed
 
- - [590] Removed `Main` class, and `main()` entry points from JAR, which also clears up a whole lot of junk being added to the classpath into `MANIFEST.MF`. (by @attipaci, thanks to @bogdanni)
+ - [#590] Removed `Main` class, and `main()` entry points from JAR, which also clears up a whole lot of junk being added to the classpath into `MANIFEST.MF`. (by @attipaci, thanks to @bogdanni)
 
- - [592] `ArrayFuncs.convertArray(Object, Class)` is now the same as the new `ArrayFuncs.convertArray(Object, Class, Quantizer)` method without a quantizer, and thus allows conversions to/from complex valued data also, when primitive arrays have a trailing dimension of 2 (e.g. `float[]..[2]` or `int[]..[2]`). (by @attipaci)
+ - [#592] `ArrayFuncs.convertArray(Object, Class)` is now the same as the new `ArrayFuncs.convertArray(Object, Class, Quantizer)` method without a quantizer, and thus allows conversions to/from complex valued data also, when primitive arrays have a trailing dimension of 2 (e.g. `float[]..[2]` or `int[]..[2]`). (by @attipaci)
 
- - [609] `MultiArrayCopier.copyInto()` now rounds floating point values before casting to integer types for a more regular behavior. (by @attipaci)
+ - [#609] `MultiArrayCopier.copyInto()` now rounds floating point values before casting to integer types for a more regular behavior. (by @attipaci)
 
- - [611] `BinaryTable.getDouble(...)` and `.getLong(...)` and `.set(...)` methods will now use the specified quantization (as specified in the header or else set explicitly by the user) when converting from decimal to integer types and vice-versa. (by @attipaci)
+ - [#611] `BinaryTable.getDouble(...)` and `.getLong(...)` and `.set(...)` methods will now use the specified quantization (as specified in the header or else set explicitly by the user) when converting from decimal to integer types and vice-versa. (by @attipaci)
 
- - [620] Updated github.io landing page with history and partial listing of software that uses nom-tam-fits. (by @attipaci)
+ - [#620] Updated github.io landing page with history and partial listing of software that uses nom-tam-fits. (by @attipaci)
 
- - [620] Fix up POM to cure various build warnings, and allow Google Analytics for online Javadoc. (by @attipaci)
+ - [#620] Fix up POM to cure various build warnings, and allow Google Analytics for online Javadoc. (by @attipaci)
 
- - [623] Fix up test code to use latest `nanohttpd-webserver` for unit testing. (by @attipaci)
+ - [#623] Fix up test code to use latest `nanohttpd-webserver` for unit testing. (by @attipaci)
 
  - Updated User's Guide (`README.md`). (by @attipaci)
 
@@ -113,39 +113,39 @@ Bug fix release, with improved table compression support.
 
 ### Fixed
 
- - [562] Compressed tables had the `ZCTYPn` keywords written with a 0-based index, and thus were off-by-one in the FITS convention. Now fixed. (by @attipaci, thanks to @keastrid)
+ - [#562] Compressed tables had the `ZCTYPn` keywords written with a 0-based index, and thus were off-by-one in the FITS convention. Now fixed. (by @attipaci, thanks to @keastrid)
 
- - [552] Fix inconsistently maintained `ColumnDesc.fileSize`, by replacing it with dynamic `.rowLen()`. (by @attipaci, thanks to @keastrid)
+ - [#552] Fix inconsistently maintained `ColumnDesc.fileSize`, by replacing it with dynamic `.rowLen()`. (by @attipaci, thanks to @keastrid)
 
- - [557] Fix the compression of variable-length table columns. These were completely off-spec in prior releases, but are now properly supported as per the (C)FITSIO convention, which is slightly deviating from the documented standard. However, based on private communication with the maintainers, they are inclined to resolve this discrepancy by updating the standard to match the (C)FITSIO implementation, and therefore we adopt the (C)FITSIO way also for compressing tables. Nevertheless, we provide the static `CompressedTableHDU.useOldStandardIndexing(boolean)` method to allow reading compressed VLA columns produced in the other way also (i.e as the current standard actually describes it). Note, that our VLA compression support is now much better than that of (C)FITSIO, whose current release contains multiple severe bugs in that regard. (by @attipaci, thanks to @keastrid)
+ - [#557] Fix the compression of variable-length table columns. These were completely off-spec in prior releases, but are now properly supported as per the (C)FITSIO convention, which is slightly deviating from the documented standard. However, based on private communication with the maintainers, they are inclined to resolve this discrepancy by updating the standard to match the (C)FITSIO implementation, and therefore we adopt the (C)FITSIO way also for compressing tables. Nevertheless, we provide the static `CompressedTableHDU.useOldStandardIndexing(boolean)` method to allow reading compressed VLA columns produced in the other way also (i.e as the current standard actually describes it). Note, that our VLA compression support is now much better than that of (C)FITSIO, whose current release contains multiple severe bugs in that regard. (by @attipaci, thanks to @keastrid)
 
- - [570] Fix potential narrowing conversion issues uncovered by GitHub's CodeQL. (by @attipaci)
+ - [#570] Fix potential narrowing conversion issues uncovered by GitHub's CodeQL. (by @attipaci)
 
- - [576] Eliminate unexpected exception thrown if trying to write an empty table to a file/stream. Now it works as expected. (by @attipaci)
+ - [#576] Eliminate unexpected exception thrown if trying to write an empty table to a file/stream. Now it works as expected. (by @attipaci)
 
- - [578] Check setting elements in `ColumnTable` more consistently to avoid creating corrupted FITS tables. (by @attipaci)
+ - [#578] Check setting elements in `ColumnTable` more consistently to avoid creating corrupted FITS tables. (by @attipaci)
 
- - [580] Fix `ArrayIndexOutOfBoundsException` when defragmenting larger heaps. (by @attipaci, thanks to @keastrid)
+ - [#580] Fix `ArrayIndexOutOfBoundsException` when defragmenting larger heaps. (by @attipaci, thanks to @keastrid)
 
 
 ### Added
 
- - [558] Find header cards with regex pattern matching with `Header.findCards()`. (by @rmathar)
+ - [#558] Find header cards with regex pattern matching with `Header.findCards()`. (by @rmathar)
 
- - [563] Added support for optionless Rice and HCOMPRESS compression, using the default option values as per the FITS standard. As a result `RICE_1` can now be used for compressing integer-type binary table columns. (by @attipaci)
+ - [#563] Added support for optionless Rice and HCOMPRESS compression, using the default option values as per the FITS standard. As a result `RICE_1` can now be used for compressing integer-type binary table columns. (by @attipaci)
 
- - [575] Added support for reserving space in FITS files for future additions to binary tables in situ without disturbing the rest of the FITS file. Space for extra table rows can be reserved via `BinaryTable.reserveRowSpace(int)`, while additional heap space for VLA additions / updates can be set aside by `BinaryTable.reserveHeapSpace(int)` prior to writing the table to a file. Note, however that (C)FITSIO may not be able to read files with reserved row space due to its lack of support for the standard `THEAP` keyword. (by @attipaci)
+ - [#575] Added support for reserving space in FITS files for future additions to binary tables in situ without disturbing the rest of the FITS file. Space for extra table rows can be reserved via `BinaryTable.reserveRowSpace(int)`, while additional heap space for VLA additions / updates can be set aside by `BinaryTable.reserveHeapSpace(int)` prior to writing the table to a file. Note, however that (C)FITSIO may not be able to read files with reserved row space due to its lack of support for the standard `THEAP` keyword. (by @attipaci)
 
 
 ### Changed
 
- - [563] Creating compressed tables now also checks that the requested compression algorithms are in fact suitable for table compression, or else throws an `IllegalArgumentException`. (Currently, only the lossless `GZIP_1`, `GZIP_2`, `RICE_1`, and `NOCOMPRESS` are allowed by the FITS standard for tables.) (by @attipaci)
+ - [#563] Creating compressed tables now also checks that the requested compression algorithms are in fact suitable for table compression, or else throws an `IllegalArgumentException`. (Currently, only the lossless `GZIP_1`, `GZIP_2`, `RICE_1`, and `NOCOMPRESS` are allowed by the FITS standard for tables.) (by @attipaci)
 
- - [567] The parallel table compression has previously resulted in a heap with irreproducible random ordering. Now, the compressed heap is ordered consistently for optimal sequential read performance. (by @attipaci)
+ - [#567] The parallel table compression has previously resulted in a heap with irreproducible random ordering. Now, the compressed heap is ordered consistently for optimal sequential read performance. (by @attipaci)
 
- - [571] From here on we'll omit writing the `THEAP` keyword into binary table headers when they are not necessary (that is when the heap follows immediately after the main table). This allows better interoperability with (C)FITSIO, which currently lacks proper support for this standard FITS keyword. (by @attipaci)
+ - [#571] From here on we'll omit writing the `THEAP` keyword into binary table headers when they are not necessary (that is when the heap follows immediately after the main table). This allows better interoperability with (C)FITSIO, which currently lacks proper support for this standard FITS keyword. (by @attipaci)
 
- - [582] Support heaps up to 2GB (previously they were limited to 1GB max). (by @attipaci)
+ - [#582] Support heaps up to 2GB (previously they were limited to 1GB max). (by @attipaci)
 
  - Uses the latest maven build and runtime dependencies. (by @attipaci)
 
@@ -157,61 +157,61 @@ Feature release with bug fixes.
 
 ### Fixed
 
- - [496] Workaround for read-only FITS files on Windows network shares. (by @cek)
+ - [#496] Workaround for read-only FITS files on Windows network shares. (by @cek)
 
- - [531] Keywords with hyphens in `STScIExt` had the wrong form previously. (by @attipaci)
+ - [#531] Keywords with hyphens in `STScIExt` had the wrong form previously. (by @attipaci)
 
- - [532] Small fixes to `HashedList` handling iterator access corner cases. (by @attipaci)
+ - [#532] Small fixes to `HashedList` handling iterator access corner cases. (by @attipaci)
 
- - [535] Binary table `NAXIS1` value was sometimes stored as a string. (by @attipaci)
+ - [#535] Binary table `NAXIS1` value was sometimes stored as a string. (by @attipaci)
 
 
 ### Added
 
- - [488] New targeted `Data` and HDU creation from Java objects via new `Data+.from(Object)` and `Data+.toHDU()` methods, replacing the now deprecated and unsafe `[...]HDU.encapsulate(Object)` methods. (by @attipaci)
+ - [#488] New targeted `Data` and HDU creation from Java objects via new `Data+.from(Object)` and `Data+.toHDU()` methods, replacing the now deprecated and unsafe `[...]HDU.encapsulate(Object)` methods. (by @attipaci)
 
- - [489] New `Header.mergeDistinct(Header)` method to allow copying non-conflicting header keywords from one FITS header to another. (by @attipaci)
+ - [#489] New `Header.mergeDistinct(Header)` method to allow copying non-conflicting header keywords from one FITS header to another. (by @attipaci)
 
- - [490] New inspection methods to `UndefinedData` class, to easily retrieve `XTENSION` type, `BITPIX`, and data size/shape information from HDUs containing unsupported data types. (by @attipaci)
+ - [#490] New inspection methods to `UndefinedData` class, to easily retrieve `XTENSION` type, `BITPIX`, and data size/shape information from HDUs containing unsupported data types. (by @attipaci)
 
- - [492] New access methods for parameters stored in `RandomGroupsHDU` types, according to the FITS specification. (by @attipaci)
+ - [#492] New access methods for parameters stored in `RandomGroupsHDU` types, according to the FITS specification. (by @attipaci)
 
- - [494] A better way to control how FITS `I10` type columns are treated in ASCII tables, via static `AsciiTable.setI10PreferInt(boolean)` and `.isI10PreferInt()` methods. (by @attipaci)
+ - [#494] A better way to control how FITS `I10` type columns are treated in ASCII tables, via static `AsciiTable.setI10PreferInt(boolean)` and `.isI10PreferInt()` methods. (by @attipaci)
 
- - [520] New methods to make the decompression of selected `CompressedTableHDU` tiles even easier (and safer) to use. (by @attipaci)
+ - [#520] New methods to make the decompression of selected `CompressedTableHDU` tiles even easier (and safer) to use. (by @attipaci)
 
- - [531] New `WCS` and `DateTime` enums with an enumeration of all standard FITS WCS and date-time related keywords, and recognized values (constants). The `WCS` enums support alternate coordinate systems via the `WCS.alt(char)` method. For example to generate the "CTYPE1A" standard keyword you may call `WCS.CTYPEna.alt('A').n(1)`. (by @attipaci)
+ - [#531] New `WCS` and `DateTime` enums with an enumeration of all standard FITS WCS and date-time related keywords, and recognized values (constants). The `WCS` enums support alternate coordinate systems via the `WCS.alt(char)` method. For example to generate the "CTYPE1A" standard keyword you may call `WCS.CTYPEna.alt('A').n(1)`. (by @attipaci)
 
- - [532] Support for `INHERIT` keyword via `Fits.getCompleteHeader(...)` methods. These methods will populate the mandatory FITS header keywords in the the selected HDU, and return either the updated header or else a new header composed up of both the explicitly defined keywords in the selected HDU and the inherited (non-conflicting) entries from the primary HDU. (by @attipaci)
+ - [#532] Support for `INHERIT` keyword via `Fits.getCompleteHeader(...)` methods. These methods will populate the mandatory FITS header keywords in the the selected HDU, and return either the updated header or else a new header composed up of both the explicitly defined keywords in the selected HDU and the inherited (non-conflicting) entries from the primary HDU. (by @attipaci)
 
- - [534] Adding standardized (`IFitsHeader`) keywords to HDU headers will now check that the keyword can be used with the associated HDU type (if any), and may throw an `IllegalArgumentException` if the usage is inappropriate. The type of checks (if any) can be adjusted via the new Header.setKeywordChecking() and/or the static `Header.setDefaultKeywordChecking()` methods. (by @attipaci)
+ - [#534] Adding standardized (`IFitsHeader`) keywords to HDU headers will now check that the keyword can be used with the associated HDU type (if any), and may throw an `IllegalArgumentException` if the usage is inappropriate. The type of checks (if any) can be adjusted via the new Header.setKeywordChecking() and/or the static `Header.setDefaultKeywordChecking()` methods. (by @attipaci)
 
- - [534] Setting values for `HeaderCards` with standardized (`IFitsHeader`) keywords now checks that the assigned value is compatible for the given keyword, and may throw an appropriate exception (such as a newly added `ValueTypeException`), or else log a warning message depending on the current value checking policy. The policy can be adjusted via the new static `HeaderCard.setValueCheckPolicy()` method. (by @attipaci)
+ - [#534] Setting values for `HeaderCards` with standardized (`IFitsHeader`) keywords now checks that the assigned value is compatible for the given keyword, and may throw an appropriate exception (such as a newly added `ValueTypeException`), or else log a warning message depending on the current value checking policy. The policy can be adjusted via the new static `HeaderCard.setValueCheckPolicy()` method. (by @attipaci)
 
- - [538] New `FitsKey` class to replace the poorly named `FitsHeaderImpl` class. (The latter continues to exist in deprecated form for compatibility). Added new functionality. (by @attipaci)
+ - [#538] New `FitsKey` class to replace the poorly named `FitsHeaderImpl` class. (The latter continues to exist in deprecated form for compatibility). Added new functionality. (by @attipaci)
 
- - [538] New `Standard.match(String)` method to match one of the reserved keyword templates of the FITS standard to a keyword instance, such as "CTYPE1A" to `WCS.CTYPEna`. (by @attipaci)
+ - [#538] New `Standard.match(String)` method to match one of the reserved keyword templates of the FITS standard to a keyword instance, such as "CTYPE1A" to `WCS.CTYPEna`. (by @attipaci)
 
 
 ### Changed
 
- - [519] Demoted `FitsException` to be a soft exception, extending `IllegalStateException`. As a result, users are no longer required to catch these, or its derivatives such as `HeaderCardException`. Some methods that have previously thrown `IllegalStateException` may now throw a `FitsException`, in a backwards compatible way. (by @attipaci)
+ - [#519] Demoted `FitsException` to be a soft exception, extending `IllegalStateException`. As a result, users are no longer required to catch these, or its derivatives such as `HeaderCardException`. Some methods that have previously thrown `IllegalStateException` may now throw a `FitsException`, in a backwards compatible way. (by @attipaci)
 
- - [518] The constructor of `PaddingException` does not throw a `FitsException`, and `FitsCheckSum.Checksum` also does not throw an `IllegalArgumentException` -- so they are now declared as such. Some related Javadoc updates. (by @attipaci)
+ - [#518] The constructor of `PaddingException` does not throw a `FitsException`, and `FitsCheckSum.Checksum` also does not throw an `IllegalArgumentException` -- so they are now declared as such. Some related Javadoc updates. (by @attipaci)
 
- - [525] Improvements to `AsciiTable` with `addColumn()` argument checking and more specific documentation. (by @attipaci)
+ - [#525] Improvements to `AsciiTable` with `addColumn()` argument checking and more specific documentation. (by @attipaci)
 
- - [531] `Synonyms` has been extended to enumerate all synonymous WCS keys and a few other keywords with equivalent definitions. (by @attipaci)
+ - [#531] `Synonyms` has been extended to enumerate all synonymous WCS keys and a few other keywords with equivalent definitions. (by @attipaci)
 
- - [531] Added `impl()` method to `IFitsHeader` interface with a default implementation to eliminate code that was duplicated many times over across enums. (by @attipaci)
+ - [#531] Added `impl()` method to `IFitsHeader` interface with a default implementation to eliminate code that was duplicated many times over across enums. (by @attipaci)
 
- - [531] `IFitsHeader.n(int...)` now checks that the supplied indices are in the 0-999 range, or else throw an `IndexOutOfBoundsException`. If too many indices are supplied it will throw a `NoSuchElementException`. And, if the resulting indexed keyword exceeds the 8-byte limit of standard FITS keywords it will throw an `IllegalStateException`. (by @attipaci)
+ - [#531] `IFitsHeader.n(int...)` now checks that the supplied indices are in the 0-999 range, or else throw an `IndexOutOfBoundsException`. If too many indices are supplied it will throw a `NoSuchElementException`. And, if the resulting indexed keyword exceeds the 8-byte limit of standard FITS keywords it will throw an `IllegalStateException`. (by @attipaci)
 
- - [531] Attempting to create a `HeaderCard` with a standard keyword that has unfilled indices will throw an `IllegalArgumentException`. (by @attipaci)
+ - [#531] Attempting to create a `HeaderCard` with a standard keyword that has unfilled indices will throw an `IllegalArgumentException`. (by @attipaci)
 
  - `CompressedImageHDU.getTileHDU()` now updates `CRPIXna` keywords also in the alternate coordinate systems (if present) for the selected cutout image. (by @attipaci)
 
- - [538] Corrections to standard keyword sources, deprecations, synonyms, comments and associated javadoc. (by @attipaci)
+ - [#538] Corrections to standard keyword sources, deprecations, synonyms, comments and associated javadoc. (by @attipaci)
 
  - Change from unmaintained `findbugs` build dep to `spotbugs` successor. (by @attipaci)
 
@@ -224,7 +224,7 @@ Feature release with bug fixes.
 
 ### Deprecated
 
- - [519] Deprecated `IHeaderAccess` interface and its implementations. These were meant for internal use anyway, and with `HeaderCardException` now being a soft exception these classes just add confusion without providing any functionality that isn't readily available without them. (by @attipaci)
+ - [#519] Deprecated `IHeaderAccess` interface and its implementations. These were meant for internal use anyway, and with `HeaderCardException` now being a soft exception these classes just add confusion without providing any functionality that isn't readily available without them. (by @attipaci)
 
 
 ## [1.18.1] - 2023-09-11
@@ -234,23 +234,23 @@ Important bug fix release with minor enhancements.
 
 ### Fixed
 
- - [466] Fixed broken default reading of ASCII tables in 1.18.0, without explicitly having to set `FitsFactory.setUseAsciiTables(true)`. (by @attipaci)
+ - [#466] Fixed broken default reading of ASCII tables in 1.18.0, without explicitly having to set `FitsFactory.setUseAsciiTables(true)`. (by @attipaci)
 
 
 ### Added
 
- - [474] New `Fits.verifyIntegrity()`, `BasicHDU.verifyIntegrity()` and `.verifyDataIntegrity()` methods for verifying file / HDU integrity based on the stored checksums and/or data sums. The now useless checksum access methods of before have been deprecated and should be avoided. (by @attipaci)
+ - [#474] New `Fits.verifyIntegrity()`, `BasicHDU.verifyIntegrity()` and `.verifyDataIntegrity()` methods for verifying file / HDU integrity based on the stored checksums and/or data sums. The now useless checksum access methods of before have been deprecated and should be avoided. (by @attipaci)
 
- - [476] `FitsInputStream` to calculate checksums for all bytes that are read/skipped, allowing checksum verification for stream-based inputs also. (by @attipaci)
+ - [#476] `FitsInputStream` to calculate checksums for all bytes that are read/skipped, allowing checksum verification for stream-based inputs also. (by @attipaci)
 
- - [475] Added `Header.getCard()` methods similar to existing `.findCard()`, but without changing the position at which new cards are added. The new method is now used more widely internally when interpreting headers. New `Header.prevCard()` method to complement existing `.nextCard()`, and `.seekHead()` / `.seekTail()` methods to set the position for new additions at the head or tail of the header space respectively. (by @attipaci)
+ - [#475] Added `Header.getCard()` methods similar to existing `.findCard()`, but without changing the position at which new cards are added. The new method is now used more widely internally when interpreting headers. New `Header.prevCard()` method to complement existing `.nextCard()`, and `.seekHead()` / `.seekTail()` methods to set the position for new additions at the head or tail of the header space respectively. (by @attipaci)
 
 
 ### Changed
 
- - [473] Updated `README` for proper checksum verification procedures. (by @attipaci)
+ - [#473] Updated `README` for proper checksum verification procedures. (by @attipaci)
 
- - [472] New cleaner-looking logos for github icons / profile image. (by @attipaci)
+ - [#472] New cleaner-looking logos for github icons / profile image. (by @attipaci)
 
  - Updated maven build and runtime dependencies to their latest releases. (by @attipaci)
 
@@ -262,110 +262,110 @@ Feature release with compression fixes and many improvements.
 
 ### Fixed
 
- - [377] Fixed use of `ZDITHER0` keyword to restore or record random generator seed when dithering is used in (de)compression. (by @attipaci)
+ - [#377] Fixed use of `ZDITHER0` keyword to restore or record random generator seed when dithering is used in (de)compression. (by @attipaci)
 
- - [349] Fixed tiled (de)compresssion of some quantized images via GZIP. (by @attipaci)
+ - [#349] Fixed tiled (de)compresssion of some quantized images via GZIP. (by @attipaci)
 
- - [436] Fixed incorrect handling of `CONTINUE` keywords with no quoted string value (a regression since 1.16). (by @attipaci)
+ - [#436] Fixed incorrect handling of `CONTINUE` keywords with no quoted string value (a regression since 1.16). (by @attipaci)
 
- - [438] Conversion of variable length `float[]` or `double[]` arrays to complex was broken since forever. Now it works for the first time as expected. (by @attipaci)
+ - [#438] Conversion of variable length `float[]` or `double[]` arrays to complex was broken since forever. Now it works for the first time as expected. (by @attipaci)
 
- - [455] Fixed incorrect variable-length complex array descriptors in binary tables. (by @attipaci)
+ - [#455] Fixed incorrect variable-length complex array descriptors in binary tables. (by @attipaci)
 
- - [445] Consistent String return for both fixed and variable-length string columns in binary tables. (by @attipaci)
+ - [#445] Consistent String return for both fixed and variable-length string columns in binary tables. (by @attipaci)
 
- - [456] Fixed compressed table tiling with tile sizes that do not divide the table rows. (by @attipaci)
+ - [#456] Fixed compressed table tiling with tile sizes that do not divide the table rows. (by @attipaci)
 
- - [462] Fixed incorrect `HCompress` `SCALE` parameter handling. (by @attipaci)
+ - [#462] Fixed incorrect `HCompress` `SCALE` parameter handling. (by @attipaci)
 
 
 ### Added
 
- - [387] Added ability to stride while tiling. (by @at88mph)
+ - [#387] Added ability to stride while tiling. (by @at88mph)
 
- - [356] Added ability to stream image cutouts. (by @at88mph)
+ - [#356] Added ability to stream image cutouts. (by @at88mph)
 
- - [400] Added ability to stream compressed image cutouts. (by @at88mph)
+ - [#400] Added ability to stream compressed image cutouts. (by @at88mph)
 
- - [335] Added `NullDataHDU` for more intuitive support for header only HDUs with no associated data. (by @attipaci)
+ - [#335] Added `NullDataHDU` for more intuitive support for header only HDUs with no associated data. (by @attipaci)
 
- - [352] Added support for alternative `RandomAccess` immplementations. (by @at88mph)
+ - [#352] Added support for alternative `RandomAccess` immplementations. (by @at88mph)
 
- - [183] Added support for `ComplexValue`-based column in `BinaryTable` (by @attipaci)
+ - [#183] Added support for `ComplexValue`-based column in `BinaryTable` (by @attipaci)
 
- - [450] Added support for bit-based columns (FITS type `X`) in binary tables. (by @attipaci)
+ - [#450] Added support for bit-based columns (FITS type `X`) in binary tables. (by @attipaci)
 
- - [451] Added support for `null` (undefined) logical values for FITS logical columns in binary tables. (by @attipaci)
+ - [#451] Added support for `null` (undefined) logical values for FITS logical columns in binary tables. (by @attipaci)
 
- - [448] More user-friendly data access in `BinaryTable`, using Java boxing for scalar primitive entries, and automatic type conversion (both narrowing and widening) for singleton values when possible. Many new `BinaryTable` methods to make it easier to build and use binary tables. (by @attipaci)
+ - [#448] More user-friendly data access in `BinaryTable`, using Java boxing for scalar primitive entries, and automatic type conversion (both narrowing and widening) for singleton values when possible. Many new `BinaryTable` methods to make it easier to build and use binary tables. (by @attipaci)
 
- - [437] Allow accessing binary table entries / rows directly from file in deferred read mode. The `README` for reading binary tables has been updated accordingly. (by @attipaci)
+ - [#437] Allow accessing binary table entries / rows directly from file in deferred read mode. The `README` for reading binary tables has been updated accordingly. (by @attipaci)
 
- - [453] Allow defragmenting binary table heaps to expunge stale data, and to optimize heap area for best sequential read performance. (by @attipaci)
+ - [#453] Allow defragmenting binary table heaps to expunge stale data, and to optimize heap area for best sequential read performance. (by @attipaci)
 
- - [452] Simplified access to select tiles / regions of compressed data in both tile compressed tables and images. (by @attipaci)
+ - [#452] Simplified access to select tiles / regions of compressed data in both tile compressed tables and images. (by @attipaci)
 
- - [178] Support for the Substring Array Convention. (However, we will prefer the use of the more generic `TDIMn` over the convention for fixed-width string-based columns.) (by @attipaci)
+ - [#178] Support for the Substring Array Convention. (However, we will prefer the use of the more generic `TDIMn` over the convention for fixed-width string-based columns.) (by @attipaci)
 
- - [458] Use `HIERARCH`-style keywords more easily within the library via the static methods of the Hierarch class. (by @attipaci)
+ - [#458] Use `HIERARCH`-style keywords more easily within the library via the static methods of the Hierarch class. (by @attipaci)
 
 
 ### Changed
 
- - [414] Significantly improved IO performance, now typically 2.5 to 4 times faster for images than prior releases and a whopping 25-50 times faster for reading streams than 1.15.2. (by @attipaci)
+ - [#414] Significantly improved IO performance, now typically 2.5 to 4 times faster for images than prior releases and a whopping 25-50 times faster for reading streams than 1.15.2. (by @attipaci)
 
- - [407] Improved dithering performance by calculating the random sequence only once, and more efficiently. (by @attipaci)
+ - [#407] Improved dithering performance by calculating the random sequence only once, and more efficiently. (by @attipaci)
 
- - [441] Significantly faster table data access and row additions. (by @attipaci)
+ - [#441] Significantly faster table data access and row additions. (by @attipaci)
 
- - [207] Unified deferred read implementation for all `Data` classes. (by @attipaci)
+ - [#207] Unified deferred read implementation for all `Data` classes. (by @attipaci)
 
- - [395] Consistent behavior and method visibilities across `Data` subclasses. (by @attipaci)
+ - [#395] Consistent behavior and method visibilities across `Data` subclasses. (by @attipaci)
 
- - [434] Stop the automatic creation of random group HDUs from compatible table data. Instead create binary or ASCII tables as appropriate given the `FitsFactory` settings. The FITS standard discourages the use of random group HDUs going forward, and support should be typically limited to dealing with some older existing data files in that format. If there is ever a need to create new random group HDUs, you can do it explicitly via `RandomGroupsHDU.createFrom(Object[][])`. (by @attipaci)
+ - [#434] Stop the automatic creation of random group HDUs from compatible table data. Instead create binary or ASCII tables as appropriate given the `FitsFactory` settings. The FITS standard discourages the use of random group HDUs going forward, and support should be typically limited to dealing with some older existing data files in that format. If there is ever a need to create new random group HDUs, you can do it explicitly via `RandomGroupsHDU.createFrom(Object[][])`. (by @attipaci)
 
- - [446] Disable automatic (and inconsistent) detection of complex binary table data, when adding real-valued data columns to a binary table. Users should call `BinaryTable.setComplexColumn()` explicitly if pairwise real values should be converted to complex. (by @attipaci)
+ - [#446] Disable automatic (and inconsistent) detection of complex binary table data, when adding real-valued data columns to a binary table. Users should call `BinaryTable.setComplexColumn()` explicitly if pairwise real values should be converted to complex. (by @attipaci)
 
- - [447] Check data consistency when adding or setting data in binary tables. (by @attipaci)
+ - [#447] Check data consistency when adding or setting data in binary tables. (by @attipaci)
 
- - [454] Do not use ASCII `NUL` (`0x00`) for padding between string array elements in binary tables, since it violates the FITS standard, in which an ASCII `NUL` terminates the entire string array entry. (by @attipaci)
+ - [#454] Do not use ASCII `NUL` (`0x00`) for padding between string array elements in binary tables, since it violates the FITS standard, in which an ASCII `NUL` terminates the entire string array entry. (by @attipaci)
 
- - [131] Tables now support up to `Integer.MAX_VALUE` (~2-billion) rows regardless of entry size. (by @attipaci)
+ - [#131] Tables now support up to `Integer.MAX_VALUE` (~2-billion) rows regardless of entry size. (by @attipaci)
 
- - [461] Improved handling of shared compression settings across option copies, and including validation (by @attipaci)
+ - [#461] Improved handling of shared compression settings across option copies, and including validation (by @attipaci)
 
- - [394] Various tweaks to `FitsDate` that should not affect user behavior. (by @attipaci)
+ - [#394] Various tweaks to `FitsDate` that should not affect user behavior. (by @attipaci)
 
- - [420] Revised `PaddingException` API and seamless internal handling. (by @attipaci)
+ - [#420] Revised `PaddingException` API and seamless internal handling. (by @attipaci)
 
- - [435] Header access methods in `BasicHDU` no longer remove significant leading spaces from strings. (by @attipaci)
+ - [#435] Header access methods in `BasicHDU` no longer remove significant leading spaces from strings. (by @attipaci)
 
- - [426] No longer exposing mutable internal arrays to users, giving them copies instead. (by @attipaci)
+ - [#426] No longer exposing mutable internal arrays to users, giving them copies instead. (by @attipaci)
 
- - [429] Remove unnecessary IO synchronization in `FitsFile`, `FitsInputStream`, and `FitsOutputStream` classes. (by @attipaci)
+ - [#429] Remove unnecessary IO synchronization in `FitsFile`, `FitsInputStream`, and `FitsOutputStream` classes. (by @attipaci)
 
- - [424] Code cleanup -- Consistent source code formating etc. (by @attipaci)
+ - [#424] Code cleanup -- Consistent source code formating etc. (by @attipaci)
 
- - [160] Public user API javadoc now complete. It could be improved, but at least all packages, classes, and methods intentionally exposed to users are documented. (by @attipaci)
+ - [#160] Public user API javadoc now complete. It could be improved, but at least all packages, classes, and methods intentionally exposed to users are documented. (by @attipaci)
 
- - [427] Online API documentation is restricted to public classes and methods only, as appropriate for users who want to read/write FITS files. Classes and methods intended for internal use are clearly indicated when these are exposed in the public. Contributors can still generate the full documentation locally if desired using maven. (by @attipaci)
+ - [#427] Online API documentation is restricted to public classes and methods only, as appropriate for users who want to read/write FITS files. Classes and methods intended for internal use are clearly indicated when these are exposed in the public. Contributors can still generate the full documentation locally if desired using maven. (by @attipaci)
 
  - Fully revised `README` (Getting Started guide) with better and more up-to-date examples. (by @attipaci)
 
- - [402] Upgrade from JDK 11 to 17 for creating signed packages in the CI (but still in Java 8 compatibility mode). (by @attipaci)
+ - [#402] Upgrade from JDK 11 to 17 for creating signed packages in the CI (but still in Java 8 compatibility mode). (by @attipaci)
 
  - Updated maven build and runtime dependencies to their latest releases. (by @attipaci)
 
 
 ### Deprecated
 
- - [336] Deprecate unsafe methods that should only be used internally (if at all) and never by users. (by @attipaci)
+ - [#336] Deprecate unsafe methods that should only be used internally (if at all) and never by users. (by @attipaci)
 
- - [209] `FitsUtil.reposition()` deprecated and changed to take `FitsIO` argument to match usage. (by @attipaci)
+ - [#209] `FitsUtil.reposition()` deprecated and changed to take `FitsIO` argument to match usage. (by @attipaci)
 
- - [425] Deprecate hexadecimal values in headers. FITS does not support these, and you should not use them. (by @attipaci)
+ - [#425] Deprecate hexadecimal values in headers. FITS does not support these, and you should not use them. (by @attipaci)
 
- - [430] Deprecate `BigInteger` and `BigDecimal` values in headers. FITS does not support these, and you should not use them. (by @attipaci)
+ - [#430] Deprecate `BigInteger` and `BigDecimal` values in headers. FITS does not support these, and you should not use them. (by @attipaci)
 
 
 ## [1.17.1] - 2023-03-15
@@ -375,21 +375,21 @@ Maintenance release with critical bug fixes.
 
 ### Fixed
 
- - [368] Fixed first extension written as primary if primary HDU contained no data (affects 1.17.0). (by @attipaci)
+ - [#368] Fixed first extension written as primary if primary HDU contained no data (affects 1.17.0). (by @attipaci)
 
- - [367] Fixed incorrect checksum calculated directly from file in multi-HDU FITS, and other checksum fixes (affects 1.17.0). (by @attipaci)
+ - [#367] Fixed incorrect checksum calculated directly from file in multi-HDU FITS, and other checksum fixes (affects 1.17.0). (by @attipaci)
 
- - [341] Fixed occasional `NullPointerException` in tiled image compression resulting from incomplete initializiation of `TiledImageCompressionOperation`. (by @keastrid)
+ - [#341] Fixed occasional `NullPointerException` in tiled image compression resulting from incomplete initializiation of `TiledImageCompressionOperation`. (by @keastrid)
 
 
 ### Added
 
- - [376] Upload coverage report to Coveralls.io also (forks need to set a repo token via the repo secret `COVERALLS_REPO_TOKEN` if want to enable reporting also). (by @attipaci)
+ - [#376] Upload coverage report to Coveralls.io also (forks need to set a repo token via the repo secret `COVERALLS_REPO_TOKEN` if want to enable reporting also). (by @attipaci)
 
 
 ### Changed
 
- - [373] Fixed GitHub Actions site build error, by removing unused broken dependency from POM. (by @attipaci)
+ - [#373] Fixed GitHub Actions site build error, by removing unused broken dependency from POM. (by @attipaci)
 
 
 ## [1.17.0] - 2022-09-11
@@ -399,49 +399,49 @@ Improved image compression, checksum support, and incremental writing
 
 ### Fixed
 
- - [318] Fixed broken tile compression of non-square images. (by @attipaci)
+ - [#318] Fixed broken tile compression of non-square images. (by @attipaci)
 
- - [318] `CompressedImageHDU.fromInageHDU()` now defaults to tiling by row if tile size is not explicitly specified, as per FITS specification and also for consistent behavior in higher dimensions. (by @attipaci)
+ - [#318] `CompressedImageHDU.fromInageHDU()` now defaults to tiling by row if tile size is not explicitly specified, as per FITS specification and also for consistent behavior in higher dimensions. (by @attipaci)
 
 
 ### Added
 
- - [319] Generalized tile compression for any-dimensional images based on the FITSIO convention. (by @attipaci)
+ - [#319] Generalized tile compression for any-dimensional images based on the FITSIO convention. (by @attipaci)
 
- - [323] New checksumming methods: `BasicHDU.calcChecksum()`, `.setChecksum()`, `.getStoredChecksum()`, and `.getStoredDataSum()`, `Data.calcChecksum()`, `Fits.calcChecksum(int)` and `.setChecksum(int)` -- as well as an extended static API for `FitsCheckSum`. (by @attipaci)
+ - [#323] New checksumming methods: `BasicHDU.calcChecksum()`, `.setChecksum()`, `.getStoredChecksum()`, and `.getStoredDataSum()`, `Data.calcChecksum()`, `Fits.calcChecksum(int)` and `.setChecksum(int)` -- as well as an extended static API for `FitsCheckSum`. (by @attipaci)
 
- - [323] Added `Fits.rewrite()` to simplify re-writing the entire Fits objects, e.g. after updating checksums. The implementation is efficient in that it skips data segments in deferred read mode. `BasicHDU.rewrite()` is modified to make it efficient also. (by @attipaci)
+ - [#323] Added `Fits.rewrite()` to simplify re-writing the entire Fits objects, e.g. after updating checksums. The implementation is efficient in that it skips data segments in deferred read mode. `BasicHDU.rewrite()` is modified to make it efficient also. (by @attipaci)
 
- - [283] User adjustable header comment alignment position via `Header.setCommentAlignPosition(int)` and checking via `.getCommentAlignPosition()`. (by @attipaci)
+ - [#283] User adjustable header comment alignment position via `Header.setCommentAlignPosition(int)` and checking via `.getCommentAlignPosition()`. (by @attipaci)
 
- - [145] New `Fits.getHDU()` methods to select HDU from Fits by name (and version). (by @attipaci)
+ - [#145] New `Fits.getHDU()` methods to select HDU from Fits by name (and version). (by @attipaci)
 
- - [323] Added `Data.isDeferred()` method (defaulting to false) that can be used to check if a FITS Data object might be in deferred read mode, that is if it may not be fully loaded into RAM. Note, that while the method is properly implemented for the built-in data types of the library, it may not properly reflect the deferred status of external data implementations unless these override the method with something meaningful also. (by @attipaci)
+ - [#323] Added `Data.isDeferred()` method (defaulting to false) that can be used to check if a FITS Data object might be in deferred read mode, that is if it may not be fully loaded into RAM. Note, that while the method is properly implemented for the built-in data types of the library, it may not properly reflect the deferred status of external data implementations unless these override the method with something meaningful also. (by @attipaci)
 
 
 ### Changed
 
- - [266] Safe incremental HDU writing via new `FitsOutput` interface, which is used to check whether HDUs should be set primary or not depending on where it is located in the output. (by @attipaci)
+ - [#266] Safe incremental HDU writing via new `FitsOutput` interface, which is used to check whether HDUs should be set primary or not depending on where it is located in the output. (by @attipaci)
 
- - [323] Simpler, faster, and more versatile `FitsChecksum` class, with support for incremental checksum updates, checksum retrieval, and checksum computations directly from files. (by @attipaci)
+ - [#323] Simpler, faster, and more versatile `FitsChecksum` class, with support for incremental checksum updates, checksum retrieval, and checksum computations directly from files. (by @attipaci)
 
- - [328] Checksum in-memory headers/data with less overhead through piped streams. (by @attipaci)
+ - [#328] Checksum in-memory headers/data with less overhead through piped streams. (by @attipaci)
 
- - [323] `Fits.setChecksum()`, `.setCheckSum(int)`, and `.calcChecksum(int)` compute checksum directly from the file, if possible, for deferred read data (i.e. data not currently loaded into RAM). This eliminates the need to keep potentially huge data volumes in RAM when computing or updating checksums in an existing FITS file. (by @attipaci)
+ - [#323] `Fits.setChecksum()`, `.setCheckSum(int)`, and `.calcChecksum(int)` compute checksum directly from the file, if possible, for deferred read data (i.e. data not currently loaded into RAM). This eliminates the need to keep potentially huge data volumes in RAM when computing or updating checksums in an existing FITS file. (by @attipaci)
 
- - [323] `Fits.setChecksum()` will now checksum all HDUs, including those not already loaded from disk -- keeping data in deferred read mode if possible. (by @attipaci)
+ - [#323] `Fits.setChecksum()` will now checksum all HDUs, including those not already loaded from disk -- keeping data in deferred read mode if possible. (by @attipaci)
 
- - [311] Duplicate header keys, during parsing, are repoted though separate logger instance from Header's, with verbosity controlled via `Header.setParserWarningsEnabled(boolean)`. (by @attipaci)
+ - [#311] Duplicate header keys, during parsing, are repoted though separate logger instance from Header's, with verbosity controlled via `Header.setParserWarningsEnabled(boolean)`. (by @attipaci)
 
- - [292] Suppress repeated duplicate keyword warnings when parsing and improve checks for FITS standard violations. Added `Header.getDuplicateKeySet()` method to check which keywords have duplicates. (by @attipaci)
+ - [#292] Suppress repeated duplicate keyword warnings when parsing and improve checks for FITS standard violations. Added `Header.getDuplicateKeySet()` method to check which keywords have duplicates. (by @attipaci)
 
- - [292] Replacing header keys logs a warning when existing value type is incompatible wth the newly associated standardized keyword. (by @attipaci)
+ - [#292] Replacing header keys logs a warning when existing value type is incompatible wth the newly associated standardized keyword. (by @attipaci)
 
- - [292] Creation of header entries with standardized keywords logs a warning if associated value type is incompatible with the keyword. (by @attipaci)
+ - [#292] Creation of header entries with standardized keywords logs a warning if associated value type is incompatible with the keyword. (by @attipaci)
 
- - [292] Improved header card ordering implementation. (by @attipaci)
+ - [#292] Improved header card ordering implementation. (by @attipaci)
 
- - [74] New logo. (by @attipaci)
+ - [#74] New logo. (by @attipaci)
 
 
 ## [1.16.1] - 2022-03-21
@@ -451,18 +451,18 @@ Maintenance release with bug fixes.
 
 ### Fixed
 
- - [252] Fixed broken Java 8 compatibility of 1.16.0 due to Java compiler flags in POM. Note, after the change the build itself will require Java 9 or later! (by @attipaci)
+ - [#252] Fixed broken Java 8 compatibility of 1.16.0 due to Java compiler flags in POM. Note, after the change the build itself will require Java 9 or later! (by @attipaci)
 
- - [243] Fixed potential unchecked null in `BinaryTableHDU`. (by @attipaci)
+ - [#243] Fixed potential unchecked null in `BinaryTableHDU`. (by @attipaci)
 
 
 ### Changed
 
- - [257] No `Logger` warnings about duplicate header cards if `Header` parser warnings are disabled. (by @attipaci)
+ - [#257] No `Logger` warnings about duplicate header cards if `Header` parser warnings are disabled. (by @attipaci)
 
- - [210] Added default `ArrayDataInput`/`ArrayDataOutput` implementations. (by @attipaci)
+ - [#210] Added default `ArrayDataInput`/`ArrayDataOutput` implementations. (by @attipaci)
 
- - [229] Removed runtime dependency on `javax.annotation-api`. (by @attipaci)
+ - [#229] Removed runtime dependency on `javax.annotation-api`. (by @attipaci)
 
  - Mostly automated updates of dependencies. (by @dependabot)
 
@@ -474,35 +474,35 @@ Compliance to FITS 4.0 standard, plus many more fixes and improvements.
 
 ### Fixed
 
- - [171] Prevent the creation of invalid header entries from code, by throwing informative runtime exceptions. New runtime exception classes `HierarchNotEnabledException`, `LongStringsNotEnabledException`, `LongValueException`, `UnclosedQuoteException` are used to report when illegal action was pre-empted relating to FITS headers. (by @attipaci)
+ - [#171] Prevent the creation of invalid header entries from code, by throwing informative runtime exceptions. New runtime exception classes `HierarchNotEnabledException`, `LongStringsNotEnabledException`, `LongValueException`, `UnclosedQuoteException` are used to report when illegal action was pre-empted relating to FITS headers. (by @attipaci)
 
- - [165] Prevent creating header cards with `NaN` and `Infinite` values. The FITS standard does not support these. (by @attipaci)
+ - [#165] Prevent creating header cards with `NaN` and `Infinite` values. The FITS standard does not support these. (by @attipaci)
 
- - [187] No `EOFException` is thrown when skipping beyond the end of file, since it should be allowed in random access mode. (by @attipaci)
+ - [#187] No `EOFException` is thrown when skipping beyond the end of file, since it should be allowed in random access mode. (by @attipaci)
 
- - [186] Consistent handling of logical (`true`/`false`) values in FITS binary tables, including newly added support for `null` (or undefined) values also as per FITS standard. (by @attipaci)
+ - [#186] Consistent handling of logical (`true`/`false`) values in FITS binary tables, including newly added support for `null` (or undefined) values also as per FITS standard. (by @attipaci)
 
- - [184] In prior versions `char[]` arrays in binary tables were written as 16-bit Unicode and read back as `short[]` integers. FITS recognises only ASCII character arrays with 1-byte per character. A new `FitsFactory.setUseUnicodeChars(boolean)` option can toggle compliance to the FITS standard for `char[]` arrays. However, the misconceived prior behavior remains the default to maintain back compatibility until the next major release. (by @attipaci)
+ - [#184] In prior versions `char[]` arrays in binary tables were written as 16-bit Unicode and read back as `short[]` integers. FITS recognises only ASCII character arrays with 1-byte per character. A new `FitsFactory.setUseUnicodeChars(boolean)` option can toggle compliance to the FITS standard for `char[]` arrays. However, the misconceived prior behavior remains the default to maintain back compatibility until the next major release. (by @attipaci)
 
- - [153] No more `Logger` warnings on multiple `CONTINUE` keywords, tolerant `HIERARCH` parsing, and other small fixes. (by @attipaci)
+ - [#153] No more `Logger` warnings on multiple `CONTINUE` keywords, tolerant `HIERARCH` parsing, and other small fixes. (by @attipaci)
 
- - [135] Fix management of sub-seconds in `FitsDate` (by @Zlika)
+ - [#135] Fix management of sub-seconds in `FitsDate` (by @Zlika)
 
- - [130] Check for and reject non-ASCII or non-printable characters in headers. The FITS standard allows only ASCII characters in the range of `0x20` to `0x7E` in the headers. The new static method `HeaderCard.sanitize(String)` is available to users to replace characters outside of the supported range with `?`. (by @olebole)
+ - [#130] Check for and reject non-ASCII or non-printable characters in headers. The FITS standard allows only ASCII characters in the range of `0x20` to `0x7E` in the headers. The new static method `HeaderCard.sanitize(String)` is available to users to replace characters outside of the supported range with `?`. (by @olebole)
 
- - [123] Minor fixes prior to release (by @wcleveland)
+ - [#123] Minor fixes prior to release (by @wcleveland)
 
- - [162] Revised when exceptions are thrown, and they are made more informative by providing more essential details and traceable causes. (by @attipaci)
+ - [#162] Revised when exceptions are thrown, and they are made more informative by providing more essential details and traceable causes. (by @attipaci)
 
- - [159] `HIERARCH` header cards are now written to conform to 'cfitsio' specification, which requires a space before '='. While the `HIERARCH` convention itself does not specify the extra space, it certainly allows for it, and with the change our FITS files shall be more conformant to, and readable, by yet another widely used library. (by @attipaci)
+ - [#159] `HIERARCH` header cards are now written to conform to 'cfitsio' specification, which requires a space before '='. While the `HIERARCH` convention itself does not specify the extra space, it certainly allows for it, and with the change our FITS files shall be more conformant to, and readable, by yet another widely used library. (by @attipaci)
 
- - [158] Check for `markSupported()` when attempting to use `mark()` or `reset()` methods in `ArrayDataInput`, and throw an appropriate runtime exception if the methods are not supported by the implementation. (by @mbtaylor)
+ - [#158] Check for `markSupported()` when attempting to use `mark()` or `reset()` methods in `ArrayDataInput`, and throw an appropriate runtime exception if the methods are not supported by the implementation. (by @mbtaylor)
 
- - [156] Fixed issues with handling of single quotes as part of user-supplied strings. (by @attipaci)
+ - [#156] Fixed issues with handling of single quotes as part of user-supplied strings. (by @attipaci)
 
- - [143] `I10` format ASCII tables are parsed as 32-bit `int[]` by default (for back compatibility), unless `TLMIN`/`TLMAX` or `TDMIN`/`TDMAX` header entries indicate a more extended range. Added new `AsciiTable(Header, boolean)` constructor to optionally change the preference to read `I10` ASCII table data as 64-bit `long[]` columns. (by @mbtaylor)
+ - [#143] `I10` format ASCII tables are parsed as 32-bit `int[]` by default (for back compatibility), unless `TLMIN`/`TLMAX` or `TDMIN`/`TDMAX` header entries indicate a more extended range. Added new `AsciiTable(Header, boolean)` constructor to optionally change the preference to read `I10` ASCII table data as 64-bit `long[]` columns. (by @mbtaylor)
 
- - [190] Changed to generated `serialVersionUIDs` from `1L` for classes that require it. (by @attipaci)
+ - [#190] Changed to generated `serialVersionUIDs` from `1L` for classes that require it. (by @attipaci)
 
  - Various smaller fixes and improvements throughout, increased unit test coverage, and more comprehensive unit tests. (by @attipaci)
 
@@ -511,51 +511,51 @@ Compliance to FITS 4.0 standard, plus many more fixes and improvements.
 
 ### Added
 
- - [177] Added support for preallocated blank header space, as per FITS 4.0 standard. via `Header.ensureCardSpace(int)` and `Header.getMinimumSize()`. Headers remain rewritable in-place as long as they don't exceed their original size in the file. (by @attipaci)
+ - [#177] Added support for preallocated blank header space, as per FITS 4.0 standard. via `Header.ensureCardSpace(int)` and `Header.getMinimumSize()`. Headers remain rewritable in-place as long as they don't exceed their original size in the file. (by @attipaci)
 
- - [172] Added support for complex values in FITS headers, as specified by the FITS standard, via new `ComplexValue` class. (by @attipaci)
+ - [#172] Added support for complex values in FITS headers, as specified by the FITS standard, via new `ComplexValue` class. (by @attipaci)
 
- - [167] Added support for header integers in hexadecimal format, as specified by the FITS standard, e.g. via `addHexValue(...)` and `getHexValue(...)` methods in both `Header` and `HeaderCard` classes. (by @attipaci)
+ - [#167] Added support for header integers in hexadecimal format, as specified by the FITS standard, e.g. via `addHexValue(...)` and `getHexValue(...)` methods in both `Header` and `HeaderCard` classes. (by @attipaci)
 
- - [120] Added optional support for using `D` instead of `E` as the exponent in decimal representations (via `FitsFactory.setUseExponentD(boolean)` setting), as specified by the FITS standard. (by @wcleveland)
+ - [#120] Added optional support for using `D` instead of `E` as the exponent in decimal representations (via `FitsFactory.setUseExponentD(boolean)` setting), as specified by the FITS standard. (by @wcleveland)
 
- - [182] Replace fragmented `PrimitiveType...` hierarchy with a more aptly named one-stop `ElementType` class. The old hierarchy is also available, albeit in deprecated form. (by @attipaci)
+ - [#182] Replace fragmented `PrimitiveType...` hierarchy with a more aptly named one-stop `ElementType` class. The old hierarchy is also available, albeit in deprecated form. (by @attipaci)
 
- - [191] Type safe `BITPIX` values via new `Bitpix` enum providing a restricted set. The unsafe `BITPIX` methods have been deprecated for removal in a future release. (by @attipaci)
+ - [#191] Type safe `BITPIX` values via new `Bitpix` enum providing a restricted set. The unsafe `BITPIX` methods have been deprecated for removal in a future release. (by @attipaci)
 
- - [175] Added new `Header.setParserWarningsEnabled(boolean)` option to log FITS standard violations when reading (3rd party) headers. (by @attipaci)
+ - [#175] Added new `Header.setParserWarningsEnabled(boolean)` option to log FITS standard violations when reading (3rd party) headers. (by @attipaci)
 
- - [138] `FitsDate.equals()` / `hashCode()` / `compareTo()` implementations. (by @FinitePhaseSpace)
+ - [#138] `FitsDate.equals()` / `hashCode()` / `compareTo()` implementations. (by @FinitePhaseSpace)
 
 
 ### Changed
 
- - [197] This release contains numerous API changes and additions. While the source code is generally back-compatible with previous versions of this library for compiling, some method signatures have changed, and as a result the JAR should not be used as a drop-in replacement for applications that were compiled against earlier versions. To use version 1.16.0 of this library you should always compile your application against it. (by @attipaci)
+ - [#197] This release contains numerous API changes and additions. While the source code is generally back-compatible with previous versions of this library for compiling, some method signatures have changed, and as a result the JAR should not be used as a drop-in replacement for applications that were compiled against earlier versions. To use version 1.16.0 of this library you should always compile your application against it. (by @attipaci)
 
- - [161] Long strings enabled by default (FITS 4.0 standard). (by @attipaci)
+ - [#161] Long strings enabled by default (FITS 4.0 standard). (by @attipaci)
 
- - [195] Permissive default `FitsFactory` settings: error-free reading of some flawed 3rd party files by default (as long as they can be made sense of). However, issued encountered with 3rd party FITS files are logged so they can be inspected. Added new `FitsFactory.setDefaults()` method to restore default settings more easily. (by @attipaci)
+ - [#195] Permissive default `FitsFactory` settings: error-free reading of some flawed 3rd party files by default (as long as they can be made sense of). However, issued encountered with 3rd party FITS files are logged so they can be inspected. Added new `FitsFactory.setDefaults()` method to restore default settings more easily. (by @attipaci)
 
- - [125] Set `FitsFactory.useHierarch(true)` by default. `HIERARCH` style keys are written upper-case only by default, but case-sensitive support can also be enabled via a call to the `setCaseSensitive(boolean)` method of the `IHierarchKeyFormatter` instance used by `FitsFactory`. (by @olebole)
+ - [#125] Set `FitsFactory.useHierarch(true)` by default. `HIERARCH` style keys are written upper-case only by default, but case-sensitive support can also be enabled via a call to the `setCaseSensitive(boolean)` method of the `IHierarchKeyFormatter` instance used by `FitsFactory`. (by @olebole)
 
- - [169] More predictable explicit precision control for header decimals. The same number of decimal places are shown after the leading figure regardless whether fixed-decimal or scientific (exponential) notation is used. (by @attipaci)
+ - [#169] More predictable explicit precision control for header decimals. The same number of decimal places are shown after the leading figure regardless whether fixed-decimal or scientific (exponential) notation is used. (by @attipaci)
 
- - [173] Fully preserve long comments for string values, including internal spaces in the comment, using the now standard long string convention. (by @attipaci)
+ - [#173] Fully preserve long comments for string values, including internal spaces in the comment, using the now standard long string convention. (by @attipaci)
 
- - [170] Simpler, better methods for adding creating comment and history entries in headers, such as via `Header.insertComment(String)` or `.insertHistory(String)`, or via `HeaderCard.createCommentCard(String)` or `.createHistoryCard(String)`. (by @attipaci)
+ - [#170] Simpler, better methods for adding creating comment and history entries in headers, such as via `Header.insertComment(String)` or `.insertHistory(String)`, or via `HeaderCard.createCommentCard(String)` or `.createHistoryCard(String)`. (by @attipaci)
 
- - [170] `Header.addValue(...)` and `Header.insert...(...)` methods now return the newly created `HeaderCard` objects for convenience. (by @attipaci)
+ - [#170] `Header.addValue(...)` and `Header.insert...(...)` methods now return the newly created `HeaderCard` objects for convenience. (by @attipaci)
 
- - [121] More predictable header card ordering when editing headers, both directly or indirectly via an iterator. (by @attipaci)
+ - [#121] More predictable header card ordering when editing headers, both directly or indirectly via an iterator. (by @attipaci)
 
- - [188] `FitsHeap` access made a lot more efficient with true random access. (by @attipaci)
+ - [#188] `FitsHeap` access made a lot more efficient with true random access. (by @attipaci)
 
- - [164] Source code updated for Java 8, with diamond operators and try-with-resources used throughout as appropriate. (by @attipaci)
+ - [#164] Source code updated for Java 8, with diamond operators and try-with-resources used throughout as appropriate. (by @attipaci)
 
 
 ### Deprecated
 
- - [192] New FITS IO class hierarchies for better layering and separation of functionality. Standard IO functions (for reading, writing, positioning, and skipping) now conform to their canonical contracts in the core Java API. The messy old IO API is also supported, though deprecated, to provide back compatibility until the next major release. The new IO classes are also 2 to 3 times faster than before. (by @attipaci)
+ - [#192] New FITS IO class hierarchies for better layering and separation of functionality. Standard IO functions (for reading, writing, positioning, and skipping) now conform to their canonical contracts in the core Java API. The messy old IO API is also supported, though deprecated, to provide back compatibility until the next major release. The new IO classes are also 2 to 3 times faster than before. (by @attipaci)
 
  - Deprecated classes and methods that (a) were exposed in the public API even though they should not have been, (b) had names that poorly reflected their function, (c) were poorly conceived/designed in the first place, and/or (d) were prone to misuse with unpredictable results. The deprecated API remains supported nonetheless, and slated for removal in the next major release (2.0) only. (by @attipaci)
 
@@ -566,26 +566,26 @@ Maintenance release with bug fixes.
 
 ### Fixed
 
- - [112] `ImageHDU` tiler corrupts values after 2GB worth of data bug fixed. (by @ritchieGitHub)
+ - [#112] `ImageHDU` tiler corrupts values after 2GB worth of data bug fixed. (by @ritchieGitHub)
 
- - [108] Non standard `BITPIX` allowed during de/compression. (by @ritchieGitHub)
+ - [#108] Non standard `BITPIX` allowed during de/compression. (by @ritchieGitHub)
 
- - [107] Add tiler support for `ImageHDU` from uncompressing a `CompressedImageHDU`? (by @ritchieGitHub)
+ - [#107] Add tiler support for `ImageHDU` from uncompressing a `CompressedImageHDU`? (by @ritchieGitHub)
 
- - [106] Remove redundant spaces in `HIERARCH` keys . (by @ritchieGitHub)
+ - [#106] Remove redundant spaces in `HIERARCH` keys . (by @ritchieGitHub)
 
- - [105] Fix integer overflow in case of negative values in combination with a defined blank value of `Integer.MIN_VANUE`. (by @ritchieGitHub)
+ - [#105] Fix integer overflow in case of negative values in combination with a defined blank value of `Integer.MIN_VANUE`. (by @ritchieGitHub)
 
- - [104] make the worker threads deamons so they do not hold of a shutdown enhancement. (by @ritchieGitHub)
+ - [#104] make the worker threads deamons so they do not hold of a shutdown enhancement. (by @ritchieGitHub)
 
- - [98] Update Outdated documentation in introduction enhancement, thanks to MaxNoe. (by @ritchieGitHub)
+ - [#98] Update Outdated documentation in introduction enhancement, thanks to MaxNoe. (by @ritchieGitHub)
 
- - [90] Fix Reading `boolean` arrays with `getColumn` bug. (by @ritchieGitHub)
+ - [#90] Fix Reading `boolean` arrays with `getColumn` bug. (by @ritchieGitHub)
 
 
 ### Added
 
- - [113] `Header` can be controlled to specify the header card order. (by @ritchieGitHub)
+ - [#113] `Header` can be controlled to specify the header card order. (by @ritchieGitHub)
 
 
 ### Changed
@@ -600,9 +600,9 @@ Maintenance release with bug fixes.
 
 ### Fixed
 
- - [102] Comment type header cards where not protected against to long comments, that can result in corrupted headers. (by @ritchieGitHub)
+ - [#102] Comment type header cards where not protected against to long comments, that can result in corrupted headers. (by @ritchieGitHub)
 
- - [101] Introduction document verified and corrected kind thanks to Maximilian Nöthe. (by @MaxNoe)
+ - [#101] Introduction document verified and corrected kind thanks to Maximilian Nöthe. (by @MaxNoe)
 
 
 ### Changed
@@ -617,16 +617,16 @@ Table compression activated.
 
 ### Added
 
- - [61] Binary table compression now fully supported. (by @ritchieGitHub)
+ - [#61] Binary table compression now fully supported. (by @ritchieGitHub)
 
- - [70] The dummy compression algorithm `NOCOMPRESS` is now supported. (by @ritchieGitHub)
+ - [#70] The dummy compression algorithm `NOCOMPRESS` is now supported. (by @ritchieGitHub)
 
 
 ### Changed
 
  - Binary table compression and tiling are now fully supported by nom-tam-fits. An API for easy handling of compressed tables is now provided.
 
- - [96] Multiple code quality fixes, provided by various developers.
+ - [#96] Multiple code quality fixes, provided by various developers.
 
 
 ## [1.14.3] - 2016-06-05
@@ -638,9 +638,9 @@ Maintenance release with minor bug fixes.
 
  - Maintenance release with bug fixes.
 
- - [92] Removal of redundent attribute `rowSize`. Attention here the public api has a minor change, the `deleteColumns` in the `ColumnTable` does not return an `int` anymore. (by @ritchieGitHub)
+ - [#92] Removal of redundent attribute `rowSize`. Attention here the public api has a minor change, the `deleteColumns` in the `ColumnTable` does not return an `int` anymore. (by @ritchieGitHub)
 
- - [91] Fix for a bug in encurling the multim arrays of the `BinaryTable` with variable length columns. (by @ritchieGitHub)
+ - [#91] Fix for a bug in encurling the multim arrays of the `BinaryTable` with variable length columns. (by @ritchieGitHub)
 
 
 ## [1.14.2] - 2016-03-11
@@ -652,9 +652,9 @@ Maintenance release with minor bug fixes and enhancements.
 
  - Maintenance release with important bug fixes and the restoration of java 6 support.
 
- - [84] `Fits` does not handle comments that start with 8 blank characters correctly when reading/writing/reading bug. (by @ritchieGitHub)
+ - [#84] `Fits` does not handle comments that start with 8 blank characters correctly when reading/writing/reading bug. (by @ritchieGitHub)
 
- - [80] Restored Java 6 compatibility. (by @ritchieGitHub)
+ - [#80] Restored Java 6 compatibility. (by @ritchieGitHub)
 
 
 ## [1.14.1] - 2016-02-24
@@ -664,21 +664,21 @@ Maintenance release with minor bug fixes and enhancements.
 
 ### Fixed
 
- - [76] In case of long strings the difference between a null comment and an empty string was not detected correctly. (by @ritchieGitHub)
+ - [#76] In case of long strings the difference between a null comment and an empty string was not detected correctly. (by @ritchieGitHub)
 
 
 ### Added
 
- - [60] Image compression support for the null pixel mask, this allows correct `NaN` with the use of lossy compression's. (by @ritchieGitHub)
+ - [#60] Image compression support for the null pixel mask, this allows correct `NaN` with the use of lossy compression's. (by @ritchieGitHub)
 
 
 ### Changed
 
  - Maintenance release with minor bug fixes and enhancements.
 
- - [79] Important note for all users, since 1.13.0 a bug is fixed in the table behavior. This can cause problems for users expecting the "buggy" result. See the issue on github for more details. (by @ritchieGitHub)
+ - [#79] Important note for all users, since 1.13.0 a bug is fixed in the table behavior. This can cause problems for users expecting the "buggy" result. See the issue on github for more details. (by @ritchieGitHub)
 
- - [77] Since a approximately 1.12.0 nom-tam-fits uses `java.util.logging` for all logs, the details what and where to log to can therefore be configured freely. (by @ritchieGitHub)
+ - [#77] Since a approximately 1.12.0 nom-tam-fits uses `java.util.logging` for all logs, the details what and where to log to can therefore be configured freely. (by @ritchieGitHub)
 
 
 ## [1.14.0] - 2016-01-10
@@ -688,20 +688,20 @@ full Image compression support
 
 ### Fixed
 
- - [26] Wrong checksum calculation corrected. (by @ritchieGitHub)
+ - [#26] Wrong checksum calculation corrected. (by @ritchieGitHub)
 
- - [54] Some problems with data segments that are bigger than 2GB corrected. (by @ritchieGitHub)
+ - [#54] Some problems with data segments that are bigger than 2GB corrected. (by @ritchieGitHub)
 
- - [62] Header parsing performance optimization. (by @ritchieGitHub)
+ - [#62] Header parsing performance optimization. (by @ritchieGitHub)
 
- - [68] Comment style cards with a empty key value can now be used multiple times. (by @ritchieGitHub)
+ - [#68] Comment style cards with a empty key value can now be used multiple times. (by @ritchieGitHub)
 
 
 ### Added
 
- - [48] Added a [de]compression API supporting all compression methods in the proposed updates to the FITS standard. (by @ritchieGitHub)
+ - [#48] Added a [de]compression API supporting all compression methods in the proposed updates to the FITS standard. (by @ritchieGitHub)
 
- - [72] The formatting of hierarch card keys can mow be be controlled. Two formats are provided. (by @ritchieGitHub)
+ - [#72] The formatting of hierarch card keys can mow be be controlled. Two formats are provided. (by @ritchieGitHub)
 
 
 ### Changed
@@ -712,7 +712,7 @@ full Image compression support
 
  - Internal compression allows FITS files to be created where the data are efficiently stored, but the metadata is still easily accessible. The tiling of images is particularly critical for supporting efficient access to subsets of very large images. A user can easily access only the tiles that overlap the region of interest and can skip data not of interest. While some skipping might be possible with uncompressed FITS files (i.e., read only the rows overlapping the desired subset), internal tiles can be much more efficient when the image is substantially larger than the subset. Most compression algorithms interfere with the ability to skip uninteresting data, but tiles are compressed independently, so users can benefit both from the compression and the selection of only a subset of the image.
 
- - [68] Alignment of hierarch headercard values deactivated. (by @ritchieGitHub)
+ - [#68] Alignment of hierarch headercard values deactivated. (by @ritchieGitHub)
 
 
 ## [1.13.1] - 2015-08-21
@@ -722,13 +722,13 @@ Maintenance release with fixes for hierarch/longstring and rewrite bugs
 
 ### Fixed
 
- - [46] After the correction of #44 the padding calculation of the fits header was wrong, now the calculation is consistent. (by @ritchieGitHub)
+ - [#46] After the correction of #44 the padding calculation of the fits header was wrong, now the calculation is consistent. (by @ritchieGitHub)
 
- - [44] Improved the calculation of the number of cards to be used for a longstring in case of a hierarch cards because it was wrong when some special string lengths where used. Now rewriting is useing the new calculation to see if the header fits in place. (by @ritchieGitHub)
+ - [#44] Improved the calculation of the number of cards to be used for a longstring in case of a hierarch cards because it was wrong when some special string lengths where used. Now rewriting is useing the new calculation to see if the header fits in place. (by @ritchieGitHub)
 
- - [43] More variants of the hierarch keywords as in #16. (by @ritchieGitHub)
+ - [#43] More variants of the hierarch keywords as in #16. (by @ritchieGitHub)
 
- - [16] More variants of the hierarch keywords allowed (lowercase and dot), but writing will convert the keywords back to the standard. (by @ritchieGitHub)
+ - [#16] More variants of the hierarch keywords allowed (lowercase and dot), but writing will convert the keywords back to the standard. (by @ritchieGitHub)
 
 
 ### Changed
@@ -743,18 +743,18 @@ This is a stability release, before the new fits standard will be implemented in
 
 ### Fixed
 
- - [24] Fixed handling of binary tables built from an empty state row by row. Fixed coupling of binary tables and the FITS heap to allow copying of binary tables using the internal ColumnTable representation.
+ - [#24] Fixed handling of binary tables built from an empty state row by row. Fixed coupling of binary tables and the FITS heap to allow copying of binary tables using the internal ColumnTable representation.
 
- - [20] Compression dependecy to apache compression is now optional again. (by @ritchieGitHub)
+ - [#20] Compression dependecy to apache compression is now optional again. (by @ritchieGitHub)
 
- - [12] When reading/writing the same card the comment moved one blank to the right. (by @ritchieGitHub)
+ - [#12] When reading/writing the same card the comment moved one blank to the right. (by @ritchieGitHub)
 
- - [29] All javadoc's are now java-8 compatible and produce no warnings. (by @ritchieGitHub)
+ - [#29] All javadoc's are now java-8 compatible and produce no warnings. (by @ritchieGitHub)
 
 
 ### Removed
 
- - [23] Tile compression, will be implemented from scratch in 2.0 and is not yet available in 1.13.0 (by @ritchieGitHub)
+ - [#23] Tile compression, will be implemented from scratch in 2.0 and is not yet available in 1.13.0 (by @ritchieGitHub)
 
 
 ### Changed
@@ -765,25 +765,25 @@ This is a stability release, before the new fits standard will be implemented in
 
  - Added examples in utilities package for how to use new Header enumerations.
 
- - [35] Builder pattern for the creation of cards introduced. (by @ritchieGitHub)
+ - [#35] Builder pattern for the creation of cards introduced. (by @ritchieGitHub)
 
- - [23] Reorganized compression and added internal compression package. (by @ritchieGitHub)
+ - [#23] Reorganized compression and added internal compression package. (by @ritchieGitHub)
 
- - [29] Unit tests extended to cover 92% of the library . (by @ritchieGitHub)
+ - [#29] Unit tests extended to cover 92% of the library . (by @ritchieGitHub)
 
- - [17] Longstring support was improved and longer comments are now supported. (by @ritchieGitHub)
+ - [#17] Longstring support was improved and longer comments are now supported. (by @ritchieGitHub)
 
- - [15] Support for biginteger and bigdecimal. (by @ritchieGitHub)
+ - [#15] Support for biginteger and bigdecimal. (by @ritchieGitHub)
 
- - [14] Generic detection of the value type of a card. (by @ritchieGitHub)
+ - [#14] Generic detection of the value type of a card. (by @ritchieGitHub)
 
- - [7] Insert a header card at a specific position. (by @ritchieGitHub)
+ - [#7] Insert a header card at a specific position. (by @ritchieGitHub)
 
- - [36] All internally used keyword references are now enumerations. (by @ritchieGitHub)
+ - [#36] All internally used keyword references are now enumerations. (by @ritchieGitHub)
 
- - [37] Comment mapping is now moved to the standard keyword enumeration. (by @ritchieGitHub)
+ - [#37] Comment mapping is now moved to the standard keyword enumeration. (by @ritchieGitHub)
 
- - [21] The settings of `FitsFactory` are now changeable to thread local specific settings. (by @ritchieGitHub)
+ - [#21] The settings of `FitsFactory` are now changeable to thread local specific settings. (by @ritchieGitHub)
 
 
 ## [1.12.0] - 2015-02-20
