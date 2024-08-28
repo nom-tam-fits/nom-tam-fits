@@ -24,11 +24,11 @@ To release packages, you will need:
 
  * Clean up and format code, e.g. with Eclipse's Code Cleanup feature to ensure a degree of consistentcy across the source tree. Use the same formatting rules for subsequent releases. After the code has been cleaned/formatted, run `mvn clean test` to confirm viability before committing.
  
- * Edit `src/changes/changes.xml` to summarize the changes for the release, linking entries to issues or pull request as appropriate. Commit and push the updates as necessary. Note any issues pertainig to compatibility at the top of the list of actions.
+ * Edit `CHANGELOG.md` to summarize the changes for the release, linking entries to issues or pull request as appropriate. Commit and push the updates as necessary. Note any issues pertainig to compatibility at the top of the list of actions.
  
  * Update `pom.xml` with the latest (or best fit) plugin versions. Test them locally with `mvn clean package` before committing and pushing the POM to the repo. Alternatively, if dependabot is generating update PRs, make sure you integrate all that pass the CI.
  
- * Make sure the [Project Site](https://nom-tam-fits.github.io/nom-tam-fits/index.html) is in good shape. Click through the menu on the left panel and check that all content is current. Check that the changes are properly shown. Check that the _Getting Started_ guide has up-to-date instructions for using the library.
+ * Make sure the Project Site is in good shape. Run `mvn clean site`. The open `target/site/index.html` in a web browser. Click through the menu on the left panel and check that all content is current. Check that the changes are properly shown. Check that the _Getting Started_ guide has up-to-date instructions for using the library.
  
 
 
