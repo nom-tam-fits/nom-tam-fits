@@ -8,6 +8,7 @@ on:
     paths:
       - 'src/**'
       - 'pom.xml'
+      - '*.md'
       - '.github/workflows/site.yml'
   
   push:
@@ -17,6 +18,7 @@ on:
       - 'src/site/**'
       - 'src/changes/**'
       - 'pom.xml'
+      - '*.md'
       - '.github/workflows/site.yml'
    
 jobs:  
