@@ -250,6 +250,7 @@
                    <directory>${basedir}</directory>
                    <includes>
                       <include>README.md</include>
+                      <include>CHANGELOG.md</include>
                       <include>CONTRIBUTING.md</include>
                    </includes>
                 </resource>
@@ -325,7 +326,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.12.1</version>
+        <version>3.20.0</version>
         <configuration>
           <chmod>false</chmod>
         </configuration>
@@ -338,7 +339,7 @@
           <dependency>
             <groupId>org.apache.maven.doxia</groupId>
             <artifactId>doxia-module-markdown</artifactId>
-            <version>1.12.0</version>
+            <version>2.0.0-M12</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -389,7 +390,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.4.0</version>
+        <version>3.5.0</version>
         <dependencies>
           <dependency>
             <groupId>com.puppycrawl.tools</groupId>
@@ -570,19 +571,6 @@
               <report>team</report>
               <report>issue-management</report>
               <report>licenses</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-    
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-changes-plugin</artifactId>
-        <version>2.12.1</version>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>changes-report</report>
             </reports>
           </reportSet>
         </reportSets>
@@ -803,36 +791,6 @@
     </profile>
     
     <profile>
-      <id>createHeasarcZip</id>
-      <activation>
-        <file>
-          <exists>pom.xml</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>3.4.1</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>java</goal>
-                </goals>
-                <phase>test</phase>
-              </execution>
-            </executions>
-            <configuration>
-              <classpathScope>test</classpathScope>
-              <mainClass>nom.tam.fits.doc.GenerateReleaseNote</mainClass>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    
-    <profile>
       <id>skipBlackBoxImages</id>
       <properties>
         <skip.backbox.images>true</skip.backbox.images>
@@ -851,10 +809,10 @@
               <failOnError>false</failOnError>
               <aggregate>false</aggregate>
               <doctitle>
-                ${project.name} ${project.version} Complete User API
+                ${project.name} ${project.version} Public User API
               </doctitle>
               <windowtitle>
-                ${project.name} ${project.version} Complete User API
+                ${project.name} ${project.version} Public User API
               </windowtitle>
               <show>public</show>
             </configuration>
