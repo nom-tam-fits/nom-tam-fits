@@ -791,36 +791,6 @@
     </profile>
     
     <profile>
-      <id>createHeasarcZip</id>
-      <activation>
-        <file>
-          <exists>pom.xml</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>3.4.1</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>java</goal>
-                </goals>
-                <phase>test</phase>
-              </execution>
-            </executions>
-            <configuration>
-              <classpathScope>test</classpathScope>
-              <mainClass>nom.tam.fits.doc.GenerateReleaseNote</mainClass>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    
-    <profile>
       <id>skipBlackBoxImages</id>
       <properties>
         <skip.backbox.images>true</skip.backbox.images>
@@ -839,10 +809,10 @@
               <failOnError>false</failOnError>
               <aggregate>false</aggregate>
               <doctitle>
-                ${project.name} ${project.version} Complete User API
+                ${project.name} ${project.version} Public User API
               </doctitle>
               <windowtitle>
-                ${project.name} ${project.version} Complete User API
+                ${project.name} ${project.version} Public User API
               </windowtitle>
               <show>public</show>
             </configuration>
