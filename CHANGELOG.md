@@ -36,6 +36,8 @@ Bug fix release candidate.
 
  - [665] `CHECKSUM` and `DATASUM` comments now store timestamp when checksums were calculated, as is the recommended practice by the checksumming standard. (by @attipaci)
 
+ - [672] Switched to markdown [keep a changelog](https://keepachangelog.com/en/1.1.0/).
+
  - Do not generate reports that have very little use. (by @attipaci)
 
  - Uses the latest maven build and runtime dependencies. (by @attipaci)
