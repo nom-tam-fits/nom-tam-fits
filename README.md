@@ -41,7 +41,7 @@ You may find the following links useful:
 
  - [API documentation](https://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html)
  - [FITS Standard](https://fits.gsfc.nasa.gov/fits_standard.html)
- - [History of changes](https://nom-tam-fits.github.io/nom-tam-fits/changes-report.html)
+ - [History of changes](https://nom-tam-fits.github.io/nom-tam-fits/CHANGELOG.html)
  - [Project site](https://nom-tam-fits.github.io/nom-tam-fits/index.html) on github.io
  - [Maven Central repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
 
