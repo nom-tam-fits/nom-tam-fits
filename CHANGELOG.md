@@ -170,7 +170,7 @@ Feature release with bug fixes.
 
  - [#488] New targeted `Data` and HDU creation from Java objects via new `Data+.from(Object)` and `Data+.toHDU()` methods, replacing the now deprecated and unsafe `[...]HDU.encapsulate(Object)` methods. (by @attipaci)
 
- - [#489] New `Header.mergeDistinct(Header)` method to allow copying non-conflicting header keywords from one FITS header to another. (by @attipaci)
+ - [#489] New `Header.mergeDistinct(Header)` method to allow copying non-conflicting header keywords from one FITS header to another. (by @attipaci, thanks to @robyww)
 
  - [#490] New inspection methods to `UndefinedData` class, to easily retrieve `XTENSION` type, `BITPIX`, and data size/shape information from HDUs containing unsupported data types. (by @attipaci)
 
@@ -234,7 +234,7 @@ Important bug fix release with minor enhancements.
 
 ### Fixed
 
- - [#466] Fixed broken default reading of ASCII tables in 1.18.0, without explicitly having to set `FitsFactory.setUseAsciiTables(true)`. (by @attipaci)
+ - [#466] Fixed broken default reading of ASCII tables in 1.18.0, without explicitly having to set `FitsFactory.setUseAsciiTables(true)`. (by @attipaci, thanks to @bogdanni)
 
 
 ### Added
@@ -250,7 +250,7 @@ Important bug fix release with minor enhancements.
 
  - [#473] Updated `README` for proper checksum verification procedures. (by @attipaci)
 
- - [#472] New cleaner-looking logos for github icons / profile image. (by @attipaci)
+ - [#472] New cleaner-looking logos for github icons / profile image. (by @attipaci, thanks to @tony-johnson and @ritchieGithub)
 
  - Updated maven build and runtime dependencies to their latest releases. (by @attipaci)
 
@@ -264,7 +264,7 @@ Feature release with compression fixes and many improvements.
 
  - [#377] Fixed use of `ZDITHER0` keyword to restore or record random generator seed when dithering is used in (de)compression. (by @attipaci)
 
- - [#349] Fixed tiled (de)compresssion of some quantized images via GZIP. (by @attipaci)
+ - [#349] Fixed tiled (de)compresssion of some quantized images via GZIP. (by @attipaci, @thanks to @bogdanni and @keastrid)
 
  - [#436] Fixed incorrect handling of `CONTINUE` keywords with no quoted string value (a regression since 1.16). (by @attipaci)
 
@@ -276,7 +276,7 @@ Feature release with compression fixes and many improvements.
 
  - [#456] Fixed compressed table tiling with tile sizes that do not divide the table rows. (by @attipaci)
 
- - [#462] Fixed incorrect `HCompress` `SCALE` parameter handling. (by @attipaci)
+ - [#460] Fixed incorrect `HCompress` `SCALE` parameter handling. (by @attipaci, thanks to @keastrid)
 
 
 ### Added
@@ -314,7 +314,7 @@ Feature release with compression fixes and many improvements.
 
  - [#414] Significantly improved IO performance, now typically 2.5 to 4 times faster for images than prior releases and a whopping 25-50 times faster for reading streams than 1.15.2. (by @attipaci)
 
- - [#407] Improved dithering performance by calculating the random sequence only once, and more efficiently. (by @attipaci)
+ - [#407] Improved dithering performance by calculating the random sequence only once, and more efficiently. (by @attipaci, thanks to @keastrid)
 
  - [#441] Significantly faster table data access and row additions. (by @attipaci)
 
@@ -375,9 +375,9 @@ Maintenance release with critical bug fixes.
 
 ### Fixed
 
- - [#368] Fixed first extension written as primary if primary HDU contained no data (affects 1.17.0). (by @attipaci)
+ - [#368] Fixed first extension written as primary if primary HDU contained no data (affects 1.17.0). (by @attipaci, thanks to @Pharisaeus)
 
- - [#367] Fixed incorrect checksum calculated directly from file in multi-HDU FITS, and other checksum fixes (affects 1.17.0). (by @attipaci)
+ - [#367] Fixed incorrect checksum calculated directly from file in multi-HDU FITS, and other checksum fixes (affects 1.17.0). (by @attipaci, thanks to @Pharisaeus)
 
  - [#341] Fixed occasional `NullPointerException` in tiled image compression resulting from incomplete initializiation of `TiledImageCompressionOperation`. (by @keastrid)
 
@@ -399,14 +399,14 @@ Improved image compression, checksum support, and incremental writing
 
 ### Fixed
 
- - [#318] Fixed broken tile compression of non-square images. (by @attipaci)
+ - [#318] Fixed broken tile compression of non-square images. (by @attipaci, thanks to @keastrid and @BCowan12)
 
  - [#318] `CompressedImageHDU.fromInageHDU()` now defaults to tiling by row if tile size is not explicitly specified, as per FITS specification and also for consistent behavior in higher dimensions. (by @attipaci)
 
 
 ### Added
 
- - [#319] Generalized tile compression for any-dimensional images based on the FITSIO convention. (by @attipaci)
+ - [#319] Generalized tile compression for any-dimensional images based on the FITSIO convention. (by @attipaci, thanks to @ritchieGithub)
 
  - [#323] New checksumming methods: `BasicHDU.calcChecksum()`, `.setChecksum()`, `.getStoredChecksum()`, and `.getStoredDataSum()`, `Data.calcChecksum()`, `Fits.calcChecksum(int)` and `.setChecksum(int)` -- as well as an extended static API for `FitsCheckSum`. (by @attipaci)
 
@@ -414,14 +414,14 @@ Improved image compression, checksum support, and incremental writing
 
  - [#283] User adjustable header comment alignment position via `Header.setCommentAlignPosition(int)` and checking via `.getCommentAlignPosition()`. (by @attipaci)
 
- - [#145] New `Fits.getHDU()` methods to select HDU from Fits by name (and version). (by @attipaci)
+ - [#145] New `Fits.getHDU()` methods to select HDU from Fits by name (and version). (by @attipaci, thanks to @at88mph)
 
  - [#323] Added `Data.isDeferred()` method (defaulting to false) that can be used to check if a FITS Data object might be in deferred read mode, that is if it may not be fully loaded into RAM. Note, that while the method is properly implemented for the built-in data types of the library, it may not properly reflect the deferred status of external data implementations unless these override the method with something meaningful also. (by @attipaci)
 
 
 ### Changed
 
- - [#266] Safe incremental HDU writing via new `FitsOutput` interface, which is used to check whether HDUs should be set primary or not depending on where it is located in the output. (by @attipaci)
+ - [#266] Safe incremental HDU writing via new `FitsOutput` interface, which is used to check whether HDUs should be set primary or not depending on where it is located in the output. (by @attipaci, thanks to @keastrid)
 
  - [#323] Simpler, faster, and more versatile `FitsChecksum` class, with support for incremental checksum updates, checksum retrieval, and checksum computations directly from files. (by @attipaci)
 
@@ -451,18 +451,18 @@ Maintenance release with bug fixes.
 
 ### Fixed
 
- - [#252] Fixed broken Java 8 compatibility of 1.16.0 due to Java compiler flags in POM. Note, after the change the build itself will require Java 9 or later! (by @attipaci)
+ - [#252] Fixed broken Java 8 compatibility of 1.16.0 due to Java compiler flags in POM. Note, after the change the build itself will require Java 9 or later! (by @attipaci, thanks to @harmanea)
 
  - [#243] Fixed potential unchecked null in `BinaryTableHDU`. (by @attipaci)
 
 
 ### Changed
 
- - [#257] No `Logger` warnings about duplicate header cards if `Header` parser warnings are disabled. (by @attipaci)
+ - [#257] No `Logger` warnings about duplicate header cards if `Header` parser warnings are disabled. (by @attipaci, thanks to @harmanea)
 
  - [#210] Added default `ArrayDataInput`/`ArrayDataOutput` implementations. (by @attipaci)
 
- - [#229] Removed runtime dependency on `javax.annotation-api`. (by @attipaci)
+ - [#229] Removed runtime dependency on `javax.annotation-api`. (by @attipaci, thanks to @bogdanni)
 
  - Mostly automated updates of dependencies. (by @dependabot)
 
@@ -496,9 +496,9 @@ Compliance to FITS 4.0 standard, plus many more fixes and improvements.
 
  - [#159] `HIERARCH` header cards are now written to conform to 'cfitsio' specification, which requires a space before '='. While the `HIERARCH` convention itself does not specify the extra space, it certainly allows for it, and with the change our FITS files shall be more conformant to, and readable, by yet another widely used library. (by @attipaci)
 
- - [#158] Check for `markSupported()` when attempting to use `mark()` or `reset()` methods in `ArrayDataInput`, and throw an appropriate runtime exception if the methods are not supported by the implementation. (by @mbtaylor)
+ - [#158] Check for `markSupported()` when attempting to use `mark()` or `reset()` methods in `ArrayDataInput`, and throw an appropriate runtime exception if the methods are not supported by the implementation. (by @mbtaylor, thanks to @olebole)
 
- - [#156] Fixed issues with handling of single quotes as part of user-supplied strings. (by @attipaci)
+ - [#156] Fixed issues with handling of single quotes as part of user-supplied strings. (by @attipaci, thanks to @keastrid)
 
  - [#143] `I10` format ASCII tables are parsed as 32-bit `int[]` by default (for back compatibility), unless `TLMIN`/`TLMAX` or `TDMIN`/`TDMAX` header entries indicate a more extended range. Added new `AsciiTable(Header, boolean)` constructor to optionally change the preference to read `I10` ASCII table data as 64-bit `long[]` columns. (by @mbtaylor)
 
@@ -525,7 +525,7 @@ Compliance to FITS 4.0 standard, plus many more fixes and improvements.
 
  - [#175] Added new `Header.setParserWarningsEnabled(boolean)` option to log FITS standard violations when reading (3rd party) headers. (by @attipaci)
 
- - [#138] `FitsDate.equals()` / `hashCode()` / `compareTo()` implementations. (by @FinitePhaseSpace)
+ - [#138] `FitsDate.equals()` / `hashCode()` / `compareTo()` implementations. (by @FinitePhaseSpace, thanks to @HabbitBaggins)
 
 
 ### Changed
