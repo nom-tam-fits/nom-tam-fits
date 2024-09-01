@@ -22,13 +22,13 @@ To release packages, you will need:
  
  * Check that unit tests coverage did not decrease compared to the prior release. (You should not merge pull request in the first place until they maintain or increase test coverage.) Small decrements in overall coverage due to a reduction in the total lines of code are acceptable, as long as the diff coverage itself is equal or above the previous coverage metric. (You should generally insist on 100% diff-coverage, unless there is a good reason why it cannot be attained.) 
 
- * Clean up and format code, e.g. with Eclipse's Code Cleanup feature to ensure a degree of consistentcy across the source tree. Use the same formatting rules for subsequent releases. After the code has been cleaned/formatted, run `mvn clean test` to confirm viability before committing.
+ * Clean up and format code, e.g. with Eclipse's Code Cleanup feature to ensure a degree of consistency across the source tree. Use the same formatting rules for subsequent releases. After the code has been cleaned/formatted, run `mvn clean test` to confirm viability before committing.
  
- * Edit `src/changes/changes.xml` to summarize the changes for the release, linking entries to issues or pull request as appropriate. Commit and push the updates as necessary. Note any issues pertainig to compatibility at the top of the list of actions.
+ * Edit `CHANGELOG.md` to summarize the changes for the release, linking entries to issues or pull request as appropriate. Commit and push the updates as necessary. Note any issues pertainig to compatibility at the top of the list of actions.
  
  * Update `pom.xml` with the latest (or best fit) plugin versions. Test them locally with `mvn clean package` before committing and pushing the POM to the repo. Alternatively, if dependabot is generating update PRs, make sure you integrate all that pass the CI.
  
- * Make sure the [Project Site](https://nom-tam-fits.github.io/nom-tam-fits/index.html) is in good shape. Click through the menu on the left panel and check that all content is current. Check that the changes are properly shown. Check that the _Getting Started_ guide has up-to-date instructions for using the library.
+ * Make sure the Project Site is in good shape. Run `mvn clean site`. The open `target/site/index.html` in a web browser. Click through the menu on the left panel and check that all content is current. Check that the changes are properly shown. Check that the _Getting Started_ guide has up-to-date instructions for using the library.
  
 
 
