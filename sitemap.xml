@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>http://nom-tam-fits.github.io/nom-tam-fits/CHANGELOG.html</loc>
-    </url>
-    <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/CONTRIBUTING.html</loc>
     </url>
     <url>
@@ -16,7 +13,13 @@
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/changes-report.html</loc>
     </url>
     <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html</loc>
+    </url>
+    <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/compression.html</loc>
+    </url>
+    <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/cpd.html</loc>
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/dependencies.html</loc>
@@ -46,6 +49,9 @@
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/maven.html</loc>
     </url>
     <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/pmd.html</loc>
+    </url>
+    <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/project-info.html</loc>
     </url>
     <url>
@@ -53,6 +59,9 @@
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/spotbugs.html</loc>
+    </url>
+    <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/taglist.html</loc>
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/team.html</loc>
@@ -2180,6 +2189,15 @@
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/compression/provider/package-summary.html</loc>
+    </url>
+    <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/doc/GenerateReleaseNote.html</loc>
+    </url>
+    <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/doc/package-frame.html</loc>
+    </url>
+    <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/doc/package-summary.html</loc>
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/fits/header/StokesTest.html</loc>
