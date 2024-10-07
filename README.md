@@ -61,7 +61,7 @@ coordinate systems (WCS)](https://fits.gsfc.nasa.gov/fits_wcs.html), physical un
 familiarize themselves with the [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html) and conventions 
 described therein to be effective users of this library. 
 
-This is an open-source, community maintained, project hosted on github as 
+This is an open-source, community maintained, project hosted on GitHub as 
 [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API 
 docs, can be found on the [project site](https://nom-tam-fits.github.io/nom-tam-fits/index.html).
 
@@ -95,7 +95,7 @@ The current FITS standard (4.0) recognizes the following principal HDU / data ty
  capabilities for storing the same type of data. Support for these type of HDUs is basic, and aimed mainly 
  at providing a way to access data that was already written in this format.
 
- 5. **Foreign File** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised 
+ 5. **Foreign File** can encapsulate various other files within the FITS. Foreign file HDUs are a recognized 
  convention, but not (yet) officially part of the FITS standard. We do not explicitly support foreign file 
  encapsulation yet, but it is something that we are considering for a future release.
  
@@ -126,13 +126,13 @@ We strive to maintain API compatibility with earlier releases of this library, a
 we continue to deliver on that. However, in a few corner cases we had no choice but to change the API and/or behavior 
 slightly to fix bugs, nagging inconsistencies, or non-compliance to the FITS standard. Such changes are generally 
 rare, and typically affect some of the more obscure features of the library -- often classes and methods that probably 
-should never have been expossed to users in the first place. Most typical users (and use cases) of this library will 
+should never have been exposed to users in the first place. Most typical users (and use cases) of this library will 
 never see a difference, but some of the more advanced users may find changes that would require some small 
 modifications to their application in how they use __nom-tam-fits__ with recent releases. If you find yourself to be 
 one of the ones affected, please know that the decision to 'break' previously existing functionality was not taken 
-lightly, and was done only because it was inavoidable in order to make the library function better overall.
+lightly, and was done only because it was unavoidable in order to make the library function better overall.
 
-Note, that as of __1.16__ we offer only API compatibility to earlier releases, but not binary compatilibility. In 
+Note, that as of __1.16__ we offer only API compatibility to earlier releases, but not binary compatibility. In 
 practical terms it means that you cannot simply drop-in replace you JAR file, from say version __1.15.2__ to 
 __1.19.0__. Instead, you are expected to (re)compile your application with the JAR version of this library that you 
 intend to use. This is because some method signatures have changed to use an encompassing argument type, such as 
@@ -140,7 +140,7 @@ intend to use. This is because some method signatures have changed to use an enc
 otherwise harmless API changes improve consistency across numerical types.)
 
 Starting with version __1.16__, we also started deprecating some of the older API, either because methods were 
-ill-conceived, confusing, or generaly unsafe to use; or because they were internals of the library that should never 
+ill-conceived, confusing, or generally unsafe to use; or because they were internals of the library that should never 
 have been exposed to users in the first place. Rest assured, the deprecations do not cripple the intended 
 functionality of the library. If anything they make the library less confusing and safer to use. The Javadoc API 
 documentation mentions alternatives for the methods that were deprecated, as appropriate. And, if nothing else 
@@ -227,7 +227,7 @@ By default the library will be tolerant to FITS standard violations when parsing
 if you use this library to read a FITS produced by other software, you are mainly interested to find out what's inside 
 it, rather than know if it was written properly. However, problems such as missing padding at the end of the file, or 
 an unexpected end-of-file before content was fully parsed, will be logged so they can be inspected. Soft violations of 
-header standards (those that can be overcome with educated guesses) are also tolerared when reading, but logging for 
+header standards (those that can be overcome with educated guesses) are also tolerated when reading, but logging for 
 these is not enabled by default (since they may be many, and likely you don't care). You can enable logging standard 
 violations in 3rd-party headers by `Header.setParserWarningsEnabled(true)`. You can also enforce stricter compliance 
 to the standard when reading FITS files via `FitsFactory.setAllowHeaderRepairs(false)` and 
@@ -290,7 +290,7 @@ floating-point values, via quantization. The quantization has the following para
    <decimal-value> = <scaling> * <integer-value> + <offset>
  ``` 
  
-or else set NaN values when the integer value matches the designated blanking value. In the absense of the above
+or else set NaN values when the integer value matches the designated blanking value. In the absence of the above
 header keywords defining quantization, the integer-to-decimal conversion is effectively just a widening conversion.
 
 The reverse conversion, from decimal images to integer images, involves rounding, i.e.:
@@ -312,13 +312,13 @@ array can thus be represented as any primitive type array with 4x3x2 dimensions.
 containing the complex pair of values has is `CTYPEn` header keyword named as 'COMPLEX'. Note, that complex values can 
 be recorded as integers also, and use quantization just like decimals.
 
-As of version 1.20, this library recognises when the convention is used when reading FITS image HDUs. (The library can 
+As of version 1.20, this library recognizes when the convention is used when reading FITS image HDUs. (The library can 
 only handle the convention if the 'COMPLEX' axis is the first or last image axis -- which should cover all but some 
 very pathological use cases.) 
 
 However, complex-valued images will continue to read back as their raw storage type (e.g. `float[4][3][2]`) for back 
-compatibility with previous releases. But, you can asily check if the data is meant to be complex (or not) and convert 
-them to complex values in a second step after loading the data. E.g.:
+compatibility with previous releases. But, you can easily check if the data is meant to be complex (or not) and 
+convert them to complex values in a second step after loading the data. E.g.:
 
 ```java
   // Get the data in the stored data format as some primitive array...
@@ -525,7 +525,7 @@ index 3), and a spectrum stored in the fifth column (i.e. Java index 4):
 ```
 
 The old `getElement()` / `setElement()` methods supported access as arrays only. While this is still a viable 
-alternative (though slightly less elegant), we recommend against it going forward. Nevetheless, the equivalent to the 
+alternative (though slightly less elegant), we recommend against it going forward. Nevertheless, the equivalent to the 
 above using this approach would be:
 
 ```java
@@ -566,7 +566,7 @@ dimensions.
 #### Converting array elements
 
 As of version 1.20, the library also support converting array elements to a different numerical type than the stored
-data. Like in the case for images (further above) the integer-decimal conversions will use the columns qunatization
+data. Like in the case for images (further above) the integer-decimal conversions will use the columns quantization
 parameters if they are defined. Otherwise narrowing conversions of decimal-to-integer types will use simple rounding.
 You can convert array elements via the `BinaryTable.getArrayElementAs()` method. E.g.:
 
@@ -675,7 +675,7 @@ after, worry-free. The `FitsFile` or `FitsOutputStream` object will keep track o
 stream, and set the required header keywords for the appended HDUs as appropriate for a primary or extension HDU 
 automatically.
 
-Here is an example of how ro create a FITS file HDU-by-HDU without the need for a `Fits` object as a holding 
+Here is an example of how to create a FITS file HDU-by-HDU without the need for a `Fits` object as a holding 
 container:
 
 ```java
@@ -704,7 +704,7 @@ Of course, you can use a `FitsOutputStream` as opposed to a file as the output a
   ...
 ```
 
-in which case going back ro re-write what was already written before is not an option.
+in which case going back to re-write what was already written before is not an option.
 
 
 
@@ -813,7 +813,7 @@ Next, we will need to create an appropriate FITS header for the table:
   table.fillHeader(header);
 ```
 
-We can now complete the header descriprtion as we see fit, with whatever optional entries. We can also save space for 
+We can now complete the header description as we see fit, with whatever optional entries. We can also save space for 
 future additions, e.g. for values we will have only after we start writing the table data itself:
 
 ```java
@@ -909,14 +909,14 @@ Same goes for a table HDU:
 
 Note, that in the above table example, the `rewrite()` call may be superfluous since `BinaryTable.set()` may be 
 editing the file in situ if the data has been left in deferred-read mode (random accessible file, without data loaded 
-to memory). Nevertheless, it is best practice to call `rewrite()` anyway to ensure that the updates are synched to the 
+to memory). Nevertheless, it is best practice to call `rewrite()` anyway to ensure that the updates are synced to the 
 output under all circumstances. And, you should also close the output (e.g. via `Fits.close()`) after done editing the 
 FITS file to ensure that any pending file changes are fully flushed to the output.
 
 Defragmenting binary tables allows to reclaim heap space that is no longer used in the heap area. When deleting 
 variable-length columns, or when replacing entries inside variable-length columns, some or all of the space occupied 
 by old entries on the heap may become orphaned, needlessly bloating the heap storage. Also, changed entries may be 
-placed on the heap out of order, which can slow down caching effectiveness for sequential table acces. Thus when 
+placed on the heap out of order, which can slow down caching effectiveness for sequential table access. Thus when 
 modifying tables with variable-length columns, it may be a good idea to defragment the heap before writing in to the 
 output. For the above example, this would be adding an extra step before `rewrite)`. 
 
@@ -1004,7 +1004,7 @@ shared space of the same FITS header. It is therefore best practice for all crea
    files). Let the library handle these appropriately.
  - Keep standard (reserved) keywords separated from user-defined keywords in the header if possible. It is 
    recommended for users to add the standardized header entries first, and then add any/all user-defined entries 
-   after. It is also recommended that users add a comment line (or lines) in-between to cleary demark where the 
+   after. It is also recommended that users add a comment line (or lines) in-between to clearly denote where the 
    standard FITS description ends, and where the user dictionary begins after.
  - Use comment cards to make headers self explanatory and easy for other humans to understand and digest. The header
    is also in a sense the self-contained documentation of your FITS data.
@@ -1077,7 +1077,7 @@ or, similarly
 ```
 
 The second argument is our new right ascension coordinate (in degrees). The third is a comment field that will also be 
-written to that header in the space remaining. (When using the standard keyword, the netry is created with the the 
+written to that header in the space remaining. (When using the standard keyword, the entry is created with the the 
 standard comment belonging to the keyword, and you may change that by adding `.comment(...)` if you want it to be 
 something more specific).
 
@@ -1096,9 +1096,9 @@ Note, that the _mark_ position also applies to adding comment cards via `Header.
 Thus, `Header.findCard()`, `.seekHead()` and/or `.seekTail()` methods will allow you to surgically control header order 
 when adding new cards to headers using the direct access methods.
 
-Table HDUs may contain several standard kewords to describe individual columns, and the `TableHDU.setColumnMeta(...)` 
+Table HDUs may contain several standard keywords to describe individual columns, and the `TableHDU.setColumnMeta(...)` 
 methods can help you add these optional descriptor for your data while keeping column-specific keywords organized into
-header blocks around the mandatory `TFORMn` keywords. Notem that the `.setColumnMeta(...)` methods also change the mark
+header blocks around the mandatory `TFORMn` keywords. Note, that the `.setColumnMeta(...)` methods also change the mark
 position at which new header entries are added.
 
 
@@ -1145,7 +1145,7 @@ commonly used keyword, which as also collected in the `nom.tam.fits.header` pack
  * `ObservationDescription` -- Commonly used keywords that describe the observation
  * `ObservationDurationDescription` -- Commonly used keywords for the timing of observations
  
-Finally, many organisations (or groups of organisations) have defined their own sets of FITS keywords. Some of 
+Finally, many organizations (or groups of organizations) have defined their own sets of FITS keywords. Some of 
 these can be found under the `nom.tam.fits-header.extra` package, such as:
 
  * `CommonExt` -- Commonly used keywords in the amateur astronomy community
@@ -1169,9 +1169,9 @@ example,
 ```
 
 The advantage of using these standardized keywords, as opposed to strings, is that they help avoid keyword typos, 
-since the compiler (or your IDE) will warn you if the keyword name is not recognised. 
+since the compiler (or your IDE) will warn you if the keyword name is not recognized. 
 
-Some keywords contain indices that must be specified via the `n()` method. You must spececify one integer (one-based 
+Some keywords contain indices that must be specified via the `n()` method. You must specicify one integer (one-based 
 index) for each 'n' appearing in the keyword name. For example, to set the value of the `WAT9_234` keyword to the 
 string value of `"50"`:
 
@@ -1277,7 +1277,7 @@ You may note a few other properties of HIERARCH keywords as implemented by this 
  better compatibility with __cfitsio__.
  
  6. The HIERARCH parsing is tolerant, and does not care about extra space (or spaces) between the hierarchical 
- components or before `=`. It also recognises `.` as a separator of hierarchy besides the conventional white space.
+ components or before `=`. It also recognizes `.` as a separator of hierarchy besides the conventional white space.
  As such the following may all appear in a FITS header to define the same two-component keyword:
   ```
     HIERARCH MY KEYWORD
@@ -1481,7 +1481,7 @@ following steps:
  1. Start by creating the new HDU from the data it will hold. It ensures that the new HDU will have the correct 
  essential data description (type and size) in its header.
 
- 2. Merge distict (non-conflicting) header entries from the original HDU into the header of the new HDU, using the 
+ 2. Merge distinct (non-conflicting) header entries from the original HDU into the header of the new HDU, using the 
  `Header.mergeDistinct(Header source)` method. It will migrate the header entries from the original HDU to the new one, 
  without overriding the proper essential data description.
 
@@ -1520,8 +1520,8 @@ For example:
 <a name="building-tables-from-data"></a>
 ## Creating tables
 
- - [Buiding tables row-by-row](#building-by-row)
- - [Buiding tables column-by-column](#building-by-column)
+ - [Building tables row-by-row](#building-by-row)
+ - [Building tables column-by-column](#building-by-column)
  - [Creating ASCII tables (discouraged)](#creating-ascii-tables)
 
 
@@ -1553,7 +1553,7 @@ contained in each table column:
 
 Defining columns this way is not always necessary before adding rows to the table. However, it is necessary if you 
 will have data that needs variable-length storage row-after-row; or if you want more control over specifics of the 
-column format. As such, it is best practice to define the columns explictly even if not strictly required for your 
+column format. As such, it is best practice to define the columns explicitly even if not strictly required for your 
 particular application. 
 
 Now you can populate the table with your data, one row at a time, using the `addRow()` method as many times over as 
@@ -1617,7 +1617,7 @@ A few rules to remember when building tables by rows:
 <a name="building-by-column"></a>
 ### Building tables column-by-column
 
-Sometimes we might want to assemble a table from a selection of data which will readily consitute columns in the table. 
+Sometimes we might want to assemble a table from a selection of data which will readily constitute columns in the table. 
 We can add these as columns to an existing table (empty or not) using the `BinaryTable.addColumn(Object)` method.
 For example, say we have two arrays, one a time-series of spectra, and a matching array of corresponding timestamps. We
 can create a table with these (or add them to an existing table with a matching number of rows) as:
@@ -1665,7 +1665,7 @@ should always be your choice for storing table data. ASCII tables are far less c
 readable from a console without the need for other tools, there is no compelling reason for using ASCII tables 
 today. Binary tables are simply better, because they:
 
- - Support arrays (including multidim and variable-length).
+ - Support arrays (including multidimensional and variable-length).
  - Support more data types (such as logical, and complex values).
  - Offer additional flexibility, such as variable sized and multi-dimensional array entries.
  - Take up less space on disk
@@ -1700,7 +1700,7 @@ However, if you insist on creating ASCII tables (provided the data allows for it
 
 Starting with version __1.15__ we include support for compressing images and tables. The compression algorithms have 
 been ported to Java from __cfitsio__ to provide a pure 100% Java implementation. However, versions prior to __1.19.1__ 
-had a number of lingering compression related bugs of varying severity, which may have prevented realiable use.
+had a number of lingering compression related bugs of varying severity, which may have prevented reliable use.
 
 
 
@@ -1740,7 +1740,7 @@ automatically when we construct a `Fits` object with an input stream:
 <a name="image-compression"></a>
 ### Image compression
 
-Image compression and tiling are fully supported by nom-tam-fits as of __1.18__, including images of 
+Image compression and tiling are fully supported by __nom.tam.fits__ as of __1.18__, including images of 
 any dimensionality and rectangular morphologies. (Releases between __1.15__ and __1.17__ had partial image
 compression support for 2D square images only, while some quantization support for compression was
 lacking prior to __1.18__). 
@@ -1760,7 +1760,7 @@ Compressing an image HDU is typically a multi-step process:
  ```
  
  2. Set up the compression algorithm, including quantization (if desired) via `setCompressAlgorithm(String)` and 
-    `setQuantAlgorithm(String)`, and optionally the compressiomn method used for preserving the blank values via 
+    `setQuantAlgorithm(String)`, and optionally the compression method used for preserving the blank values via 
     `preserveNulls(String)`:
    
 ```java
@@ -1826,8 +1826,8 @@ decompress only the selected image area. As of version __1.18__, this is really 
 <a name="table-compression"></a>
 ### Table compression
 
-Table compression is also supported in nom-tam-fits from version __1.15__, and more completely since __1.19.1__. When 
-compressing a table, the 'tiles' are sets of contiguous rows within a column. Each column may use a different 
+Table compression is also supported in __nom.tam.fits__ from version __1.15__, and more completely since __1.19.1__. 
+When compressing a table, the 'tiles' are sets of contiguous rows within a column. Each column may use a different 
 compression algorithm. As for FITS version 4.0 only lossless compression is supported for tables, and hence only 
 `GZIP_1`, `GZIP_2` (default), `RICE_1` (with default options), and `NOCOMPRESS` are admissible. The default 
 compression is with `GZIP_2`, unless explicitly defined otherwise.
@@ -1911,13 +1911,13 @@ VLAs, you should be aware of the very limited interoperability with other tools,
 truly complete and accurate implementation of this part of the standard.
 
 Note, that the [(C)FITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) implementation of VLA compression diverges from the 
-documented standard (FITS 4.0 and the original Pence et al. 2013 convention) by storing the adjoint desciptors in 
+documented standard (FITS 4.0 and the original Pence et al. 2013 convention) by storing the adjoined descriptors in 
 reversed order, w.r.t. the standard, on the heap. Our understanding, based on communication with the maintainers of 
-the FITS standard, is that this discrepacy will be resolved by changing the documentation (the standard) to conform to 
+the FITS standard, is that this discrepancy will be resolved by changing the documentation (the standard) to conform to 
 the (C)FITSIO implementation. Therefore, our implementation for the compression of VLAs is generally compliant to that 
 of (C)FITSIO, and not to the current prescription of the standard. However, we wish to support reading files produced 
 either way via the `static` `CompressedTableHDU.useOldStandardVLAIndexing(boolean)` method selecting the convention 
-according to which the adjoint table descriptors are stored in the file: either in the format described by the 
+according to which the adjoined table descriptors are stored in the file: either in the format described by the 
 original FITS 4.0 standard / Pence+2013 convention (`true`), or else in the (C)FITSIO compatible format (`false`; 
 default).
 
@@ -1925,25 +1925,26 @@ default).
 
 The table compression implementation of __nom.tam.fits__ is now both more standard(!) and  more reliable(!) than that 
 of (C)FITSIO and `fpack` / `funpack`. Issues of interoperability are not due to a fault of our own. Specifically, 
-the current (4.4.0) and earlier [(C)FITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) releases are affected by a slew of 
+the current (4.5.0) and earlier [(C)FITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) releases are affected by a slew of 
 table-compression related bugs, quirks, and oddities -- which severely limit its interoperability with other tools. 
 Some of the bugs in `fpack` may result in entirely corrupted FITS files, while others limit what standard compressed 
 data `funpack` is able to decompress:
  
- 1. (C)FITSIO and `fpack`  version &lt;= 4.4.0 do not properly handle the `THEAP` keyword (if present). If the keyword
+ 1. (C)FITSIO and `fpack`  version &lt;= 4.5.0 do not properly handle the `THEAP` keyword (if present). If the keyword
  is present, `fpack` will use it incorrectly, resulting in a bloated compressed FITS that is also unreadable because of
  an incorrect `PCOUNT` value in the compressed header. Therefore, we will skip adding `THEAP` to the table headers when 
  not necessary (that is when the heap follows immediately after the main table), in order to provide better 
  interoperability with (C)FITSIO and `fpack`.
  
- 2. (C)FITSIO and `fpack` version &lt;= 4.4.0 do not handle `byte`-type and `short`-type VLA columns properly. In the
- `fpack`-compressed headers these are indicated as compressed via `GZIP_1` and `GZIP_2` respectively (regardless of 
- the user-specified compression option), whereas the data on the heap is not actually GZIP compressed for either (in 
- fact, they appear uncompressed, actually). Note, that `fpack` does compress `int` type VLAs properly, albeit always 
- with `RICE_1`, regardless of the user selection for the compression option; whereas fixed-sized `byte[]` and 
- `short[]` array columns they are in fact compressed with `GZIP_1` and `GZIP_2` respectively, as indicated.
+ 2. (C)FITSIO and `fpack` version &lt;= 4.5.0 do not handle `byte`-type and `short`-type VLA columns properly. In the
+ `fpack`-compressed headers these are invariably indicated as compressed via `GZIP_1` and `GZIP_2` respectively 
+ (regardless of the user-specified compression option), whereas the data on the heap is not actually compressed 
+ for either. And while `fpack` does compress `int` type VLAs properly, it does it with `RICE_1` always, regardless of 
+ the user selection for the compression option. To a lesser extent, the `fpack` compression of fixed-sized columns
+ is also lacking: fixed-sized `byte[]` and/or `short[]` array columns they are invariably compressed with `GZIP_1` and 
+ `GZIP_2`, respectively, as indicated (but still ignoring the user's choice for the requested compression type).
  
- 3. (C)FITSIO and `funpack` version &lt;= 4.4.0 do not handle uncompressed data columns (with `ZCTYPn = 'NOCOMPRESS')` 
+ 3. (C)FITSIO and `funpack` version &lt;= 4.5.0 do not handle uncompressed data columns (with `ZCTYPn = 'NOCOMPRESS')` 
  in compressed tables, despite these being standard.
 
 -----------------------------------------------------------------------------
@@ -1968,10 +1969,10 @@ features are generally reserved for the feature releases, although they may also
 long as they do not affect the existing API -- in line with the desire to keep bug-fix releases fully backwards 
 compatible with their parent versions.
 
-In the month(s) preceding releases one or more _release candidates_ (e.g. `1.19.1-rc3`) will be available on github
+In the month(s) preceding releases one or more _release candidates_ (e.g. `1.19.1-rc3`) will be available on GitHub
 briefly, under [Releases](https://github.com/nom-tam-fits/nom-tam-fits/releases), so that changes can be tested by 
 adopters before the releases are finalized. Please use due diligence to test such release candidates with your code 
-when they become available to avoid unexpected suprises when the finalized release is published. Release candidates 
+when they become available to avoid unexpected surprises when the finalized release is published. Release candidates 
 are typically available for one week only before they are superseded either by another, or by the finalized release.
 
 
@@ -1985,7 +1986,7 @@ are typically available for one week only before they are superseded either by a
 The _nom-tam-fits_ library is a community-maintained project. We absolutely rely on developers like you to make it 
 better and to keep it going. Whether there is a nagging issue you would like to fix, or a new feature you'd like to 
 see, you can make a difference yourself. We welcome you as a contributor. You became part of our community the moment 
-you landed on this page. We very much encourange you to make this project a little bit your own, by submitting pull 
+you landed on this page. We very much encourage you to make this project a little bit your own, by submitting pull 
 requests with fixes and enhancement. When you are ready, here are the typical steps for 
 contributing to the project:
 
@@ -2002,7 +2003,7 @@ fork, which is named either after the issue number, e.g. `issue-192`, or some ot
 3. __Develop__. Feel free to experiment on your fork/branch. If you run into a dead-end, you can always abandon it 
 (which is why branches are great) and start anew. You can run your own test builds locally using `mvn clean test` 
 before committing your changes. If the tests pass, you should also try running `mvn clean package` and 
-`mvn site stage` to ensure that the package and javadoc are also in order. Remember to synchronize your `master` 
+`mvn site stage` to ensure that the package and Javadoc are also in order. Remember to synchronize your `master` 
 branch by fetching changes from upstream every once in a while, and rebasing your development branch. Don't 
 forget to:
 
@@ -2011,7 +2012,7 @@ forget to:
    methods that are similar, related, or relevant to what you just added.
 
    - Add __Unit Tests__. Make sure your new code has as close to full unit test coverage as possible. You should aim 
-   for 100% diff coverage. When pushing changes to your fork, you can get a coverage report by checking the Github 
+   for 100% diff coverage. When pushing changes to your fork, you can get a coverage report by checking the GitHub 
    Actions result of your commit (click the Codecov link), and you can analyze what line(s) of code need to have tests 
    added. Try to create tests that are simple but meaningful (i.e. check for valid results, rather than just confirm 
    existing behavior), and try to cover as many realistic scenarios as appropriate. Write lots of tests if you need to. 
@@ -2019,7 +2020,7 @@ forget to:
    unit testing holes outside of your area of development!
 
 4. __Pull Request__. Once you feel your work can be integrated, create a pull request from your fork/branch. You can 
-do that easily from the github page of your fork/branch directly. In the pull request, provide a concise description 
+do that easily from the GitHub page of your fork/branch directly. In the pull request, provide a concise description 
 of what you added or changed. Your pull request will be reviewed. You may get some feedback at this point, and maybe 
 there will be discussions about possible improvements or regressions etc. It's a good thing too, and your changes will 
 likely end up with added polish as a result. You can be all the more proud of it in the end!

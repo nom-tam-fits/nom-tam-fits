@@ -16,7 +16,7 @@ Bug fix release.
 
  - [#656] Fixed incorrect value types in several FITS keywords extension dictionaries. (by @attipaci, thanks to @johnmurphyastro)
 
- - [#664] Recalculate stored checksums when writing headers to avoid invalid checksums being set by `setChecksum()` methods. (by @attipaci, thanks to @johnmurphyastro)
+ - [#664] Recalculate stored checksums when writing headers to avoid checksums being set prematurely by `setChecksum()` methods. (by @attipaci, thanks to @johnmurphyastro)
 
 
 ### Added
