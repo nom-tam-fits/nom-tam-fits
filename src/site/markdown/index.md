@@ -56,7 +56,7 @@ presence on GitHub, based on the contributor statistics available in the GitHub
 ## Adoption
 
 At the time of writing this document, the GitHub project repository lists 
-[73 other GitHub repositories](https://github.com/nom-tam-fits/nom-tam-fits/network/dependents) that utilize 
+[80 other GitHub repositories](https://github.com/nom-tam-fits/nom-tam-fits/network/dependents) that utilize 
 __nom.tam.fits__. A few are also listed as dependents on 
 [Maven Central](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits). 
 
