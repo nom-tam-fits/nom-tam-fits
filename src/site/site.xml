@@ -62,5 +62,6 @@
 		</menu>
 		<menu ref="modules" />
 		<menu ref="reports" />
+		<footer><![CDATA[nom.tam.fits documentation]]></footer>
 	</body>
 </project>
