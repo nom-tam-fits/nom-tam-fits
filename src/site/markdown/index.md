@@ -5,3 +5,11 @@ __nom.tam.fits__ is a full-featured, fast, 100% pure Java library for reading, w
 the _nom.tam_ prefix) at [NASA Goddard Space Flight Center](https://www.nasa.gov/goddard/). Currently, it is 
 maintained by Attila Kov&aacute;cs at the [Center for Astrophysics | Harvard & Smithsonian](https://cfa.harvard.edu/).
 
+ - [Releases](https://github.com/nom-tam-fits/nom-tam-fits/releases)
+ - [API Documentation](https://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html)
+ - [Discussions](https://github.com/nom-tam-fits/nom-tam-fits/discussions) for questions, suggestions, comments.
+ - Check or report known [Issues](https://github.com/nom-tam-fits/nom-tam-fits/issues)
+ - [GitHub Repository](https://github.com/nom-tam-fits/nom-tam-fits/)
+ - [Maven Central Repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
+ 
+ 
