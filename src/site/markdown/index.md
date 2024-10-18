@@ -7,9 +7,11 @@ maintained by Attila Kov&aacute;cs at the [Center for Astrophysics | Harvard & S
 
  - [Releases](https://github.com/nom-tam-fits/nom-tam-fits/releases)
  - [API Documentation](https://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html)
+ - [User's Guide](https://nom-tam-fits.github.io/nom-tam-fits/README.html)
+ - [Changes](https://nom-tam-fits.github.io/nom-tam-fits/CHANGELOG.html)
  - [Discussions](https://github.com/nom-tam-fits/nom-tam-fits/discussions) for questions, suggestions, comments.
  - Check or report known [Issues](https://github.com/nom-tam-fits/nom-tam-fits/issues)
  - [GitHub Repository](https://github.com/nom-tam-fits/nom-tam-fits/)
  - [Maven Central Repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
- 
+ - [Contributor's guide](https://nom-tam-fits.github.io/nom-tam-fits/CONTRIBUTING.html)
  
