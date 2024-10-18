@@ -14,4 +14,15 @@ maintained by Attila Kov&aacute;cs at the [Center for Astrophysics | Harvard & S
  - [GitHub Repository](https://github.com/nom-tam-fits/nom-tam-fits/)
  - [Maven Central Repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
  - [Contributor's guide](https://nom-tam-fits.github.io/nom-tam-fits/CONTRIBUTING.html)
+
+
+## About FITS
+
+FITS is the Flexible Image Transport System, a file format designed at NASA for astronomical images and datasets. 
+Despite its venerable age, the format is still being used today, including for disciplines outside of astrophysics.
  
+  - [The FITS Standard](https://fits.gsfc.nasa.gov/fits_standard.html)
+  - [Registered conventions](https://fits.gsfc.nasa.gov/fits_conventions.html)
+  - [Reserved and conventional FITS keywords](https://fits.gsfc.nasa.gov/fits_dictionary.html)
+  - [List of Software Libraries](https://fits.gsfc.nasa.gov/fits_libraries.html)
+  - [FITS viewer applications](https://fits.gsfc.nasa.gov/fits_viewer.html)
