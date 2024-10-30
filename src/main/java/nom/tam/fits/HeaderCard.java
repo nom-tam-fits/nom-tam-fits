@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 import nom.tam.fits.FitsFactory.FitsSettings;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.NonStandard;
+import nom.tam.fits.header.hierarch.IHierarchKeyFormatter;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.ComplexValue;
@@ -1810,8 +1811,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      */
     private static int spaceForValue(String key) {
         if (key.length() > MAX_KEYWORD_LENGTH) {
-            return FITS_HEADER_CARD_SIZE - (Math.max(key.length(), MAX_KEYWORD_LENGTH)
-                    + FitsFactory.getHierarchFormater().getExtraSpaceRequired(key));
+            IHierarchKeyFormatter fmt = FitsFactory.getHierarchFormater();
+            int keyLen = Math.max(key.length(), MAX_KEYWORD_LENGTH) + fmt.getExtraSpaceRequired(key);
+            int space = FITS_HEADER_CARD_SIZE - keyLen;
+            String assign = fmt.getAssignStringForSpace(space);
+            return space - assign.length();
         }
         return FITS_HEADER_CARD_SIZE - (Math.max(key.length(), MAX_KEYWORD_LENGTH) + HeaderCardFormatter.getAssignLength());
     }

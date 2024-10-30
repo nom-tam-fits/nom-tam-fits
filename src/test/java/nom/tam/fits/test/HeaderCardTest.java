@@ -532,11 +532,11 @@ public class HeaderCardTest {
         // now test a longString
         FitsFactory.setLongStringsEnabled(true);
 
-        hc = new HeaderCard(key, "a verly long value that must be splitted over multiple lines to fit the card",
+        hc = new HeaderCard(key, "a very long value that must be splitted over multiple lines to fit the card",
                 "the comment is also not the smallest");
 
-        assertEquals("HIERARCH TEST1 TEST2 INT = 'a verly long value that must be splitted over mult&'" + //
-                "CONTINUE  'iple lines to fit the card' / the comment is also not the smallest   ", hc.toString());
+        assertEquals("HIERARCH TEST1 TEST2 INT = 'a very long value that must be splitted over multi&'" + //
+                "CONTINUE  'ple lines to fit the card' / the comment is also not the smallest    ", hc.toString());
 
     }
 
@@ -605,10 +605,10 @@ public class HeaderCardTest {
         FitsFactory.setSkipBlankAfterAssign(true);
         String key = "HIERARCH.TEST1.TEST2.INT";
 
-        HeaderCard hc = new HeaderCard(key, "a verly long value that must be splitted over multiple lines to fit the card",
+        HeaderCard hc = new HeaderCard(key, "a very long value that must be splitted over multiple lines to fit the card",
                 "the comment is also not the smallest");
 
-        assertEquals("HIERARCH TEST1 TEST2 INT ='a verly long value that must be splitted over multi&'" + //
+        assertEquals("HIERARCH TEST1 TEST2 INT = 'a very long value that must be splitted over multi&'" + //
                 "CONTINUE  'ple lines to fit the card' / the comment is also not the smallest    ", hc.toString());
 
     }
@@ -1104,21 +1104,21 @@ public class HeaderCardTest {
         FitsFactory.setUseHierarch(true);
         HeaderCard headerCard = new HeaderCard("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", "xy", null);
         assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
-        assertEquals("HIERARCH TEST1 TEST2 TEST3 TEST4 TEST5 TEST6 ='xy'                              ",
+        assertEquals("HIERARCH TEST1 TEST2 TEST3 TEST4 TEST5 TEST6 = 'xy'                             ",
                 headerCard.toString());
         assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6",
                 new HeaderCard(headerCardToStream(headerCard)).getKey());
 
         FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(1));
         assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
-        assertEquals("HIERARCH TEST1.TEST2.TEST3.TEST4.TEST5.TEST6 ='xy'                              ",
+        assertEquals("HIERARCH TEST1.TEST2.TEST3.TEST4.TEST5.TEST6 = 'xy'                             ",
                 headerCard.toString());
         assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6",
                 new HeaderCard(headerCardToStream(headerCard)).getKey());
 
         FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
         assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
-        assertEquals("HIERARCH  TEST1.TEST2.TEST3.TEST4.TEST5.TEST6 ='xy'                             ",
+        assertEquals("HIERARCH  TEST1.TEST2.TEST3.TEST4.TEST5.TEST6 = 'xy'                            ",
                 headerCard.toString());
         assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6",
                 new HeaderCard(headerCardToStream(headerCard)).getKey());
@@ -1332,7 +1332,7 @@ public class HeaderCardTest {
     @Test
     public void testSetValueExcept() throws Exception {
         FitsFactory.setUseHierarch(true);
-        HeaderCard hc = new HeaderCard("HIERARCH.ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ", 0);
+        HeaderCard hc = new HeaderCard("HIERARCH.ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ", 0);
 
         boolean thrown = false;
 
@@ -1694,13 +1694,13 @@ public class HeaderCardTest {
         assertEquals("UTC", card.getValue());
         assertEquals("All dates are in UTC time", card.getComment());
         assertEquals("HIERARCH.TIMESYS.BBBB.CCCC", card.getKey());
-        assertEquals("HIERARCH TIMESYS BBBB CCCC ='UTC' / All dates are in UTC time                   ", card.toString());
+        assertEquals("HIERARCH TIMESYS BBBB CCCC = 'UTC' / All dates are in UTC time                  ", card.toString());
 
         card = HeaderCard.create("HIERARCH TIMESYS.BBBB.CCCC ='UTC ' / All dates are in UTC time");
         assertEquals("UTC", card.getValue());
         assertEquals("All dates are in UTC time", card.getComment());
         assertEquals("HIERARCH.TIMESYS.BBBB.CCCC", card.getKey());
-        assertEquals("HIERARCH TIMESYS BBBB CCCC ='UTC' / All dates are in UTC time                   ", card.toString());
+        assertEquals("HIERARCH TIMESYS BBBB CCCC = 'UTC' / All dates are in UTC time                  ", card.toString());
     }
 
     private String makeTestString(int n) {

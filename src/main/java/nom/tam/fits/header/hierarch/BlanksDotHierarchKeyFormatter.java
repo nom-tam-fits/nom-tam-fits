@@ -75,8 +75,7 @@ public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
 
     @Override
     public int getExtraSpaceRequired(String key) {
-        // The number of blank spaces minus the one standard, and the one extra space before '='...
-        return blanks.length();
+        return blanks.length() - 1;
     }
 
     @Override
@@ -85,8 +84,7 @@ public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
             key = key.toUpperCase(Locale.US);
         }
 
-        // cfitsio specifies a required space before the '=', so let's play nice with it.
-        return HIERARCH.key() + blanks + key.substring(HIERARCH.key().length() + 1) + " ";
+        return HIERARCH.key() + blanks + key.substring(HIERARCH.key().length() + 1);
     }
 
     @Override
