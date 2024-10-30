@@ -263,7 +263,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
-        <version>3.2.5</version>
+        <version>3.2.7</version>
         <configuration>
           <passphraseServerId>gpg</passphraseServerId>
         </configuration>
@@ -290,7 +290,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.10.0</version>
+        <version>3.10.1</version>
         <configuration>
           <source>8</source>
           <aggregate>false</aggregate>
@@ -326,7 +326,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.20.0</version>
+        <version>3.21.0</version>
         <configuration>
           <chmod>false</chmod>
         </configuration>
@@ -339,7 +339,7 @@
           <dependency>
             <groupId>org.apache.maven.doxia</groupId>
             <artifactId>doxia-module-markdown</artifactId>
-            <version>2.0.0-M12</version>
+            <version>2.0.0</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -390,12 +390,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.5.0</version>
+        <version>3.6.0</version>
         <dependencies>
           <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
-            <version>10.18.1</version>
+            <version>10.19.0</version>
           </dependency>
         </dependencies>
         <executions>
@@ -473,7 +473,7 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>4.8.6.2</version>
+        <version>4.8.6.5</version>
         <executions>
           <execution>
             <goals>
@@ -494,7 +494,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.0</version>
+        <version>3.5.1</version>
         <configuration>
           <forkCount>1.5C</forkCount>
           <argLine>-Xmx2G @{argLine}</argLine>
@@ -558,7 +558,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.7.0</version>
+        <version>3.8.0</version>
         <configuration>
           <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
           <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
@@ -579,7 +579,7 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>4.8.6.2</version>
+        <version>4.8.6.5</version>
         <configuration>
           <!-- Skip bug warnings for EI_EXPOSE_REP and EI_EXPOSE_REP2
                we know we exposse some internal data of our classes -->
@@ -592,7 +592,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.10.0</version>
+        <version>3.10.1</version>
         <configuration>
           <source>8</source>
           <failOnError>false</failOnError>
@@ -692,7 +692,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>3.5.0</version>
+        <version>3.6.0</version>
         <configuration>
           <linkJavadoc>true</linkJavadoc>
         </configuration>
@@ -721,7 +721,7 @@
     <dependency>
       <groupId>org.junit.vintage</groupId>
       <artifactId>junit-vintage-engine</artifactId>
-      <version>5.11.0</version>
+      <version>5.11.3</version>
       <scope>test</scope>
     </dependency>
    
