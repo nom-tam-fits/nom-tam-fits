@@ -58,6 +58,8 @@ import nom.tam.fits.LongValueException;
 import nom.tam.fits.TruncatedFileException;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
+import nom.tam.fits.header.hierarch.IHierarchKeyFormatter;
+import nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
@@ -1944,6 +1946,12 @@ public class HeaderCardTest {
             HeaderCard.setValueCheckingPolicy(policy);
             Assert.assertEquals(policy.name(), policy, HeaderCard.getValueCheckingPolicy());
         }
+    }
+
+    @Test
+    public void testEmptyHierarchKey() {
+        IHierarchKeyFormatter fmt = new StandardIHierarchKeyFormatter();
+        Assert.assertEquals("", fmt.toHeaderString(". ."));
     }
 
 }
