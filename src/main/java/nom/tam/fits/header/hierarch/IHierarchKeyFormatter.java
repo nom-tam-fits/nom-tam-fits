@@ -99,4 +99,27 @@ public interface IHierarchKeyFormatter {
      * @since  1.16
      */
     boolean isCaseSensitive();
+
+    /**
+     * Returns the assignment string that separates the hierarchical key and value components, for the given amount of
+     * space available. For example, the ESO HIERARCH convention just requires an '=' character (1 byte), but it is
+     * common to surround it with spaces before and after (3 bytes). As the spaces before an after are optional, the
+     * assignment can occupy anywhere between 1 to 3 bytes in the header card. So we can use the 3-byte version if there
+     * is room, or squeeze it down as needed.
+     * 
+     * @param  space (bytes) Number of characters available for the assignment marker to separate the keyword from the
+     *                   value part.
+     * 
+     * @return       The string to use for the assignment marker
+     */
+    default String getAssignStringForSpace(int space) {
+        switch (space) {
+        case 1:
+            return "="; // minimal '='
+        case 2:
+            return "= "; // standard FITS style assigmnment marker
+        default:
+            return " = "; // easy to read commonly used marker
+        }
+    }
 }

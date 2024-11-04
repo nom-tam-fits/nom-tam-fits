@@ -200,8 +200,17 @@ class HeaderCardFormatter {
             return buf.length();
         }
 
-        // Add assignment sequence "= "
-        buf.append(getAssignString());
+        if (card.hasHierarchKey()) {
+            // Flexible assignment sequence depending on space...
+            int space = HeaderCard.FITS_HEADER_CARD_SIZE - buf.length() - card.getValue().length();
+            if (card.isStringValue()) {
+                space -= QUOTES_LENGTH;
+            }
+            buf.append(settings.getHierarchKeyFormatter().getAssignStringForSpace(space));
+        } else {
+            // Add assignment sequence "= "
+            buf.append(getAssignString());
+        }
 
         if (value == null) {
             // 'null' value, nothing more to append.
