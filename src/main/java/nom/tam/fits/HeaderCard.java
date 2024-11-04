@@ -88,8 +88,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /** if a commend needs the be specified 2 extra chars are needed to start the comment */
     public static final int MAX_LONG_STRING_VALUE_WITH_COMMENT_LENGTH = MAX_LONG_STRING_VALUE_LENGTH - 2;
 
-    /** Maximum HIERARCH keyword length (80 chars must fit [&lt;keyword&gt; = '&amp;'] at minimum... */
-    public static final int MAX_HIERARCH_KEYWORD_LENGTH = FITS_HEADER_CARD_SIZE - 6;
+    /** Maximum HIERARCH keyword length (80 chars must fit [&lt;keyword&gt;=T] at minimum... */
+    public static final int MAX_HIERARCH_KEYWORD_LENGTH = FITS_HEADER_CARD_SIZE - 2;
 
     /** The start and end quotes of the string and the ampasant to continue the string. */
     public static final int MAX_LONG_STRING_CONTINUE_OVERHEAD = 3;
@@ -571,18 +571,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             return;
         }
         if (isStringValue()) {
-            // Discard trailing spaces
-            aValue = trimEnd(aValue);
-
-            // Remember that quotes get doubled in the value...
-            String printValue = aValue.replace("'", "''");
-
-            // Check that the value fits in the space available for it.
-            if (!FitsFactory.isLongStringsEnabled() && (printValue.length() + STRING_QUOTES_LENGTH) > spaceForValue()) {
-                throw new HeaderCardException("value too long: [" + sanitize(aValue) + "]",
-                        new LongStringsNotEnabledException(key));
+            try {
+                setValue(aValue);
+            } catch (Exception e) {
+                throw new HeaderCardException("Value too long: [" + sanitize(aValue) + "]", e);
             }
-
         } else {
             aValue = aValue.trim();
 
@@ -591,9 +584,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
                 throw new HeaderCardException("Value too long: [" + sanitize(aValue) + "]",
                         new LongValueException(key, spaceForValue()));
             }
-        }
 
-        value = aValue;
+            value = aValue;
+        }
     }
 
     @Override
@@ -1076,6 +1069,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *
      * @return                                the HeaderCard itself
      *
+     * @throws ValueTypeException             if the card's keyword does not support string values.
+     * @throws IllegalStateException          if the card has a HIERARCH keyword that is too long to fit any string
+     *                                            value.
      * @throws IllegalArgumentException       if the new value contains characters that cannot be added to the the FITS
      *                                            header.
      * @throws LongStringsNotEnabledException if the card contains a long string but support for long strings is
@@ -1084,20 +1080,32 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see                                   FitsFactory#setLongStringsEnabled(boolean)
      * @see                                   #validateChars(String)
      */
-    public synchronized HeaderCard setValue(String update) throws IllegalArgumentException, LongStringsNotEnabledException {
+    public synchronized HeaderCard setValue(String update)
+            throws ValueTypeException, IllegalStateException, IllegalArgumentException, LongStringsNotEnabledException {
         checkValueType(IFitsHeader.VALUE.STRING);
 
+        int space = spaceForValue(key);
+        if (space < STRING_QUOTES_LENGTH) {
+            throw new IllegalStateException("No space for string value for [" + key + "]");
+        }
+
         if (update == null) {
-            // There is always room for an empty string...
+            // There is always room for a null string...
             value = null;
         } else {
             validateChars(update);
-            int l = STRING_QUOTES_LENGTH + update.length();
-            if (!FitsFactory.isLongStringsEnabled() && l > spaceForValue(key)) {
+            update = trimEnd(update);
+            int l = getHeaderValueSize(update);
+
+            if (space < l) {
+                if (FitsFactory.isLongStringsEnabled()) {
+                    throw new IllegalStateException("No space for long string value for [" + key + "]");
+                }
+
                 throw new LongStringsNotEnabledException("New string value for [" + key + "] is too long."
                         + "\n\n --> You can enable long string support by FitsFactory.setLongStringEnabled(true).\n");
             }
-            value = trimEnd(update);
+            value = update;
         }
 
         type = String.class;
@@ -1281,24 +1289,51 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *
      * @return the minimum number of bytes needed to represent this value in a header record.
      *
-     * @since  1.16.
+     * @since  1.16
      *
+     * @see    #getHeaderValueSize(String)
      * @see    #spaceForValue()
      */
-    private synchronized int getHeaderValueSize() {
-        if (isStringValue() && FitsFactory.isLongStringsEnabled()) {
-            return Integer.MAX_VALUE;
+    synchronized int getHeaderValueSize() {
+        return getHeaderValueSize(value);
+    }
+
+    /**
+     * Returns the minimum number of characters the value field will occupy in the header record, including quotes
+     * around string values, and quoted quotes inside. The actual header may add padding (e.g. to ensure the end quote
+     * does not come before byte 20). If the long string convention is enabled, this method returns the minimum number
+     * of characters needed in the leading 80-character record only. The call assumes that the value has been
+     * appropriately trimmed of trailing and leading spaces as appropriate.
+     * 
+     * @param  aValue The proposed value for this card
+     * 
+     * @return        the minimum number of bytes needed to represent this value in a header record.
+     *
+     * @since         1.16
+     *
+     * @see           #spaceForValue()
+     * @see           #trimEnd(String)
+     */
+    private synchronized int getHeaderValueSize(String aValue) {
+        if (aValue == null) {
+            return 0;
         }
 
-        int n = isStringValue() ? 2 : 0;
-        if (value == null) {
-            return n;
+        if (!isStringValue()) {
+            return aValue.length();
         }
 
-        n += value.length();
-        for (int i = value.length(); --i >= 0;) {
-            if (value.charAt(i) == '\'') {
-                // Add the number of quotes that need quoting.
+        int n = STRING_QUOTES_LENGTH;
+
+        if (FitsFactory.isLongStringsEnabled()) {
+            // If not empty string we need to write at least &...
+            return aValue.isEmpty() ? n : n + 1;
+        }
+
+        n += aValue.length();
+        for (int i = aValue.length(); --i >= 0;) {
+            if (aValue.charAt(i) == '\'') {
+                // Add the number of quotes that need escaping.
                 n++;
             }
         }
@@ -1338,13 +1373,14 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             LongStringsNotEnabledException, IllegalArgumentException {
 
         validateKey(newKey);
-        if (getHeaderValueSize() > spaceForValue(newKey)) {
-            if (!isStringValue()) {
-                throw new LongValueException(spaceForValue(newKey), newKey + "= " + value);
-            }
-            if (!FitsFactory.isLongStringsEnabled()) {
+        int l = getHeaderValueSize();
+        int space = spaceForValue(newKey);
+
+        if (l > space) {
+            if (isStringValue() && !FitsFactory.isLongStringsEnabled() && space > STRING_QUOTES_LENGTH) {
                 throw new LongStringsNotEnabledException(newKey);
             }
+            throw new LongValueException(spaceForValue(newKey), newKey + "= " + value);
         }
         key = newKey;
         standardKey = null;
@@ -1813,9 +1849,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         if (key.length() > MAX_KEYWORD_LENGTH) {
             IHierarchKeyFormatter fmt = FitsFactory.getHierarchFormater();
             int keyLen = Math.max(key.length(), MAX_KEYWORD_LENGTH) + fmt.getExtraSpaceRequired(key);
-            int space = FITS_HEADER_CARD_SIZE - keyLen;
-            String assign = fmt.getAssignStringForSpace(space);
-            return space - assign.length();
+            return FITS_HEADER_CARD_SIZE - keyLen - fmt.getMinAssignLength();
         }
         return FITS_HEADER_CARD_SIZE - (Math.max(key.length(), MAX_KEYWORD_LENGTH) + HeaderCardFormatter.getAssignLength());
     }
@@ -1954,7 +1988,6 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             if (!FitsFactory.getUseHierarch()) {
                 throw new HierarchNotEnabledException(key);
             }
-
             maxLength = MAX_HIERARCH_KEYWORD_LENGTH;
             validateHierarchComponents(key);
         }
