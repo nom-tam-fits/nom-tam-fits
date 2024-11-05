@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
  - [#696] Flexible space around `=` for HIERARCH cards, allowing slightly longer inline values (by @attipaci, thanks to @vforchi).
   
+ - [#697] Tweaks to how space available is calculated for cards, allowing slightly longer (hierarch) keys or values, depending on value types. The calculations are also more consistent across the various methods that use them. (by @attipaci)
+  
  - Uses the latest maven build and runtime dependencies. (by @attipaci)
 
 
