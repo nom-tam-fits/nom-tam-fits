@@ -51,7 +51,7 @@ jobs:
         echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
        
     - name: Upload test coverage to Codecov.io
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       continue-on-error: true
       with:
         working-directory: ./nom-tam-fits

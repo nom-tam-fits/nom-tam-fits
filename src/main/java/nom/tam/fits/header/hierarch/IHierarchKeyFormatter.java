@@ -110,7 +110,12 @@ public interface IHierarchKeyFormatter {
      * @param  space (bytes) Number of characters available for the assignment marker to separate the keyword from the
      *                   value part.
      * 
-     * @return       The string to use for the assignment marker
+     * @return       The string to use for the assignment marker. If the space is smaller than the minimum assignment
+     *                   string length, then it returns the minimal assignment string.
+     * 
+     * @since        1.20.2
+     * 
+     * @see          #getMinAssignLength()
      */
     default String getAssignStringForSpace(int space) {
         switch (space) {
@@ -121,5 +126,18 @@ public interface IHierarchKeyFormatter {
         default:
             return " = "; // easy to read commonly used marker
         }
+    }
+
+    /**
+     * Returns the minimum length of the sequence that separates keywords from values.
+     * 
+     * @return the length of the minimal key/value separator string.
+     * 
+     * @since  1.20.2
+     * 
+     * @see    #getAssignStringForSpace(int)
+     */
+    default int getMinAssignLength() {
+        return 1;
     }
 }

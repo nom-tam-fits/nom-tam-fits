@@ -32,6 +32,7 @@
 package nom.tam.fits;
 
 import nom.tam.fits.FitsFactory.FitsSettings;
+import nom.tam.fits.header.hierarch.IHierarchKeyFormatter;
 
 import static nom.tam.fits.header.Standard.CONTINUE;
 
@@ -153,15 +154,18 @@ class HeaderCardFormatter {
         String key = card.getKey();
 
         if (card.hasHierarchKey()) {
+            IHierarchKeyFormatter fmt = settings.getHierarchKeyFormatter();
             if (!settings.isUseHierarch()) {
                 throw new HierarchNotEnabledException(key);
             }
-            key = settings.getHierarchKeyFormatter().toHeaderString(key);
-            if (key.length() > HeaderCard.MAX_HIERARCH_KEYWORD_LENGTH) {
-                // Truncate HIERARCH keywords as necessary to fit.
-                // This is really just a second parachute here. Normally, HeaderCards
-                // won't allow creation or setting longer keywords...
-                throw new LongValueException(key, HeaderCard.MAX_HIERARCH_KEYWORD_LENGTH);
+            key = fmt.toHeaderString(key);
+
+            // Calculate the space needed after the keyword
+            int need = fmt.getMinAssignLength();
+            need += card.getHeaderValueSize();
+
+            if (key.length() + need > HeaderCard.FITS_HEADER_CARD_SIZE) {
+                throw new LongValueException(key, HeaderCard.FITS_HEADER_CARD_SIZE - need);
             }
         } else {
             // Just to be certain, we'll make sure base keywords are upper-case, if they
@@ -196,13 +200,16 @@ class HeaderCardFormatter {
         String value = card.getValue();
 
         if (card.isCommentStyleCard()) {
-            // omment-style card. Nothing to do here...
+            // comment-style card. Nothing to do here...
             return buf.length();
         }
 
         if (card.hasHierarchKey()) {
             // Flexible assignment sequence depending on space...
-            int space = HeaderCard.FITS_HEADER_CARD_SIZE - buf.length() - card.getValue().length();
+            int space = HeaderCard.FITS_HEADER_CARD_SIZE - buf.length();
+            if (value != null) {
+                space -= value.length();
+            }
             if (card.isStringValue()) {
                 space -= QUOTES_LENGTH;
             }

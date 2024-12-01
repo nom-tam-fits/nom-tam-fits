@@ -689,43 +689,7 @@ public class HeaderCardTest {
     }
 
     @Test(expected = LongValueException.class)
-    public void testRewriteLongStringOverflow1() {
-        FitsFactory.setUseHierarch(true);
-        FitsFactory.setLongStringsEnabled(false);
-        // We can read this card, even though the keyword is longer than allowed due to the missing
-        // spaces around the '='.
-        HeaderCard hc = HeaderCard
-                .create("HIERARCH ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ=''");
-        // But we should not be able to re-write this card.
-        hc.toString();
-    }
-
-    @Test(expected = LongValueException.class)
-    public void testRewriteLongStringOverflow2() {
-        FitsFactory.setUseHierarch(true);
-        FitsFactory.setLongStringsEnabled(false);
-        // We can read this card, even though the keyword is longer than allowed due to the missing
-        // spaces around the '='.
-        HeaderCard hc = HeaderCard
-                .create("HIERARCH ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ=T");
-        // But we should not be able to re-write this card.
-        hc.toString();
-    }
-
-    @Test(expected = LongValueException.class)
-    public void testRewriteLongStringOverflow3() {
-        FitsFactory.setUseHierarch(true);
-        FitsFactory.setLongStringsEnabled(false);
-        // We can read this card, even though the keyword is longer than allowed due to the missing
-        // spaces around the '='.
-        HeaderCard hc = HeaderCard
-                .create("HIERARCH ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ=");
-        // But we should not be able to re-write this card.
-        hc.toString();
-    }
-
-    @Test(expected = LongValueException.class)
-    public void testRewriteLongStringOverflow4() {
+    public void testRewriteLongBooleanHierarchExcept() {
         FitsFactory.setUseHierarch(true);
         FitsFactory.setLongStringsEnabled(false);
         // We can read this card, even though the keyword is longer than allowed due to the missing
@@ -736,16 +700,47 @@ public class HeaderCardTest {
         hc.setValue(true);
     }
 
-    @Test(expected = LongValueException.class)
-    public void testRewriteLongStringOverflow5() {
+    @Test(expected = IllegalStateException.class)
+    public void testRewriteStringHierarchExcept() {
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setLongStringsEnabled(false);
+        // We can read this card, even though the keyword is longer than allowed due to the missing
+        // spaces around the '='.
+        HeaderCard hc = HeaderCard
+                .create("HIERARCH ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ=");
+        // But we should not be able to set even an empty string value..
+        hc.setValue("");
+    }
+
+    public void testRewriteEmptyStringHierarch() {
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setLongStringsEnabled(false);
+        // We can read this card, even though the keyword is longer than allowed due to the missing
+        // spaces around the '='.
+        HeaderCard hc = HeaderCard.create("HIERARCH ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ=");
+        // We should not be able to set an empty string value...
+        hc.setValue("");
+    }
+
+    public void testRewriteEmptyLongStringHierarch() {
         FitsFactory.setUseHierarch(true);
         FitsFactory.setLongStringsEnabled(true);
         // We can read this card, even though the keyword is longer than allowed due to the missing
         // spaces around the '='.
-        HeaderCard hc = HeaderCard.create("HIERARCH ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ='&'"
-                + "CONTINUE 'continues here' / comment");
-        // But we should not be able to re-write this card.
-        hc.toString();
+        HeaderCard hc = HeaderCard.create("HIERARCH ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ=");
+        // We should not be able to set an empty string value...
+        hc.setValue("");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testRewriteLongStringHierarchExcept() {
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setLongStringsEnabled(true);
+        // We can read this card, even though the keyword is longer than allowed due to the missing
+        // spaces around the '='.
+        HeaderCard hc = HeaderCard.create("HIERARCH ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ=");
+        // But we should not be able to set a non-empty string value...
+        hc.setValue("boo!");
     }
 
     @Test
@@ -1334,7 +1329,7 @@ public class HeaderCardTest {
     @Test
     public void testSetValueExcept() throws Exception {
         FitsFactory.setUseHierarch(true);
-        HeaderCard hc = new HeaderCard("HIERARCH.ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ", 0);
+        HeaderCard hc = new HeaderCard("HIERARCH.ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ", 0);
 
         boolean thrown = false;
 
@@ -1954,4 +1949,86 @@ public class HeaderCardTest {
         Assert.assertEquals("", fmt.toHeaderString(". ."));
     }
 
+    @Test
+    public void testHierarchSpace() {
+        HeaderCard c = HeaderCard
+                .create("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PPP.QQQ.R=T");
+        Assert.assertEquals(1, c.spaceForValue());
+
+        c = HeaderCard.create("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PPP.QQQ='x'");
+        Assert.assertEquals(3, c.spaceForValue());
+    }
+
+    @Test
+    public void testSetLongEmptyString() {
+        FitsFactory.setLongStringsEnabled(true);
+        HeaderCard c = new HeaderCard("TEST", "blah", "empty string");
+        c.setValue("");
+        Assert.assertEquals("", c.getValue());
+    }
+
+    @Test
+    public void testChangeKeyLongString() {
+        FitsFactory.setLongStringsEnabled(true);
+        HeaderCard c = new HeaderCard("TEST", "blah", "empty string");
+
+        c.changeKey("TEST2");
+        Assert.assertEquals("TEST2", c.getKey());
+
+        FitsFactory.setLongStringsEnabled(false);
+        c.changeKey("TEST3");
+        Assert.assertEquals("TEST3", c.getKey());
+    }
+
+    @Test
+    public void testChangeKeyEmptyLongString() {
+        FitsFactory.setLongStringsEnabled(true);
+        HeaderCard c = new HeaderCard("TEST", "", "empty string");
+
+        c.changeKey("TEST2");
+        Assert.assertEquals("TEST2", c.getKey());
+    }
+
+    @Test(expected = LongValueException.class)
+    public void testChangeKeyLongStringExcept() {
+        FitsFactory.setLongStringsEnabled(true);
+        HeaderCard c = new HeaderCard("TEST", "abc", "no comment");
+        // No space for '&'...
+        c.changeKey("HIERARCH.TEST.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PPP");
+    }
+
+    @Test(expected = LongStringsNotEnabledException.class)
+    public void testChangeKeyNoLongStringExcept() {
+        FitsFactory.setLongStringsEnabled(false);
+        HeaderCard c = new HeaderCard("TEST", "abc", "no comment");
+        // No space for ''...
+        c.changeKey("HIERARCH.TEST.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PP");
+    }
+
+    @Test(expected = LongValueException.class)
+    public void testChangeKeyNumberExcept() {
+        HeaderCard c = new HeaderCard("TEST", "123", "no comment");
+        // No space for ''...
+        c.changeKey("HIERARCH.TEST.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PPP");
+    }
+
+    @Test(expected = LongValueException.class)
+    public void testNoLongStringExcept() {
+        FitsFactory.setLongStringsEnabled(true);
+        HeaderCard c = new HeaderCard("HIERARCH.TEST.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PP", "abc",
+                "no comment");
+        FitsFactory.setLongStringsEnabled(false);
+        c.toString();
+    }
+
+    @Test(expected = HeaderCardException.class)
+    public void testCreateInvalidStringExcept() {
+        HeaderCard c = new HeaderCard("TEST", "illegal \r\t in string value", "no comment");
+    }
+
+    @Test
+    public void testHierarchNullString() {
+        HeaderCard c = new HeaderCard("HIERARCH.TEST.AAA.BBB", (String) null, null);
+        Assert.assertEquals("HIERARCH TEST AAA BBB =", c.toString().trim());
+    }
 }
