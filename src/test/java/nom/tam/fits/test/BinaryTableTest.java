@@ -1772,4 +1772,36 @@ public class BinaryTableTest {
         return btab;
     }
 
+    @Test
+    public void scalarBitTest() throws Exception {
+        BinaryTable bt = new BinaryTable();
+        bt.addColumn(BinaryTable.ColumnDesc.createForScalars(boolean.class));
+        bt.addRowEntries(true);
+        // No exception
+    }
+
+    @Test
+    public void scalarLogicalTest() throws Exception {
+        BinaryTable bt = new BinaryTable();
+        bt.addColumn(BinaryTable.ColumnDesc.createForScalars(Boolean.class));
+        bt.addRowEntries(true);
+        // No exception
+    }
+
+    @Test(expected = ClassCastException.class)
+    public void scalarBitTestException() throws Exception {
+        BinaryTable bt = new BinaryTable();
+        bt.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(boolean.class, 2));
+        bt.addRowEntries(true);
+        // No exception
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void scalarLogicalTestException() throws Exception {
+        BinaryTable bt = new BinaryTable();
+        bt.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(Boolean.class, 2));
+        bt.addRowEntries(true);
+        // No exception
+    }
+
 }
