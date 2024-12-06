@@ -3618,10 +3618,18 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     private Object javaToFits1D(ColumnDesc c, Object o) throws FitsException {
 
         if (c.isBits()) {
+            if (o instanceof Boolean && c.isSingleton()) {
+                return FitsUtil.bitsToBytes(new boolean[] {(Boolean) o});
+            }
+
             return FitsUtil.bitsToBytes((boolean[]) o);
         }
 
         if (c.isLogical()) {
+            if (o instanceof Boolean && c.isSingleton()) {
+                return FitsUtil.booleansToBytes(new Boolean[] {(Boolean) o});
+            }
+
             // Convert true/false to 'T'/'F', or null to '\0'
             return FitsUtil.booleansToBytes(o);
         }
