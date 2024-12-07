@@ -43,9 +43,9 @@ public class FitsUtilTest {
 
     @Test
     public void singleBooleanToByte() throws Exception {
-        Assert.assertEquals((byte) 'T', (byte) FitsUtil.booleansToBytes(true));
-        Assert.assertEquals((byte) 'F', (byte) FitsUtil.booleansToBytes(false));
-        Assert.assertEquals((byte) 0, (byte) FitsUtil.booleansToBytes(null));
+        Assert.assertEquals((byte) 'T', ((byte[]) FitsUtil.booleansToBytes(true))[0]);
+        Assert.assertEquals((byte) 'F', ((byte[]) FitsUtil.booleansToBytes(false))[0]);
+        Assert.assertEquals((byte) 0, ((byte[]) FitsUtil.booleansToBytes(null))[0]);
     }
 
     @Test

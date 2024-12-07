@@ -446,4 +446,9 @@ public class ArrayFuncsTest {
         ArrayFuncs.slice(array, null, new int[] {4});
     }
 
+    @Test
+    public void booleanToArray() throws Exception {
+        Assert.assertEquals(boolean[].class, ArrayFuncs.objectToArray(true, false).getClass());
+        Assert.assertEquals(Boolean[].class, ArrayFuncs.objectToArray(true, true).getClass());
+    }
 }

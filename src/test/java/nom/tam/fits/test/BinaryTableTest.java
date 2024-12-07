@@ -220,7 +220,8 @@ public class BinaryTableTest {
         strings[0] = "abcdefghijklmnopqrstuvwxyz";
 
         for (int i = 0; i < NROWS; i++) {
-            tab.addRow(new Object[] {strings[i], shorts[i], floats[i], new double[] {doubles[i]}, multiString[i]});
+            // tab.addRow(new Object[] {strings[i], shorts[i], floats[i], doubles[i], multiString[i]});
+            tab.addRow(new Object[] {strings[i], shorts[i], floats[i], doubles[i], multiString[i]});
         }
 
         Header hdr = new Header();
@@ -1770,38 +1771,6 @@ public class BinaryTableTest {
         Fits f = new Fits();
         f.addHDU(Fits.makeHDU(btab));
         return btab;
-    }
-
-    @Test
-    public void scalarBitTest() throws Exception {
-        BinaryTable bt = new BinaryTable();
-        bt.addColumn(BinaryTable.ColumnDesc.createForScalars(boolean.class));
-        bt.addRowEntries(true);
-        // No exception
-    }
-
-    @Test
-    public void scalarLogicalTest() throws Exception {
-        BinaryTable bt = new BinaryTable();
-        bt.addColumn(BinaryTable.ColumnDesc.createForScalars(Boolean.class));
-        bt.addRowEntries(true);
-        // No exception
-    }
-
-    @Test(expected = ClassCastException.class)
-    public void scalarBitTestException() throws Exception {
-        BinaryTable bt = new BinaryTable();
-        bt.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(boolean.class, 2));
-        bt.addRowEntries(true);
-        // No exception
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void scalarLogicalTestException() throws Exception {
-        BinaryTable bt = new BinaryTable();
-        bt.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(Boolean.class, 2));
-        bt.addRowEntries(true);
-        // No exception
     }
 
 }

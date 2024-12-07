@@ -117,7 +117,7 @@ public final class FitsUtil {
      * 
      * @param  o a new array of <code>Boolean</code>
      * 
-     * @return   and array of FITS logical values with the same size and shape as the input
+     * @return   an array of FITS logical values with the same size and shape as the input
      * 
      * @see      #bytesToBooleanObjects(Object)
      * @see      #byteToBoolean(byte[])
@@ -126,11 +126,11 @@ public final class FitsUtil {
      */
     static Object booleansToBytes(Object o) {
         if (o == null) {
-            return FitsEncoder.byteForBoolean(null);
+            return new byte[] {FitsEncoder.byteForBoolean(null)};
         }
 
         if (o instanceof Boolean) {
-            return FitsEncoder.byteForBoolean((Boolean) o);
+            return new byte[] {FitsEncoder.byteForBoolean((Boolean) o)};
         }
 
         if (o instanceof boolean[]) {

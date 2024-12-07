@@ -5,6 +5,18 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+Changes coming to the next release, expected around 15 March 2025.
+
+### Fixed
+
+ - [#708] `BinaryTable.addRowEntries()` did not work with scalar `Boolean` or `boolean`. (by @attipaci, thanks to @johnmurphyastro) 
+ 
+ - [#710] `BinaryTable.addRow()` has some oddities and inconsistencies that resulted in unexpected behavior. (by @attipaci)
+
+
+
 ## [1.20.2] - 2024-12-01
 
 Minor bug-fix release.

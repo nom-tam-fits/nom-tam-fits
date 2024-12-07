@@ -1827,31 +1827,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * Converts a boxed table entry to an array.
-     * 
-     * @param  o             a boxed table entry or array of some kind
-     * 
-     * @return               an array object that wrap non-array arguments
-     * 
-     * @throws FitsException If the argument is not a valid FITS object
-     */
-    private static Object entryToColumnArray(Object o) throws FitsException {
-        o = boxedToArray(o);
-
-        if (o.getClass().isArray()) {
-            int[] dim = ArrayFuncs.getDimensions(o);
-
-            if (dim.length == 1 && dim[0] == 1) {
-                return o;
-            }
-        }
-
-        Object[] array = (Object[]) Array.newInstance(o.getClass(), 1);
-        array[0] = o;
-        return array;
-    }
-
-    /**
      * <p>
      * Adds a new column with the specified data array, with some default mappings. This method will always use
      * double-precision representation for {@link ComplexValue}-based data, and will represent <code>boolean</code>
@@ -1908,7 +1883,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *                    <code>boolean</code> arrays will stored as logical bytes, otherwise as packed bits.
      */
     private int addColumn(Object o, boolean compat) throws FitsException {
-        o = boxedToArray(o);
+        o = ArrayFuncs.objectToArray(o, compat);
 
         int rows = checkRowCount(o);
 
@@ -2177,29 +2152,61 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     @Override
     public int addRow(Object[] o) throws FitsException {
-        ensureData();
-
         if (columns.isEmpty()) {
             for (Object element : o) {
-
                 if (element == null) {
                     throw new TableException("Prototype row may not contain null");
                 }
 
-                addColumn(entryToColumnArray(element));
-            }
-        } else if (o.length != columns.size()) {
-            throw new TableException("Mismatched row size: " + o.length + ", expected " + columns.size());
-        } else {
-            Object[] flatRow = new Object[getNCols()];
+                Class<?> cl = element.getClass();
 
-            for (int i = 0; i < flatRow.length; i++) {
-                ColumnDesc c = columns.get(i);
-                flatRow[i] = c.isVariableSize() ? putOnHeap(c, o[i], null) : javaToFits1D(c, ArrayFuncs.flatten(o[i]));
+                if (cl.isArray()) {
+                    if (cl.getComponentType().isPrimitive() && Array.getLength(element) == 1) {
+                        // Primitives of 1 (e.g. short[1]) are wrapped and should be added as is.
+                        addColumn(element);
+                    } else {
+                        // Wrap into array of 1, as leading dimension becomes the number of rows, which must be 1...
+                        Object wrapped = Array.newInstance(element.getClass(), 1);
+                        Array.set(wrapped, 0, element);
+                        addColumn(wrapped);
+                    }
+                } else {
+                    addColumn(ArrayFuncs.objectToArray(element, true));
+                }
             }
-            table.addRow(flatRow);
-            nRow++;
+
+            return 1;
         }
+
+        if (o.length != columns.size()) {
+            throw new TableException("Mismatched row size: " + o.length + ", expected " + columns.size());
+        }
+
+        ensureData();
+
+        Object[] flatRow = new Object[getNCols()];
+
+        for (int i = 0; i < flatRow.length; i++) {
+            ColumnDesc c = columns.get(i);
+            if (c.isVariableSize()) {
+                flatRow[i] = putOnHeap(c, o[i], null);
+            } else {
+                flatRow[i] = javaToFits1D(c, ArrayFuncs.flatten(o[i]));
+
+                int nexp = c.getElementCount();
+                if (c.stringLength > 0) {
+                    nexp *= c.stringLength;
+                }
+
+                if (Array.getLength(flatRow[i]) != nexp) {
+                    throw new IllegalArgumentException("Mismatched element count for column " + i + ": got "
+                            + Array.getLength(flatRow[i]) + ", expected " + nexp);
+                }
+            }
+        }
+
+        table.addRow(flatRow);
+        nRow++;
 
         return nRow;
     }
@@ -3615,21 +3622,17 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @throws FitsException if the operation failed
      */
-    private Object javaToFits1D(ColumnDesc c, Object o) throws FitsException {
+    private static Object javaToFits1D(ColumnDesc c, Object o) throws FitsException {
 
         if (c.isBits()) {
             if (o instanceof Boolean && c.isSingleton()) {
+                // Scalar boxed boolean...
                 return FitsUtil.bitsToBytes(new boolean[] {(Boolean) o});
             }
-
             return FitsUtil.bitsToBytes((boolean[]) o);
         }
 
         if (c.isLogical()) {
-            if (o instanceof Boolean && c.isSingleton()) {
-                return FitsUtil.booleansToBytes(new Boolean[] {(Boolean) o});
-            }
-
             // Convert true/false to 'T'/'F', or null to '\0'
             return FitsUtil.booleansToBytes(o);
         }
@@ -3676,7 +3679,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             return FitsUtil.stringsToByteArray((String[]) o, c.getStringLength(), FitsUtil.BLANK_SPACE);
         }
 
-        return boxedToArray(o);
+        return ArrayFuncs.objectToArray(o, true);
     }
 
     /**
@@ -3756,45 +3759,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
         table = createColumnTable(data, sizes);
         nRow = rows;
-    }
-
-    private static Object boxedToArray(Object o) throws FitsException {
-        if (o.getClass().isArray()) {
-            return o;
-        }
-
-        // Convert boxed types to primitive arrays of 1.
-        if (o instanceof Number) {
-            if (o instanceof Byte) {
-                return new byte[] {(byte) o};
-            }
-            if (o instanceof Short) {
-                return new short[] {(short) o};
-            }
-            if (o instanceof Integer) {
-                return new int[] {(int) o};
-            }
-            if (o instanceof Long) {
-                return new long[] {(long) o};
-            }
-            if (o instanceof Float) {
-                return new float[] {(float) o};
-            }
-            if (o instanceof Double) {
-                return new double[] {(double) o};
-            }
-            throw new FitsException("Unsupported Number type: " + o.getClass());
-        }
-
-        if (o instanceof Boolean) {
-            return new Boolean[] {(Boolean) o};
-        }
-
-        if (o instanceof Character) {
-            return new char[] {(char) o};
-        }
-
-        return o;
     }
 
     /**
