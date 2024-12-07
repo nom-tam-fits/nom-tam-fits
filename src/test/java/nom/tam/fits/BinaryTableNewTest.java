@@ -48,6 +48,7 @@ import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.Quantizer;
+import nom.tam.util.TableException;
 
 @SuppressWarnings({"javadoc", "deprecation"})
 public class BinaryTableNewTest {
@@ -1207,7 +1208,7 @@ public class BinaryTableNewTest {
         Assert.assertEquals(double.class, tab.getDescriptor(7).getElementClass());
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testAddColumnNotArray() throws Exception {
         BinaryTable tab = new BinaryTable();
         tab.addColumn("abc");
@@ -2080,5 +2081,41 @@ public class BinaryTableNewTest {
         Assert.assertFalse(ColumnDesc.createForStrings(10, 2).isNumeric());
         Assert.assertFalse(ColumnDesc.createForFixedArrays(boolean.class, 2).isNumeric());
         Assert.assertFalse(ColumnDesc.createForFixedArrays(Boolean.class, 2).isNumeric());
+    }
+
+    @Test
+    public void scalarBitTest() throws Exception {
+        BinaryTable bt = new BinaryTable();
+        bt.addColumn(BinaryTable.ColumnDesc.createForScalars(boolean.class));
+        bt.addRowEntries(true);
+        // No exception
+    }
+
+    @Test
+    public void scalarLogicalTest() throws Exception {
+        BinaryTable bt = new BinaryTable();
+        bt.addColumn(BinaryTable.ColumnDesc.createForScalars(Boolean.class));
+        bt.addRowEntries(true);
+        // No exception
+    }
+
+    @Test(expected = ClassCastException.class)
+    public void scalarBitTestException() throws Exception {
+        BinaryTable bt = new BinaryTable();
+        bt.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(boolean.class, 2));
+        bt.addRowEntries(true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void scalarLogicalTestException() throws Exception {
+        BinaryTable bt = new BinaryTable();
+        bt.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(Boolean.class, 2));
+        bt.addRowEntries(true);
+    }
+
+    @Test(expected = TableException.class)
+    public void addVariableSizeColumnException() throws Exception {
+        BinaryTable bt = new BinaryTable();
+        bt.addVariableSizeColumn(true);
     }
 }
