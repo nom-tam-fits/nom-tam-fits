@@ -48,6 +48,7 @@ import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.Quantizer;
+import nom.tam.util.TableException;
 
 @SuppressWarnings({"javadoc", "deprecation"})
 public class BinaryTableNewTest {
@@ -2103,7 +2104,6 @@ public class BinaryTableNewTest {
         BinaryTable bt = new BinaryTable();
         bt.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(boolean.class, 2));
         bt.addRowEntries(true);
-        // No exception
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -2111,6 +2111,11 @@ public class BinaryTableNewTest {
         BinaryTable bt = new BinaryTable();
         bt.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(Boolean.class, 2));
         bt.addRowEntries(true);
-        // No exception
+    }
+
+    @Test(expected = TableException.class)
+    public void addVariableSizeColumnException() throws Exception {
+        BinaryTable bt = new BinaryTable();
+        bt.addVariableSizeColumn(true);
     }
 }
