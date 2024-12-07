@@ -220,7 +220,8 @@ public class BinaryTableTest {
         strings[0] = "abcdefghijklmnopqrstuvwxyz";
 
         for (int i = 0; i < NROWS; i++) {
-            tab.addRow(new Object[] {strings[i], shorts[i], floats[i], new double[] {doubles[i]}, multiString[i]});
+            // tab.addRow(new Object[] {strings[i], shorts[i], floats[i], doubles[i], multiString[i]});
+            tab.addRow(new Object[] {strings[i], shorts[i], floats[i], doubles[i], multiString[i]});
         }
 
         Header hdr = new Header();

@@ -1181,4 +1181,55 @@ public final class ArrayFuncs {
         return slice;
     }
 
+    /**
+     * Converts objects to arrays. If the object is already an array it is returned unchanged. Boxed primitives are
+     * returned as primitive arrays of 1. All other objects are wrapped into an array of 1 of the same type.
+     * <code>Boolean</code> values are somewhat special and are handled according to the second argument, either to
+     * produce a <code>boolean[1]</code> or else a <code>Boolean[1]</code>.
+     * 
+     * @param  o           The object
+     * @param  booleanAsObject Whether <code>Boolean</code> values should be converted <code>Boolean[1]</code> instead of
+     *                         <code>boolean[1]</code>.
+     * 
+     * @return             The input object, wrapped into an array as appropriate.
+     * 
+     * @since              1.21
+     */
+    public static Object objectToArray(Object o, boolean booleanAsObject) {
+        if (o.getClass().isArray()) {
+            return o;
+        }
+
+        // Convert boxed types to primitive arrays of 1.
+        if (o instanceof Number) {
+            if (o instanceof Byte) {
+                return new byte[] {(byte) o};
+            }
+            if (o instanceof Short) {
+                return new short[] {(short) o};
+            }
+            if (o instanceof Integer) {
+                return new int[] {(int) o};
+            }
+            if (o instanceof Long) {
+                return new long[] {(long) o};
+            }
+            if (o instanceof Float) {
+                return new float[] {(float) o};
+            }
+            if (o instanceof Double) {
+                return new double[] {(double) o};
+            }
+        } else if (o instanceof Boolean) {
+            return booleanAsObject ? new Boolean[] {(Boolean) o} : new boolean[] {(Boolean) o};
+        } else if (o instanceof Character) {
+            return new char[] {(Character) o};
+        }
+
+        Object array = Array.newInstance(o.getClass(), 1);
+        Array.set(array, 0, o);
+
+        return array;
+    }
+
 }
