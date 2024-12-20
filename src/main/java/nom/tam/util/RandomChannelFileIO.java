@@ -90,17 +90,17 @@ public class RandomChannelFileIO implements RandomAccessFileIO {
 
     @Override
     public FileDescriptor getFD() {
-        throw new UnsupportedOperationException("FileDescriptor is not supported for FileChannels.");
+        throw new UnsupportedOperationException("FileDescriptor is not implemented for FileChannels.");
     }
 
     @Override
     public void setLength(long l) {
-        throw new UnsupportedOperationException("Setting file length is not supported for FileChannels.");
+        throw new UnsupportedOperationException("Setting file length is not implemented for FileChannels.");
     }
 
     @Override
     public void writeUTF(String s) {
-        throw new UnsupportedOperationException("Write operation is not implemented for FileChannels.");
+        throw new UnsupportedOperationException("writeUTF operation is not implemented for FileChannels.");
     }
 
     @Override
@@ -128,7 +128,7 @@ public class RandomChannelFileIO implements RandomAccessFileIO {
 
     @Override
     public int read() {
-        throw new UnsupportedOperationException("read()");
+        throw new UnsupportedOperationException("read is not implemented for FileChannels.");
     }
 
     /**
@@ -153,7 +153,7 @@ public class RandomChannelFileIO implements RandomAccessFileIO {
 
     @Override
     public void write(int i) {
-        throw new UnsupportedOperationException("Write operation is not implemented for FileChannels.");
+        throw new UnsupportedOperationException("write is not implemented for FileChannels.");
     }
 
 

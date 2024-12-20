@@ -79,4 +79,142 @@ public class RandomChannelFileIOTest {
         final byte[] readBuffer = Files.readAllBytes(testPath);
         Assert.assertArrayEquals("Wrong bytes written", buffer, readBuffer);
     }
+
+    @Test
+    public void testLength() throws Exception {
+        final File tempFile = File.createTempFile("test", "tmp");
+        tempFile.deleteOnExit();
+
+        final byte[] buffer = "testdataforlength".getBytes(StandardCharsets.UTF_8);
+        try (final FileWriter fileWriter = new FileWriter(tempFile)) {
+            fileWriter.write(new String(buffer));
+        }
+
+        final Path testPath = tempFile.toPath();
+        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+            Assert.assertEquals("Wrong length", buffer.length, testSubject.length());
+        }
+    }
+
+    @Test
+    public void testPosition() throws Exception {
+        final File tempFile = File.createTempFile("test", "tmp");
+        tempFile.deleteOnExit();
+
+        final byte[] buffer = "testdataforposition".getBytes(StandardCharsets.UTF_8);
+        try (final FileWriter fileWriter = new FileWriter(tempFile)) {
+            fileWriter.write(new String(buffer));
+        }
+
+        final Path testPath = tempFile.toPath();
+        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+            testSubject.position(5);
+            Assert.assertEquals("Wrong position", 5, testSubject.position());
+        }
+    }
+
+    @Test
+    public void testClose() throws Exception {
+        final File tempFile = File.createTempFile("test", "tmp");
+        tempFile.deleteOnExit();
+
+        final Path testPath = tempFile.toPath();
+        final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath);
+        testSubject.close();
+
+        Assert.assertFalse("File channel not closed", testSubject.getChannel().isOpen());
+
+        final RandomChannelFileIO testSubject2 = new RandomChannelFileIO(0, null);
+        testSubject2.close();
+    }
+
+    @Test
+    public void testWrite() throws Exception {
+        final File tempFile = File.createTempFile("test", "tmp");
+        tempFile.deleteOnExit();
+
+        final Path testPath = tempFile.toPath();
+
+        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+            testSubject.write(0);
+            Assert.fail("Expected UnsupportedOperationException");
+        } catch (UnsupportedOperationException e) {
+            Assert.assertEquals("write is not implemented for FileChannels.", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testReadUTF() throws Exception {
+        final File tempFile = File.createTempFile("test", "tmp");
+        tempFile.deleteOnExit();
+
+        final Path testPath = tempFile.toPath();
+
+        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+            testSubject.readUTF();
+            Assert.fail("Expected UnsupportedOperationException");
+        } catch (UnsupportedOperationException e) {
+            Assert.assertEquals("readUTF is not implemented for FileChannels.", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetFD() throws Exception {
+        final File tempFile = File.createTempFile("test", "tmp");
+        tempFile.deleteOnExit();
+
+        final Path testPath = tempFile.toPath();
+
+        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+            testSubject.getFD();
+            Assert.fail("Expected UnsupportedOperationException");
+        } catch (UnsupportedOperationException e) {
+            Assert.assertEquals("FileDescriptor is not implemented for FileChannels.", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testSetLength() throws Exception {
+        final File tempFile = File.createTempFile("test", "tmp");
+        tempFile.deleteOnExit();
+
+        final Path testPath = tempFile.toPath();
+
+        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+            testSubject.setLength(3);
+            Assert.fail("Expected UnsupportedOperationException");
+        } catch (UnsupportedOperationException e) {
+            Assert.assertEquals("Setting file length is not implemented for FileChannels.", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testWriteUTF() throws Exception {
+        final File tempFile = File.createTempFile("test", "tmp");
+        tempFile.deleteOnExit();
+
+        final Path testPath = tempFile.toPath();
+
+        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+            testSubject.writeUTF("data");
+            Assert.fail("Expected UnsupportedOperationException");
+        } catch (UnsupportedOperationException e) {
+            Assert.assertEquals("writeUTF operation is not implemented for FileChannels.", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testRead() throws Exception {
+        final File tempFile = File.createTempFile("test", "tmp");
+        tempFile.deleteOnExit();
+
+        final Path testPath = tempFile.toPath();
+
+        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+            testSubject.read();
+            Assert.fail("Expected UnsupportedOperationException");
+        } catch (UnsupportedOperationException e) {
+            Assert.assertEquals("read is not implemented for FileChannels.", e.getMessage());
+        }
+    }
 }
