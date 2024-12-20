@@ -183,7 +183,7 @@ will parse all HDU headers but will typically skip over the data segments (notin
 Only when the user tries to access data from an HDU, will the library load that data from the previously noted file 
 position. The behavior allows to inspect the contents of a FITS file very quickly even when the file is large, and 
 reduces the need for IO when only parts of the whole are of interest to the user. Deferred input, however, is not 
-possible when the input is compressed or if it is uses an stream rather than a random-access `FitsFile`.
+possible when the input is compressed or if it is uses a stream rather than a random-access `FitsFile`.
 
 One thing to keep in mind with deferred reading is that you should not close your `Fits` or its random-accessible 
 input file before all the required data has been loaded. For example, the following will cause an error:
@@ -372,18 +372,24 @@ Since version __1.18__ it is also possible to stream cutouts, using the `Streami
 can be used with any source that implements the `RandomAccessFileIO` interface, which provides file-like random 
 access, for example for a resource on the Amazon S3 cloud:
 
-```java
-  import nom.tam.util.RandomAccessFileIO;
-
-  public final class S3RandomAccessFileIO implements RandomAccessFileIO {
-      // ...
-  }
+Maven (`pom.xml`) dependency:
+```xml
+<!-- https://mvnrepository.com/artifact/software.amazon.nio.s3/aws-java-nio-spi-for-s3 -->
+<dependency>
+    <groupId>software.amazon.nio.s3</groupId>
+    <artifactId>aws-java-nio-spi-for-s3</artifactId>
+    <version>2.2.0</version>
+</dependency>
 ```
 
-Below is an example code sketch for streaming image cutouts from a very large image residing on Amazon S3:
+Gradle (`build.gradle`) dependency:
+```groovy
+// https://mvnrepository.com/artifact/software.amazon.nio.s3/aws-java-nio-spi-for-s3
+implementation 'software.amazon.nio.s3:aws-java-nio-spi-for-s3:2.2.0'
+```
 
 ```java
-  Fits source = new Fits(new S3RandomAccessFileIO(...));
+  Fits source = new Fits(new RandomChannelFileIO(...));
   ImageHDU imageHDU = source.getHDU(...);
   
   // Manually set up the header for the cutout image as necessary
