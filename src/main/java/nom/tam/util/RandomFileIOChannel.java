@@ -2,9 +2,9 @@ package nom.tam.util;
 
 /*-
  * #%L
- * nom-tam-fits-s3
+ * nom-tam-fits
  * %%
- * Copyright (C) 2024 nom-tam-fits-s3
+ * Copyright (C) 2025 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  *
@@ -40,6 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,17 +51,17 @@ import java.util.logging.Logger;
  *
  * @see <a href="https://github.com/awslabs/aws-java-nio-spi-for-s3">AWS NIO SPI library</a>
  */
-public class RandomChannelFileIO implements RandomAccessFileIO {
-    private static final Logger LOGGER = LoggerHelper.getLogger(RandomChannelFileIO.class);
+public class RandomFileIOChannel implements RandomAccessFileIO {
+    private static final Logger LOGGER = LoggerHelper.getLogger(RandomFileIOChannel.class);
 
     private final long fileSize;
     private final FileChannel fileChannel;
 
-    public RandomChannelFileIO(final Path filePath) throws IOException {
+    public RandomFileIOChannel(final Path filePath) throws IOException {
         this(filePath, true);
     }
 
-    public RandomChannelFileIO(final Path filePath, final boolean readOnly) throws IOException {
+    public RandomFileIOChannel(final Path filePath, final boolean readOnly) throws IOException {
         this(Files.size(filePath), FileChannel.open(filePath, readOnly ? new OpenOption[]{StandardOpenOption.READ} :
                 new OpenOption[]{StandardOpenOption.READ, StandardOpenOption.WRITE}));
     }
@@ -71,9 +72,9 @@ public class RandomChannelFileIO implements RandomAccessFileIO {
      * @param fileSize    The size (length) of the file in bytes.
      * @param fileChannel The open channel to the file.
      */
-    RandomChannelFileIO(long fileSize, FileChannel fileChannel) {
+    RandomFileIOChannel(long fileSize, FileChannel fileChannel) {
         this.fileSize = fileSize;
-        this.fileChannel = fileChannel;
+        this.fileChannel = Objects.requireNonNull(fileChannel, "FileChannel cannot be null.");
     }
 
 
@@ -105,10 +106,7 @@ public class RandomChannelFileIO implements RandomAccessFileIO {
 
     @Override
     public void close() throws IOException {
-        // Just in case (i.e. this is a unit test running), check for null.
-        if (fileChannel != null) {
-            fileChannel.close();
-        }
+        fileChannel.close();
     }
 
     @Override

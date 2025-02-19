@@ -2,9 +2,9 @@ package nom.tam.util;
 
 /*-
  * #%L
- * nom-tam-fits-s3
+ * nom-tam-fits
  * %%
- * Copyright (C) 2024 nom-tam-fits-s3
+ * Copyright (C) 2025 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  *
@@ -40,10 +40,18 @@ import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 
-public class RandomChannelFileIOTest {
+public class RandomFileIOChannelTest {
+
+    @Test
+    public void testConstructor() throws Exception {
+        try (final RandomFileIOChannel _testSubject = new RandomFileIOChannel(0, null)) {
+            Assert.fail("Expected NullPointerException");
+        } catch (NullPointerException e) {
+            Assert.assertEquals("FileChannel cannot be null.", e.getMessage());
+        }
+    }
 
     @Test
     public void testReadCall() throws Exception {
@@ -57,7 +65,7 @@ public class RandomChannelFileIOTest {
         final Path testPath = tempFile.toPath();
         final int readLength = 2;
         final byte[] buffer = new byte[readLength];
-        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath)) {
+        try (final RandomFileIOChannel testSubject = new RandomFileIOChannel(testPath)) {
             testSubject.read(buffer, "te".getBytes(StandardCharsets.UTF_8).length, readLength);
         }
 
@@ -72,7 +80,7 @@ public class RandomChannelFileIOTest {
         final Path testPath = tempFile.toPath();
         final byte[] buffer = "testdataforwrite".getBytes(StandardCharsets.UTF_8);
 
-        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+        try (final RandomFileIOChannel testSubject = new RandomFileIOChannel(testPath, false)) {
             testSubject.write(buffer);
         }
 
@@ -91,7 +99,7 @@ public class RandomChannelFileIOTest {
         }
 
         final Path testPath = tempFile.toPath();
-        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+        try (final RandomFileIOChannel testSubject = new RandomFileIOChannel(testPath, false)) {
             Assert.assertEquals("Wrong length", buffer.length, testSubject.length());
         }
     }
@@ -107,7 +115,7 @@ public class RandomChannelFileIOTest {
         }
 
         final Path testPath = tempFile.toPath();
-        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+        try (final RandomFileIOChannel testSubject = new RandomFileIOChannel(testPath, false)) {
             testSubject.position(5);
             Assert.assertEquals("Wrong position", 5, testSubject.position());
         }
@@ -119,13 +127,10 @@ public class RandomChannelFileIOTest {
         tempFile.deleteOnExit();
 
         final Path testPath = tempFile.toPath();
-        final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath);
+        final RandomFileIOChannel testSubject = new RandomFileIOChannel(testPath);
         testSubject.close();
 
         Assert.assertFalse("File channel not closed", testSubject.getChannel().isOpen());
-
-        final RandomChannelFileIO testSubject2 = new RandomChannelFileIO(0, null);
-        testSubject2.close();
     }
 
     @Test
@@ -135,7 +140,7 @@ public class RandomChannelFileIOTest {
 
         final Path testPath = tempFile.toPath();
 
-        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+        try (final RandomFileIOChannel testSubject = new RandomFileIOChannel(testPath, false)) {
             testSubject.write(0);
             Assert.fail("Expected UnsupportedOperationException");
         } catch (UnsupportedOperationException e) {
@@ -150,7 +155,7 @@ public class RandomChannelFileIOTest {
 
         final Path testPath = tempFile.toPath();
 
-        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+        try (final RandomFileIOChannel testSubject = new RandomFileIOChannel(testPath, false)) {
             testSubject.readUTF();
             Assert.fail("Expected UnsupportedOperationException");
         } catch (UnsupportedOperationException e) {
@@ -165,7 +170,7 @@ public class RandomChannelFileIOTest {
 
         final Path testPath = tempFile.toPath();
 
-        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+        try (final RandomFileIOChannel testSubject = new RandomFileIOChannel(testPath, false)) {
             testSubject.getFD();
             Assert.fail("Expected UnsupportedOperationException");
         } catch (UnsupportedOperationException e) {
@@ -180,7 +185,7 @@ public class RandomChannelFileIOTest {
 
         final Path testPath = tempFile.toPath();
 
-        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+        try (final RandomFileIOChannel testSubject = new RandomFileIOChannel(testPath, false)) {
             testSubject.setLength(3);
             Assert.fail("Expected UnsupportedOperationException");
         } catch (UnsupportedOperationException e) {
@@ -195,7 +200,7 @@ public class RandomChannelFileIOTest {
 
         final Path testPath = tempFile.toPath();
 
-        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+        try (final RandomFileIOChannel testSubject = new RandomFileIOChannel(testPath, false)) {
             testSubject.writeUTF("data");
             Assert.fail("Expected UnsupportedOperationException");
         } catch (UnsupportedOperationException e) {
@@ -210,7 +215,7 @@ public class RandomChannelFileIOTest {
 
         final Path testPath = tempFile.toPath();
 
-        try (final RandomChannelFileIO testSubject = new RandomChannelFileIO(testPath, false)) {
+        try (final RandomFileIOChannel testSubject = new RandomFileIOChannel(testPath, false)) {
             testSubject.read();
             Assert.fail("Expected UnsupportedOperationException");
         } catch (UnsupportedOperationException e) {
