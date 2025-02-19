@@ -62,7 +62,9 @@ abstract class TileCompressionOperation extends AbstractTileOperation implements
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + getTileIndex() + "," + compressionType + "," + compressedOffset + ")";
+        synchronized (this) {
+            return getClass().getSimpleName() + "(" + getTileIndex() + "," + compressionType + "," + compressedOffset + ")";
+        }
     }
 
     private ByteBuffer convertToBuffer(Object data) {
@@ -78,7 +80,7 @@ abstract class TileCompressionOperation extends AbstractTileOperation implements
     protected void forceNoLoss(boolean value) {
     }
 
-    protected byte[] getCompressedData() {
+    protected synchronized byte[] getCompressedData() {
         byte[] data = new byte[compressedData.limit()];
         compressedData.rewind();
         ElementType.BYTE.getArray(compressedData, data);
@@ -89,7 +91,7 @@ abstract class TileCompressionOperation extends AbstractTileOperation implements
         return getTiledImageOperation().getCompressedWholeArea();
     }
 
-    protected TileCompressionType getCompressionType() {
+    protected synchronized TileCompressionType getCompressionType() {
         return compressionType;
     }
 
@@ -101,14 +103,14 @@ abstract class TileCompressionOperation extends AbstractTileOperation implements
         return getTiledImageOperation().getGzipCompressorControl();
     }
 
-    protected TileCompressionOperation initTileOptions() {
+    protected synchronized TileCompressionOperation initTileOptions() {
         tileOptions = getTiledImageOperation().compressOptions().copy() //
                 .setTileWidth(getTileBuffer().getWidth()) //
                 .setTileHeight(getTileBuffer().getHeight());
         return this;
     }
 
-    protected TileCompressionOperation setCompressed(Object data, TileCompressionType type) {
+    protected synchronized TileCompressionOperation setCompressed(Object data, TileCompressionType type) {
         if (data != null && Array.getLength(data) > 0) {
             compressionType = type;
             compressedData = convertToBuffer(data);
@@ -117,7 +119,7 @@ abstract class TileCompressionOperation extends AbstractTileOperation implements
         return this;
     }
 
-    protected TileCompressionOperation setCompressedOffset(int value) {
+    protected synchronized TileCompressionOperation setCompressedOffset(int value) {
         compressedOffset = value;
         return this;
     }
@@ -136,7 +138,7 @@ abstract class TileCompressionOperation extends AbstractTileOperation implements
      *
      * @param compressed the buffer that describes the whole image.
      */
-    protected void setWholeImageCompressedBuffer(ByteBuffer compressed) {
+    protected synchronized void setWholeImageCompressedBuffer(ByteBuffer compressed) {
         compressed.position(compressedOffset * getBaseType().size());
         compressedData = compressed.slice();
         compressedOffset = 0;

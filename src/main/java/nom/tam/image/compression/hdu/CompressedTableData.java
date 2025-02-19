@@ -305,7 +305,7 @@ public class CompressedTableData extends BinaryTable {
      * 
      * @return the number of table rows compressed together as a block.
      */
-    protected final int getRowsPerTile() {
+    protected final synchronized int getRowsPerTile() {
         return rowsPerTile;
     }
 
@@ -348,7 +348,7 @@ public class CompressedTableData extends BinaryTable {
      * {@link CompressedTableHDU}.
      */
     @SuppressWarnings("javadoc")
-    protected CompressedTableData setRowsPerTile(int value) {
+    protected synchronized CompressedTableData setRowsPerTile(int value) {
         rowsPerTile = value;
         return this;
     }
