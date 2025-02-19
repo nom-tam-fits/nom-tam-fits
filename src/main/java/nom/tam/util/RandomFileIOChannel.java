@@ -31,7 +31,6 @@ package nom.tam.util;
  * #L%
  */
 
-
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -45,11 +44,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Concrete implementation of RandomAccessFileIO for FileChannels.  This is a generic implementation using the Java
- * FileChannel API.
- * An example of an implementation of the underlying FileChannel is the NIO SPI file system provider to Amazon S3.
+ * Concrete implementation of the {@link RandomAccessFileIO} interface for {@link FileChannel}s. It allows
+ * <code>FileChannel</code> resources containing FITS files to be fully accessible for the nom-tam-fits library. This
+ * class provides a generic implementation, which may be used, for example, with the NIO SPI file system provider to
+ * Amazon S3.
  *
- * @see <a href="https://github.com/awslabs/aws-java-nio-spi-for-s3">AWS NIO SPI library</a>
+ * @author Dustin Jenkins
+ * 
+ * @since  1.21
+ *
+ * @see    <a href="https://github.com/awslabs/aws-java-nio-spi-for-s3">AWS NIO SPI library</a>
  */
 public class RandomFileIOChannel implements RandomAccessFileIO {
     private static final Logger LOGGER = LoggerHelper.getLogger(RandomFileIOChannel.class);
@@ -57,17 +61,47 @@ public class RandomFileIOChannel implements RandomAccessFileIO {
     private final long fileSize;
     private final FileChannel fileChannel;
 
+    /**
+     * Constructor for a readable/writable random accessible {@link FileChannel}, which can be used for accessing FITS
+     * files.
+     * 
+     * @param  filePath    The path to the file
+     * 
+     * @throws IOException if the file is not accessible
+     * 
+     * @author             Dustin Jenkins
+     * 
+     * @since              1.21
+     * 
+     * @see                #RandomFileIOChannel(Path, boolean)
+     */
     public RandomFileIOChannel(final Path filePath) throws IOException {
         this(filePath, true);
     }
 
+    /**
+     * Constructor for a random accessible {@link FileChannel}, for reading or for reading and writing. It may be used
+     * for accessing FITS files.
+     * 
+     * @param  filePath    The path to the file
+     * @param  readOnly    <code>true</code> if the file should only be used for reading, otherwise <code>false</code>.
+     * 
+     * @throws IOException if the file is not accessible
+     * 
+     * @author             Dustin Jenkins
+     * 
+     * @since              1.21
+     * 
+     * @see                #RandomFileIOChannel(Path, boolean)
+     */
+    @SuppressWarnings("resource")
     public RandomFileIOChannel(final Path filePath, final boolean readOnly) throws IOException {
-        this(Files.size(filePath), FileChannel.open(filePath, readOnly ? new OpenOption[]{StandardOpenOption.READ} :
-                new OpenOption[]{StandardOpenOption.READ, StandardOpenOption.WRITE}));
+        this(Files.size(filePath), FileChannel.open(filePath, readOnly ? new OpenOption[] {StandardOpenOption.READ} :
+                new OpenOption[] {StandardOpenOption.READ, StandardOpenOption.WRITE}));
     }
 
     /**
-     * Used for testing purposes.
+     * (<i>for internal use</i>) for testing purposes only.
      *
      * @param fileSize    The size (length) of the file in bytes.
      * @param fileChannel The open channel to the file.
@@ -76,7 +110,6 @@ public class RandomFileIOChannel implements RandomAccessFileIO {
         this.fileSize = fileSize;
         this.fileChannel = Objects.requireNonNull(fileChannel, "FileChannel cannot be null.");
     }
-
 
     // Read UTF string (mock implementation)
     @Override
@@ -132,10 +165,12 @@ public class RandomFileIOChannel implements RandomAccessFileIO {
     /**
      * Read bytes from the file channel, starting at offset for readLength bytes.
      *
-     * @param bytes      The byte array to read into.
-     * @param offset     The offset in the FileChannel to start reading.
-     * @param readLength The number of bytes to read.
-     * @return The number of bytes read.
+     * @param  bytes       The byte array to read into.
+     * @param  offset      The offset in the FileChannel to start reading.
+     * @param  readLength  The number of bytes to read.
+     * 
+     * @return             The number of bytes read.
+     * 
      * @throws IOException If an error occurs reading from the FileChannel.
      */
     @Override
@@ -154,14 +189,14 @@ public class RandomFileIOChannel implements RandomAccessFileIO {
         throw new UnsupportedOperationException("write is not implemented for FileChannels.");
     }
 
-
     /**
      * Write bytes to the file channel.
      *
-     * @param bytes       The byte array to write.
-     * @param offset        The offset in the FileChannel to start writing from.
-     * @param writeLength   The number of bytes to write.
-     * @throws IOException  If an error occurs writing to the FileChannel.
+     * @param  bytes       The byte array to write.
+     * @param  offset      The offset in the FileChannel to start writing from.
+     * @param  writeLength The number of bytes to write.
+     * 
+     * @throws IOException If an error occurs writing to the FileChannel.
      */
     @Override
     public void write(byte[] bytes, int offset, int writeLength) throws IOException {
