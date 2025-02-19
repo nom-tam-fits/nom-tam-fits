@@ -62,6 +62,8 @@ import nom.tam.util.FitsOutputStream;
 import static nom.tam.fits.header.Compression.ZIMAGE;
 import static nom.tam.fits.header.Standard.BLANK;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * <p>
  * A header-data unit (HDU) containing a compressed image. A compressed image is a normal binary table with some
@@ -202,6 +204,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
      * @return         <CODE>true</CODE> if this HDU has a valid header.
      */
     @Deprecated
+    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     public static boolean isHeader(Header hdr) {
         return hdr.getBooleanValue(ZIMAGE, false);
     }
@@ -469,6 +472,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
 
     @Override
     @Deprecated
+    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     public boolean isHeader() {
         return super.isHeader() && isHeader(myHeader);
     }

@@ -53,6 +53,8 @@ import static nom.tam.fits.header.Standard.TUNITn;
 import static nom.tam.fits.header.Standard.TZEROn;
 import static nom.tam.fits.header.Standard.XTENSION;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Binary table header/data unit.
  * 
@@ -142,6 +144,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      *
      * @deprecated   (<i>for internal use</i>) Will reduce visibility in the future
      */
+    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     @Deprecated
     public static boolean isData(Object o) {
         return o instanceof nom.tam.util.ColumnTable || o instanceof Object[][] || o instanceof Object[];
@@ -156,6 +159,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      *
      * @return            <CODE>true</CODE> if this is a binary table header.
      */
+    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     @Deprecated
     public static boolean isHeader(Header header) {
         String xten = header.getStringValue(XTENSION);
