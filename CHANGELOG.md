@@ -15,6 +15,10 @@ Changes coming to the next release, expected around 15 March 2025.
  
  - [#710] `BinaryTable.addRow()` has some oddities and inconsistencies that resulted in unexpected behavior. (by @attipaci)
 
+### Added
+
+ - [717] New `RandomFileIOChannel` class, which wraps `FileChannel` objects to provide `RandomAccessFileIO` for FITS files. You might use it to access FITS files efficinetly on as Amazon S3, or other cloud resources. (by @at88mph)
+
 ### Changed
 
  - [#722] Synchronization fixed for issues detected by latest spotbugs. These should improve thread safety, especially of binary
