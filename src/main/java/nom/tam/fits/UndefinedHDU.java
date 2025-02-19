@@ -37,6 +37,8 @@ import nom.tam.fits.header.Standard;
 
 import static nom.tam.fits.header.Standard.XTENSION;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * A HDU that holds a type of data we don't recognise. We can still access that data in its raw binary form, and the
  * user can interpret the headers to make sense of particular but not (yet) supported FITS HDU types.
@@ -76,6 +78,7 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      *                   We cannot wrap arbitrary data objects since we do not have a generic recipe for converting
      *                   these into binary form.
      */
+    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     @Deprecated
     public static boolean isData(Object o) {
         return o instanceof byte[];
@@ -91,6 +94,7 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      *
      * @return         <CODE>true</CODE> if this HDU has a valid header.
      */
+    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     @Deprecated
     public static boolean isHeader(Header hdr) {
         if (ImageHDU.isHeader(hdr)) {

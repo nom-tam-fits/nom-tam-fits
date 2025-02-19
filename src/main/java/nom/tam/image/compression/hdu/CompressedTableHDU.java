@@ -44,6 +44,8 @@ import nom.tam.util.type.ElementType;
 
 import static nom.tam.fits.header.Compression.ZTABLE;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * A header-data unit (HDU) containing a compressed binary table. A compressed table is still a binary table but with
  * some additional constraints. The original table is divided into groups of rows (tiles) and each tile is compressed on
@@ -224,6 +226,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @return         <CODE>true</CODE> if this HDU has a valid header.
      */
     @Deprecated
+    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     public static boolean isHeader(Header hdr) {
         return hdr.getBooleanValue(ZTABLE, false);
     }

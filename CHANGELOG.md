@@ -15,6 +15,10 @@ Changes coming to the next release, expected around 15 March 2025.
  
  - [#710] `BinaryTable.addRow()` has some oddities and inconsistencies that resulted in unexpected behavior. (by @attipaci)
 
+### Changed
+
+ - [#722] Synchronization fixed for issues detected by latest spotbugs. These should improve thread safety, especially of binary
+   tables and compressed tables.
 
 
 ## [1.20.2] - 2024-12-01

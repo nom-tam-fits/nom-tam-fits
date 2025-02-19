@@ -53,6 +53,8 @@ import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Random groups header/data unit. Random groups were an early attempt at extending FITS support beyond images, and was
  * eventually superseded by binary tables, which offer the same functionality and more in a more generic way. The use of
@@ -140,6 +142,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      *
      * @return                   is this data compatible with Random Groups structure
      */
+    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     @Deprecated
     public static boolean isData(Object potentialData) {
         if (potentialData instanceof Object[][]) {
@@ -162,6 +165,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      *
      * @param      hdr The header to be tested.
      */
+    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     @Deprecated
     public static boolean isHeader(Header hdr) {
 

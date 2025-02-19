@@ -50,6 +50,8 @@ import static nom.tam.fits.header.Standard.TZEROn;
 import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.fits.header.Standard.XTENSION_ASCIITABLE;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * ASCII table header/data unit. ASCII table HDUs were desgined for human readability, e.g. on a console, without any
  * special tools. However, they are far less flexible or compact than {@link BinaryTableHDU}. As such, users are
@@ -108,6 +110,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      *
      * @param      o object representing the data
      */
+    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     @Deprecated
     public static boolean isData(Object o) {
 
@@ -136,6 +139,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      *
      * @return            <CODE>true</CODE> if this is an ascii table header.
      */
+    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     @Deprecated
     public static boolean isHeader(Header header) {
         String xtension = header.getStringValue(XTENSION);

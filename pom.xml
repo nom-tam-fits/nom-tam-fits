@@ -395,7 +395,7 @@
           <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
-            <version>10.21.0</version>
+            <version>10.21.2</version>
           </dependency>
         </dependencies>
         <executions>
@@ -473,7 +473,7 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>4.8.6.6</version>
+        <version>4.9.1.0</version>
         <executions>
           <execution>
             <goals>
@@ -579,7 +579,7 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>4.8.6.6</version>
+        <version>4.9.1.0</version>
         <configuration>
           <!-- Skip bug warnings for EI_EXPOSE_REP and EI_EXPOSE_REP2
                we know we exposse some internal data of our classes -->
@@ -714,7 +714,7 @@
     <dependency>
       <groupId>com.github.spotbugs</groupId>
       <artifactId>spotbugs-annotations</artifactId>
-      <version>4.8.6</version>
+      <version>4.9.1</version>
       <scope>compile</scope>
     </dependency>
    
