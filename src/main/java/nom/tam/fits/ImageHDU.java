@@ -47,6 +47,8 @@ import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.util.LoggerHelper.getLogger;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Header/data unit for images. Image HDUs are suitable for storing monolithic regular numerical arrays in 1 to 255
  * dimensions, such as a <code>double[]</code>, <code>float[][]</code>, or <code>short[][][]</code>. ((FITS supports up
@@ -89,6 +91,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
      *
      * @param      o The Object being tested.
      */
+    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     @Deprecated
     public static boolean isData(Object o) {
         try {
@@ -108,6 +111,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
      *
      * @return         <CODE>true</CODE> if this HDU has a valid header.
      */
+    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     @Deprecated
     public static boolean isHeader(Header hdr) {
         boolean found = hdr.getBooleanValue(SIMPLE);

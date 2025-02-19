@@ -74,7 +74,7 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
         orig = table;
     }
 
-    private void decompressVariable() throws IOException {
+    private synchronized void decompressVariable() throws IOException {
         int nRows = rowEnd - rowStart;
         boolean longPointers = orig.getDescriptor(targetColumn).hasLongPointers();
 
@@ -153,7 +153,7 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
         }
     }
 
-    private void decompressTableTile() throws IOException {
+    private synchronized void decompressTableTile() throws IOException {
         ByteBuffer zip = ByteBuffer.wrap((byte[]) compressed.getElement(getTileIndex(), column));
         ByteBuffer buf = ByteBuffer.allocateDirect(getUncompressedSizeInBytes());
 
@@ -168,12 +168,14 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
     @Override
     public void run() {
         try {
-            if (orig != null && orig.getDescriptor(targetColumn).isVariableSize()) {
-                // binary table with variable sized column
-                decompressVariable();
-            } else {
-                // regular column table (fixed width columns)
-                decompressTableTile();
+            synchronized (this) {
+                if (orig != null && orig.getDescriptor(targetColumn).isVariableSize()) {
+                    // binary table with variable sized column
+                    decompressVariable();
+                } else {
+                    // regular column table (fixed width columns)
+                    decompressTableTile();
+                }
             }
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage(), e);
@@ -192,7 +194,7 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
      * 
      * @since      1.18
      */
-    public BinaryTableTileDecompressor decompressToColumn(int col) {
+    public synchronized BinaryTableTileDecompressor decompressToColumn(int col) {
         targetColumn = col;
         return this;
     }

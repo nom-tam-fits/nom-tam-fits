@@ -70,7 +70,7 @@ public class TileCompressor extends TileCompressionOperation {
      * lets close the gaps in the data as soon as the previous tiles are also compressed. the compressed data of the
      * first tile is used to append the complete block.
      */
-    private void compactCompressedData() {
+    private synchronized void compactCompressedData() {
         if (getTileIndex() > 0) {
             // wait for the previous tile to finish.
             getPreviousTileOperation().waitForResult();
@@ -84,7 +84,7 @@ public class TileCompressor extends TileCompressionOperation {
         }
     }
 
-    private void compress() {
+    private synchronized void compress() {
         initTileOptions();
 
         compressedData.limit(getTileBuffer().getPixelSize() * getBaseType().size());
@@ -127,7 +127,7 @@ public class TileCompressor extends TileCompressionOperation {
         compactCompressedData();
     }
 
-    private void replaceCompressedBufferWithTargetArea(ByteBuffer compressedWholeArea) {
+    private synchronized void replaceCompressedBufferWithTargetArea(ByteBuffer compressedWholeArea) {
         int compressedSize = compressedData.limit();
         int latest = compressedWholeArea.position();
         compressedWholeArea.position(compressedOffset);
@@ -137,7 +137,7 @@ public class TileCompressor extends TileCompressionOperation {
     }
 
     @Override
-    protected NullPixelMaskPreserver createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
+    protected synchronized NullPixelMaskPreserver createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
         if (imageNullPixelMask != null) {
             nullPixelMaskPerserver = imageNullPixelMask.createTilePreserver(getTileBuffer(), getTileIndex());
         }
@@ -145,7 +145,7 @@ public class TileCompressor extends TileCompressionOperation {
     }
 
     @Override
-    protected void forceNoLoss(boolean value) {
+    protected synchronized void forceNoLoss(boolean value) {
         forceNoLoss = value;
     }
 }

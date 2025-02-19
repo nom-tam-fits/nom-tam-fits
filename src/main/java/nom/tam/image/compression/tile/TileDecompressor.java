@@ -70,7 +70,7 @@ public class TileDecompressor extends TileCompressionOperation {
         getTileBuffer().finish();
     }
 
-    private void decompress() {
+    private synchronized void decompress() {
         initTileOptions();
 
         tileOptions.getCompressionParameters().setTileIndex(getTileIndex());
@@ -94,7 +94,7 @@ public class TileDecompressor extends TileCompressionOperation {
     }
 
     @Override
-    protected NullPixelMaskRestorer createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
+    protected synchronized NullPixelMaskRestorer createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
         if (imageNullPixelMask != null) {
             nullPixelMaskRestorer = imageNullPixelMask.createTileRestorer(getTileBuffer(), getTileIndex());
         }
