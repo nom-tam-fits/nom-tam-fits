@@ -44,19 +44,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Concrete implementation of the {@link RandomAccessFileIO} interface for {@link FileChannel}s. It allows
- * <code>FileChannel</code> resources containing FITS files to be fully accessible for the nom-tam-fits library. This
- * class provides a generic implementation, which may be used, for example, with the NIO SPI file system provider to
- * Amazon S3.
+ * A random accessible {@link FileChannel} implementation for FITS I/O purposes. It allows for resources that are not
+ * local files, but which provide file-like access through a <code>FileChannel</code> object, to become usable by the
+ * nom-tam-fits library. This class provides a generic implementation, which may be used, for example, with the NIO SPI
+ * file system provider to Amazon S3.
  *
- * @author Dustin Jenkins
+ * @author Dustin Jenkins, Attila Kovacs
  * 
  * @since  1.21
  *
  * @see    <a href="https://github.com/awslabs/aws-java-nio-spi-for-s3">AWS NIO SPI library</a>
  */
-public class RandomFileIOChannel implements RandomAccessFileIO {
-    private static final Logger LOGGER = LoggerHelper.getLogger(RandomFileIOChannel.class);
+public class RandomAccessFileChannel implements RandomAccessFileIO {
+    private static final Logger LOGGER = LoggerHelper.getLogger(RandomAccessFileChannel.class);
 
     private final long fileSize;
     private final FileChannel fileChannel;
@@ -73,9 +73,9 @@ public class RandomFileIOChannel implements RandomAccessFileIO {
      * 
      * @since              1.21
      * 
-     * @see                #RandomFileIOChannel(Path, boolean)
+     * @see                #RandomAccessFileChannel(Path, boolean)
      */
-    public RandomFileIOChannel(final Path filePath) throws IOException {
+    public RandomAccessFileChannel(final Path filePath) throws IOException {
         this(filePath, true);
     }
 
@@ -92,10 +92,10 @@ public class RandomFileIOChannel implements RandomAccessFileIO {
      * 
      * @since              1.21
      * 
-     * @see                #RandomFileIOChannel(Path, boolean)
+     * @see                #RandomAccessFileChannel(Path, boolean)
      */
     @SuppressWarnings("resource")
-    public RandomFileIOChannel(final Path filePath, final boolean readOnly) throws IOException {
+    public RandomAccessFileChannel(final Path filePath, final boolean readOnly) throws IOException {
         this(Files.size(filePath), FileChannel.open(filePath, readOnly ? new OpenOption[] {StandardOpenOption.READ} :
                 new OpenOption[] {StandardOpenOption.READ, StandardOpenOption.WRITE}));
     }
@@ -106,7 +106,7 @@ public class RandomFileIOChannel implements RandomAccessFileIO {
      * @param fileSize    The size (length) of the file in bytes.
      * @param fileChannel The open channel to the file.
      */
-    RandomFileIOChannel(long fileSize, FileChannel fileChannel) {
+    RandomAccessFileChannel(long fileSize, FileChannel fileChannel) {
         this.fileSize = fileSize;
         this.fileChannel = Objects.requireNonNull(fileChannel, "FileChannel cannot be null.");
     }
@@ -118,7 +118,7 @@ public class RandomFileIOChannel implements RandomAccessFileIO {
     }
 
     @Override
-    public FileChannel getChannel() {
+    public final FileChannel getChannel() {
         return this.fileChannel;
     }
 
@@ -143,17 +143,17 @@ public class RandomFileIOChannel implements RandomAccessFileIO {
     }
 
     @Override
-    public long position() throws IOException {
+    public final long position() throws IOException {
         return fileChannel.position();
     }
 
     @Override
-    public void position(long l) throws IOException {
+    public final void position(long l) throws IOException {
         fileChannel.position(l);
     }
 
     @Override
-    public long length() {
+    public final long length() {
         return this.fileSize;
     }
 
@@ -163,7 +163,7 @@ public class RandomFileIOChannel implements RandomAccessFileIO {
     }
 
     /**
-     * Read bytes from the file channel, starting at offset for readLength bytes.
+     * Read bytes from the underlying file channel.
      *
      * @param  bytes       The byte array to read into.
      * @param  offset      The offset in the FileChannel to start reading.
@@ -190,7 +190,7 @@ public class RandomFileIOChannel implements RandomAccessFileIO {
     }
 
     /**
-     * Write bytes to the file channel.
+     * Write bytes to the underlying file channel.
      *
      * @param  bytes       The byte array to write.
      * @param  offset      The offset in the FileChannel to start writing from.
