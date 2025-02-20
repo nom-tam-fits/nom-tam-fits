@@ -78,7 +78,7 @@
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">     * lets close the gaps in the data as soon as the previous tiles are also compressed. the compressed data of the</em>
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">     * first tile is used to append the complete block.</em>
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> compactCompressedData() {
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> compactCompressedData() {
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>          <strong class="jxr_keyword">if</strong> (getTileIndex() &gt; 0) {
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>              <em class="jxr_comment">// wait for the previous tile to finish.</em>
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>              getPreviousTileOperation().waitForResult();
@@ -92,7 +92,7 @@
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>          }
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>      }
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> compress() {
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> compress() {
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>          initTileOptions();
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>          compressedData.limit(getTileBuffer().getPixelSize() * getBaseType().size());
@@ -135,7 +135,7 @@
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>         compactCompressedData();
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>     }
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> 
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> replaceCompressedBufferWithTargetArea(ByteBuffer compressedWholeArea) {
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> replaceCompressedBufferWithTargetArea(ByteBuffer compressedWholeArea) {
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>         <strong class="jxr_keyword">int</strong> compressedSize = compressedData.limit();
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>         <strong class="jxr_keyword">int</strong> latest = compressedWholeArea.position();
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>         compressedWholeArea.position(compressedOffset);
@@ -145,7 +145,7 @@
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>     }
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> 
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>     @Override
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>     <strong class="jxr_keyword">protected</strong> <a name="NullPixelMaskPreserver" href="../../../../../nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.html#NullPixelMaskPreserver">NullPixelMaskPreserver</a> createImageNullPixelMask(<a name="ImageNullPixelMask" href="../../../../../nom/tam/image/compression/tile/mask/ImageNullPixelMask.html#ImageNullPixelMask">ImageNullPixelMask</a> imageNullPixelMask) {
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <a name="NullPixelMaskPreserver" href="../../../../../nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.html#NullPixelMaskPreserver">NullPixelMaskPreserver</a> createImageNullPixelMask(<a name="ImageNullPixelMask" href="../../../../../nom/tam/image/compression/tile/mask/ImageNullPixelMask.html#ImageNullPixelMask">ImageNullPixelMask</a> imageNullPixelMask) {
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>         <strong class="jxr_keyword">if</strong> (imageNullPixelMask != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>             nullPixelMaskPerserver = imageNullPixelMask.createTilePreserver(getTileBuffer(), getTileIndex());
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>         }
@@ -153,12 +153,12 @@
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>     }
 <a class="jxr_linenumber" name="L146" href="#L146">146</a> 
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>     @Override
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> forceNoLoss(<strong class="jxr_keyword">boolean</strong> value) {
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> forceNoLoss(<strong class="jxr_keyword">boolean</strong> value) {
 <a class="jxr_linenumber" name="L149" href="#L149">149</a>         forceNoLoss = value;
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>     }
 <a class="jxr_linenumber" name="L151" href="#L151">151</a> }
 </pre>
 <hr/>
-<div id="footer">© 1996–2024 nom-tam-fits</div>
+<div id="footer">© 1996–2025 nom-tam-fits</div>
 </body>
 </html>

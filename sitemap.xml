@@ -865,6 +865,9 @@
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/apidocs/nom/tam/util/RandomAccess.html</loc>
     </url>
     <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/apidocs/nom/tam/util/RandomAccessFileChannel.html</loc>
+    </url>
+    <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/apidocs/nom/tam/util/RandomAccessFileIO.html</loc>
     </url>
     <url>
@@ -1040,6 +1043,9 @@
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/apidocs/nom/tam/util/class-use/RandomAccess.html</loc>
+    </url>
+    <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/apidocs/nom/tam/util/class-use/RandomAccessFileChannel.html</loc>
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/apidocs/nom/tam/util/class-use/RandomAccessFileIO.html</loc>
@@ -1900,6 +1906,9 @@
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/util/RandomAccess.html</loc>
     </url>
     <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/util/RandomAccessFileChannel.html</loc>
+    </url>
+    <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref/nom/tam/util/RandomAccessFileIO.html</loc>
     </url>
     <url>
@@ -2435,6 +2444,9 @@
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/util/QuantizerTest.html</loc>
+    </url>
+    <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/util/RandomAccessFileChannelTest.html</loc>
     </url>
     <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/xref-test/nom/tam/util/TestArrayFuncs.html</loc>

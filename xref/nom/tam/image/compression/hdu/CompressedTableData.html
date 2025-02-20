@@ -313,7 +313,7 @@
 <a class="jxr_linenumber" name="L305" href="#L305">305</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L306" href="#L306">306</a> <em class="jxr_javadoccomment">     * @return the number of table rows compressed together as a block.</em>
 <a class="jxr_linenumber" name="L307" href="#L307">307</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> getRowsPerTile() {
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">int</strong> getRowsPerTile() {
 <a class="jxr_linenumber" name="L309" href="#L309">309</a>         <strong class="jxr_keyword">return</strong> rowsPerTile;
 <a class="jxr_linenumber" name="L310" href="#L310">310</a>     }
 <a class="jxr_linenumber" name="L311" href="#L311">311</a> 
@@ -356,13 +356,13 @@
 <a class="jxr_linenumber" name="L348" href="#L348">348</a> <em class="jxr_javadoccomment">     * {@link CompressedTableHDU}.</em>
 <a class="jxr_linenumber" name="L349" href="#L349">349</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L350" href="#L350">350</a>     @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>     <strong class="jxr_keyword">protected</strong> <a name="CompressedTableData" href="../../../../../nom/tam/image/compression/hdu/CompressedTableData.html#CompressedTableData">CompressedTableData</a> setRowsPerTile(<strong class="jxr_keyword">int</strong> value) {
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <a name="CompressedTableData" href="../../../../../nom/tam/image/compression/hdu/CompressedTableData.html#CompressedTableData">CompressedTableData</a> setRowsPerTile(<strong class="jxr_keyword">int</strong> value) {
 <a class="jxr_linenumber" name="L352" href="#L352">352</a>         rowsPerTile = value;
 <a class="jxr_linenumber" name="L353" href="#L353">353</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L354" href="#L354">354</a>     }
 <a class="jxr_linenumber" name="L355" href="#L355">355</a> }
 </pre>
 <hr/>
-<div id="footer">© 1996–2024 nom-tam-fits</div>
+<div id="footer">© 1996–2025 nom-tam-fits</div>
 </body>
 </html>

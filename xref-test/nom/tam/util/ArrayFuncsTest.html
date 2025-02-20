@@ -454,9 +454,14 @@
 <a class="jxr_linenumber" name="L446" href="#L446">446</a>         ArrayFuncs.slice(array, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {4});
 <a class="jxr_linenumber" name="L447" href="#L447">447</a>     }
 <a class="jxr_linenumber" name="L448" href="#L448">448</a> 
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> }
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>     @Test
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> booleanToArray() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>         Assert.assertEquals(<strong class="jxr_keyword">boolean</strong>[].<strong class="jxr_keyword">class</strong>, ArrayFuncs.objectToArray(<strong class="jxr_keyword">true</strong>, false).getClass());
+<a class="jxr_linenumber" name="L452" href="#L452">452</a>         Assert.assertEquals(Boolean[].<strong class="jxr_keyword">class</strong>, ArrayFuncs.objectToArray(<strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">true</strong>).getClass());
+<a class="jxr_linenumber" name="L453" href="#L453">453</a>     }
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> }
 </pre>
 <hr/>
-<div id="footer">© 1996–2024 nom-tam-fits</div>
+<div id="footer">© 1996–2025 nom-tam-fits</div>
 </body>
 </html>

@@ -125,7 +125,7 @@
 <a class="jxr_linenumber" name="L117" href="#L117">117</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L118" href="#L118">118</a> <em class="jxr_javadoccomment">     * @param  o a new array of &lt;code&gt;Boolean&lt;/code&gt;</em>
 <a class="jxr_linenumber" name="L119" href="#L119">119</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L120" href="#L120">120</a> <em class="jxr_javadoccomment">     * @return   and array of FITS logical values with the same size and shape as the input</em>
+<a class="jxr_linenumber" name="L120" href="#L120">120</a> <em class="jxr_javadoccomment">     * @return   an array of FITS logical values with the same size and shape as the input</em>
 <a class="jxr_linenumber" name="L121" href="#L121">121</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L122" href="#L122">122</a> <em class="jxr_javadoccomment">     * @see      #bytesToBooleanObjects(Object)</em>
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> <em class="jxr_javadoccomment">     * @see      #byteToBoolean(byte[])</em>
@@ -134,11 +134,11 @@
 <a class="jxr_linenumber" name="L126" href="#L126">126</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>     <strong class="jxr_keyword">static</strong> Object booleansToBytes(Object o) {
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>         <strong class="jxr_keyword">if</strong> (o == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>             <strong class="jxr_keyword">return</strong> FitsEncoder.byteForBoolean(<strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> byte[] {FitsEncoder.byteForBoolean(<strong class="jxr_keyword">null</strong>)};
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>         }
 <a class="jxr_linenumber" name="L131" href="#L131">131</a> 
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>         <strong class="jxr_keyword">if</strong> (o instanceof Boolean) {
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>             <strong class="jxr_keyword">return</strong> FitsEncoder.byteForBoolean((Boolean) o);
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> byte[] {FitsEncoder.byteForBoolean((Boolean) o)};
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>         }
 <a class="jxr_linenumber" name="L135" href="#L135">135</a> 
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>         <strong class="jxr_keyword">if</strong> (o instanceof <strong class="jxr_keyword">boolean</strong>[]) {
@@ -863,6 +863,6 @@
 <a class="jxr_linenumber" name="L855" href="#L855">855</a> }
 </pre>
 <hr/>
-<div id="footer">© 1996–2024 nom-tam-fits</div>
+<div id="footer">© 1996–2025 nom-tam-fits</div>
 </body>
 </html>

@@ -1189,9 +1189,60 @@
 <a class="jxr_linenumber" name="L1181" href="#L1181">1181</a>         <strong class="jxr_keyword">return</strong> slice;
 <a class="jxr_linenumber" name="L1182" href="#L1182">1182</a>     }
 <a class="jxr_linenumber" name="L1183" href="#L1183">1183</a> 
-<a class="jxr_linenumber" name="L1184" href="#L1184">1184</a> }
+<a class="jxr_linenumber" name="L1184" href="#L1184">1184</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1185" href="#L1185">1185</a> <em class="jxr_javadoccomment">     * Converts objects to arrays. If the object is already an array it is returned unchanged. Boxed primitives are</em>
+<a class="jxr_linenumber" name="L1186" href="#L1186">1186</a> <em class="jxr_javadoccomment">     * returned as primitive arrays of 1. All other objects are wrapped into an array of 1 of the same type.</em>
+<a class="jxr_linenumber" name="L1187" href="#L1187">1187</a> <em class="jxr_javadoccomment">     * &lt;code&gt;Boolean&lt;/code&gt; values are somewhat special and are handled according to the second argument, either to</em>
+<a class="jxr_linenumber" name="L1188" href="#L1188">1188</a> <em class="jxr_javadoccomment">     * produce a &lt;code&gt;boolean[1]&lt;/code&gt; or else a &lt;code&gt;Boolean[1]&lt;/code&gt;.</em>
+<a class="jxr_linenumber" name="L1189" href="#L1189">1189</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1190" href="#L1190">1190</a> <em class="jxr_javadoccomment">     * @param  o           The object</em>
+<a class="jxr_linenumber" name="L1191" href="#L1191">1191</a> <em class="jxr_javadoccomment">     * @param  booleanAsObject Whether &lt;code&gt;Boolean&lt;/code&gt; values should be converted &lt;code&gt;Boolean[1]&lt;/code&gt; instead of</em>
+<a class="jxr_linenumber" name="L1192" href="#L1192">1192</a> <em class="jxr_javadoccomment">     *                         &lt;code&gt;boolean[1]&lt;/code&gt;.</em>
+<a class="jxr_linenumber" name="L1193" href="#L1193">1193</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1194" href="#L1194">1194</a> <em class="jxr_javadoccomment">     * @return             The input object, wrapped into an array as appropriate.</em>
+<a class="jxr_linenumber" name="L1195" href="#L1195">1195</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1196" href="#L1196">1196</a> <em class="jxr_javadoccomment">     * @since              1.21</em>
+<a class="jxr_linenumber" name="L1197" href="#L1197">1197</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1198" href="#L1198">1198</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Object objectToArray(Object o, <strong class="jxr_keyword">boolean</strong> booleanAsObject) {
+<a class="jxr_linenumber" name="L1199" href="#L1199">1199</a>         <strong class="jxr_keyword">if</strong> (o.getClass().isArray()) {
+<a class="jxr_linenumber" name="L1200" href="#L1200">1200</a>             <strong class="jxr_keyword">return</strong> o;
+<a class="jxr_linenumber" name="L1201" href="#L1201">1201</a>         }
+<a class="jxr_linenumber" name="L1202" href="#L1202">1202</a> 
+<a class="jxr_linenumber" name="L1203" href="#L1203">1203</a>         <em class="jxr_comment">// Convert boxed types to primitive arrays of 1.</em>
+<a class="jxr_linenumber" name="L1204" href="#L1204">1204</a>         <strong class="jxr_keyword">if</strong> (o instanceof Number) {
+<a class="jxr_linenumber" name="L1205" href="#L1205">1205</a>             <strong class="jxr_keyword">if</strong> (o instanceof Byte) {
+<a class="jxr_linenumber" name="L1206" href="#L1206">1206</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> byte[] {(byte) o};
+<a class="jxr_linenumber" name="L1207" href="#L1207">1207</a>             }
+<a class="jxr_linenumber" name="L1208" href="#L1208">1208</a>             <strong class="jxr_keyword">if</strong> (o instanceof Short) {
+<a class="jxr_linenumber" name="L1209" href="#L1209">1209</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">short</strong>[] {(<strong class="jxr_keyword">short</strong>) o};
+<a class="jxr_linenumber" name="L1210" href="#L1210">1210</a>             }
+<a class="jxr_linenumber" name="L1211" href="#L1211">1211</a>             <strong class="jxr_keyword">if</strong> (o instanceof Integer) {
+<a class="jxr_linenumber" name="L1212" href="#L1212">1212</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {(<strong class="jxr_keyword">int</strong>) o};
+<a class="jxr_linenumber" name="L1213" href="#L1213">1213</a>             }
+<a class="jxr_linenumber" name="L1214" href="#L1214">1214</a>             <strong class="jxr_keyword">if</strong> (o instanceof Long) {
+<a class="jxr_linenumber" name="L1215" href="#L1215">1215</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">long</strong>[] {(<strong class="jxr_keyword">long</strong>) o};
+<a class="jxr_linenumber" name="L1216" href="#L1216">1216</a>             }
+<a class="jxr_linenumber" name="L1217" href="#L1217">1217</a>             <strong class="jxr_keyword">if</strong> (o instanceof Float) {
+<a class="jxr_linenumber" name="L1218" href="#L1218">1218</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[] {(<strong class="jxr_keyword">float</strong>) o};
+<a class="jxr_linenumber" name="L1219" href="#L1219">1219</a>             }
+<a class="jxr_linenumber" name="L1220" href="#L1220">1220</a>             <strong class="jxr_keyword">if</strong> (o instanceof Double) {
+<a class="jxr_linenumber" name="L1221" href="#L1221">1221</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[] {(<strong class="jxr_keyword">double</strong>) o};
+<a class="jxr_linenumber" name="L1222" href="#L1222">1222</a>             }
+<a class="jxr_linenumber" name="L1223" href="#L1223">1223</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof Boolean) {
+<a class="jxr_linenumber" name="L1224" href="#L1224">1224</a>             <strong class="jxr_keyword">return</strong> booleanAsObject ? <strong class="jxr_keyword">new</strong> Boolean[] {(Boolean) o} : <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">boolean</strong>[] {(Boolean) o};
+<a class="jxr_linenumber" name="L1225" href="#L1225">1225</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof Character) {
+<a class="jxr_linenumber" name="L1226" href="#L1226">1226</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">char</strong>[] {(Character) o};
+<a class="jxr_linenumber" name="L1227" href="#L1227">1227</a>         }
+<a class="jxr_linenumber" name="L1228" href="#L1228">1228</a> 
+<a class="jxr_linenumber" name="L1229" href="#L1229">1229</a>         Object array = Array.newInstance(o.getClass(), 1);
+<a class="jxr_linenumber" name="L1230" href="#L1230">1230</a>         Array.set(array, 0, o);
+<a class="jxr_linenumber" name="L1231" href="#L1231">1231</a> 
+<a class="jxr_linenumber" name="L1232" href="#L1232">1232</a>         <strong class="jxr_keyword">return</strong> array;
+<a class="jxr_linenumber" name="L1233" href="#L1233">1233</a>     }
+<a class="jxr_linenumber" name="L1234" href="#L1234">1234</a> 
+<a class="jxr_linenumber" name="L1235" href="#L1235">1235</a> }
 </pre>
 <hr/>
-<div id="footer">© 1996–2024 nom-tam-fits</div>
+<div id="footer">© 1996–2025 nom-tam-fits</div>
 </body>
 </html>
