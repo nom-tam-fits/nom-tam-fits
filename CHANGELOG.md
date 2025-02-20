@@ -17,7 +17,7 @@ Changes coming to the next release, expected around 15 March 2025.
 
 ### Added
 
- - [#717] New `RandomAccessFileChannel` class, which wraps `FileChannel` objects to provide `RandomAccessFileIO` for FITS files. You might use it to access FITS files efficinetly on as Amazon S3, or other cloud resources. (by @at88mph)
+ - [#717] New `RandomAccessFileChannel` class, which wraps `FileChannel` objects to provide `RandomAccessFileIO` for FITS files. For example, this could be used in conjunction with the Amazon Java SDK (https://aws.amazon.com/sdk-for-java/) to connect to an S3 instance. (by @at88mph)
 
 ### Changed
 

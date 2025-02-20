@@ -44,16 +44,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A random accessible {@link FileChannel} implementation for FITS I/O purposes. It allows for resources that are not
- * local files, but which provide file-like access through a <code>FileChannel</code> object, to become usable by the
- * nom-tam-fits library. This class provides a generic implementation, which may be used, for example, with the NIO SPI
- * file system provider to Amazon S3.
+ * A random accessible {@link FileChannel} implementation for FITS I/O purposes. It enables file-like access for
+ * nom-tam-fits that goes beyond local files. This class provides a generic implementation, which may be used, for
+ * example, with the NIO SPI file system provider to Amazon S3.
  *
  * @author Dustin Jenkins, Attila Kovacs
  * 
  * @since  1.21
  *
  * @see    <a href="https://github.com/awslabs/aws-java-nio-spi-for-s3">AWS NIO SPI library</a>
+ * @see    FitsFile
  */
 public class RandomAccessFileChannel implements RandomAccessFileIO {
     private static final Logger LOGGER = LoggerHelper.getLogger(RandomAccessFileChannel.class);
