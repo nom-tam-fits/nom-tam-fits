@@ -17,12 +17,11 @@ Changes coming to the next release, expected around 15 March 2025.
 
 ### Added
 
- - [717] New `RandomFileIOChannel` class, which wraps `FileChannel` objects to provide `RandomAccessFileIO` for FITS files. You might use it to access FITS files efficinetly on as Amazon S3, or other cloud resources. (by @at88mph)
+ - [#717] New `RandomAccessFileChannel` class, which wraps `FileChannel` objects to provide `RandomAccessFileIO` for FITS files. For example, this could be used in conjunction with the Amazon Java SDK (https://aws.amazon.com/sdk-for-java/) to connect to an S3 instance. (by @at88mph)
 
 ### Changed
 
- - [#722] Synchronization fixed for issues detected by latest spotbugs. These should improve thread safety, especially of binary
-   tables and compressed tables.
+ - [#722] Synchronization fixes for issues detected by latest spotbugs. These should improve thread safety, especially of binary tables and compressed tables.
 
 
 ## [1.20.2] - 2024-12-01
