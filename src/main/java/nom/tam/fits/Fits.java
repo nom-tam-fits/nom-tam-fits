@@ -155,7 +155,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * 
  * @see     FitsFactory
  *
- * @version 1.20
+ * @version 1.21
  */
 @SuppressWarnings("deprecation")
 public class Fits implements Closeable {

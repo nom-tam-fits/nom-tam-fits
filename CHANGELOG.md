@@ -5,9 +5,9 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [1.21.0-rc1] - 2025-02-20
 
-Changes coming to the next release, expected around 15 March 2025.
+Release candidate for the upcoming 1.21 feature release, expected around 15 March 2025.
 
 ### Fixed
 
@@ -21,7 +21,10 @@ Changes coming to the next release, expected around 15 March 2025.
 
 ### Changed
 
- - [#722] Synchronization fixes for issues detected by latest spotbugs. These should improve thread safety, especially of binary tables and compressed tables.
+ - [#722] Synchronization fixes for issues detected by latest spotbugs. These should improve thread safety, especially of binary tables and compressed tables. (by @attipaci)
+
+ - Uses the latest maven build and runtime dependencies. (by @attipaci)
+
 
 
 ## [1.20.2] - 2024-12-01
