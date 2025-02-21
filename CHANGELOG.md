@@ -22,6 +22,8 @@ Changes for the upcoming 1.21 feature release, expected around 15 March 2025.
 ### Changed
 
  - [#722] Synchronization fixes for issues detected by latest spotbugs. These should improve thread safety, especially of binary tables and compressed tables. (by @attipaci)
+ 
+ - [#726] Bump to Java 21 for CI builds. (by @attipaci)
 
  - Uses the latest maven build and runtime dependencies. (by @attipaci)
 
