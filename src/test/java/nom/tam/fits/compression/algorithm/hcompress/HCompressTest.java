@@ -618,4 +618,19 @@ public class HCompressTest {
         Assert.assertEquals(c, o.getHCompressorOption());
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testIntHCompressWrongOptions() throws Exception {
+        int[] data = new int[100];
+
+        for (int i = 0; i < 100; i++) {
+            data[i] = i;
+        }
+
+        IntBuffer buf = IntBuffer.wrap(data);
+        ByteBuffer zip = ByteBuffer.allocateDirect(800);
+
+        ICompressorControl c = CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_HCOMPRESS_1, int.class);
+        c.decompress(zip, buf, new RiceCompressOption());
+    }
+
 }
