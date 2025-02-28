@@ -626,7 +626,22 @@
 <a class="jxr_linenumber" name="L618" href="#L618">618</a>         Assert.assertEquals(c, o.getHCompressorOption());
 <a class="jxr_linenumber" name="L619" href="#L619">619</a>     }
 <a class="jxr_linenumber" name="L620" href="#L620">620</a> 
-<a class="jxr_linenumber" name="L621" href="#L621">621</a> }
+<a class="jxr_linenumber" name="L621" href="#L621">621</a>     @Test(expected = IllegalStateException.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L622" href="#L622">622</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIntHCompressWrongOptions() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L623" href="#L623">623</a>         <strong class="jxr_keyword">int</strong>[] data = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[100];
+<a class="jxr_linenumber" name="L624" href="#L624">624</a> 
+<a class="jxr_linenumber" name="L625" href="#L625">625</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 100; i++) {
+<a class="jxr_linenumber" name="L626" href="#L626">626</a>             data[i] = i;
+<a class="jxr_linenumber" name="L627" href="#L627">627</a>         }
+<a class="jxr_linenumber" name="L628" href="#L628">628</a> 
+<a class="jxr_linenumber" name="L629" href="#L629">629</a>         IntBuffer buf = IntBuffer.wrap(data);
+<a class="jxr_linenumber" name="L630" href="#L630">630</a>         ByteBuffer zip = ByteBuffer.allocateDirect(800);
+<a class="jxr_linenumber" name="L631" href="#L631">631</a> 
+<a class="jxr_linenumber" name="L632" href="#L632">632</a>         ICompressorControl c = CompressorProvider.findCompressorControl(<strong class="jxr_keyword">null</strong>, Compression.ZCMPTYPE_HCOMPRESS_1, <strong class="jxr_keyword">int</strong>.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L633" href="#L633">633</a>         c.decompress(zip, buf, <strong class="jxr_keyword">new</strong> RiceCompressOption());
+<a class="jxr_linenumber" name="L634" href="#L634">634</a>     }
+<a class="jxr_linenumber" name="L635" href="#L635">635</a> 
+<a class="jxr_linenumber" name="L636" href="#L636">636</a> }
 </pre>
 <hr/>
 <div id="footer">© 1996–2025 nom-tam-fits</div>
