@@ -11,9 +11,11 @@ Changes for the upcoming 1.21 feature release, expected around 15 March 2025.
 
 ### Fixed
 
- - [#708] `BinaryTable.addRowEntries()` did not work with scalar `Boolean` or `boolean`. (by @attipaci, thanks to @johnmurphyastro) 
+ - [#708] `BinaryTable.addRowEntries()` did not work with scalar `Boolean` or `boolean` values. (by @attipaci, thanks to @johnmurphyastro) 
  
  - [#710] `BinaryTable.addRow()` has some oddities and inconsistencies that resulted in unexpected behavior. (by @attipaci)
+
+ - [#730] Decompression errors when reading compressed images that used compression quantization (`ZSCALE`, `ZZERO`, `ZBLANK`, and `ZQUANTIZ` options) together with a lossless compression algorithm (e.g. GZIP or PLIO). (by @attipaci, thanks to @bogdanni)
 
 ### Added
 
