@@ -39,6 +39,7 @@ import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import nom.tam.fits.FitsException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressor;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
@@ -174,27 +175,31 @@ public class CompressorProvider implements ICompressorProvider {
 
         @SuppressWarnings({"unchecked", "rawtypes"})
         private ICompressor<Buffer> newCompressor(ICompressOption option)
-                throws InstantiationException, IllegalAccessException, InvocationTargetException {
+                throws FitsException, InstantiationException, IllegalAccessException, InvocationTargetException {
             ICompressor<Buffer> compressor = null;
             QuantizeOption quantOption = null;
 
-            if (option == NULL_OPTION) {
-                option = null;
-            } else if (option instanceof QuantizeOption) {
+            if (option instanceof QuantizeOption) {
                 quantOption = (QuantizeOption) option;
                 option = quantOption.getCompressOption();
+            }
+
+            if (option == NULL_OPTION) {
+                option = null;
             }
 
             try {
                 for (Constructor<ICompressor<Buffer>> c : constructors) {
                     Class<?>[] parms = c.getParameterTypes();
 
-                    if (option == null && parms.length == 0) {
+                    if (parms.length == 0 && option == null) {
+                        // Use constructor without special options...
                         compressor = c.newInstance();
                         break;
                     }
 
-                    if (option != null && parms.length == 1) {
+                    if (parms.length == 1 && option != null) {
+                        // Use constructor with the option
                         Class<? extends ICompressOption> p = (Class<? extends ICompressOption>) parms[0];
                         if (quantOption != null && p.isAssignableFrom(quantOption.getClass())) {
                             compressor = c.newInstance(quantOption);
@@ -206,6 +211,11 @@ public class CompressorProvider implements ICompressorProvider {
                             break;
                         }
                     }
+
+                }
+
+                if (compressor == null) {
+                    throw new FitsException("Could not instantiate (de)compressor for the specified options");
                 }
 
                 if (quantOption != null && quantType != null) {

@@ -59,4 +59,5 @@ public interface ICompressor<T extends Buffer> {
      * @param buffer     the buffer to fill with the uncompressed data.
      */
     void decompress(ByteBuffer compressed, T buffer);
+
 }
