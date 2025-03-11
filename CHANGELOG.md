@@ -27,7 +27,7 @@ Feature release, with a few bug fixes.
  
  - [#726] Bump to Java 21 for CI builds. (by @attipaci)
  
- - [#737] Remove spotbug supressions that are no longer needed. (@attipaci)
+ - [#737] Remove spotbugs suppressions that are no longer needed. (by @attipaci)
 
  - Uses the latest maven build and runtime dependencies. (by @attipaci)
 
