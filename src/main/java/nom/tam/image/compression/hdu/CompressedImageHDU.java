@@ -472,7 +472,6 @@ public class CompressedImageHDU extends BinaryTableHDU {
 
     @Override
     @Deprecated
-    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     public boolean isHeader() {
         return super.isHeader() && isHeader(myHeader);
     }

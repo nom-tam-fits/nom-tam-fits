@@ -42,8 +42,6 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.Cursor;
 import nom.tam.util.FitsEncoder;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * Random Groups data. The use of random groups is discouraged, even by the FITS standard. Some old radio data may be
  * packaged in this format. Thus apart from provided limited support for reading such data, users should not create
@@ -91,7 +89,6 @@ public class RandomGroupsData extends Data {
      * @throws IllegalArgumentException if the second array dimension is specified and it is not 2, or if the parameter
      *                                      arrya is not 1-dimensional, or if the parameter and data types differ.
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public RandomGroupsData(Object[][] x) throws IllegalArgumentException {
         dataArray = x == null ? new Object[0][] : x;
         groups = dataArray.length;

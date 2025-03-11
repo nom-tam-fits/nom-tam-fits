@@ -63,8 +63,6 @@ import nom.tam.util.SafeClose;
 import static nom.tam.fits.header.Standard.EXTNAME;
 import static nom.tam.fits.header.Standard.EXTVER;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * <p>
  * Handling of FITS files and streams. This class is a container of HDUs (header-data units), which together constitute
@@ -677,7 +675,6 @@ public class Fits implements Closeable {
     // TODO Make private
     @Deprecated
     @SuppressWarnings("resource")
-    @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "stream stays open, and will be read when nessesary.")
     protected void fileInit(File myFile, boolean compressed) throws FitsException {
         try {
             if (compressed) {

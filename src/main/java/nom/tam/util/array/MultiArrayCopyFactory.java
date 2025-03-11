@@ -35,8 +35,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * @deprecated               (<i>for internal use</i>) use {@link MultiArrayCopier} instead. Make copies of
  *                               multi-dimensional arrays.
@@ -45,7 +43,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @param      <Destination> The generic type of array to which we want to copy elements.
  */
 @Deprecated
-@SuppressFBWarnings(value = "SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", justification = "warning persists despite private constructor")
 public class MultiArrayCopyFactory<Source, Destination> {
 
     private MultiArrayCopyFactory() {

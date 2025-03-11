@@ -1,7 +1,5 @@
 package nom.tam.util;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -112,7 +110,6 @@ public class ByteParser {
      * @param input The byte array to be parsed. Note that the array can be re-used by refilling its contents and
      *                  resetting the offset.
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public ByteParser(byte[] input) {
         this.input = input;
         offset = 0;
@@ -203,7 +200,6 @@ public class ByteParser {
     /**
      * @return the buffer being used by the parser
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public byte[] getBuffer() {
         return input;
     }
@@ -471,7 +467,6 @@ public class ByteParser {
      *
      * @param buf buffer to set
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public void setBuffer(byte[] buf) {
         input = buf;
         offset = 0;

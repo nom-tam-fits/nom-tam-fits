@@ -57,8 +57,6 @@ import static nom.tam.fits.header.Standard.TLMAXn;
 import static nom.tam.fits.header.Standard.TLMINn;
 import static nom.tam.fits.header.Standard.TNULLn;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * ASCII table data. ASCII tables are meant for human readability without any special tools. However, they are far less
  * flexible or compact than {@link BinaryTable}. As such, users are generally discouraged from using this type of table
@@ -758,7 +756,6 @@ public class AsciiTable extends AbstractTableData {
     }
 
     @Override
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     protected Object[] getCurrentData() {
         return data;
     }

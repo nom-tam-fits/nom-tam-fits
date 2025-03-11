@@ -3537,7 +3537,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @throws FitsException if the data could not be accessed in full from the heap.
      */
-    @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not propagated or used locally")
     private Object putOnHeap(ColumnDesc c, Object o, Object oldPointer) throws FitsException {
         return putOnHeap(getHeap(), c, o, oldPointer);
     }
@@ -3557,7 +3556,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @throws FitsException if the data could not be accessed in full from the heap.
      */
-    @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not propagated or used locally")
     private Object putOnHeap(FitsHeap h, ColumnDesc c, Object o, Object oldPointer) throws FitsException {
         // Flatten data for heap
         o = ArrayFuncs.flatten(o);
