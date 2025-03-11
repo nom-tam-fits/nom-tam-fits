@@ -1,7 +1,5 @@
 package nom.tam.util;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -76,7 +74,6 @@ public class BufferPointer {
      * 
      * @deprecated        Rusty rail implementation only.
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public BufferPointer(byte[] buffer) {
         this();
         this.buffer = buffer;

@@ -39,8 +39,6 @@ import java.util.Arrays;
 
 import nom.tam.util.type.ElementType;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * <p>
  * Table data that is stored (internally) in column major format. This class has been completely re-written by A. Kovacs
@@ -1394,7 +1392,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             out.writeChar(data[index]);
         }
 
-        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         int read(int from, int n, ArrayDataInput in) throws IOException {
             return in.read(data, from, n);
@@ -1448,7 +1445,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             out.writeShort(data[index]);
         }
 
-        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         int read(int from, int n, ArrayDataInput in) throws IOException {
             return in.read(data, from, n);
