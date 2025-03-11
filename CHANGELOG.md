@@ -5,9 +5,9 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [1.21.0-rc2] - 2025-02-28
+## [1.21.0] - 2025-03-11
 
-Changes for the upcoming 1.21 feature release, expected around 15 March 2025.
+Feature release, with a few bug fixes.
 
 ### Fixed
 
@@ -26,6 +26,8 @@ Changes for the upcoming 1.21 feature release, expected around 15 March 2025.
  - [#722] Synchronization fixes for issues detected by latest spotbugs. These should improve thread safety, especially of binary tables and compressed tables. (by @attipaci)
  
  - [#726] Bump to Java 21 for CI builds. (by @attipaci)
+ 
+ - [#737] Remove spotbug supressions that are no longer needed. (@attipaci)
 
  - Uses the latest maven build and runtime dependencies. (by @attipaci)
 
