@@ -561,7 +561,7 @@ values appropriately!).
 
 Note that for best performance you should access elements in monotonically increasing order when in deferred mode -- at 
 least for the rows, but it does not hurt to follow the same principle for columns inside the loops also. This will help 
-avoid excess buffering that way be required at times for backward jumps.
+avoid excess buffering that may otherwise be required at times for backward jumps.
 
 The library provides methods for accessing entire rows and columns also via the `TableData.getRow(int)` and 
 `TableData.getColumn(int)` or `BinaryTable.getColumn(String)` methods. However, we recommend against using these going
@@ -723,8 +723,8 @@ more difficult than in the case of reads.
 
 There are two main issues:
 
- 1. The header for the HDU must written to show the size of the entire file when we are done.
-    Thus the user may need to modify the header data appropriately.
+ 1. The header for the HDU must be written to show the size of the entire file when we are done.
+    Thus the user may need to modify the header data appropriately after all data have been written.
 
  2. After writing the data, a valid FITS file may need to be padded to an appropriate length.
 
@@ -736,8 +736,8 @@ representation.
 #### Images
 
 We can write images one subarray at a time, if we want to. Here is an example of how you could go about it. First, 
-create storage for the contiguous chunk we want to write at a time. For example, same we want to write a 32-bit 
-floating-point image  with `[nRows][nCols]` pixels, and we want to write these one row at a time:
+create storage for the contiguous chunk you want to write at a time. For example, same you want to write a 32-bit 
+floating-point image  with `[nRows][nCols]` pixels, and you want to write these one row at a time:
 
 First let's create storage for the chunk:
 
@@ -758,8 +758,8 @@ image, e.g. as:
   ImageData.overrideHeaderAxes(header, nRow, nCol); 
 ```
 
-Next, we can complete the header description adding whatever information we desire. Once complete, we'll write the 
-image header to the output:
+Next, we can complete the header description adding whatever information you desire. Once complete, you can write 
+the image header to the output:
 
 ```java
   // Create a FITS and write to the image to it
@@ -767,8 +767,8 @@ image header to the output:
   header.write(out);
 ```
 
-Now, we can start writing the image data, iterating over the rows, populating our chunk data in turn, and writing it 
-out as we go.
+Now, you may start writing the image data, iterating over the rows, populating our chunk data in turn, and writing it 
+out as you go.
 
 ```java
   // Iterate over the image rows
@@ -790,12 +790,12 @@ Finally, add the requisite padding to complete the FITS block of 2880 bytes afte
 
 #### Tables
 
-We can do something pretty similar for tables _so long as we don't have variable length columns_, but it requires a 
+You can do something pretty similar for tables _so long as you don't have variable length columns_, but it requires a 
 little more work.
 
-First we have to make sure we are not trying to write tables into the primary HDU of a FITS. Tables can only reside in 
-extensions, and so we might need to create and write a dummy primary HDU to the FITS before we can write the table 
-itself:
+First you have to make sure we are not trying to write tables into the primary HDU of a FITS. Tables can only reside 
+in extensions, and so you might need to create and write a dummy primary HDU to the FITS before you can write the 
+table itself:
 
 ```java
   FitsFile out = new FitsFile("table.fits", "rw");
@@ -805,36 +805,36 @@ itself:
   new NullDataHDU().write(out);
 ```
 
-Next, assume we have a binary table that we either read from an input, or else assembled ourselves (see further below 
-on how to build binary tables):
+Next, assume you have a binary table that you have either read from an input, or else assembled yourself (see further 
+below on how to build binary tables):
 
 ```java 
   BinaryTable table = ...
 ```
 
-Next, we will need to create an appropriate FITS header for the table:
+Next, you will need to create an appropriate FITS header for the table:
 
 ```java
   Header header = new Header();
   table.fillHeader(header);
 ```
 
-We can now complete the header description as we see fit, with whatever optional entries. We can also save space for 
-future additions, e.g. for values we will have only after we start writing the table data itself:
+You can now complete the header description as you see fit, with whatever optional entries. You can also save space 
+for future additions, e.g. for values you will have only after you start writing the table data itself:
 
 ```java
    // Make space for at least 200 more header lines to be added later
    header.ensureCardSpace(200);
 ```
 
-Now, we can write out the header:
+Now, you can write out the header:
 
 ```java
    header.write(out);
 ```
 
-Next, we can finally write regular table rows (without variable-length entries) in a loop. Assuming that our row is 
-something like `{ { double[1] }, { byte[10] }, { float[256] }, ... }`: 
+Next, you can finally write regular table rows (without variable-length entries) in a loop. Assuming that your row is,
+say `{ { double[1] }, { byte[10] }, { float[256] }, ... }`: 
 
 ```java
   for (...) {
@@ -849,23 +849,23 @@ something like `{ { double[1] }, { byte[10] }, { float[256] }, ... }`:
   }
 ```
 
-We want to keep count of the rows we write (e.g. `nRowsWritten`). Once we finish writing the table data, we must add 
-the requisite padding to complete the FITS block of 2880 bytes after the table data ends. 
+You want to keep count of the rows your write them (e.g. `nRowsWritten`). Once you finish writing the table data, you 
+must add the requisite padding to complete the FITS block of 2880 bytes after the table data ends. 
 
 ```java
   // Add padding to the file to complete the FITS block
   FitsUtil.pad(out, nRowsWritten * table.getRegularRowSize());
 ```
 
-After the table has been thus written to the output, we should make sure that the header has the correct number of 
+After the table has been thus written to the output, you should make sure that the header has the correct number of 
 table rows in in `NAXIS2` entry:
 
 ```java
   header.addValue(Standard.NAXISn.n(2), nRowsWritten);
 ```
 
-We can also complete the header with any other information that became available since the start (using the space we 
-reserved for additions earlier). Once the header is all in ship-shape, we can re-write in the file at its original
+You can also complete the header with any other information that became available since the start (using the space we 
+reserved for additions earlier). Once the header is all in ship-shape, you may re-write in the file at its original
 location:
 
 ```java
