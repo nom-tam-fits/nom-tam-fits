@@ -39,6 +39,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.FlexFormat;
 
@@ -367,6 +368,10 @@ class HeaderCardParser {
     private void parseValue() throws UnclosedQuoteException {
         if (key.isEmpty() || !skipSpaces()) {
             // nothing left to parse.
+            return;
+        }
+
+        if (key.equals(Standard.COMMENT.key()) || key.equals(Standard.BLANKS.key()) || key.equals(Standard.HISTORY.key())) {
             return;
         }
 

@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 import nom.tam.fits.FitsFactory.FitsSettings;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.NonStandard;
+import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.hierarch.IHierarchKeyFormatter;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.AsciiFuncs;
@@ -511,6 +512,14 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see                        #set(String, String, String, Class)
      */
     private HeaderCard(String key, String value, String comment, Class<?> type) throws HeaderCardException {
+        if (value == null) {
+            if (key == null || key.equals(Standard.COMMENT.key()) || key.equals(Standard.BLANKS.key())
+                    || key.equals(Standard.HISTORY.key())) {
+                // Force comment
+                type = null;
+            }
+        }
+
         set(key, value, comment, type);
         this.type = type;
     }
