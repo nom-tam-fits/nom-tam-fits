@@ -1667,18 +1667,21 @@ public class HeaderTest {
                 new FitsInputStream(new FileInputStream(new File("src/test/resources/nom/tam/fits/test/test.fits"))));
         Header hdr = f.readHDU().getHeader();
         HeaderCard[] cds = hdr.findCards("NAX.*");
-        /* ought to find 3 cards, NAXIS, NAXIS1, NAXIS2, that start with NAX
-        */
+        /*
+         * ought to find 3 cards, NAXIS, NAXIS1, NAXIS2, that start with NAX
+         */
         assertEquals(3, cds.length);
 
         cds = hdr.findCards(".*Y.*");
-        /* ought to find no card which has a key with a Y
-        */
+        /*
+         * ought to find no card which has a key with a Y
+         */
         assertEquals(0, cds.length);
 
         cds = hdr.findCards(".*\\d");
-        /* ought to find the two cards that end on digits, namely NAXIS1 and NAXIS2
-        */
+        /*
+         * ought to find the two cards that end on digits, namely NAXIS1 and NAXIS2
+         */
         assertEquals(2, cds.length);
     }
 

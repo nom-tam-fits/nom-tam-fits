@@ -366,13 +366,12 @@ class HeaderCardParser {
      * @see                           FitsFactory#setAllowHeaderRepairs(boolean)
      */
     private void parseValue() throws UnclosedQuoteException {
-        if (key.isEmpty() || !skipSpaces()) {
-            // nothing left to parse.
+        if (key.isEmpty() || key.equals(Standard.COMMENT.key()) || key.equals(Standard.HISTORY.key())) {
             return;
         }
 
-        if (key.equals(Standard.COMMENT.key()) || key.equals(Standard.BLANKS.key()) || key.equals(Standard.HISTORY.key())) {
-            return;
+        if (!skipSpaces()) {
+            return; // nothing left to parse.
         }
 
         if (CONTINUE.key().equals(key)) {

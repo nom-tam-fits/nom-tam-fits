@@ -5,6 +5,13 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+### Fixed
+
+ - [#748] `COMMENT`, `HISTORY` or blank keywords should always be comments as per the FITS standard, even if there is a value indicator `=` in column 9. (by @attipaci, thanks to @svensk-pojke)
+
+
 ## [1.21.0] - 2025-03-11
 
 Feature release, with a few bug fixes.
