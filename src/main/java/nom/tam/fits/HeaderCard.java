@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 import nom.tam.fits.FitsFactory.FitsSettings;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.NonStandard;
+import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.hierarch.IHierarchKeyFormatter;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.AsciiFuncs;
@@ -511,6 +512,19 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see                        #set(String, String, String, Class)
      */
     private HeaderCard(String key, String value, String comment, Class<?> type) throws HeaderCardException {
+        if (key != null) {
+            key = trimEnd(key);
+        }
+
+        if (key == null || key.isEmpty() || key.equals(Standard.COMMENT.key()) || key.equals(Standard.HISTORY.key())) {
+            if (value != null) {
+                throw new HeaderCardException("Standard commentary keywords may not have an assigned value.");
+            }
+
+            // Force comment
+            type = null;
+        }
+
         set(key, value, comment, type);
         this.type = type;
     }
@@ -534,14 +548,15 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
         type = aType;
 
-        // AK: Map null and blank keys to BLANKS.key()
-        // This simplifies things as we won't have to check for null keys separately!
-        if ((aKey == null) || aKey.trim().isEmpty()) {
-            aKey = EMPTY_KEY;
+        // Remove trailing spaces
+        if (aKey != null) {
+            aKey = trimEnd(aKey);
         }
 
-        if (aKey.isEmpty() && aValue != null) {
-            throw new HeaderCardException("Blank or null key for value: [" + sanitize(aValue) + "]");
+        // AK: Map null and blank keys to BLANKS.key()
+        // This simplifies things as we won't have to check for null keys separately!
+        if ((aKey == null) || aKey.isEmpty()) {
+            aKey = EMPTY_KEY;
         }
 
         try {
@@ -763,7 +778,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see    #isCommentStyleCard()
      */
     public synchronized boolean isKeyValuePair() {
-        return !isCommentStyleCard() && !(key.isEmpty() || value == null);
+        return !isCommentStyleCard() && value != null;
     }
 
     /**

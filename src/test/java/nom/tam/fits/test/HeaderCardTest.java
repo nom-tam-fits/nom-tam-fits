@@ -2031,4 +2031,63 @@ public class HeaderCardTest {
         HeaderCard c = new HeaderCard("HIERARCH.TEST.AAA.BBB", (String) null, null);
         Assert.assertEquals("HIERARCH TEST AAA BBB =", c.toString().trim());
     }
+
+    @Test
+    public void testCommentCardConstructs() {
+        HeaderCard c = new HeaderCard("COMMENT", (String) null, "blah");
+        Assert.assertTrue(c.isCommentStyleCard());
+        Assert.assertNull(c.getValue());
+        Assert.assertEquals("blah", c.getComment());
+
+        c = new HeaderCard("HISTORY", (String) null, "blah");
+        Assert.assertTrue(c.isCommentStyleCard());
+        Assert.assertNull(c.getValue());
+        Assert.assertEquals("blah", c.getComment());
+
+        c = new HeaderCard("", (String) null, "blah");
+        Assert.assertTrue(c.isCommentStyleCard());
+        Assert.assertNull(c.getValue());
+        Assert.assertEquals("blah", c.getComment());
+
+        c = new HeaderCard(null, (String) null, "blah");
+        Assert.assertTrue(c.isCommentStyleCard());
+        Assert.assertNull(c.getValue());
+        Assert.assertEquals("blah", c.getComment());
+    }
+
+    @Test(expected = HeaderCardException.class)
+    public void testCommentCardConstructWithValueException() {
+        HeaderCard c = new HeaderCard("COMMENT", "whatever", "blah");
+    }
+
+    // COMMENT, HISTORY or blank keywords can have a value indicator "= " in columns 9 and 10
+    // and are still understood to be commentary keywords, with the comment starting in
+    // column 9.
+    @Test
+    public void testParseCommentWithEquals() throws Exception {
+        String im;
+        HeaderCard c;
+
+        im = "COMMENT = blah                                                                  ";
+        c = new HeaderCard(new FitsInputStream(new ByteArrayInputStream(im.getBytes())));
+        Assert.assertEquals(Standard.COMMENT.key(), c.getKey());
+        Assert.assertTrue(c.isCommentStyleCard());
+        Assert.assertNull(c.getValue());
+        Assert.assertEquals("= blah", c.getComment());
+
+        im = "HISTORY = blah                                                                  ";
+        c = new HeaderCard(new FitsInputStream(new ByteArrayInputStream(im.getBytes())));
+        Assert.assertEquals(Standard.HISTORY.key(), c.getKey());
+        Assert.assertTrue(c.isCommentStyleCard());
+        Assert.assertNull(c.getValue());
+        Assert.assertEquals("= blah", c.getComment());
+
+        im = "        = blah                                                                  ";
+        c = new HeaderCard(new FitsInputStream(new ByteArrayInputStream(im.getBytes())));
+        Assert.assertEquals(Standard.BLANKS.key(), c.getKey());
+        Assert.assertTrue(c.isCommentStyleCard());
+        Assert.assertNull(c.getValue());
+        Assert.assertEquals("= blah", c.getComment());
+    }
+
 }
