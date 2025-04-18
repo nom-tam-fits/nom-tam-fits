@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+Changes for the upcoming bug-fix release, expected around 15 June 2025. 
+
 ### Fixed
 
  - [#748] `COMMENT`, `HISTORY` or blank keywords should always be comments as per the FITS standard, even if there is a value indicator `=` in column 9. (by @attipaci, thanks to @svensk-pojke)
