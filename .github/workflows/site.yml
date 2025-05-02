@@ -1,5 +1,7 @@
-
 name: Project Site
+permissions:
+  contents: read
+  pull-requests: write
 
 on: 
   release:
