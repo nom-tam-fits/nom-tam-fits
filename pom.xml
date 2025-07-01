@@ -152,8 +152,8 @@
     <!-- We'll use profiles to define the standard repository -->
     <snapshotRepository>
       <id>nexus</id>
-      <name>OSSRH Staging Snapshot repository</name>
-      <url>https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots</url>
+      <name>Maven Central Snapshot repository</name>
+      <url>https://central.sonatype.com/content/repository/maven-snapshots</url>
     </snapshotRepository>
     <site>
       <id>github-project-site</id>
