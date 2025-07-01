@@ -79,7 +79,7 @@ jobs:
 
     - name: Publish package
       env:
-        NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-        NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+        PORTAL_USERNAME: ${{ secrets.PORTAL_USERNAME }}
+        PORTAL_PASSWORD: ${{ secrets.PORTAL_PASSWORD }}
       run: mvn -B deploy -DskipTests -Pnexus-repo --settings settings.xml
       
