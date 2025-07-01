@@ -2,8 +2,8 @@
   <servers>
     <server>
       <id>nexus</id>
-      <username>${env.NEXUS_USERNAME}</username>
-      <password>${env.NEXUS_PASSWORD}</password>
+      <username>${env.CENTRAL_USERNAME}</username>
+      <password>${env.CENTRAL_PASSWORD}</password>
     </server>
     <server>
       <id>github</id>

@@ -27,6 +27,8 @@ To release packages, you will need:
  * Edit `CHANGELOG.md` to summarize the changes for the release, linking entries to issues or pull request as appropriate. Commit and push the updates as necessary. Note any issues pertainig to compatibility at the top of the list of actions.
  
  * Update `pom.xml` with the latest (or best fit) plugin versions. Test them locally with `mvn clean package` before committing and pushing the POM to the repo. Alternatively, if dependabot is generating update PRs, make sure you integrate all that pass the CI.
+
+ * Update version in the rich result section of `src/site/site.xml`.
  
  * Make sure the Project Site is in good shape. Run `mvn clean site`. The open `target/site/index.html` in a web browser. Click through the menu on the left panel and check that all content is current. Check that the changes are properly shown. Check that the _Getting Started_ guide has up-to-date instructions for using the library.
  

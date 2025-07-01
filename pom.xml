@@ -152,8 +152,8 @@
     <!-- We'll use profiles to define the standard repository -->
     <snapshotRepository>
       <id>nexus</id>
-      <name>i4j sonatype Snapshot Maven 2 repository</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <name>OSSRH Staging Snapshot repository</name>
+      <url>https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots</url>
     </snapshotRepository>
     <site>
       <id>github-project-site</id>
@@ -773,8 +773,8 @@
       <distributionManagement>
         <repository>
           <id>nexus</id>
-          <name>i4j sonatype Maven 2 repository</name>
-          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+          <name>OSSRH Staging repository</name>
+          <url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2</url>
         </repository>
       </distributionManagement>
     </profile>
