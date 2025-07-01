@@ -153,7 +153,7 @@
     <snapshotRepository>
       <id>nexus</id>
       <name>Maven Central Snapshot repository</name>
-      <url>https://central.sonatype.com/content/repository/maven-snapshots</url>
+      <url>https://central.sonatype.com/repository/maven-snapshots</url>
     </snapshotRepository>
     <site>
       <id>github-project-site</id>
