@@ -774,7 +774,7 @@
         <repository>
           <id>nexus</id>
           <name>OSSRH Staging repository</name>
-          <url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2</url>
+          <url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/</url>
         </repository>
       </distributionManagement>
     </profile>
