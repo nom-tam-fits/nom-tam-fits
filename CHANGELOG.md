@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
  - Migrated publishing from OSS Nexus to the Maven Central OSSRH Staging API.
  
- - Migrated SNAPSHORT to Maven Central
+ - Migrated SNAPSHOT to Maven Central
  
  - Uses the latest Maven build and Runtime dependencies.
 

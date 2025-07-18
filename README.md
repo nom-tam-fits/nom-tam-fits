@@ -1427,8 +1427,8 @@ For example,
   // to be filled later
   h.ensureCardSpace(200);
 
-  // We can now write the header, knowing we can fill it with up to
-  // 200 records in total at a later point
+  // We can now write the header, knowing we have space for at
+  // least 200 additional records to be filled at a later point
   h.write(out);
 ```
   
