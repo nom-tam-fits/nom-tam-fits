@@ -25,12 +25,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         path: nom-tam-fits
         
     - name: Check out blackbox images 
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         repository: nom-tam-fits/blackbox-images
         path: blackbox-images
