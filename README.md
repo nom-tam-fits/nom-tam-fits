@@ -521,7 +521,7 @@ index 3), and a spectrum stored in the fifth column (i.e. Java index 4):
   for(int row = 0; row < tab.getNRows(); row++) {
   
       // Retrieve scalar entries with convenient getters... 
-      double utc  = tab.getDouble(row, colUTC);
+      double utc = tab.getDouble(row, colUTC);
            
       // We can also access by fixed column index...
       ComplexValue phase = (ComplexValue) tab.get(row, 3);
@@ -542,7 +542,7 @@ above using this approach would be:
   
       // Retrieve scalar entries by casting the element to the correct array 
       // type, and returning the first (and only) element from that array...
-      double utc  = ((double[]) tab.getElement(row, colUTC))[0];
+      double utc = ((double[]) tab.getElement(row, colUTC))[0];
       
       // We can also access by fixed column index...
       float[] phase = ((float[]) tab.getElement(row, 3));
@@ -583,7 +583,7 @@ You can convert array elements via the `BinaryTable.getArrayElementAs()` method.
 
   // Assuming that the column contains 2D numerical entries of some type...
   // Get a table entry as an array of doubles, regardless of its (numerical) storage type...
-  double[][] e = tab.getArrayElementAs(1, 3, double.class);
+  double[][] e = (double[][]) tab.getArrayElementAs(1, 3, double.class);
 ```
 
 The quantization of columns is automatically digested based on the `TSCALn`, `TZEROn`, and `TNULLn` keywords in the 
