@@ -303,15 +303,22 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         }
 
         String algo = compressAlgorithmCard.getValue().toUpperCase(Locale.US);
+        compressAlgorithm = algo;
+
+        if (algo.equals(Compression.ZCMPTYPE_RICE_ONE) && FitsFactory.isAllowHeaderRepairs()) {
+            compressAlgorithm = Compression.ZCMPTYPE_RICE_1;
+            Logger.getLogger(HeaderCard.class.getName()).warning("Repaired non-standard ZCMPTYPE value: "
+                    + Compression.ZCMPTYPE_RICE_ONE + " to " + Compression.ZCMPTYPE_RICE_1);
+            return this;
+        }
+
         if (algo.equals(Compression.ZCMPTYPE_GZIP_1) || algo.equals(Compression.ZCMPTYPE_GZIP_2)
                 || algo.equals(Compression.ZCMPTYPE_RICE_1) || algo.equals(Compression.ZCMPTYPE_PLIO_1)
                 || algo.equals(Compression.ZCMPTYPE_HCOMPRESS_1) || algo.equals(Compression.ZCMPTYPE_NOCOMPRESS)) {
-            compressAlgorithm = algo;
-        } else {
-            Logger.getLogger(HeaderCard.class.getName()).warning("Ignored invalid ZCMPTYPE value: " + algo);
+            return this;
         }
 
-        return this;
+        throw new FitsException("Invalid ZCMPTYPE value: " + algo);
     }
 
     /**
