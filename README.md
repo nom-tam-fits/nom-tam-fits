@@ -1429,6 +1429,7 @@ For example,
 
   // We can now write the header, knowing we have space for at
   // least 200 additional records to be filled at a later point
+
   h.write(out);
 ```
   

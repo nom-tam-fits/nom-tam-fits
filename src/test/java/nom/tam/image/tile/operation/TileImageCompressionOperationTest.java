@@ -34,17 +34,31 @@ package nom.tam.image.tile.operation;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.FitsFactory;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.header.Compression;
 import nom.tam.image.compression.tile.TiledImageCompressionOperation;
 import nom.tam.util.type.ElementType;
 
 public class TileImageCompressionOperationTest {
+
+    @Before
+    public void before() {
+        FitsFactory.setDefaults();
+    }
+
+    @After
+    public void after() {
+        FitsFactory.setDefaults();
+    }
+
     @Test(expected = FitsException.class)
     public void tileImageOpMultiDimOverrideTest() throws Exception {
         TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
@@ -117,10 +131,30 @@ public class TileImageCompressionOperationTest {
         op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_HCOMPRESS_1));
         Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_HCOMPRESS_1);
 
-        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, "invalid value"));
-        Assert.assertNull(op.getCompressAlgorithm());
-
         op.setCompressAlgorithm(null);
         Assert.assertNull(op.getCompressAlgorithm());
+    }
+
+    @Test
+    public void testZcmptypeRiceOne() throws Exception {
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+
+        FitsFactory.setAllowHeaderRepairs(true);
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_RICE_ONE));
+        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_RICE_1);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testZcmptypeRiceOneException() throws Exception {
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+
+        FitsFactory.setAllowHeaderRepairs(false);
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_RICE_ONE));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testZcmptypeException() throws Exception {
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, "invalid value"));
     }
 }

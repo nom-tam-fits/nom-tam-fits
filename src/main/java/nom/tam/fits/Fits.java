@@ -1511,8 +1511,8 @@ public class Fits implements Closeable {
      * @see                  #write(FitsOutputStream)
      */
     public void write(File file) throws IOException, FitsException {
-        try (FileOutputStream o = new FileOutputStream(file)) {
-            write(new FitsOutputStream(o));
+        try (FileOutputStream o = new FileOutputStream(file); FitsOutputStream fo = new FitsOutputStream(o)) {
+            write(fo);
             o.flush();
         }
     }
@@ -1624,8 +1624,8 @@ public class Fits implements Closeable {
             throw new FitsException("Cannot create FitsOutputStream from class " + os.getClass().getName());
         }
 
-        try {
-            write(new FitsOutputStream((DataOutputStream) os));
+        try (FitsOutputStream fos = new FitsOutputStream((DataOutputStream) os)) {
+            write(fos);
         } catch (IOException e) {
             throw new FitsException("Error writing to the FITS output stream: " + e, e);
         }
