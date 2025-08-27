@@ -189,13 +189,14 @@ public class ImageData extends Data {
     }
 
     /**
-     * Returns the class that can be used to divide this image into tiles that may be processed separately (and in
-     * parallel).
+     * Returns the an image tiler instance that can be used to divide this image into tiles that may be processed
+     * separately (and in parallel). A default tiler, which returns the image in memory, is returned for images not
+     * associated with a random-accessible input.
      * 
      * @return image tiler for this image instance.
      */
     public StandardImageTiler getTiler() {
-        return tiler;
+        return tiler != null ? tiler : new ImageDataTiler(null, 0, dataDescription);
     }
 
     /**
