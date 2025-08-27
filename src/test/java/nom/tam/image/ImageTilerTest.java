@@ -102,6 +102,8 @@ package nom.tam.image;
 import org.junit.Assert;
 import org.junit.Test;
 
+import nom.tam.fits.ImageData;
+
 public class ImageTilerTest {
     @Test
     public void defaultImplementation() throws Exception {
@@ -138,5 +140,13 @@ public class ImageTilerTest {
         public Object getCompleteImage() {
             return null;
         }
+    }
+
+    @Test
+    public void testDefaultTiler() throws Exception {
+        ImageData im = new ImageData();
+        ImageTiler tiler = im.getTiler();
+
+        Assert.assertNotNull(tiler);
     }
 }
