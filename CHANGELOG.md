@@ -8,11 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Maintenance release, with minor improvements, and revised publishing process.
 
+### Fixed
+
+ - [#773] `ImageData.getTiler()` to return a default tiler even if the image is not associated to a random accessible input. The fix restores the behaviour previously present in prior to the __1.18__ release (by @attipaci, thanks to @sguzzo-dkist-nso).
+
 ### Changed
  
- - [#770] Recognize `RICE_ONE` as an alias for `RICE_1`. Before it became part of the standard, `RICE_ONE` was sometimes used in preceding conventions for the `ZCMPTYPE` keyword. While this alias is explicitly _not_ part of the FITS standard, we can however recognize it to facilitate the reading older compressed files. If a compressed FITS header has `ZCMPTYPE= 'RICE_ONE'`, we will automatically 'repair' it with the standard `RICE_1` value instead (provided that header repairs are allowed -- which is true by default), so that re-writing the FITS will contain the standard value after ingesting. The repair will be logged by the `Logger` of `HeaderCard` also. If header repairs are disabled (via `FitsFactory.setAllowHeaderRepairs(false)`), then `RICE_ONE` will throw a `FitsException`, like all other invalid values for the comression type.
+ - [#770] Recognize `RICE_ONE` as an alias for `RICE_1`. Before it became part of the standard, `RICE_ONE` was sometimes used in preceding conventions for the `ZCMPTYPE` keyword. While this alias is explicitly _not_ part of the FITS standard, we can however recognize it to facilitate the reading older compressed files. If a compressed FITS header has `ZCMPTYPE= 'RICE_ONE'`, we will automatically 'repair' it with the standard `RICE_1` value instead (provided that header repairs are allowed -- which is true by default), so that re-writing the FITS will contain the standard value after ingesting. The repair will be logged by the `Logger` of `HeaderCard` also. If header repairs are disabled (via `FitsFactory.setAllowHeaderRepairs(false)`), then `RICE_ONE` will throw a `FitsException`, like all other invalid values for the comression type. (by @attipaci, thanks to @zycxnanwang)
    
- - [#770] Fail earlier, and with a more descriptive `FitsException` if the `ZCMPTYPE` compression type has an invalid value in the FITS header.
+ - [#770] Fail earlier, and with a more descriptive `FitsException` if the `ZCMPTYPE` compression type has an invalid value in the FITS header. (by @attipaci)
 
  - Migrated publishing from OSS Nexus to the Maven Central OSSRH Staging API.
  
