@@ -4,8 +4,7 @@
 [![Package](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/nexus.yml/badge.svg)](https://oss.sonatype.org/#nexus-search;quick~nom-tam-fits)
 [![Project Site](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml/badge.svg)](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml)
 [![Codecov](https://codecov.io/gh/nom-tam-fits/nom-tam-fits/branch/master/graph/badge.svg?token=8rFyA5YzE5)](https://codecov.io/gh/nom-tam-fits/nom-tam-fits)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits/badge.svg)](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits)
-
+[![Maven Central Version](https://img.shields.io/maven-central/v/gov.nasa.gsfc.heasarc/nom-tam-fits)](https://central.sonatype.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits/overview)
 
 
 # User's guide
