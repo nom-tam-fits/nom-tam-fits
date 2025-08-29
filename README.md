@@ -4,7 +4,7 @@
 [![Package](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/nexus.yml/badge.svg)](https://oss.sonatype.org/#nexus-search;quick~nom-tam-fits)
 [![Project Site](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml/badge.svg)](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml)
 [![Codecov](https://codecov.io/gh/nom-tam-fits/nom-tam-fits/branch/master/graph/badge.svg?token=8rFyA5YzE5)](https://codecov.io/gh/nom-tam-fits/nom-tam-fits)
-[![Maven Central Version](https://img.shields.io/maven-central/v/gov.nasa.gsfc.heasarc/nom-tam-fits)](https://central.sonatype.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits/overview)
+[![Maven Central Version](https://img.shields.io/maven-central/v/gov.nasa.gsfc.heasarc/nom-tam-fits)](https://central.sonatype.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
 
 
 # User's guide
@@ -44,7 +44,7 @@ You may find the following links useful:
  - [FITS Standard](https://fits.gsfc.nasa.gov/fits_standard.html)
  - [History of changes](https://nom-tam-fits.github.io/nom-tam-fits/CHANGELOG.html)
  - [Project site](https://nom-tam-fits.github.io/nom-tam-fits/index.html) on github.io
- - [Maven Central repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
+ - [Maven Central repository](https://central.sonatype.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
 
 
 -----------------------------------------------------------------------------
