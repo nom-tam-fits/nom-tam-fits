@@ -311,213 +311,220 @@
 <a class="jxr_linenumber" name="L303" href="#L303">303</a>         }
 <a class="jxr_linenumber" name="L304" href="#L304">304</a> 
 <a class="jxr_linenumber" name="L305" href="#L305">305</a>         String algo = compressAlgorithmCard.getValue().toUpperCase(Locale.US);
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>         <strong class="jxr_keyword">if</strong> (algo.equals(Compression.ZCMPTYPE_GZIP_1) || algo.equals(Compression.ZCMPTYPE_GZIP_2)
-<a class="jxr_linenumber" name="L307" href="#L307">307</a>                 || algo.equals(Compression.ZCMPTYPE_RICE_1) || algo.equals(Compression.ZCMPTYPE_PLIO_1)
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>                 || algo.equals(Compression.ZCMPTYPE_HCOMPRESS_1) || algo.equals(Compression.ZCMPTYPE_NOCOMPRESS)) {
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>             compressAlgorithm = algo;
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L311" href="#L311">311</a>             Logger.getLogger(HeaderCard.<strong class="jxr_keyword">class</strong>.getName()).warning(<span class="jxr_string">"Ignored invalid ZCMPTYPE value: "</span> + algo);
-<a class="jxr_linenumber" name="L312" href="#L312">312</a>         }
-<a class="jxr_linenumber" name="L313" href="#L313">313</a> 
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>     }
-<a class="jxr_linenumber" name="L316" href="#L316">316</a> 
-<a class="jxr_linenumber" name="L317" href="#L317">317</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L318" href="#L318">318</a> <em class="jxr_javadoccomment">     * Sets the quantization algorithm, via a &lt;code&gt;ZQUANTIZ&lt;/code&gt; header card or equivalent. The card must contain one</em>
-<a class="jxr_linenumber" name="L319" href="#L319">319</a> <em class="jxr_javadoccomment">     * of the values recognized by the FITS standard. If not, &lt;code&gt;null&lt;/code&gt; will be set instead.</em>
-<a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">     * @param  quantAlgorithmCard The header card that specifies the compression algorithm, with one of the standard</em>
-<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">     *                                recognized values such as {@link Compression#ZQUANTIZ_NO_DITHER}, or</em>
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">     *                                &lt;code&gt;null&lt;/code&gt;.</em>
-<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">     * @return                    itself</em>
-<a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">     * @see                       #getQuantAlgorithm()</em>
-<a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">     * @see                       #setCompressAlgorithm(HeaderCard)</em>
-<a class="jxr_linenumber" name="L329" href="#L329">329</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <a name="TiledImageCompressionOperation" href="../../../../../nom/tam/image/compression/tile/TiledImageCompressionOperation.html#TiledImageCompressionOperation">TiledImageCompressionOperation</a> setQuantAlgorithm(<a name="HeaderCard" href="../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> quantAlgorithmCard) {
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>         quantAlgorithm = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L332" href="#L332">332</a> 
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>         <strong class="jxr_keyword">if</strong> (quantAlgorithmCard == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L335" href="#L335">335</a>         }
-<a class="jxr_linenumber" name="L336" href="#L336">336</a> 
-<a class="jxr_linenumber" name="L337" href="#L337">337</a>         String algo = quantAlgorithmCard.getValue().toUpperCase();
-<a class="jxr_linenumber" name="L338" href="#L338">338</a> 
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>         <strong class="jxr_keyword">if</strong> (algo.equals(Compression.ZQUANTIZ_NO_DITHER) || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>                 || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)) {
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>             quantAlgorithm = algo;
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>             Logger.getLogger(HeaderCard.<strong class="jxr_keyword">class</strong>.getName()).warning(<span class="jxr_string">"Ignored invalid ZQUANTIZ value: "</span> + algo);
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>         }
+<a class="jxr_linenumber" name="L306" href="#L306">306</a>         compressAlgorithm = algo;
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> 
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>         <strong class="jxr_keyword">if</strong> (algo.equals(Compression.ZCMPTYPE_RICE_ONE) &amp;&amp; FitsFactory.isAllowHeaderRepairs()) {
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>             compressAlgorithm = Compression.ZCMPTYPE_RICE_1;
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>             Logger.getLogger(HeaderCard.<strong class="jxr_keyword">class</strong>.getName()).warning(<span class="jxr_string">"Repaired non-standard ZCMPTYPE value: "</span>
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>                     + Compression.ZCMPTYPE_RICE_ONE + <span class="jxr_string">" to "</span> + Compression.ZCMPTYPE_RICE_1);
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>         }
+<a class="jxr_linenumber" name="L314" href="#L314">314</a> 
+<a class="jxr_linenumber" name="L315" href="#L315">315</a>         <strong class="jxr_keyword">if</strong> (algo.equals(Compression.ZCMPTYPE_GZIP_1) || algo.equals(Compression.ZCMPTYPE_GZIP_2)
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>                 || algo.equals(Compression.ZCMPTYPE_RICE_1) || algo.equals(Compression.ZCMPTYPE_PLIO_1)
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>                 || algo.equals(Compression.ZCMPTYPE_HCOMPRESS_1) || algo.equals(Compression.ZCMPTYPE_NOCOMPRESS)) {
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>         }
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> 
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Invalid ZCMPTYPE value: "</span> + algo);
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>     }
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> 
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">     * Sets the quantization algorithm, via a &lt;code&gt;ZQUANTIZ&lt;/code&gt; header card or equivalent. The card must contain one</em>
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">     * of the values recognized by the FITS standard. If not, &lt;code&gt;null&lt;/code&gt; will be set instead.</em>
+<a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">     * @param  quantAlgorithmCard The header card that specifies the compression algorithm, with one of the standard</em>
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> <em class="jxr_javadoccomment">     *                                recognized values such as {@link Compression#ZQUANTIZ_NO_DITHER}, or</em>
+<a class="jxr_linenumber" name="L330" href="#L330">330</a> <em class="jxr_javadoccomment">     *                                &lt;code&gt;null&lt;/code&gt;.</em>
+<a class="jxr_linenumber" name="L331" href="#L331">331</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> <em class="jxr_javadoccomment">     * @return                    itself</em>
+<a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L334" href="#L334">334</a> <em class="jxr_javadoccomment">     * @see                       #getQuantAlgorithm()</em>
+<a class="jxr_linenumber" name="L335" href="#L335">335</a> <em class="jxr_javadoccomment">     * @see                       #setCompressAlgorithm(HeaderCard)</em>
+<a class="jxr_linenumber" name="L336" href="#L336">336</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <a name="TiledImageCompressionOperation" href="../../../../../nom/tam/image/compression/tile/TiledImageCompressionOperation.html#TiledImageCompressionOperation">TiledImageCompressionOperation</a> setQuantAlgorithm(<a name="HeaderCard" href="../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> quantAlgorithmCard) {
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>         quantAlgorithm = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L339" href="#L339">339</a> 
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>         <strong class="jxr_keyword">if</strong> (quantAlgorithmCard == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>         }
+<a class="jxr_linenumber" name="L343" href="#L343">343</a> 
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>         String algo = quantAlgorithmCard.getValue().toUpperCase();
 <a class="jxr_linenumber" name="L345" href="#L345">345</a> 
-<a class="jxr_linenumber" name="L346" href="#L346">346</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>     }
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> 
-<a class="jxr_linenumber" name="L349" href="#L349">349</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L350" href="#L350">350</a> <em class="jxr_javadoccomment">     * Returns the name of the currently configured quantization algorithm.</em>
-<a class="jxr_linenumber" name="L351" href="#L351">351</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L352" href="#L352">352</a> <em class="jxr_javadoccomment">     * @return The name of the standard quantization algorithm (i.e. a FITS standard value for the &lt;code&gt;ZQUANTIZ&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L353" href="#L353">353</a> <em class="jxr_javadoccomment">     *             keyword), or &lt;code&gt;null&lt;/code&gt; if not quantization is currently defined, possibly because an invalid</em>
-<a class="jxr_linenumber" name="L354" href="#L354">354</a> <em class="jxr_javadoccomment">     *             value was set before.</em>
-<a class="jxr_linenumber" name="L355" href="#L355">355</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L356" href="#L356">356</a> <em class="jxr_javadoccomment">     * @see    #setQuantAlgorithm(HeaderCard)</em>
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> <em class="jxr_javadoccomment">     * @see    #getCompressAlgorithm()</em>
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>         <strong class="jxr_keyword">if</strong> (algo.equals(Compression.ZQUANTIZ_NO_DITHER) || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>                 || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)) {
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>             quantAlgorithm = algo;
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>             Logger.getLogger(HeaderCard.<strong class="jxr_keyword">class</strong>.getName()).warning(<span class="jxr_string">"Ignored invalid ZQUANTIZ value: "</span> + algo);
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>         }
+<a class="jxr_linenumber" name="L352" href="#L352">352</a> 
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>     }
+<a class="jxr_linenumber" name="L355" href="#L355">355</a> 
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> <em class="jxr_javadoccomment">     * Returns the name of the currently configured quantization algorithm.</em>
 <a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">     * @since  1.18</em>
-<a class="jxr_linenumber" name="L360" href="#L360">360</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> String getQuantAlgorithm() {
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>         <strong class="jxr_keyword">return</strong> quantAlgorithm;
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>     }
-<a class="jxr_linenumber" name="L364" href="#L364">364</a> 
-<a class="jxr_linenumber" name="L365" href="#L365">365</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">     * Returns the name of the currently configured compression algorithm.</em>
-<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">     * @return The name of the standard compression algorithm (i.e. a FITS standard value for the &lt;code&gt;ZCMPTYPE&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L369" href="#L369">369</a> <em class="jxr_javadoccomment">     *             keyword), or &lt;code&gt;null&lt;/code&gt; if not quantization is currently defined, possibly because an invalid</em>
-<a class="jxr_linenumber" name="L370" href="#L370">370</a> <em class="jxr_javadoccomment">     *             value was set before.</em>
-<a class="jxr_linenumber" name="L371" href="#L371">371</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L372" href="#L372">372</a> <em class="jxr_javadoccomment">     * @see    #setCompressAlgorithm(HeaderCard)</em>
-<a class="jxr_linenumber" name="L373" href="#L373">373</a> <em class="jxr_javadoccomment">     * @see    #getQuantAlgorithm()</em>
+<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">     * @return The name of the standard quantization algorithm (i.e. a FITS standard value for the &lt;code&gt;ZQUANTIZ&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> <em class="jxr_javadoccomment">     *             keyword), or &lt;code&gt;null&lt;/code&gt; if not quantization is currently defined, possibly because an invalid</em>
+<a class="jxr_linenumber" name="L361" href="#L361">361</a> <em class="jxr_javadoccomment">     *             value was set before.</em>
+<a class="jxr_linenumber" name="L362" href="#L362">362</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L363" href="#L363">363</a> <em class="jxr_javadoccomment">     * @see    #setQuantAlgorithm(HeaderCard)</em>
+<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">     * @see    #getCompressAlgorithm()</em>
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">     * @since  1.18</em>
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> String getQuantAlgorithm() {
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>         <strong class="jxr_keyword">return</strong> quantAlgorithm;
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>     }
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> 
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L373" href="#L373">373</a> <em class="jxr_javadoccomment">     * Returns the name of the currently configured compression algorithm.</em>
 <a class="jxr_linenumber" name="L374" href="#L374">374</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">     * @since  1.18</em>
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L377" href="#L377">377</a>     <strong class="jxr_keyword">public</strong> String getCompressAlgorithm() {
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>         <strong class="jxr_keyword">return</strong> compressAlgorithm;
-<a class="jxr_linenumber" name="L379" href="#L379">379</a>     }
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> 
-<a class="jxr_linenumber" name="L381" href="#L381">381</a>     <strong class="jxr_keyword">private</strong> &lt;T&gt; T getNullableColumn(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header, Class&lt;T&gt; <strong class="jxr_keyword">class</strong>1, String columnName) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L382" href="#L382">382</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= binaryTable.getNCols(); i++) {
-<a class="jxr_linenumber" name="L383" href="#L383">383</a>             String val = header.getStringValue(TTYPEn.n(i));
-<a class="jxr_linenumber" name="L384" href="#L384">384</a>             <strong class="jxr_keyword">if</strong> (val != <strong class="jxr_keyword">null</strong> &amp;&amp; val.trim().equals(columnName)) {
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">class</strong>1.<strong class="jxr_keyword">cast</strong>(binaryTable.getColumn(i - 1));
-<a class="jxr_linenumber" name="L386" href="#L386">386</a>             }
-<a class="jxr_linenumber" name="L387" href="#L387">387</a>         }
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L389" href="#L389">389</a>     }
-<a class="jxr_linenumber" name="L390" href="#L390">390</a> 
-<a class="jxr_linenumber" name="L391" href="#L391">391</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> processAllTiles() {
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>         compressOptions();
-<a class="jxr_linenumber" name="L393" href="#L393">393</a>         ExecutorService threadPool = FitsFactory.threadPool();
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>         <strong class="jxr_keyword">for</strong> (<a name="TileCompressionOperation" href="../../../../../nom/tam/image/compression/tile/TileCompressionOperation.html#TileCompressionOperation">TileCompressionOperation</a> tileOperation : getTileOperations()) {
-<a class="jxr_linenumber" name="L395" href="#L395">395</a>             tileOperation.execute(threadPool);
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>         }
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>         <strong class="jxr_keyword">for</strong> (<a name="TileCompressionOperation" href="../../../../../nom/tam/image/compression/tile/TileCompressionOperation.html#TileCompressionOperation">TileCompressionOperation</a> tileOperation : getTileOperations()) {
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>             tileOperation.waitForResult();
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>         }
-<a class="jxr_linenumber" name="L400" href="#L400">400</a>     }
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> 
-<a class="jxr_linenumber" name="L402" href="#L402">402</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readAxis(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L403" href="#L403">403</a>         <strong class="jxr_keyword">if</strong> (hasAxes()) {
-<a class="jxr_linenumber" name="L404" href="#L404">404</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L405" href="#L405">405</a>         }
-<a class="jxr_linenumber" name="L406" href="#L406">406</a>         <strong class="jxr_keyword">int</strong> naxis = header.getIntValue(ZNAXIS);
-<a class="jxr_linenumber" name="L407" href="#L407">407</a>         <strong class="jxr_keyword">int</strong>[] axes = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[naxis];
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= naxis; i++) {
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>             <strong class="jxr_keyword">int</strong> axisValue = header.getIntValue(ZNAXISn.n(i), -1);
-<a class="jxr_linenumber" name="L410" href="#L410">410</a>             <strong class="jxr_keyword">if</strong> (axisValue == -1) {
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Required ZNAXISn not found"</span>);
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>             }
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>             axes[naxis - i] = axisValue;
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>         }
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>         setAxes(axes);
-<a class="jxr_linenumber" name="L416" href="#L416">416</a>     }
-<a class="jxr_linenumber" name="L417" href="#L417">417</a> 
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readBaseType(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header) {
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>         <strong class="jxr_keyword">if</strong> (getBaseType() == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L420" href="#L420">420</a>             <strong class="jxr_keyword">int</strong> zBitPix = header.getIntValue(ZBITPIX);
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>             ElementType&lt;Buffer&gt; elementType = ElementType.forNearestBitpix(zBitPix);
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>             <strong class="jxr_keyword">if</strong> (elementType == ElementType.UNKNOWN) {
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Illegal value for ZBITPIX: "</span> + zBitPix);
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>             }
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>             setBaseType(elementType);
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>         }
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>     }
-<a class="jxr_linenumber" name="L428" href="#L428">428</a> 
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readCompressionHeaders(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header) {
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>         compressOptions().getCompressionParameters().getValuesFromHeader(<strong class="jxr_keyword">new</strong> <a name="HeaderAccess" href="../../../../../nom/tam/fits/compression/provider/param/api/HeaderAccess.html#HeaderAccess">HeaderAccess</a>(header));
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>     }
-<a class="jxr_linenumber" name="L432" href="#L432">432</a> 
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readTileAxis(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>         <strong class="jxr_keyword">if</strong> (hasTileAxes()) {
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L436" href="#L436">436</a>         }
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> 
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>         <strong class="jxr_keyword">int</strong> naxes = getNAxes();
-<a class="jxr_linenumber" name="L439" href="#L439">439</a>         <strong class="jxr_keyword">int</strong>[] tileAxes = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[naxes];
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>         <em class="jxr_comment">// TODO</em>
-<a class="jxr_linenumber" name="L441" href="#L441">441</a>         <em class="jxr_comment">// The FITS default is to tile by row (Pence, W., et al. 2000, ASPC, 216, 551)</em>
-<a class="jxr_linenumber" name="L442" href="#L442">442</a>         <em class="jxr_comment">// However, this library defaulted to full image size by default...</em>
-<a class="jxr_linenumber" name="L443" href="#L443">443</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= naxes; i++) {
-<a class="jxr_linenumber" name="L444" href="#L444">444</a>             tileAxes[naxes - i] = header.getIntValue(ZTILEn.n(i), i == 1 ? header.getIntValue(ZNAXISn.n(1)) : 1);
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>         }
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> 
-<a class="jxr_linenumber" name="L447" href="#L447">447</a>         setTileAxes(tileAxes);
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>     }
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> 
-<a class="jxr_linenumber" name="L450" href="#L450">450</a>     <strong class="jxr_keyword">private</strong> &lt;T&gt; Object setInColumn(Object column, <strong class="jxr_keyword">boolean</strong> predicate, <a name="TileCompressionOperation" href="../../../../../nom/tam/image/compression/tile/TileCompressionOperation.html#TileCompressionOperation">TileCompressionOperation</a> tileOperation, Class&lt;T&gt; clazz,
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>             T value) {
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>         <strong class="jxr_keyword">if</strong> (predicate) {
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>             <strong class="jxr_keyword">if</strong> (column == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>                 column = Array.newInstance(clazz, getNumberOfTileOperations());
-<a class="jxr_linenumber" name="L455" href="#L455">455</a>             }
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>             Array.set(column, tileOperation.getTileIndex(), value);
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>         }
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>         <strong class="jxr_keyword">return</strong> column;
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>     }
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> 
-<a class="jxr_linenumber" name="L461" href="#L461">461</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeColumns(<a name="BinaryTableHDU" href="../../../../../nom/tam/fits/BinaryTableHDU.html#BinaryTableHDU">BinaryTableHDU</a> hdu) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L462" href="#L462">462</a>         Object compressedColumn = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>         Object uncompressedColumn = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L464" href="#L464">464</a>         Object gzipColumn = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L465" href="#L465">465</a>         <strong class="jxr_keyword">for</strong> (<a name="TileCompressionOperation" href="../../../../../nom/tam/image/compression/tile/TileCompressionOperation.html#TileCompressionOperation">TileCompressionOperation</a> tileOperation : getTileOperations()) {
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>             <a name="TileCompressionType" href="../../../../../nom/tam/image/compression/tile/TileCompressionType.html#TileCompressionType">TileCompressionType</a> compression = tileOperation.getCompressionType();
-<a class="jxr_linenumber" name="L467" href="#L467">467</a>             byte[] compressedData = tileOperation.getCompressedData();
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> 
-<a class="jxr_linenumber" name="L469" href="#L469">469</a>             compressedColumn = setInColumn(compressedColumn, compression == COMPRESSED, tileOperation, byte[].<strong class="jxr_keyword">class</strong>,
-<a class="jxr_linenumber" name="L470" href="#L470">470</a>                     compressedData);
-<a class="jxr_linenumber" name="L471" href="#L471">471</a>             gzipColumn = setInColumn(gzipColumn, compression == GZIP_COMPRESSED, tileOperation, byte[].<strong class="jxr_keyword">class</strong>,
-<a class="jxr_linenumber" name="L472" href="#L472">472</a>                     compressedData);
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>             uncompressedColumn = setInColumn(uncompressedColumn, compression == UNCOMPRESSED, tileOperation, byte[].<strong class="jxr_keyword">class</strong>,
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>                     compressedData);
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>         }
-<a class="jxr_linenumber" name="L476" href="#L476">476</a>         setNullEntries(compressedColumn, <strong class="jxr_keyword">new</strong> byte[0]);
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>         setNullEntries(gzipColumn, <strong class="jxr_keyword">new</strong> byte[0]);
-<a class="jxr_linenumber" name="L478" href="#L478">478</a>         setNullEntries(uncompressedColumn, <strong class="jxr_keyword">new</strong> byte[0]);
-<a class="jxr_linenumber" name="L479" href="#L479">479</a>         addColumnToTable(hdu, compressedColumn, COMPRESSED_DATA_COLUMN);
-<a class="jxr_linenumber" name="L480" href="#L480">480</a>         addColumnToTable(hdu, gzipColumn, GZIP_COMPRESSED_DATA_COLUMN);
-<a class="jxr_linenumber" name="L481" href="#L481">481</a>         addColumnToTable(hdu, uncompressedColumn, UNCOMPRESSED_DATA_COLUMN);
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>         <strong class="jxr_keyword">if</strong> (imageNullPixelMask != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L483" href="#L483">483</a>             addColumnToTable(hdu, imageNullPixelMask.getColumn(), NULL_PIXEL_MASK_COLUMN);
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>         }
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>         compressOptions.getCompressionParameters().addColumnsToTable(hdu);
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>         hdu.getData().fillHeader(hdu.getHeader());
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>     }
-<a class="jxr_linenumber" name="L488" href="#L488">488</a> 
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> writeHeader(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L490" href="#L490">490</a>         <a name="HeaderCardBuilder" href="../../../../../nom/tam/fits/HeaderCardBuilder.html#HeaderCardBuilder">HeaderCardBuilder</a> cardBuilder = header<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L491" href="#L491">491</a>                 .card(ZBITPIX).value(getBaseType().bitPix())<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L492" href="#L492">492</a>                 .card(ZCMPTYPE).value(compressAlgorithm);
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>         <strong class="jxr_keyword">int</strong>[] tileAxes = getTileAxes();
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>         <strong class="jxr_keyword">int</strong> naxes = tileAxes.length;
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= naxes; i++) {
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>             cardBuilder.card(ZTILEn.n(i)).value(tileAxes[naxes - i]);
-<a class="jxr_linenumber" name="L497" href="#L497">497</a>         }
-<a class="jxr_linenumber" name="L498" href="#L498">498</a>         compressOptions().getCompressionParameters().setValuesInHeader(<strong class="jxr_keyword">new</strong> <a name="HeaderAccess" href="../../../../../nom/tam/fits/compression/provider/param/api/HeaderAccess.html#HeaderAccess">HeaderAccess</a>(header));
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>         <strong class="jxr_keyword">if</strong> (imageNullPixelMask != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L500" href="#L500">500</a>             cardBuilder.card(ZMASKCMP).value(imageNullPixelMask.getCompressAlgorithm());
-<a class="jxr_linenumber" name="L501" href="#L501">501</a>         }
-<a class="jxr_linenumber" name="L502" href="#L502">502</a>     }
-<a class="jxr_linenumber" name="L503" href="#L503">503</a> 
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>     <strong class="jxr_keyword">protected</strong> <a name="BinaryTable" href="../../../../../nom/tam/fits/BinaryTable.html#BinaryTable">BinaryTable</a> getBinaryTable() {
-<a class="jxr_linenumber" name="L505" href="#L505">505</a>         <strong class="jxr_keyword">return</strong> binaryTable;
-<a class="jxr_linenumber" name="L506" href="#L506">506</a>     }
-<a class="jxr_linenumber" name="L507" href="#L507">507</a> 
-<a class="jxr_linenumber" name="L508" href="#L508">508</a>     <strong class="jxr_keyword">protected</strong> <a name="ImageNullPixelMask" href="../../../../../nom/tam/image/compression/tile/mask/ImageNullPixelMask.html#ImageNullPixelMask">ImageNullPixelMask</a> getImageNullPixelMask() {
-<a class="jxr_linenumber" name="L509" href="#L509">509</a>         <strong class="jxr_keyword">return</strong> imageNullPixelMask;
-<a class="jxr_linenumber" name="L510" href="#L510">510</a>     }
-<a class="jxr_linenumber" name="L511" href="#L511">511</a> 
-<a class="jxr_linenumber" name="L512" href="#L512">512</a> }
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">     * @return The name of the standard compression algorithm (i.e. a FITS standard value for the &lt;code&gt;ZCMPTYPE&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     *             keyword), or &lt;code&gt;null&lt;/code&gt; if not quantization is currently defined, possibly because an invalid</em>
+<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     *             value was set before.</em>
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     * @see    #setCompressAlgorithm(HeaderCard)</em>
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> <em class="jxr_javadoccomment">     * @see    #getQuantAlgorithm()</em>
+<a class="jxr_linenumber" name="L381" href="#L381">381</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L382" href="#L382">382</a> <em class="jxr_javadoccomment">     * @since  1.18</em>
+<a class="jxr_linenumber" name="L383" href="#L383">383</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L384" href="#L384">384</a>     <strong class="jxr_keyword">public</strong> String getCompressAlgorithm() {
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>         <strong class="jxr_keyword">return</strong> compressAlgorithm;
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>     }
+<a class="jxr_linenumber" name="L387" href="#L387">387</a> 
+<a class="jxr_linenumber" name="L388" href="#L388">388</a>     <strong class="jxr_keyword">private</strong> &lt;T&gt; T getNullableColumn(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header, Class&lt;T&gt; <strong class="jxr_keyword">class</strong>1, String columnName) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= binaryTable.getNCols(); i++) {
+<a class="jxr_linenumber" name="L390" href="#L390">390</a>             String val = header.getStringValue(TTYPEn.n(i));
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>             <strong class="jxr_keyword">if</strong> (val != <strong class="jxr_keyword">null</strong> &amp;&amp; val.trim().equals(columnName)) {
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">class</strong>1.<strong class="jxr_keyword">cast</strong>(binaryTable.getColumn(i - 1));
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>             }
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>         }
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>     }
+<a class="jxr_linenumber" name="L397" href="#L397">397</a> 
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> processAllTiles() {
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>         compressOptions();
+<a class="jxr_linenumber" name="L400" href="#L400">400</a>         ExecutorService threadPool = FitsFactory.threadPool();
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>         <strong class="jxr_keyword">for</strong> (<a name="TileCompressionOperation" href="../../../../../nom/tam/image/compression/tile/TileCompressionOperation.html#TileCompressionOperation">TileCompressionOperation</a> tileOperation : getTileOperations()) {
+<a class="jxr_linenumber" name="L402" href="#L402">402</a>             tileOperation.execute(threadPool);
+<a class="jxr_linenumber" name="L403" href="#L403">403</a>         }
+<a class="jxr_linenumber" name="L404" href="#L404">404</a>         <strong class="jxr_keyword">for</strong> (<a name="TileCompressionOperation" href="../../../../../nom/tam/image/compression/tile/TileCompressionOperation.html#TileCompressionOperation">TileCompressionOperation</a> tileOperation : getTileOperations()) {
+<a class="jxr_linenumber" name="L405" href="#L405">405</a>             tileOperation.waitForResult();
+<a class="jxr_linenumber" name="L406" href="#L406">406</a>         }
+<a class="jxr_linenumber" name="L407" href="#L407">407</a>     }
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> 
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readAxis(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>         <strong class="jxr_keyword">if</strong> (hasAxes()) {
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>         }
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>         <strong class="jxr_keyword">int</strong> naxis = header.getIntValue(ZNAXIS);
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>         <strong class="jxr_keyword">int</strong>[] axes = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[naxis];
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= naxis; i++) {
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>             <strong class="jxr_keyword">int</strong> axisValue = header.getIntValue(ZNAXISn.n(i), -1);
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>             <strong class="jxr_keyword">if</strong> (axisValue == -1) {
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Required ZNAXISn not found"</span>);
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>             }
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>             axes[naxis - i] = axisValue;
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>         }
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>         setAxes(axes);
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>     }
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> 
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readBaseType(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header) {
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>         <strong class="jxr_keyword">if</strong> (getBaseType() == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L427" href="#L427">427</a>             <strong class="jxr_keyword">int</strong> zBitPix = header.getIntValue(ZBITPIX);
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>             ElementType&lt;Buffer&gt; elementType = ElementType.forNearestBitpix(zBitPix);
+<a class="jxr_linenumber" name="L429" href="#L429">429</a>             <strong class="jxr_keyword">if</strong> (elementType == ElementType.UNKNOWN) {
+<a class="jxr_linenumber" name="L430" href="#L430">430</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Illegal value for ZBITPIX: "</span> + zBitPix);
+<a class="jxr_linenumber" name="L431" href="#L431">431</a>             }
+<a class="jxr_linenumber" name="L432" href="#L432">432</a>             setBaseType(elementType);
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>         }
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>     }
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> 
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readCompressionHeaders(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header) {
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>         compressOptions().getCompressionParameters().getValuesFromHeader(<strong class="jxr_keyword">new</strong> <a name="HeaderAccess" href="../../../../../nom/tam/fits/compression/provider/param/api/HeaderAccess.html#HeaderAccess">HeaderAccess</a>(header));
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>     }
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> 
+<a class="jxr_linenumber" name="L440" href="#L440">440</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readTileAxis(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L441" href="#L441">441</a>         <strong class="jxr_keyword">if</strong> (hasTileAxes()) {
+<a class="jxr_linenumber" name="L442" href="#L442">442</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>         }
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> 
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>         <strong class="jxr_keyword">int</strong> naxes = getNAxes();
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>         <strong class="jxr_keyword">int</strong>[] tileAxes = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[naxes];
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>         <em class="jxr_comment">// TODO</em>
+<a class="jxr_linenumber" name="L448" href="#L448">448</a>         <em class="jxr_comment">// The FITS default is to tile by row (Pence, W., et al. 2000, ASPC, 216, 551)</em>
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>         <em class="jxr_comment">// However, this library defaulted to full image size by default...</em>
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= naxes; i++) {
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>             tileAxes[naxes - i] = header.getIntValue(ZTILEn.n(i), i == 1 ? header.getIntValue(ZNAXISn.n(1)) : 1);
+<a class="jxr_linenumber" name="L452" href="#L452">452</a>         }
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> 
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>         setTileAxes(tileAxes);
+<a class="jxr_linenumber" name="L455" href="#L455">455</a>     }
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> 
+<a class="jxr_linenumber" name="L457" href="#L457">457</a>     <strong class="jxr_keyword">private</strong> &lt;T&gt; Object setInColumn(Object column, <strong class="jxr_keyword">boolean</strong> predicate, <a name="TileCompressionOperation" href="../../../../../nom/tam/image/compression/tile/TileCompressionOperation.html#TileCompressionOperation">TileCompressionOperation</a> tileOperation, Class&lt;T&gt; clazz,
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>             T value) {
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>         <strong class="jxr_keyword">if</strong> (predicate) {
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>             <strong class="jxr_keyword">if</strong> (column == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>                 column = Array.newInstance(clazz, getNumberOfTileOperations());
+<a class="jxr_linenumber" name="L462" href="#L462">462</a>             }
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>             Array.set(column, tileOperation.getTileIndex(), value);
+<a class="jxr_linenumber" name="L464" href="#L464">464</a>         }
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>         <strong class="jxr_keyword">return</strong> column;
+<a class="jxr_linenumber" name="L466" href="#L466">466</a>     }
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> 
+<a class="jxr_linenumber" name="L468" href="#L468">468</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeColumns(<a name="BinaryTableHDU" href="../../../../../nom/tam/fits/BinaryTableHDU.html#BinaryTableHDU">BinaryTableHDU</a> hdu) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L469" href="#L469">469</a>         Object compressedColumn = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L470" href="#L470">470</a>         Object uncompressedColumn = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L471" href="#L471">471</a>         Object gzipColumn = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>         <strong class="jxr_keyword">for</strong> (<a name="TileCompressionOperation" href="../../../../../nom/tam/image/compression/tile/TileCompressionOperation.html#TileCompressionOperation">TileCompressionOperation</a> tileOperation : getTileOperations()) {
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>             <a name="TileCompressionType" href="../../../../../nom/tam/image/compression/tile/TileCompressionType.html#TileCompressionType">TileCompressionType</a> compression = tileOperation.getCompressionType();
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>             byte[] compressedData = tileOperation.getCompressedData();
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> 
+<a class="jxr_linenumber" name="L476" href="#L476">476</a>             compressedColumn = setInColumn(compressedColumn, compression == COMPRESSED, tileOperation, byte[].<strong class="jxr_keyword">class</strong>,
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>                     compressedData);
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>             gzipColumn = setInColumn(gzipColumn, compression == GZIP_COMPRESSED, tileOperation, byte[].<strong class="jxr_keyword">class</strong>,
+<a class="jxr_linenumber" name="L479" href="#L479">479</a>                     compressedData);
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>             uncompressedColumn = setInColumn(uncompressedColumn, compression == UNCOMPRESSED, tileOperation, byte[].<strong class="jxr_keyword">class</strong>,
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>                     compressedData);
+<a class="jxr_linenumber" name="L482" href="#L482">482</a>         }
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>         setNullEntries(compressedColumn, <strong class="jxr_keyword">new</strong> byte[0]);
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>         setNullEntries(gzipColumn, <strong class="jxr_keyword">new</strong> byte[0]);
+<a class="jxr_linenumber" name="L485" href="#L485">485</a>         setNullEntries(uncompressedColumn, <strong class="jxr_keyword">new</strong> byte[0]);
+<a class="jxr_linenumber" name="L486" href="#L486">486</a>         addColumnToTable(hdu, compressedColumn, COMPRESSED_DATA_COLUMN);
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>         addColumnToTable(hdu, gzipColumn, GZIP_COMPRESSED_DATA_COLUMN);
+<a class="jxr_linenumber" name="L488" href="#L488">488</a>         addColumnToTable(hdu, uncompressedColumn, UNCOMPRESSED_DATA_COLUMN);
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>         <strong class="jxr_keyword">if</strong> (imageNullPixelMask != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>             addColumnToTable(hdu, imageNullPixelMask.getColumn(), NULL_PIXEL_MASK_COLUMN);
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>         }
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>         compressOptions.getCompressionParameters().addColumnsToTable(hdu);
+<a class="jxr_linenumber" name="L493" href="#L493">493</a>         hdu.getData().fillHeader(hdu.getHeader());
+<a class="jxr_linenumber" name="L494" href="#L494">494</a>     }
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> 
+<a class="jxr_linenumber" name="L496" href="#L496">496</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> writeHeader(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L497" href="#L497">497</a>         <a name="HeaderCardBuilder" href="../../../../../nom/tam/fits/HeaderCardBuilder.html#HeaderCardBuilder">HeaderCardBuilder</a> cardBuilder = header<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L498" href="#L498">498</a>                 .card(ZBITPIX).value(getBaseType().bitPix())<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>                 .card(ZCMPTYPE).value(compressAlgorithm);
+<a class="jxr_linenumber" name="L500" href="#L500">500</a>         <strong class="jxr_keyword">int</strong>[] tileAxes = getTileAxes();
+<a class="jxr_linenumber" name="L501" href="#L501">501</a>         <strong class="jxr_keyword">int</strong> naxes = tileAxes.length;
+<a class="jxr_linenumber" name="L502" href="#L502">502</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= naxes; i++) {
+<a class="jxr_linenumber" name="L503" href="#L503">503</a>             cardBuilder.card(ZTILEn.n(i)).value(tileAxes[naxes - i]);
+<a class="jxr_linenumber" name="L504" href="#L504">504</a>         }
+<a class="jxr_linenumber" name="L505" href="#L505">505</a>         compressOptions().getCompressionParameters().setValuesInHeader(<strong class="jxr_keyword">new</strong> <a name="HeaderAccess" href="../../../../../nom/tam/fits/compression/provider/param/api/HeaderAccess.html#HeaderAccess">HeaderAccess</a>(header));
+<a class="jxr_linenumber" name="L506" href="#L506">506</a>         <strong class="jxr_keyword">if</strong> (imageNullPixelMask != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L507" href="#L507">507</a>             cardBuilder.card(ZMASKCMP).value(imageNullPixelMask.getCompressAlgorithm());
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>         }
+<a class="jxr_linenumber" name="L509" href="#L509">509</a>     }
+<a class="jxr_linenumber" name="L510" href="#L510">510</a> 
+<a class="jxr_linenumber" name="L511" href="#L511">511</a>     <strong class="jxr_keyword">protected</strong> <a name="BinaryTable" href="../../../../../nom/tam/fits/BinaryTable.html#BinaryTable">BinaryTable</a> getBinaryTable() {
+<a class="jxr_linenumber" name="L512" href="#L512">512</a>         <strong class="jxr_keyword">return</strong> binaryTable;
+<a class="jxr_linenumber" name="L513" href="#L513">513</a>     }
+<a class="jxr_linenumber" name="L514" href="#L514">514</a> 
+<a class="jxr_linenumber" name="L515" href="#L515">515</a>     <strong class="jxr_keyword">protected</strong> <a name="ImageNullPixelMask" href="../../../../../nom/tam/image/compression/tile/mask/ImageNullPixelMask.html#ImageNullPixelMask">ImageNullPixelMask</a> getImageNullPixelMask() {
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>         <strong class="jxr_keyword">return</strong> imageNullPixelMask;
+<a class="jxr_linenumber" name="L517" href="#L517">517</a>     }
+<a class="jxr_linenumber" name="L518" href="#L518">518</a> 
+<a class="jxr_linenumber" name="L519" href="#L519">519</a> }
 </pre>
 <hr/>
 <div id="footer">© 1996–2025 nom-tam-fits</div>

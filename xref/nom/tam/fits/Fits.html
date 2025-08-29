@@ -1519,8 +1519,8 @@
 <a class="jxr_linenumber" name="L1511" href="#L1511">1511</a> <em class="jxr_javadoccomment">     * @see                  #write(FitsOutputStream)</em>
 <a class="jxr_linenumber" name="L1512" href="#L1512">1512</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L1513" href="#L1513">1513</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(File file) <strong class="jxr_keyword">throws</strong> IOException, <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L1514" href="#L1514">1514</a>         <strong class="jxr_keyword">try</strong> (FileOutputStream o = <strong class="jxr_keyword">new</strong> FileOutputStream(file)) {
-<a class="jxr_linenumber" name="L1515" href="#L1515">1515</a>             write(<strong class="jxr_keyword">new</strong> <a name="FitsOutputStream" href="../../../nom/tam/util/FitsOutputStream.html#FitsOutputStream">FitsOutputStream</a>(o));
+<a class="jxr_linenumber" name="L1514" href="#L1514">1514</a>         <strong class="jxr_keyword">try</strong> (FileOutputStream o = <strong class="jxr_keyword">new</strong> FileOutputStream(file); <a name="FitsOutputStream" href="../../../nom/tam/util/FitsOutputStream.html#FitsOutputStream">FitsOutputStream</a> fo = <strong class="jxr_keyword">new</strong> <a name="FitsOutputStream" href="../../../nom/tam/util/FitsOutputStream.html#FitsOutputStream">FitsOutputStream</a>(o)) {
+<a class="jxr_linenumber" name="L1515" href="#L1515">1515</a>             write(fo);
 <a class="jxr_linenumber" name="L1516" href="#L1516">1516</a>             o.flush();
 <a class="jxr_linenumber" name="L1517" href="#L1517">1517</a>         }
 <a class="jxr_linenumber" name="L1518" href="#L1518">1518</a>     }
@@ -1632,8 +1632,8 @@
 <a class="jxr_linenumber" name="L1624" href="#L1624">1624</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Cannot create FitsOutputStream from class "</span> + os.getClass().getName());
 <a class="jxr_linenumber" name="L1625" href="#L1625">1625</a>         }
 <a class="jxr_linenumber" name="L1626" href="#L1626">1626</a> 
-<a class="jxr_linenumber" name="L1627" href="#L1627">1627</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L1628" href="#L1628">1628</a>             write(<strong class="jxr_keyword">new</strong> <a name="FitsOutputStream" href="../../../nom/tam/util/FitsOutputStream.html#FitsOutputStream">FitsOutputStream</a>((DataOutputStream) os));
+<a class="jxr_linenumber" name="L1627" href="#L1627">1627</a>         <strong class="jxr_keyword">try</strong> (<a name="FitsOutputStream" href="../../../nom/tam/util/FitsOutputStream.html#FitsOutputStream">FitsOutputStream</a> fos = <strong class="jxr_keyword">new</strong> <a name="FitsOutputStream" href="../../../nom/tam/util/FitsOutputStream.html#FitsOutputStream">FitsOutputStream</a>((DataOutputStream) os)) {
+<a class="jxr_linenumber" name="L1628" href="#L1628">1628</a>             write(fos);
 <a class="jxr_linenumber" name="L1629" href="#L1629">1629</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
 <a class="jxr_linenumber" name="L1630" href="#L1630">1630</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Error writing to the FITS output stream: "</span> + e, e);
 <a class="jxr_linenumber" name="L1631" href="#L1631">1631</a>         }
