@@ -4,7 +4,7 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.21.20rc2] - 2025-09-02
 
 Maintenance release, with minor improvements, and revised publishing process.
 
