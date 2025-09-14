@@ -81,5 +81,5 @@ jobs:
       env:
         PORTAL_USERNAME: ${{ secrets.PORTAL_USERNAME }}
         PORTAL_PASSWORD: ${{ secrets.PORTAL_PASSWORD }}
-      run: mvn -B deploy -DskipTests -Pnexus-repo --settings settings.xml
+      run: mvn -B deploy -DskipTests -Pcentral-publishing --settings settings.xml
       

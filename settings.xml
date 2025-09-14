@@ -1,12 +1,12 @@
 <settings>
   <servers>
     <server>
-      <id>nexus</id>
+      <id>snapshot-repo</id>
       <username>${env.PORTAL_USERNAME}</username>
       <password>${env.PORTAL_PASSWORD}</password>
     </server>
     <server>
-      <id>central</id>
+      <id>central-repo</id>
       <username>${env.PORTAL_USERNAME}</username>
       <password>${env.PORTAL_PASSWORD}</password>
     </server>

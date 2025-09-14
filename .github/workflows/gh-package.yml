@@ -35,4 +35,4 @@ jobs:
       - name: Publish to GitHub Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn -B deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -DskipTests -Pgithub-repo
+        run: mvn -B deploy -Dmaven.javadoc.skip=true -DskipTests -Pgithub-packages
