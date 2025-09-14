@@ -38,9 +38,9 @@ To release packages, you will need:
 
 Once you are confident that everything is in perfect order for the next release, change the version number in `pom.xml`. Remove `-SNAPHOT` from the version. The release needs a proper version number, such a `1.17.2` for finalized release, or something like `1.17.2-rc5` for release candidates and pre-releases. 
 
- * Commit and push the updated `pom.xml` to the mainline master. Following a successful build, the Github Actions CI will upload the release artifacts to the Nexus staging repository.
+ * Commit and push the updated `pom.xml` to the mainline master. Following a successful build, the Github Actions CI will upload the release artifacts to Maven Central Publishing.
 
- * Log into Sonatype Nexus ([oss.sonatype.org](https://oss.sonatype.org)) and click _Staging Repositories_ in the left menu panel. Your freshly packaged release should show up here. If you don't see it, it's either because Github Actions failed (or did not run at all), or because it uploaded to Nexus with someone else's credentials. If necessary, retrace your steps and fix what is needed to get the package published to Nexus staging with your credentials. 
+ * Log into [Maven Central Publising](https://central.sonatype.com/publishing/) and click the _Deployments_ tab (it might take a few minutes for the upload to appear). If you don't see it within an hour or so of pushing the release commit to GitHub, it's either because Github Actions failed (or did not run at all), or because the CI upload failed. If necessary, retrace your steps and fix what is needed to get the package published with your credentials. 
 
  * Sleep on it. So far so good, but this is also you last chance to fix anything before the package really goes public, so don't rush it. Take some time to reflect on it, double or triple-check everything, before moving to the next step...
 
@@ -48,13 +48,17 @@ Once you are confident that everything is in perfect order for the next release,
    - Name and tag the release with by the version, such as `1.17.0-rc1` (Note, before 1.17.0 the tag included a 'nom-tam-fits-' prefix as well, which resulted in source tarballs named as nom-tam-fits-nom-tam-fits-<version> -- therefore starting with 1.17.0 we'll omit that).
    - Link the release to the last master commit of the repo.
    - If it is not a final release, be sure to check the box for _pre-release_ near the bottom (when checked the CI will not publish a Github package for this release).
-   - Write up a summary of what's in the release. It can be a digested version of the changes, or some other concise summary.
-   - Attach the signed package and javadoc JARs. (Best to use the signed JAR that has been uploaded to Nexus staging.)
+   - Copy/paste the changes for the release from `CHANGELOG.md`.
+   - Attach the signed package and javadoc JARs. (use the signed JARs from _Deployment_ on Maven Central Publishing.)
    - After creating the release, delete any prior pre-releases (We should only track final releases in the long run).
 
- * After your upload to Sonatype Nexus, you need _Close_ the release, s.t. it cannot be modified further. (Prior to closing, in principle you could upload more artifacts from the same host as before -- but since we used the github CI to upload, there is little you can do to add anything really). Name the release with the version number, such as `1.17.0-rc4`.
+ * Maven Central Publishing now give you options to _Release_ to Maven Central or _Drop_ it. If it is a final release, and you are ready to push it to Maven Central, then go ahead and click _Release_. Or, if it's a pre-release, you can drop it.
  
- * Nexus will now give you options to _Release_ to Maven Central or _Drop_ it. If it is a final release, and you are ready to push it to Maven Central, then go ahead and click _Release_. Or, if it's a pre-release, you can drop it once it gets obsoleted (before then collaborators can access the pre-release on Nexus too, so do keep pre-releases around for them as long as it's appropriate).
+ * Close and unpin any issues on GitHub, which were resolved by the release.
+ 
+ * Close the Milestone on GitHub, and create a new milestone for the next release.
+ 
+ * Clean up Discussions on GitHub. 
  
  * Finally, edit `pom.xml`, and bump the version number and add `-SNAPSHOT`, for example: change the just released `1.17.0` to `1.17.1-SNAPSHOT`. I.e., from here on new commits on master will be part of the 1.17.1 development. Commit and push `pom.xml`. 
  
