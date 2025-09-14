@@ -3,7 +3,6 @@ permissions:
   contents: read
   pull-requests: write
 
-
 on: 
   push:
     paths:
@@ -12,7 +11,7 @@ on:
       - 'src/site/**'
       - 'src/changes/**'
       - 'pom.xml'
-      - '.github/workflows/nexus.yml'
+      - '.github/workflows/central.yml'
 
   pull_request:
     paths:
@@ -21,8 +20,7 @@ on:
       - 'src/site/**'
       - 'src/changes/**'
       - 'pom.xml'
-      - '.github/workflows/nexus.yml'
-
+      - '.github/workflows/central.yml'
 
 jobs:
   build:

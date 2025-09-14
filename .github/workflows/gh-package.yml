@@ -3,8 +3,8 @@ on:
   release:
     types: [released]
   push:
-    paths:
-      - '.github/workflows/gh-package.yml'
+#    paths:
+#      - '.github/workflows/gh-package.yml'
 
 jobs:
   publish:
