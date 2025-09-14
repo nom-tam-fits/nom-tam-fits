@@ -1,7 +1,7 @@
 
 ![Build](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/build.yml/badge.svg)
 ![Testing](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/test.yml/badge.svg)
-[![Package](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/nexus.yml/badge.svg)](https://oss.sonatype.org/#nexus-search;quick~nom-tam-fits)
+![Package](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/central.yml/badge.svg)
 [![Project Site](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml/badge.svg)](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml)
 [![Codecov](https://codecov.io/gh/nom-tam-fits/nom-tam-fits/branch/master/graph/badge.svg?token=8rFyA5YzE5)](https://codecov.io/gh/nom-tam-fits/nom-tam-fits)
 [![Maven Central Version](https://img.shields.io/maven-central/v/gov.nasa.gsfc.heasarc/nom-tam-fits)](https://central.sonatype.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)

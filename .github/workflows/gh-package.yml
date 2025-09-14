@@ -2,7 +2,7 @@ name: GitHub Package
 on:
   release:
     types: [released]
-  push:
+# push:
 #    paths:
 #      - '.github/workflows/gh-package.yml'
 
@@ -23,7 +23,7 @@ jobs:
           java-version: '21'
           distribution: 'adopt'
           cache: 'maven'
-         
+
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v6
