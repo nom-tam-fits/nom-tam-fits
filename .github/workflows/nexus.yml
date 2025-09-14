@@ -51,7 +51,7 @@ jobs:
       working-directory: ./nom-tam-fits
         
   release:
-    name: Publish to Sonatype
+    name: Publish to Maven Central
     needs: build
     runs-on: ubuntu-latest
     if: ${{ github.repository_owner == 'nom-tam-fits' && github.ref_name == 'master' }}
