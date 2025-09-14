@@ -6,12 +6,12 @@
       <password>${env.PORTAL_PASSWORD}</password>
     </server>
     <server>
-      <id>central-repo</id>
+      <id>central</id>
       <username>${env.PORTAL_USERNAME}</username>
       <password>${env.PORTAL_PASSWORD}</password>
     </server>
     <server>
-      <id>github-repo</id>
+      <id>github</id>
       <username>${github.actor}</username>
       <password>${env.GITHUB_TOKEN}</password>
     </server>

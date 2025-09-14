@@ -6,7 +6,6 @@ on:
     paths:
       - '.github/workflows/gh-package.yml'
 
-
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -36,4 +35,4 @@ jobs:
       - name: Publish to GitHub Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn -B deploy -Dmaven.javadoc.skip=true -DskipTests -Pgithub-packages
+        run: mvn -B deploy -Dmaven.javadoc.skip=true -DskipTests -Pgithub

@@ -3,6 +3,7 @@ permissions:
   contents: read
   pull-requests: write
 
+
 on: 
   push:
     paths:
@@ -21,6 +22,7 @@ on:
       - 'src/changes/**'
       - 'pom.xml'
       - '.github/workflows/nexus.yml'
+
 
 jobs:
   build:
@@ -81,5 +83,5 @@ jobs:
       env:
         PORTAL_USERNAME: ${{ secrets.PORTAL_USERNAME }}
         PORTAL_PASSWORD: ${{ secrets.PORTAL_PASSWORD }}
-      run: mvn -B deploy -DskipTests -Pcentral-publishing --settings settings.xml
+      run: mvn -B deploy -DskipTests -Pcentral --settings settings.xml
       
