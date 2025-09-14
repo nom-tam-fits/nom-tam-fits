@@ -12,7 +12,7 @@
           <property>
             <name>Authorization</name>
             <value>Bearer ${env.GITHUB_TOKEN}</value>
-          </property
+          </property>
         </httpHeaders>
       </configuration>
       <username>${env.PKG_USERNAME}</username>
