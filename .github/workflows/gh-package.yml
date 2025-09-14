@@ -13,17 +13,17 @@ jobs:
     permissions: 
       contents: read
       packages: write
-      
+
     steps:
       - uses: actions/checkout@v5
-        
+
       - name: Set up Java
         uses: actions/setup-java@v5
         with:
           java-version: '21'
           distribution: 'adopt'
           cache: 'maven'
-                   
+         
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v6
@@ -31,7 +31,7 @@ jobs:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
           git_user_signingkey: true
-          
+
       - name: Publish to GitHub Packages
         env:
           PKG_USERNAME: ${{ github.actor }}
