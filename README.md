@@ -35,7 +35,7 @@ This document has been updated for 1.21 and/or later 1.x releases.
 
 -----------------------------------------------------------------------------
 
-<a name="related-links"></a>
+<a id="related-links"></a>
 ## Related links
 
 You may find the following links useful:
@@ -49,7 +49,7 @@ You may find the following links useful:
 
 -----------------------------------------------------------------------------
 
-<a name="introduction"></a>
+<a id="introduction"></a>
 ## Introduction
 
 FITS (Flexible Image Transport System) is a binary format of many astronomical datasets and images.
@@ -67,7 +67,7 @@ This is an open-source, community maintained, project hosted on GitHub as
 docs, can be found on the [project site](https://nom-tam-fits.github.io/nom-tam-fits/index.html).
 
 
-<a name="Fits-data-types"></a>
+<a id="Fits-data-types"></a>
 ### FITS data (HDU) types
 
 A FITS file is composed of one or more *Header-Data Units* (HDUs). Each HDU consists of a *header*, which describes 
@@ -118,7 +118,7 @@ The current FITS standard (4.0) recognizes the following principal HDU / data ty
 
 -----------------------------------------------------------------------------
 
-<a name="deprecated-methods"></a>
+<a id="deprecated-methods"></a>
 ## Compatibility with prior releases
 
 The current version of the __nom.tam.fits__ library requires Java 8 (or later).
@@ -154,7 +154,7 @@ future releases prior to version __2.0__ of the library.
 
 -----------------------------------------------------------------------------
 
-<a name="reading-fits-files"></a>
+<a id="reading-fits-files"></a>
 ## Reading FITS files
 
  - [FITS vs Java bytes](#fits-vs-java-bytes)
@@ -164,7 +164,7 @@ future releases prior to version __2.0__ of the library.
  - [Reading tables](#reading-tables)
 
 
-<a name="fits-vs-java-bytes"></a>
+<a id="fits-vs-java-bytes"></a>
 ### FITS vs Java bytes
 
 Java bytes are signed, but FITS bytes are not. If any arithmetic processing is to be done on byte-valued data,
@@ -176,7 +176,7 @@ bytes to Java `short` values as:
   short shortValue = (byteValue & 0xFF);
 ```
 
-<a name="deferred-reading"></a>
+<a id="deferred-reading"></a>
 ### Deferred reading
 
 When FITS data are being read from a non-compressed random accessible input (such as a `FitsFile`), the `read()` call 
@@ -221,7 +221,7 @@ As of version __1.18__, all data classes of the library support deferred reading
 
 
 
-<a name="read-tolerance"></a>
+<a id="read-tolerance"></a>
 ### Tolerance to standard violations in 3rd party FITS files.
 
 By default the library will be tolerant to FITS standard violations when parsing 3rd-party FITS files. We believe that 
@@ -237,7 +237,7 @@ during reading.
 
 
 
-<a name="reading-images"></a>
+<a id="reading-images"></a>
 ### Reading Images
 
 - [Reading whole images](#reading-whole-images)
@@ -247,7 +247,7 @@ during reading.
 
 
 
-<a name="reading-whole-images"></a>
+<a id="reading-whole-images"></a>
 
 #### Reading whole images
 
@@ -334,7 +334,7 @@ convert them to complex values in a second step after loading the data. E.g.:
 ```
 
 
-<a name="reading-cutouts"></a>
+<a id="reading-cutouts"></a>
 #### Reading selected parts of an image only (cutouts)
 
 Since version __1.18__, it is possible to read select cutouts of large images, including sparse sampling of specific 
@@ -367,7 +367,7 @@ And you can convert to other numerical types, e.g. via one of the `ArrayFuncs.co
 ```
 
 
-<a name="reading-streaming-cutouts"></a>
+<a id="reading-streaming-cutouts"></a>
 #### Streaming image cutouts
 Since version __1.18__ it is also possible to stream cutouts, using the `StreamingTileImageData` class. The streaming 
 can be used with any source that implements the `RandomAccessFileIO` interface, which provides file-like random 
@@ -430,7 +430,7 @@ example, replacing `imageHDU.getTiler()` with a `CompressedImageTiler` step, suc
 
 
 
-<a name="low-level-image-read"></a>
+<a id="low-level-image-read"></a>
 #### Low-level reading of image data
 
 Suppose we want to get the average value of a 100,000 x 40,000 pixel image. If the pixels are 32-bit integers, that 
@@ -477,7 +477,7 @@ Now we can cycle through the image rows (or chunks) and collect the statistics a
 ```
     
 
-<a name="reading-tables"></a>
+<a id="reading-tables"></a>
 ### Reading Tables
 
 The easiest and safest way to access data in tables, is by individual entries. Typically, we start by identifying our 
@@ -594,7 +594,7 @@ numerical types, such as `byte.class`, `short.class`, `int.class`, `long.class`,
 
 -----------------------------------------------------------------------------
 
-<a name="writing-data"></a>
+<a id="writing-data"></a>
 ## Writing FITS data
 
  - [Java strings vs FITS strings](#java-strings-vs-FITS-strings)
@@ -603,7 +603,7 @@ numerical types, such as `byte.class`, `short.class`, `int.class`, `long.class`,
  - [Low-level writes](#low-level-writes)
 
 
-<a name="java-strings-vs-FITS-strings"></a>
+<a id="java-strings-vs-FITS-strings"></a>
 ### Java strings vs FITS strings
 
 FITS generally represents character strings as byte arrays of ASCII characters, with legal values between `0x20` and 
@@ -613,7 +613,7 @@ extended Unicode characters (and also ASCII beyond the `0x20` -- `0x7E` range) i
 FITS.
 
 
-<a name="writing-files"></a>
+<a id="writing-files"></a>
 ### Writing complete FITS files
 
 When creating FITS files from data we have at hand, the easiest is to start with a `Fits` object. We can add to it 
@@ -670,7 +670,7 @@ compactness of binary tables, we recommend against using ASCII tables, unless yo
 
 
 
-<a name="incremental-writing"></a>
+<a id="incremental-writing"></a>
 ### Writing one HDU at a time
 
 Sometimes you do not want to add all your HDUs to a `Fits` object before writing them out to a file or stream. Maybe 
@@ -716,7 +716,7 @@ in which case going back to re-write what was already written before is not an o
 
 
 
-<a name="low-level-writes"></a>
+<a id="low-level-writes"></a>
 ### Low-level writes
 
 When a large table or image is to be written, the user may wish to stream the write. This is possible but rather 
@@ -878,7 +878,7 @@ location:
 
 -----------------------------------------------------------------------------
 
-<a name="modifying-existing-files"></a>
+<a id="modifying-existing-files"></a>
 ## Modifying existing FITS files
 
 An existing FITS file can be modified in place in some circumstances. The file must be an uncompressed 
@@ -967,7 +967,7 @@ originally.)
 
 -----------------------------------------------------------------------------
 
-<a name="fits-headers"></a>
+<a id="fits-headers"></a>
 ## FITS headers
 
  - [What is in a header](#what-is-in-a-header) 
@@ -981,7 +981,7 @@ originally.)
  - [Migrating header data between HDUs](#migrating-headers)
 
 
-<a name="what-is-in-a-header"></a>
+<a id="what-is-in-a-header"></a>
 ### What is in a header
 
 The FITS header consists of a list of 80-byte records at the beginning of each HDU. They contain key/value pairs and 
@@ -1026,7 +1026,7 @@ integral part of the standard as of FITS version 4.0. See more about these conve
 library, further below.
 
 
-<a name="accessing-header-entries"></a>
+<a id="accessing-header-entries"></a>
 ### Accessing header entries
 
 There are two basic ways to access data contained in FITS headers: direct (by keyword) or ordered (iterator-based).
@@ -1129,7 +1129,7 @@ since dictionary lookup will not work for these -- as comment cards are by defin
 
 
 
-<a name="standard-and-conventional-fits-header-keywords"></a>
+<a id="standard-and-conventional-fits-header-keywords"></a>
 ### Standard and conventional FITS header keywords
 
 The [FITS standard](https://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) defines a set of reserved keywords. 
@@ -1231,7 +1231,7 @@ The keyword checking policy can be adjusted via the `HeaderCard.setValueChecking
 
 
 
-<a name="hierarch-style-header-keywords"></a>
+<a id="hierarch-style-header-keywords"></a>
 ### Hierarchical and long header keywords
 
 The standard FITS header keywords consists of maximum 8 upper case letters (`A` through `Z`) or numbers (`0` through `9`) 
@@ -1296,7 +1296,7 @@ You may note a few other properties of HIERARCH keywords as implemented by this 
     HIERARCH MY .. KEYWORD
   ```
 
-<a name="long-string-values"></a>
+<a id="long-string-values"></a>
 ### Long string values
 
 The standard maximum length for string values in the header is 68 characters. As of FITS 4.0, the [CONTINUE long 
@@ -1307,7 +1307,7 @@ value to a string longer than the space available for it in a single 80-characte
 `LongStringsNotEnabledException` runtime exception.
  
  
-<a name="checksums"></a>
+<a id="checksums"></a>
 ### Checksums
 
 Checksums can be added to (and updated in) the headers of HDUs, and can be used to check the integrity of the FITS 
@@ -1394,7 +1394,7 @@ modifying any of the records. In such cases You may proceed re-writing a selecti
 
 
 
-<a name="preallocated-header-space"></a>
+<a id="preallocated-header-space"></a>
 ### Preallocated header space
 
 Many FITS files are created by live-recording of data, e.g. from astronomical instruments. As such not all header 
@@ -1453,7 +1453,7 @@ into that header as trailing blank records were found, and still call `rewrite()
 
 
 
-<a name="standard-compliance"></a>
+<a id="standard-compliance"></a>
 ### Standard compliance
 
 As of version __1.16__, the library offers a two-pronged approach to ensure header compliance to the 
@@ -1479,7 +1479,7 @@ can be used in FITS headers. The method will replace illegal FITS characters (ou
 
 
 
-<a name="migrating-headers"></a>
+<a id="migrating-headers"></a>
 ## Migrating header data between HDUs
 
 Sometimes we want to create a new HDU based on an existing HDU, such as a cropped image, or a table segment, in which 
@@ -1525,7 +1525,7 @@ For example:
 
 -----------------------------------------------------------------------------
 
-<a name="building-tables-from-data"></a>
+<a id="building-tables-from-data"></a>
 ## Creating tables
 
  - [Building tables row-by-row](#building-by-row)
@@ -1534,7 +1534,7 @@ For example:
 
 
 
-<a name="building-by-row"></a>
+<a id="building-by-row"></a>
 ### Building tables row-by-row
 
 As of version __1.18__ building tables one row at a time is both easy and efficient -- and may be the least confusing 
@@ -1622,7 +1622,7 @@ A few rules to remember when building tables by rows:
    (these will map to empty strings or _undefined_ logical values respectively)
  
 
-<a name="building-by-column"></a>
+<a id="building-by-column"></a>
 ### Building tables column-by-column
 
 Sometimes we might want to assemble a table from a selection of data which will readily constitute columns in the table. 
@@ -1665,7 +1665,7 @@ Defragmenting might also be a good idea before writing binary tables with variab
 before calling `write()` on the encompassing HDU.
 
 
-<a name="creating-ascii-tables"></a>
+<a id="creating-ascii-tables"></a>
 ### Creating ASCII tables (discouraged)
    
 While the library also supports ASCII tables for storing a more limited assortment of _scalar_ entries, binary tables 
@@ -1699,7 +1699,7 @@ However, if you insist on creating ASCII tables (provided the data allows for it
 
 -----------------------------------------------------------------------------
 
-<a name="compression-support"></a>
+<a id="compression-support"></a>
 ## Compression support
 
  - [File level compression](#file-compression)
@@ -1712,7 +1712,7 @@ had a number of lingering compression related bugs of varying severity, which ma
 
 
 
-<a name="file-compression"></a>
+<a id="file-compression"></a>
 ### File level compression
 
 
@@ -1745,7 +1745,7 @@ automatically when we construct a `Fits` object with an input stream:
 
 
 
-<a name="image-compression"></a>
+<a id="image-compression"></a>
 ### Image compression
 
 Image compression and tiling are fully supported by __nom.tam.fits__ as of __1.18__, including images of 
@@ -1831,7 +1831,7 @@ decompress only the selected image area. As of version __1.18__, this is really 
 
 
 
-<a name="table-compression"></a>
+<a id="table-compression"></a>
 ### Table compression
 
 Table compression is also supported in __nom.tam.fits__ from version __1.15__, and more completely since __1.19.1__. 
@@ -1957,7 +1957,7 @@ data `funpack` is able to decompress:
 
 -----------------------------------------------------------------------------
 
-<a name="release-schedule"></a>
+<a id="release-schedule"></a>
 ## Release schedule
 
 A predictable release schedule and process can help manage expectations and reduce stress on adopters and developers 
@@ -1988,7 +1988,7 @@ are typically available for one week only before they are superseded either by a
 
 
 
-<a name="contribute"></a>
+<a id="contribute"></a>
 ## How to contribute
 
 The _nom-tam-fits_ library is a community-maintained project. We absolutely rely on developers like you to make it 
