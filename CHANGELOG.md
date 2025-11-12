@@ -4,6 +4,18 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [Unreleased]
+
+### Fixed
+
+ - [#793] `README.md` anchors now use the newer `id` attribute instead of the deprecated `name` attribute for defining in-page references. The older form was not processed correctly by the Maven Doxia markdown module (2.0.0), breaking in-page navigation on the site. The use of the `id` tag seems to fix it, and it works on Github also. (by @attipaci, thanks to @gpdf)
+
+### Changed
+
+ - Uses the latest Maven build and runtime dependencies. (by @attipaci)
+
+
 ## [1.21.2] - 2025-09-15
 
 Maintenance release, with minor improvements, and new Maven Central publishing process.
