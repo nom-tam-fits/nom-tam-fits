@@ -31,17 +31,13 @@ package nom.tam.fits;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.io.File;
 import java.io.FileOutputStream;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.util.FitsOutputStream;
@@ -53,7 +49,7 @@ public class GetHDUByNameTest {
 
     private final String extensionFile = "target/testExtensions.fits";
 
-    @Before
+    @BeforeEach
     public void writeTestFits() throws Exception {
         Fits fits = new Fits();
 
@@ -77,7 +73,7 @@ public class GetHDUByNameTest {
         }
     }
 
-    @After
+    @AfterEach
     public void after() {
         try {
             new File(extensionFile).delete();
@@ -102,19 +98,19 @@ public class GetHDUByNameTest {
         try (Fits fits = new Fits(new File(extensionFile))) {
 
             BasicHDU<?> hdu = fits.getHDU("EXTA");
-            assertNotNull(hdu);
-            assertEquals("EXTA", hdu.getHeader().getStringValue(EXTNAME));
-            assertFalse(hdu.getHeader().containsKey(EXTVER));
+            Assertions.assertNotNull(hdu);
+            Assertions.assertEquals("EXTA", hdu.getHeader().getStringValue(EXTNAME));
+            Assertions.assertFalse(hdu.getHeader().containsKey(EXTVER));
 
             hdu = fits.getHDU("EXTC");
-            assertNotNull(hdu);
-            assertEquals("EXTC", hdu.getHeader().getStringValue(EXTNAME));
-            assertFalse(hdu.getHeader().containsKey(EXTVER));
+            Assertions.assertNotNull(hdu);
+            Assertions.assertEquals("EXTC", hdu.getHeader().getStringValue(EXTNAME));
+            Assertions.assertFalse(hdu.getHeader().containsKey(EXTVER));
 
             hdu = fits.getHDU("EXTA");
-            assertNotNull(hdu);
-            assertEquals("EXTA", hdu.getHeader().getStringValue(EXTNAME));
-            assertFalse(hdu.getHeader().containsKey(EXTVER));
+            Assertions.assertNotNull(hdu);
+            Assertions.assertEquals("EXTA", hdu.getHeader().getStringValue(EXTNAME));
+            Assertions.assertFalse(hdu.getHeader().containsKey(EXTVER));
 
             fits.close();
         }
@@ -125,9 +121,9 @@ public class GetHDUByNameTest {
         try (Fits fits = new Fits(new File(extensionFile))) {
 
             BasicHDU<?> hdu = fits.getHDU("EXTB"); // All
-            assertNotNull(hdu);
-            assertEquals("EXTB", hdu.getHeader().getStringValue(EXTNAME));
-            assertEquals(1, hdu.getHeader().getIntValue(EXTVER));
+            Assertions.assertNotNull(hdu);
+            Assertions.assertEquals("EXTB", hdu.getHeader().getStringValue(EXTNAME));
+            Assertions.assertEquals(1, hdu.getHeader().getIntValue(EXTVER));
 
             fits.close();
         }
@@ -138,12 +134,12 @@ public class GetHDUByNameTest {
         try (Fits fits = new Fits(new File(extensionFile))) {
 
             BasicHDU<?> hdu = fits.getHDU("EXTA");
-            assertNotNull(hdu);
-            assertEquals("EXTA", hdu.getHeader().getStringValue(EXTNAME));
-            assertFalse(hdu.getHeader().containsKey(EXTVER));
+            Assertions.assertNotNull(hdu);
+            Assertions.assertEquals("EXTA", hdu.getHeader().getStringValue(EXTNAME));
+            Assertions.assertFalse(hdu.getHeader().containsKey(EXTVER));
 
             hdu = fits.getHDU("EXTD");
-            assertNull(hdu);
+            Assertions.assertNull(hdu);
 
             fits.close();
         }
@@ -154,13 +150,13 @@ public class GetHDUByNameTest {
         try (Fits fits = new Fits(new File(extensionFile))) {
 
             BasicHDU<?> hdu = fits.getHDU("EXTA");
-            assertNotNull(hdu);
-            assertEquals("EXTA", hdu.getHeader().getStringValue(EXTNAME));
-            assertFalse(hdu.getHeader().containsKey(EXTVER));
+            Assertions.assertNotNull(hdu);
+            Assertions.assertEquals("EXTA", hdu.getHeader().getStringValue(EXTNAME));
+            Assertions.assertFalse(hdu.getHeader().containsKey(EXTVER));
 
             hdu = fits.getHDU("EXTD");
             fits.close();
-            assertNull(hdu);
+            Assertions.assertNull(hdu);
         }
     }
 
@@ -169,16 +165,16 @@ public class GetHDUByNameTest {
         try (Fits fits = new Fits(new File(extensionFile))) {
 
             BasicHDU<?> hdu = fits.getHDU("EXTA", 2);
-            assertEquals("EXTA", hdu.getHeader().getStringValue(EXTNAME));
-            assertEquals(2, hdu.getHeader().getIntValue(EXTVER));
+            Assertions.assertEquals("EXTA", hdu.getHeader().getStringValue(EXTNAME));
+            Assertions.assertEquals(2, hdu.getHeader().getIntValue(EXTVER));
 
             hdu = fits.getHDU("EXTB", 1);
-            assertEquals("EXTB", hdu.getHeader().getStringValue(EXTNAME));
-            assertEquals(1, hdu.getHeader().getIntValue(EXTVER));
+            Assertions.assertEquals("EXTB", hdu.getHeader().getStringValue(EXTNAME));
+            Assertions.assertEquals(1, hdu.getHeader().getIntValue(EXTVER));
 
             hdu = fits.getHDU("EXTA", 1);
-            assertEquals("EXTA", hdu.getHeader().getStringValue(EXTNAME));
-            assertEquals(1, hdu.getHeader().getIntValue(EXTVER));
+            Assertions.assertEquals("EXTA", hdu.getHeader().getStringValue(EXTNAME));
+            Assertions.assertEquals(1, hdu.getHeader().getIntValue(EXTVER));
 
             fits.close();
         }
@@ -189,10 +185,10 @@ public class GetHDUByNameTest {
         try (Fits fits = new Fits(new File(extensionFile))) {
 
             BasicHDU<?> hdu = fits.getHDU("EXTC", 1);
-            assertNull(hdu);
+            Assertions.assertNull(hdu);
 
             hdu = fits.getHDU("EXTC", 1);
-            assertNull(hdu);
+            Assertions.assertNull(hdu);
 
             fits.close();
         }
@@ -203,11 +199,11 @@ public class GetHDUByNameTest {
         try (Fits fits = new Fits(new File(extensionFile))) {
 
             BasicHDU<?> hdu = fits.getHDU("EXTD", 1);
-            assertNull(hdu);
+            Assertions.assertNull(hdu);
 
             // Again from cache...
             hdu = fits.getHDU("EXTD", 1);
-            assertNull(hdu);
+            Assertions.assertNull(hdu);
 
             fits.close();
         }
@@ -218,10 +214,10 @@ public class GetHDUByNameTest {
         try (Fits fits = new Fits(new File(extensionFile))) {
 
             BasicHDU<?> hdu = fits.getHDU("EXTB", 3);
-            assertNull(hdu);
+            Assertions.assertNull(hdu);
 
             hdu = fits.getHDU("EXTB", 3);
-            assertNull(hdu);
+            Assertions.assertNull(hdu);
 
             fits.close();
         }

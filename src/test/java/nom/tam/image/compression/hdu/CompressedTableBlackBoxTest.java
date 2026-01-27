@@ -37,9 +37,9 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
@@ -74,6 +74,7 @@ public class CompressedTableBlackBoxTest {
     private void compressThenUncompressTableAndAssert(String originalFileName, String algo)
             throws FitsException, IOException {
         String tableOrgFile = BlackBoxImages.getBlackBoxImage(originalFileName);
+
         String[] algos = new String[100];
         Arrays.fill(algos, algo);
 
@@ -85,7 +86,7 @@ public class CompressedTableBlackBoxTest {
                     .compress();
 
             for (int col = 0; col < cHDU.getNCols(); col++) {
-                Assert.assertEquals(algo, cHDU.getHeader().getStringValue(Compression.ZCTYPn.n(col + 1)));
+                Assertions.assertEquals(algo, cHDU.getHeader().getStringValue(Compression.ZCTYPn.n(col + 1)));
             }
 
             fitsCompressed.addHDU(cHDU);
@@ -114,7 +115,6 @@ public class CompressedTableBlackBoxTest {
             fitsComp.readHDU(); // skip image
             CompressedTableHDU compressedTable = (CompressedTableHDU) fitsComp.readHDU();
             BinaryTableHDU uncompressedTable = compressedTable.asBinaryTableHDU();
-
             fitsOrg = new Fits(tableOrgFile);
             fitsOrg.readHDU(); // skip image
             BinaryTableHDU orgTable = compressedTable.asBinaryTableHDU();
@@ -130,12 +130,12 @@ public class CompressedTableBlackBoxTest {
 
     private void assertEquals(BinaryTableHDU orgTable, BinaryTableHDU testTable) throws FitsException {
         int numberOfCards = orgTable.getHeader().getNumberOfCards();
-        // Assert.assertEquals(numberOfCards, testTable.getHeader().getNumberOfCards());
+        // Assertions.assertEquals(numberOfCards, testTable.getHeader().getNumberOfCards());
         Cursor<String, HeaderCard> orgIterator = orgTable.getHeader().iterator();
         for (int index = 0; index < numberOfCards; index++) {
             HeaderCard orgCard = orgIterator.next();
             HeaderCard testCard = testTable.getHeader().findCard(orgCard.getKey());
-            Assert.assertEquals("header " + orgCard.getKey(), orgCard.getValue(), testCard.getValue());
+            Assertions.assertEquals(orgCard.getValue(), testCard.getValue(), "header " + orgCard.getKey());
         }
         for (int column = 0; column < orgTable.getNCols(); column++) {
             for (int row = 0; row < orgTable.getNRows(); row++) {
@@ -155,7 +155,7 @@ public class CompressedTableBlackBoxTest {
                 assertValues(label + ":" + arrayIndex, orgValueElement, testValueElement);
             }
         } else {
-            Assert.assertEquals(orgValue, testValue);
+            Assertions.assertEquals(orgValue, testValue);
         }
     }
 
@@ -170,13 +170,13 @@ public class CompressedTableBlackBoxTest {
     }
 
     @Test
-    @Ignore // TODO also cfitsio can not uncompress this, mail to bill 22.7.2016
+    @Disabled // TODO also cfitsio can not uncompress this, mail to bill 22.7.2016
     public void testUncompress_tst0010() throws FitsException, IOException {
         uncompressTableAndAssert("bintable/tst0010.fits.fz", "bintable/tst0010.fits");
     }
 
     @Test
-    @Ignore // TODO also cfitsio can not uncompress this, mail to bill 22.7.2016
+    @Disabled // TODO also cfitsio can not uncompress this, mail to bill 22.7.2016
     public void testUncompress_tst0012() throws FitsException, IOException {
         uncompressTableAndAssert("bintable/tst0012.fits.fz", "bintable/tst0012.fits");
     }
@@ -243,23 +243,31 @@ public class CompressedTableBlackBoxTest {
         compressIntThenUncompressTableAndAssert("bintable/vtab.q.fits");
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void test_vtab_q_reversed() throws Exception {
-        try {
-            CompressedTableHDU.useOldStandardVLAIndexing(true);
-            compressIntThenUncompressTableAndAssert("bintable/vtab.q.fits");
-        } finally {
-            CompressedTableHDU.useOldStandardVLAIndexing(false);
-        }
+        Assertions.assertThrows(Exception.class, () -> {
+
+            try {
+                CompressedTableHDU.useOldStandardVLAIndexing(true);
+                compressIntThenUncompressTableAndAssert("bintable/vtab.q.fits");
+            } finally {
+                CompressedTableHDU.useOldStandardVLAIndexing(false);
+            }
+
+        });
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void test_vtab_p_reversed() throws Exception {
-        try {
-            CompressedTableHDU.useOldStandardVLAIndexing(true);
-            compressIntThenUncompressTableAndAssert("bintable/vtab.p.fits");
-        } finally {
-            CompressedTableHDU.useOldStandardVLAIndexing(false);
-        }
+        Assertions.assertThrows(Exception.class, () -> {
+
+            try {
+                CompressedTableHDU.useOldStandardVLAIndexing(true);
+                compressIntThenUncompressTableAndAssert("bintable/vtab.p.fits");
+            } finally {
+                CompressedTableHDU.useOldStandardVLAIndexing(false);
+            }
+
+        });
     }
 }

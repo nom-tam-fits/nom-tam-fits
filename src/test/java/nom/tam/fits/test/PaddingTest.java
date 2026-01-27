@@ -1,13 +1,12 @@
 package nom.tam.fits.test;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -93,7 +92,7 @@ public class PaddingTest {
             f = new Fits("target/padding1.fits");
 
             f.read();
-            assertEquals("HDUCount2", 1, f.getNumberOfHDUs());
+            Assertions.assertEquals(1, f.getNumberOfHDUs());
 
             ImageHDU hdu0 = (ImageHDU) f.getHDU(0);
             byte[][] aa = (byte[][]) hdu0.getKernel();
@@ -108,12 +107,12 @@ public class PaddingTest {
                     }
                 }
             }
-            assertEquals("PadMiss1:", 0, miss);
-            assertEquals("PadMatch1:", 400, match);
+            Assertions.assertEquals(0, miss);
+            Assertions.assertEquals(400, match);
             // Make sure we got the real header and not the one generated
             // strictly
             // from the data.
-            assertEquals("Update header:", hdu0.getHeader().getStringValue("NEWKEY"), "TESTVALUE");
+            Assertions.assertEquals(hdu0.getHeader().getStringValue("NEWKEY"), "TESTVALUE");
 
             StandardImageTiler it = hdu0.getTiler();
 
@@ -121,11 +120,11 @@ public class PaddingTest {
             // 1-D representation of the data.
             byte[] data = (byte[]) it.getTile(new int[] {2, 2}, new int[] {2, 2});
 
-            assertEquals("tilet1:", data.length, 4);
-            assertEquals("tilet2:", data[0] + 0, 4);
-            assertEquals("tilet3:", data[1] + 0, 5);
-            assertEquals("tilet4:", data[2] + 0, 5);
-            assertEquals("tilet5:", data[3] + 0, 6);
+            Assertions.assertEquals(data.length, 4);
+            Assertions.assertEquals(data[0] + 0, 4);
+            Assertions.assertEquals(data[1] + 0, 5);
+            Assertions.assertEquals(data[2] + 0, 5);
+            Assertions.assertEquals(data[3] + 0, 6);
         } finally {
             SafeClose.close(f);
         }
@@ -183,7 +182,7 @@ public class PaddingTest {
             f = new Fits("target/padding2.fits");
             f.read();
 
-            assertEquals("HDUCount2", 2, f.getNumberOfHDUs());
+            Assertions.assertEquals(2, f.getNumberOfHDUs());
 
             ImageHDU hdu0 = (ImageHDU) f.getHDU(0);
             ImageHDU hdu1 = (ImageHDU) f.getHDU(1);
@@ -200,8 +199,8 @@ public class PaddingTest {
                     }
                 }
             }
-            assertEquals("PadMiss2:", 0, miss);
-            assertEquals("PadMatch2:", 400, match);
+            Assertions.assertEquals(0, miss);
+            Assertions.assertEquals(400, match);
         } finally {
             SafeClose.close(f);
         }
@@ -227,7 +226,7 @@ public class PaddingTest {
         BasicHDU<?>[] hdus = fits.read();
         fits.close();
 
-        assertEquals(1, hdus.length);
+        Assertions.assertEquals(1, hdus.length);
 
         // No Exception
     }
@@ -252,7 +251,7 @@ public class PaddingTest {
         BasicHDU<?>[] hdus = fits.read();
         fits.close();
 
-        assertEquals(1, hdus.length);
+        Assertions.assertEquals(1, hdus.length);
 
         // No Exception
     }

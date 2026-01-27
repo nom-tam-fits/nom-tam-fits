@@ -1,12 +1,5 @@
 package nom.tam.fits;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
@@ -19,10 +12,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.GenericKey;
@@ -90,7 +83,7 @@ import static nom.tam.fits.header.extra.NOAOExt.CTYPE2;
 
 public class HeaderTest {
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         FitsFactory.setDefaults();
         Header.setDefaultKeywordChecking(Header.DEFAULT_KEYWORD_CHECK_POLICY);
@@ -107,7 +100,7 @@ public class HeaderTest {
         }
     }
 
-    @After
+    @AfterEach
     public void after() {
         FitsFactory.setDefaults();
     }
@@ -136,26 +129,26 @@ public class HeaderTest {
             c.add(new HeaderCard("INV2", true, "Invertible axis"));
             c.add(new HeaderCard("SYM2", "YZ SYMMETRIC", "Symmetries..."));
 
-            assertEquals(CTYPE1.key(), "GLON-CAR", hdr.getStringValue(CTYPE1));
-            assertEquals(CRPIX2.key(), 0., hdr.getDoubleValue(CRPIX2, -2.), 0);
+            Assertions.assertEquals("GLON-CAR", hdr.getStringValue(CTYPE1), CTYPE1.key());
+            Assertions.assertEquals(0., hdr.getDoubleValue(CRPIX2, -2.), 0, CRPIX2.key());
 
             c.setKey(CRVAL1.key());
             HeaderCard hc = c.next();
-            assertEquals("CRVAL1_c", CRVAL1.key(), hc.getKey());
+            Assertions.assertEquals(CRVAL1.key(), hc.getKey());
             hc = c.next();
-            assertEquals("CRPIX1_c", CRPIX1.key(), hc.getKey());
+            Assertions.assertEquals(CRPIX1.key(), hc.getKey());
             hc = c.next();
-            assertEquals("CTYPE1_c", CTYPE1.key(), hc.getKey());
+            Assertions.assertEquals(CTYPE1.key(), hc.getKey());
             hc = c.next();
-            assertEquals("CRVAL2_c", CRVAL2.key(), hc.getKey());
+            Assertions.assertEquals(CRVAL2.key(), hc.getKey());
             hc = c.next();
-            assertEquals("CRPIX2_c", CRPIX2.key(), hc.getKey());
+            Assertions.assertEquals(CRPIX2.key(), hc.getKey());
             hc = c.next();
-            assertEquals("INV2_c", "INV2", hc.getKey());
+            Assertions.assertEquals("INV2", hc.getKey());
             hc = c.next();
-            assertEquals("SYM2_c", "SYM2", hc.getKey());
+            Assertions.assertEquals("SYM2", hc.getKey());
             hc = c.next();
-            assertEquals("CTYPE2_c", CTYPE2.key(), hc.getKey());
+            Assertions.assertEquals(CTYPE2.key(), hc.getKey());
 
             hdr.findCard(CRPIX1.key());
             hdr.addValue("INTVAL1", 1, "An integer value");
@@ -167,33 +160,33 @@ public class HeaderTest {
 
             c.setKey("INTVAL1");
             hc = c.next();
-            assertEquals("INTVAL1", "INTVAL1", hc.getKey());
+            Assertions.assertEquals(hc.getKey(), "INTVAL1");
             hc = c.next();
-            assertEquals("LOG1", "LOG1", hc.getKey());
+            Assertions.assertEquals(hc.getKey(), "LOG1");
             hc = c.next();
-            assertEquals("LOGB1", "LOGB1", hc.getKey());
+            Assertions.assertEquals(hc.getKey(), "LOGB1");
             hc = c.next();
-            assertEquals("FLT1", "FLT1", hc.getKey());
+            Assertions.assertEquals("FLT1", hc.getKey());
             hc = c.next();
-            assertEquals("FLT2", "FLT2", hc.getKey());
+            Assertions.assertEquals("FLT2", hc.getKey());
             c.next(); // Skip comment
             hc = c.next();
-            assertEquals("CRPIX1x", CRPIX1.key(), hc.getKey());
+            Assertions.assertEquals(CRPIX1.key(), hc.getKey());
 
-            assertEquals("FLT1", 1.34, hdr.getDoubleValue("FLT1", 0), 0);
+            Assertions.assertEquals(1.34, hdr.getDoubleValue("FLT1", 0), 0);
             c.setKey("FLT1");
             c.next();
             c.remove();
-            assertEquals("FLT1", 0., hdr.getDoubleValue("FLT1", 0), 0);
-            assertEquals("FLT1", BigDecimal.valueOf(0.).doubleValue(), hdr.getBigDecimalValue("FLT1").doubleValue(),
+            Assertions.assertEquals(0., hdr.getDoubleValue("FLT1", 0), 0);
+            Assertions.assertEquals(BigDecimal.valueOf(0.).doubleValue(), hdr.getBigDecimalValue("FLT1").doubleValue(),
                     0.00000000001);
             c.setKey("LOGB1");
             hc = c.next();
-            assertEquals("AftDel1", "LOGB1", hc.getKey());
+            Assertions.assertEquals("LOGB1", hc.getKey());
             hc = c.next();
-            assertEquals("AftDel2", "FLT2", hc.getKey());
+            Assertions.assertEquals("FLT2", hc.getKey());
             hc = c.next();
-            assertEquals("AftDel3", "Comment after flt2", hc.getComment());
+            Assertions.assertEquals("Comment after flt2", hc.getComment());
         } finally {
             SafeClose.close(f);
         }
@@ -219,14 +212,14 @@ public class HeaderTest {
             h.addValue("TESTKEY2", "TESTVAL2", null); // Should precede TESTKEY
 
             Cursor<String, HeaderCard> c = h.iterator();
-            assertEquals("E1", c.next().getKey(), SIMPLE.key());
-            assertEquals("E2", c.next().getKey(), BITPIX.key());
-            assertEquals("E3", c.next().getKey(), NAXIS.key());
-            assertEquals("E4", c.next().getKey(), NAXISn.n(1).key());
-            assertEquals("E5", c.next().getKey(), NAXISn.n(2).key());
-            assertEquals("E6", c.next().getKey(), EXTEND.key());
-            assertEquals("E7", c.next().getKey(), "TESTKEY2");
-            assertEquals("E8", c.next().getKey(), "TESTKEY");
+            Assertions.assertEquals(c.next().getKey(), SIMPLE.key());
+            Assertions.assertEquals(c.next().getKey(), BITPIX.key());
+            Assertions.assertEquals(c.next().getKey(), NAXIS.key());
+            Assertions.assertEquals(c.next().getKey(), NAXISn.n(1).key());
+            Assertions.assertEquals(c.next().getKey(), NAXISn.n(2).key());
+            Assertions.assertEquals(c.next().getKey(), EXTEND.key());
+            Assertions.assertEquals(c.next().getKey(), "TESTKEY2");
+            Assertions.assertEquals(c.next().getKey(), "TESTKEY");
         } finally {
             SafeClose.close(f);
         }
@@ -247,7 +240,7 @@ public class HeaderTest {
             f = new Fits("target/ht1.fits");
             Header hdr = f.getHDU(0).getHeader();
 
-            assertEquals("Set state:", true, FitsFactory.isLongStringsEnabled());
+            Assertions.assertTrue(FitsFactory.isLongStringsEnabled(), "Set state:");
             hdr.addValue("LONG1", lng, "Here is a comment that is also very long and will be truncated at least a little");
             hdr.addValue("LONG2", "xx'yy'zz" + lng, "Another comment");
             hdr.addValue("LONG3", "xx'yy'zz" + lng, null);
@@ -267,14 +260,14 @@ public class HeaderTest {
                 SafeClose.close(bf);
             }
             String val = hdr.getStringValue("LONG1");
-            assertEquals("LongT1", lng, val);
+            Assertions.assertEquals(lng, val);
             val = hdr.getStringValue("LONG2");
-            assertEquals("LongT2", "xx'yy'zz" + lng, val);
-            assertEquals("APOS1", 70, hdr.getStringValue("APOS1").length());
-            assertEquals("APOS2", 71, hdr.getStringValue("APOS2").length());
+            Assertions.assertEquals("xx'yy'zz" + lng, val);
+            Assertions.assertEquals(70, hdr.getStringValue("APOS1").length());
+            Assertions.assertEquals(71, hdr.getStringValue("APOS2").length());
 
             // long3 should not have a comment!
-            assertNull(hdr.findCard("LONG3").getComment());
+            Assertions.assertNull(hdr.findCard("LONG3").getComment());
 
             String string = hdr.findCard("LONG1").toString();
             val = HeaderCard.create(string).getValue();
@@ -282,21 +275,21 @@ public class HeaderTest {
             val = HeaderCard.create(string).getValue();
             FitsFactory.setLongStringsEnabled(true);
 
-            assertEquals("LongT3", true, !val.equals(lng));
-            assertEquals("Longt4", true, val.length() <= 70);
-            assertEquals("longamp1", hdr.getStringValue("SHORT"), "A STRING ENDING IN A &");
+            Assertions.assertTrue(!val.equals(lng));
+            Assertions.assertTrue(val.length() <= 70);
+            Assertions.assertEquals(hdr.getStringValue("SHORT"), "A STRING ENDING IN A &");
             try {
                 bf = new FitsFile("target/ht4.hdr", "r");
                 hdr = new Header(bf);
-                assertEquals("Set state2:", true, FitsFactory.isLongStringsEnabled());
-                assertEquals("LongT5", lng, hdr.getStringValue("LONG1"));
-                assertEquals("LongT6", "xx'yy'zz" + lng, hdr.getStringValue("LONG2"));
-                assertEquals("longamp2", lng + "&", hdr.getStringValue("LONGISH"));
-                assertEquals("APOS1b", 70, hdr.getStringValue("APOS1").length());
-                assertEquals("APOS2b", 71, hdr.getStringValue("APOS2").length());
-                assertEquals("APOS2c", sixty + " ''''''''''", hdr.getStringValue("APOS2"));
-                assertEquals("longamp1b", "A STRING ENDING IN A &", hdr.getStringValue("SHORT"));
-                assertEquals("longamp2b", lng + "&", hdr.getStringValue("LONGISH"));
+                Assertions.assertTrue(FitsFactory.isLongStringsEnabled());
+                Assertions.assertEquals(lng, hdr.getStringValue("LONG1"));
+                Assertions.assertEquals("xx'yy'zz" + lng, hdr.getStringValue("LONG2"));
+                Assertions.assertEquals(lng + "&", hdr.getStringValue("LONGISH"));
+                Assertions.assertEquals(70, hdr.getStringValue("APOS1").length());
+                Assertions.assertEquals(71, hdr.getStringValue("APOS2").length());
+                Assertions.assertEquals(sixty + " ''''''''''", hdr.getStringValue("APOS2"));
+                Assertions.assertEquals("A STRING ENDING IN A &", hdr.getStringValue("SHORT"));
+                Assertions.assertEquals(lng + "&", hdr.getStringValue("LONGISH"));
 
                 int cnt = hdr.getNumberOfCards();
                 int pcnt = hdr.getNumberOfPhysicalCards();
@@ -304,13 +297,13 @@ public class HeaderTest {
                 // LONG1
                 int nd = hdr.findCard("LONG1").cardSize();
                 hdr.removeCard("LONG1");
-                assertEquals("deltest", cnt - 1, hdr.getNumberOfCards());
-                assertEquals("deltest", pcnt - nd, hdr.getNumberOfPhysicalCards());
+                Assertions.assertEquals(cnt - 1, hdr.getNumberOfCards());
+                Assertions.assertEquals(pcnt - nd, hdr.getNumberOfPhysicalCards());
 
                 nd += hdr.findCard("LONG2").cardSize();
                 hdr.removeCard("LONG2");
-                assertEquals("deltest2", cnt - 2, hdr.getNumberOfCards());
-                assertEquals("deltest2", pcnt - 9, hdr.getNumberOfPhysicalCards());
+                Assertions.assertEquals(cnt - 2, hdr.getNumberOfCards());
+                Assertions.assertEquals(pcnt - 9, hdr.getNumberOfPhysicalCards());
 
             } finally {
                 SafeClose.close(bf);
@@ -328,22 +321,23 @@ public class HeaderTest {
                         "CONTINUE  ' value that is continued over 3 keywords in the &  '                 " + //
                         "CONTINUE  'FITS header.' / This is another optional comment.                    ");
 
-        assertEquals("This is a very long string keyword value that is continued over 3 keywords in the FITS header.",
+        Assertions.assertEquals(
+                "This is a very long string keyword value that is continued over 3 keywords in the FITS header.",
                 card.getValue());
-        assertEquals("Optional Comment              This is another optional comment.", card.getComment());
+        Assertions.assertEquals("Optional Comment              This is another optional comment.", card.getComment());
 
         card = HeaderCard.create("STRKEY  = 'This is a very long string keyword&'  / Optional Comment             " + //
                 "CONTINUE  ' value that is continued over 2 keywords        &  '                 " + //
                 "STRKEY2 = 'This is a very long string keyword '  / Optional Comment             ");
 
-        assertEquals("This is a very long string keyword value that is continued over 2 keywords        &",
+        Assertions.assertEquals("This is a very long string keyword value that is continued over 2 keywords        &",
                 card.getValue());
-        assertEquals("Optional Comment", card.getComment());
+        Assertions.assertEquals("Optional Comment", card.getComment());
 
         card = new HeaderCard("LONGSTR",
                 "This is very very very very very very very very very very very very very very very very very very very very very very very very very very very long string value of FITS card",
                 "long longer longest comment");
-        assertEquals("LONGSTR = 'This is very very very very very very very very very very very very&'" + //
+        Assertions.assertEquals("LONGSTR = 'This is very very very very very very very very very very very very&'" + //
                 "CONTINUE  ' very very very very very very very very very very very very very v&'" + //
                 "CONTINUE  'ery very long string value of FITS card' /long longer longest comment", card.toString());
 
@@ -358,10 +352,11 @@ public class HeaderTest {
                         "CONTINUE  ' value that is continued over 3 keywords in the &  '                 " + //
                         "CONTINUE  'FITS header.'                                                        ");
 
-        assertEquals("This is a very long string keyword value that is continued over 3 keywords in the FITS header.",
+        Assertions.assertEquals(
+                "This is a very long string keyword value that is continued over 3 keywords in the FITS header.",
                 card.getValue());
-        assertNull(card.getComment());
-        assertFalse(new HeaderCard("STRKEY",
+        Assertions.assertNull(card.getComment());
+        Assertions.assertFalse(new HeaderCard("STRKEY",
                 "This is a very long string keyword value that is continued over at least three keywords in the FITS header even if it has no comment.",
                 null).toString().contains("/"));
         FitsFactory.setLongStringsEnabled(false);
@@ -404,19 +399,19 @@ public class HeaderTest {
         try {
             HeaderCard headerCard = new HeaderCard("CARD", cardValue, cardComment);
             String cardString = headerCard.toString();
-            assertEquals(cardString.length(), headerCard.cardSize() * 80);
+            Assertions.assertEquals(cardString.length(), headerCard.cardSize() * 80);
             byte[] bytes = new byte[cardString.length() + 160];
             Arrays.fill(bytes, (byte) ' ');
             System.arraycopy(AsciiFuncs.getBytes(cardString), 0, bytes, 0, cardString.length());
             HeaderCard rereadCard = new HeaderCard(new FitsInputStream(new ByteArrayInputStream(bytes)));
 
-            assertEquals(cardValue, rereadCard.getValue());
-            assertEquals(headerCard.getValue(), rereadCard.getValue());
-            assertEquals(cardComment, headerCard.getComment());
-            assertTrue(cardComment
+            Assertions.assertEquals(cardValue, rereadCard.getValue());
+            Assertions.assertEquals(headerCard.getValue(), rereadCard.getValue());
+            Assertions.assertEquals(cardComment, headerCard.getComment());
+            Assertions.assertTrue(cardComment
                     .startsWith(rereadCard.getComment() == null ? "" : rereadCard.getComment().replaceAll(" ", "")));
         } catch (HeaderCardException e) {
-            assertTrue(!FitsFactory.isLongStringsEnabled() && cardValue.length() > 68);
+            Assertions.assertTrue(!FitsFactory.isLongStringsEnabled() && cardValue.length() > 68);
         }
     }
 
@@ -431,31 +426,31 @@ public class HeaderTest {
             ImageHDU hdu = (ImageHDU) f.getHDU(0);
             Header hdr = hdu.getHeader();
 
-            assertEquals("NAXIS", 2, hdr.getIntValue(NAXIS));
-            assertEquals("NAXIS", 2, hdr.getIntValue("NAXIS", -1)); // Verify key found path
-            assertEquals("NAXIS1", 300, hdr.getIntValue(NAXISn.n(1)));
-            assertEquals("NAXIS2", 300, hdr.getIntValue(NAXISn.n(2)));
-            assertEquals("NAXIS2a", 300, hdr.getIntValue(NAXISn.n(2), -1));
-            assertEquals("NAXIS3", -1, hdr.getIntValue(NAXISn.n(3), -1));
-            assertEquals("NAXIS3", -1, hdr.getIntValue(NAXISn.n(3).key(), -1));
+            Assertions.assertEquals(2, hdr.getIntValue(NAXIS));
+            Assertions.assertEquals(2, hdr.getIntValue("NAXIS", -1)); // Verify key found path
+            Assertions.assertEquals(300, hdr.getIntValue(NAXISn.n(1)));
+            Assertions.assertEquals(300, hdr.getIntValue(NAXISn.n(2)));
+            Assertions.assertEquals(300, hdr.getIntValue(NAXISn.n(2), -1));
+            Assertions.assertEquals(-1, hdr.getIntValue(NAXISn.n(3), -1));
+            Assertions.assertEquals(-1, hdr.getIntValue(NAXISn.n(3).key(), -1));
 
-            assertEquals("BITPIX", BigInteger.valueOf(-32), hdr.getBigIntegerValue(BITPIX.name()));
+            Assertions.assertEquals(BigInteger.valueOf(-32), hdr.getBigIntegerValue(BITPIX.name()));
 
             Cursor<String, HeaderCard> c = hdr.iterator();
             HeaderCard hc = c.next();
-            assertEquals("SIMPLE_1", SIMPLE.key(), hc.getKey());
+            Assertions.assertEquals(SIMPLE.key(), hc.getKey());
 
             hc = c.next();
-            assertEquals("BITPIX_2", BITPIX.key(), hc.getKey());
+            Assertions.assertEquals(BITPIX.key(), hc.getKey());
 
             hc = c.next();
-            assertEquals("NAXIS_3", NAXIS.key(), hc.getKey());
+            Assertions.assertEquals(NAXIS.key(), hc.getKey());
 
             hc = c.next();
-            assertEquals("NAXIS1_4", NAXISn.n(1).key(), hc.getKey());
+            Assertions.assertEquals(NAXISn.n(1).key(), hc.getKey());
 
             hc = c.next();
-            assertEquals("NAXIS2_5", NAXISn.n(2).key(), hc.getKey());
+            Assertions.assertEquals(NAXISn.n(2).key(), hc.getKey());
         } finally {
             SafeClose.close(f);
         }
@@ -481,7 +476,7 @@ public class HeaderTest {
             } catch (Exception e) {
                 thrown = true;
             }
-            assertEquals("BITPIX delete", true, thrown);
+            Assertions.assertTrue(thrown);
         } finally {
             SafeClose.close(f);
         }
@@ -519,7 +514,7 @@ public class HeaderTest {
         try {
             f = new Fits("target/testHeaderCommentsDrift.fits");
             f.read();
-            assertEquals("COMMENT", f.getHDU(0).getHeader().findCard("KEY").getComment());
+            Assertions.assertEquals("COMMENT", f.getHDU(0).getHeader().findCard("KEY").getComment());
         } finally {
             SafeClose.close(f);
         }
@@ -530,31 +525,31 @@ public class HeaderTest {
         FitsFactory.setUseHierarch(true);
 
         String keyword = HeaderCard.create("HIERARCH test this = 'bla bla' ").getKey();
-        assertEquals(Hierarch.key("TEST.THIS"), keyword);
+        Assertions.assertEquals(Hierarch.key("TEST.THIS"), keyword);
 
         keyword = HeaderCard.create("HIERARCH test this= 'bla bla' ").getKey();
-        assertEquals(Hierarch.key("TEST.THIS"), keyword);
+        Assertions.assertEquals(Hierarch.key("TEST.THIS"), keyword);
 
         keyword = HeaderCard.create("HIERARCH.test.this= 'bla bla' ").getKey();
-        assertEquals(Hierarch.key("TEST", "THIS"), keyword);
+        Assertions.assertEquals(Hierarch.key("TEST", "THIS"), keyword);
 
         keyword = HeaderCard.create("HIERARCH ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
-        assertEquals(Hierarch.key("ESO", "INS", "OPTI-3", "ID"), keyword);
+        Assertions.assertEquals(Hierarch.key("ESO", "INS", "OPTI-3", "ID"), keyword);
 
         keyword = HeaderCard.create("HIERARCH ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
-        assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
+        Assertions.assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
 
         keyword = HeaderCard.create("HIERARCH ESO INS. OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
-        assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
+        Assertions.assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
 
         keyword = HeaderCard.create("HIERARCH ESO.INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
-        assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
+        Assertions.assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
 
         keyword = HeaderCard.create("HIERARCH..ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
-        assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
+        Assertions.assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
 
         keyword = HeaderCard.create("HIERARCH    ESO INS   OPTI-3 ID= 'ESO#427 ' / Optical element identifier").getKey();
-        assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
+        Assertions.assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
 
         // AK: The old test expected "" here, but that's inconsistent behavior for the same type of
         // line if hierarch is enabled or not. When HIERARCH is not enabled, we require it to return the
@@ -562,10 +557,10 @@ public class HeaderTest {
         // as much as possible. So, we should be requiring the same behavior for these type
         // of keys when HIERARCH is enabled.
         keyword = HeaderCard.create("sdfajsg sdgf asdgf kasj sjk ID Optical element identifier").getKey();
-        assertEquals("SDFAJSG", keyword);
+        Assertions.assertEquals("SDFAJSG", keyword);
 
         keyword = HeaderCard.create("SIMPLE = T").getKey();
-        assertEquals("SIMPLE", keyword);
+        Assertions.assertEquals("SIMPLE", keyword);
     }
 
     @Test
@@ -585,7 +580,7 @@ public class HeaderTest {
 
             while (hdr.rewriteable()) {
                 int nbx = (hdr.getNumberOfCards() - 1) / 36;
-                assertEquals("Rewrite:" + nbx, nb == nbx, hdr.rewriteable());
+                Assertions.assertEquals(nb == nbx, hdr.rewriteable(), "Rewrite:" + nbx);
                 c.add(new HeaderCard("DUMMY" + hdr.getNumberOfCards(), (String) null, null));
             }
         } finally {
@@ -599,18 +594,19 @@ public class HeaderTest {
         HeaderCard card;
         try {
             new HeaderCard("TESTKEY", "random value just for testing purpose - random value just for testing", "");
-            fail("must trow an value too long exception");
+            Assertions.fail("must trow an value too long exception");
         } catch (HeaderCardException e) {
             // ok this is expected
         }
         // now one char less.
         card = new HeaderCard("TESTKEY", "random value just for testing purpose - random value just for testin", "");
-        assertEquals("TESTKEY = 'random value just for testing purpose - random value just for testin'", card.toString());
+        Assertions.assertEquals("TESTKEY = 'random value just for testing purpose - random value just for testin'",
+                card.toString());
     }
 
     @Test
     public void testHeaderComments() throws Exception {
-        Assert.assertNull(HeaderCommentsMap.getComment("NOT_PRESENT"));
+        Assertions.assertNull(HeaderCommentsMap.getComment("NOT_PRESENT"));
     }
 
     @Test
@@ -631,9 +627,9 @@ public class HeaderTest {
             f = new Fits("target/hx1.fits");
             f.read();
             HeaderCard c1 = f.getHDU(0).getHeader().findCard(SIMPLE.key());
-            assertEquals("tuhc1", c1.getComment(), HeaderCommentsMap.getComment("header:simple:1"));
+            Assertions.assertEquals(c1.getComment(), HeaderCommentsMap.getComment("header:simple:1"));
             c1 = f.getHDU(0).getHeader().findCard(BITPIX.key());
-            assertEquals("tuhc2", c1.getComment(), HeaderCommentsMap.getComment("header:bitpix:1"));
+            Assertions.assertEquals(c1.getComment(), HeaderCommentsMap.getComment("header:bitpix:1"));
             HeaderCommentsMap.updateComment("header:bitpix:1", "A byte tiledImageOperation");
             HeaderCommentsMap.deleteComment("header:simple:1");
         } finally {
@@ -651,9 +647,9 @@ public class HeaderTest {
         try {
             f = new Fits("target/hx2.fits");
             HeaderCard c1 = f.getHDU(0).getHeader().findCard(SIMPLE.key());
-            assertEquals("tuhc1", null, c1.getComment());
+            Assertions.assertEquals(null, c1.getComment());
             c1 = f.getHDU(0).getHeader().findCard(BITPIX.key());
-            assertEquals("tuhc2", "A byte tiledImageOperation", c1.getComment());
+            Assertions.assertEquals("A byte tiledImageOperation", c1.getComment());
         } finally {
             SafeClose.close(f);
         }
@@ -696,8 +692,8 @@ public class HeaderTest {
 
         for (int i = 1; i <= 7; i++) {
             HeaderCard card = c.next();
-            assertEquals("KEY" + i, card.getKey());
-            assertEquals(1, (int) card.getValue(Integer.class, 0));
+            Assertions.assertEquals("KEY" + i, card.getKey());
+            Assertions.assertEquals(1, (int) card.getValue(Integer.class, 0));
         }
     }
 
@@ -716,66 +712,68 @@ public class HeaderTest {
             hdr.setKeywordChecking(Header.KeywordCheck.NONE);
 
             hdu.addValue(CTYPE1, true);
-            assertEquals(hdr.getBooleanValue(CTYPE1.name()), true);
-            assertEquals(hdr.getBooleanValue(CTYPE1), true);
+            Assertions.assertEquals(hdr.getBooleanValue(CTYPE1.name()), true);
+            Assertions.assertEquals(hdr.getBooleanValue(CTYPE1), true);
 
             hdu.addValue(CTYPE1.name(), false, "bla");
-            assertEquals(hdr.getBooleanValue(CTYPE1.name()), false);
-            assertEquals(hdr.getBooleanValue(CTYPE1), false);
+            Assertions.assertEquals(hdr.getBooleanValue(CTYPE1.name()), false);
+            Assertions.assertEquals(hdr.getBooleanValue(CTYPE1), false);
 
             hdu.addValue(NAXISn.n(1).key(), 5, "bla");
-            assertEquals(hdr.getIntValue(NAXISn.n(1).key()), 5);
-            assertEquals(hdr.getIntValue(NAXISn.n(1)), 5);
-            assertEquals(hdr.getIntValue(NAXISn.n(1), -1), 5);
-            assertEquals(hdr.getIntValue("ZZZ", -1), -1);
+            Assertions.assertEquals(hdr.getIntValue(NAXISn.n(1).key()), 5);
+            Assertions.assertEquals(hdr.getIntValue(NAXISn.n(1)), 5);
+            Assertions.assertEquals(hdr.getIntValue(NAXISn.n(1), -1), 5);
+            Assertions.assertEquals(hdr.getIntValue("ZZZ", -1), -1);
 
             hdu.addValue(CTYPE1.name(), "XX", "bla");
-            assertEquals(hdr.getStringValue(CTYPE1.name()), "XX");
-            assertEquals(hdr.getStringValue(CTYPE1), "XX");
-            assertEquals(hdr.getStringValue("ZZZ"), null);
-            assertEquals(hdr.getStringValue(CTYPE1, "yy"), "XX");
-            assertEquals(hdr.getStringValue("ZZZ", "yy"), "yy");
+            Assertions.assertEquals(hdr.getStringValue(CTYPE1.name()), "XX");
+            Assertions.assertEquals(hdr.getStringValue(CTYPE1), "XX");
+            Assertions.assertEquals(hdr.getStringValue("ZZZ"), null);
+            Assertions.assertEquals(hdr.getStringValue(CTYPE1, "yy"), "XX");
+            Assertions.assertEquals(hdr.getStringValue("ZZZ", "yy"), "yy");
 
             hdr.addValue(BLOCKED, true);
-            assertEquals(hdr.getBooleanValue(BLOCKED.name()), true);
-            assertEquals(hdr.getBooleanValue(BLOCKED), true);
-            assertEquals(hdr.getBooleanValue("ZZZ", true), true);
+            Assertions.assertEquals(hdr.getBooleanValue(BLOCKED.name()), true);
+            Assertions.assertEquals(hdr.getBooleanValue(BLOCKED), true);
+            Assertions.assertEquals(hdr.getBooleanValue("ZZZ", true), true);
 
             hdr.addValue(CRVAL2, 5.0);
-            assertEquals(hdr.getDoubleValue(CRVAL2.name()), 5.0, 0.000001);
-            assertEquals(hdr.getDoubleValue(CRVAL2), 5.0, 0.000001);
-            assertEquals(hdr.getDoubleValue("ZZZ", -1.0), -1.0, 0.000001);
+            Assertions.assertEquals(hdr.getDoubleValue(CRVAL2.name()), 5.0, 0.000001);
+            Assertions.assertEquals(hdr.getDoubleValue(CRVAL2), 5.0, 0.000001);
+            Assertions.assertEquals(hdr.getDoubleValue("ZZZ", -1.0), -1.0, 0.000001);
 
             hdr.addValue(CRVAL2.key(), 5.0, 6, "precision control.");
-            assertEquals(hdr.getDoubleValue(CRVAL2.name()), 5.0, 0.000001);
-            assertEquals(hdr.getDoubleValue(CRVAL2), 5.0, 0.000001);
-            assertEquals(hdr.getDoubleValue("ZZZ", -1.0), -1.0, 0.000001);
+            Assertions.assertEquals(hdr.getDoubleValue(CRVAL2.name()), 5.0, 0.000001);
+            Assertions.assertEquals(hdr.getDoubleValue(CRVAL2), 5.0, 0.000001);
+            Assertions.assertEquals(hdr.getDoubleValue("ZZZ", -1.0), -1.0, 0.000001);
 
             hdr.addValue(CRVAL2.name(), BigDecimal.valueOf(5.0), "nothing special");
-            assertEquals(hdr.getDoubleValue(CRVAL2.name()), 5.0, 0.000001);
-            assertEquals(hdr.getDoubleValue(CRVAL2, -1d), 5.0, 0.000001);
-            assertEquals(hdr.getDoubleValue(CRVAL2), 5.0, 0.000001);
-            assertEquals(hdr.getBigDecimalValue(CRVAL2.name()), BigDecimal.valueOf(5.0));
-            assertEquals(hdr.getBigDecimalValue(CRVAL2), BigDecimal.valueOf(5.0));
-            assertEquals(hdr.getBigDecimalValue(CRVAL2, BigDecimal.ZERO), BigDecimal.valueOf(5.0));
-            assertEquals(hdr.getBigDecimalValue("ZZZ", BigDecimal.valueOf(-1.0)), BigDecimal.valueOf(-1.0));
+            Assertions.assertEquals(hdr.getDoubleValue(CRVAL2.name()), 5.0, 0.000001);
+            Assertions.assertEquals(hdr.getDoubleValue(CRVAL2, -1d), 5.0, 0.000001);
+            Assertions.assertEquals(hdr.getDoubleValue(CRVAL2), 5.0, 0.000001);
+            Assertions.assertEquals(hdr.getBigDecimalValue(CRVAL2.name()), BigDecimal.valueOf(5.0));
+            Assertions.assertEquals(hdr.getBigDecimalValue(CRVAL2), BigDecimal.valueOf(5.0));
+            Assertions.assertEquals(hdr.getBigDecimalValue(CRVAL2, BigDecimal.ZERO), BigDecimal.valueOf(5.0));
+            Assertions.assertEquals(hdr.getBigDecimalValue("ZZZ", BigDecimal.valueOf(-1.0)), BigDecimal.valueOf(-1.0));
 
             hdr.addValue(CRVAL2.name(), 5.0f, "nothing special");
-            assertEquals(hdr.getFloatValue(CRVAL2.name()), 5.0f, 0.000001);
-            assertEquals(hdr.getFloatValue(CRVAL2), 5.0f, 0.000001);
-            assertEquals(hdr.getFloatValue(CRVAL2.name(), -1f), 5.0f, 0.000001);
-            assertEquals(hdr.getFloatValue(CRVAL2, -1f), 5.0f, 0.000001);
-            assertEquals(hdr.getFloatValue("ZZZ", -1f), -1f, 0.000001);
+            Assertions.assertEquals(hdr.getFloatValue(CRVAL2.name()), 5.0f, 0.000001);
+            Assertions.assertEquals(hdr.getFloatValue(CRVAL2), 5.0f, 0.000001);
+            Assertions.assertEquals(hdr.getFloatValue(CRVAL2.name(), -1f), 5.0f, 0.000001);
+            Assertions.assertEquals(hdr.getFloatValue(CRVAL2, -1f), 5.0f, 0.000001);
+            Assertions.assertEquals(hdr.getFloatValue("ZZZ", -1f), -1f, 0.000001);
 
             hdr.addValue(NAXISn.n(2).key(), BigInteger.valueOf(5), "nothing special");
-            assertEquals(hdr.getIntValue(NAXISn.n(2).key()), 5);
-            assertEquals(hdr.getIntValue(NAXISn.n(2)), 5);
-            assertEquals(hdr.getIntValue("ZZZ", 0), 0);
-            assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key()), BigInteger.valueOf(5));
-            assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key(), BigInteger.valueOf(-1)), BigInteger.valueOf(5));
-            assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key()), BigInteger.valueOf(5));
-            assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key(), BigInteger.valueOf(-1)), BigInteger.valueOf(5));
-            assertEquals(hdr.getBigIntegerValue("ZZZ", BigInteger.valueOf(-1)), BigInteger.valueOf(-1));
+            Assertions.assertEquals(hdr.getIntValue(NAXISn.n(2).key()), 5);
+            Assertions.assertEquals(hdr.getIntValue(NAXISn.n(2)), 5);
+            Assertions.assertEquals(hdr.getIntValue("ZZZ", 0), 0);
+            Assertions.assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key()), BigInteger.valueOf(5));
+            Assertions.assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key(), BigInteger.valueOf(-1)),
+                    BigInteger.valueOf(5));
+            Assertions.assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key()), BigInteger.valueOf(5));
+            Assertions.assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key(), BigInteger.valueOf(-1)),
+                    BigInteger.valueOf(5));
+            Assertions.assertEquals(hdr.getBigIntegerValue("ZZZ", BigInteger.valueOf(-1)), BigInteger.valueOf(-1));
         } finally {
             SafeClose.close(in);
             SafeClose.close(fits);
@@ -788,10 +786,10 @@ public class HeaderTest {
         IFitsHeader key = GenericKey.create("TEST");
         ComplexValue z0 = new ComplexValue(1.0, 2.0);
         h.addValue(key, z0);
-        assertTrue(h.containsKey(key));
-        assertTrue(h.containsKey(key.key()));
+        Assertions.assertTrue(h.containsKey(key));
+        Assertions.assertTrue(h.containsKey(key.key()));
         ComplexValue z = h.getComplexValue(key.key());
-        assertEquals(z0, z);
+        Assertions.assertEquals(z0, z);
     }
 
     @Test
@@ -804,15 +802,16 @@ public class HeaderTest {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             hdr.dumpHeader(new PrintStream(out));
             String result = new String(out.toByteArray());
-            assertTrue(result.indexOf("NAXIS   =                    2") >= 0);
-            assertTrue(result.indexOf("NAXIS1  =                  300") >= 0);
-            assertTrue(result.indexOf("NAXIS2  =                  300") >= 0);
+            Assertions.assertTrue(result.indexOf("NAXIS   =                    2") >= 0);
+            Assertions.assertTrue(result.indexOf("NAXIS1  =                  300") >= 0);
+            Assertions.assertTrue(result.indexOf("NAXIS2  =                  300") >= 0);
 
-            assertEquals("NAXIS1  =                  300 / " + Standard.NAXIS1.comment(), hdr.findKey("NAXIS1").trim());
+            Assertions.assertEquals("NAXIS1  =                  300 / " + Standard.NAXIS1.comment(),
+                    hdr.findKey("NAXIS1").trim());
 
-            assertEquals("SIMPLE", hdr.getKey(0));
-            assertEquals(7, hdr.size());
-            assertEquals(362880, hdu.getSize());
+            Assertions.assertEquals("SIMPLE", hdr.getKey(0));
+            Assertions.assertEquals(7, hdr.size());
+            Assertions.assertEquals(362880, hdu.getSize());
         } finally {
             SafeClose.close(f);
         }
@@ -820,8 +819,8 @@ public class HeaderTest {
 
     @Test
     public void dumpDefaultStatics() throws Exception {
-        assertFalse(BasicHDU.isData(null));
-        assertFalse(BasicHDU.isHeader(null));
+        Assertions.assertFalse(BasicHDU.isData(null));
+        Assertions.assertFalse(BasicHDU.isHeader(null));
     }
 
     @Test
@@ -830,11 +829,11 @@ public class HeaderTest {
         try {
             f = new Fits("target/ht1.fits");
             Header hdr = f.getHDU(0).getHeader();
-            Assert.assertNull(hdr.getCard(10000));
-            Assert.assertNull(hdr.getKey(10000));
-            Assert.assertNull(hdr.findKey("BBBB"));
-            Assert.assertEquals(BigInteger.valueOf(-100), hdr.getBigIntegerValue("BBBB", BigInteger.valueOf(-100)));
-            Assert.assertEquals(-100f, hdr.getFloatValue("BBBB", -100f), 0.00001);
+            Assertions.assertNull(hdr.getCard(10000));
+            Assertions.assertNull(hdr.getKey(10000));
+            Assertions.assertNull(hdr.findKey("BBBB"));
+            Assertions.assertEquals(BigInteger.valueOf(-100), hdr.getBigIntegerValue("BBBB", BigInteger.valueOf(-100)));
+            Assertions.assertEquals(-100f, hdr.getFloatValue("BBBB", -100f), 0.00001);
         } finally {
             SafeClose.close(f);
         }
@@ -850,7 +849,7 @@ public class HeaderTest {
         Header header = invalidHeaderTests();
         // should have no effect because it is illegal!
         header.setNaxis(-1, 3);
-        Assert.assertEquals(1, header.getIntValue(NAXIS.name()));
+        Assertions.assertEquals(1, header.getIntValue(NAXIS.name()));
 
         header.addValue("COMMENT", (String) null, "bla bla");
         header.insertComment("blu blu");
@@ -872,40 +871,40 @@ public class HeaderTest {
             blubHistory = blubHistory || headerCard.getComment().equals("blub blub");
             yzPressent = yzPressent || headerCard.getKey().equals("YZ");
         }
-        assertTrue(blaComment);
-        assertTrue(bluComment);
-        assertTrue(blabHistory);
-        assertTrue(blubHistory);
-        assertTrue(yzPressent);
+        Assertions.assertTrue(blaComment);
+        Assertions.assertTrue(bluComment);
+        Assertions.assertTrue(blabHistory);
+        Assertions.assertTrue(blubHistory);
+        Assertions.assertTrue(yzPressent);
     }
 
     private Header invalidHeaderTests() throws HeaderCardException {
         Header header = new Header();
-        Assert.assertEquals(0, header.getSize());
+        Assertions.assertEquals(0, header.getSize());
         header.addValue("XX", "XX", "XYZ");
         header.addValue("XY", "XX", "XYZ");
         header.addValue("XZ", "XX", "XYZ");
         header.addValue("YZ", "XX", "XYZ");
-        Assert.assertEquals(0, header.getSize());
+        Assertions.assertEquals(0, header.getSize());
 
         Cursor<String, HeaderCard> iterator = header.iterator(0);
         iterator.add(new HeaderCard(SIMPLE.name(), "", ""));
-        Assert.assertEquals(0, header.getSize());
+        Assertions.assertEquals(0, header.getSize());
         iterator.add(new HeaderCard(BITPIX.name(), 8, ""));
-        Assert.assertEquals(0, header.getSize());
+        Assertions.assertEquals(0, header.getSize());
         iterator.add(new HeaderCard(NAXIS.name(), 1, ""));
-        Assert.assertEquals(0, header.getSize());
+        Assertions.assertEquals(0, header.getSize());
         header.addValue("END", "", "");
 
-        Assert.assertEquals(2880, header.getSize());
+        Assertions.assertEquals(2880, header.getSize());
         return header;
     }
 
     @Test
     public void testSpecialSituations() throws Exception {
         Header header = new Header();
-        assertNull(header.nextCard());
-        assertNull(header.getCard(-1));
+        Assertions.assertNull(header.nextCard());
+        Assertions.assertNull(header.getCard(-1));
 
         FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
         FitsException actual = null;
@@ -921,8 +920,8 @@ public class HeaderTest {
         } catch (FitsException e) {
             actual = e;
         }
-        assertNotNull(actual);
-        assertTrue(actual.getMessage().indexOf("SIMPLE") > 0);
+        Assertions.assertNotNull(actual);
+        Assertions.assertTrue(actual.getMessage().indexOf("SIMPLE") > 0);
         header.addValue("XTENSION", "", "");
         actual = null;
         try {
@@ -930,8 +929,8 @@ public class HeaderTest {
         } catch (FitsException e) {
             actual = e;
         }
-        assertNotNull(actual);
-        assertTrue(actual.getMessage().indexOf("XTENSION") > 0);
+        Assertions.assertNotNull(actual);
+        Assertions.assertTrue(actual.getMessage().indexOf("XTENSION") > 0);
         header.findCard(XTENSION.key()).setValue(XTENSION_BINTABLE);
         actual = null;
         try {
@@ -939,9 +938,9 @@ public class HeaderTest {
         } catch (FitsException e) {
             actual = e;
         }
-        assertNotNull(actual);
+        Assertions.assertNotNull(actual);
 
-        assertTrue(actual.getMessage().indexOf("not found where expected") > 0);
+        Assertions.assertTrue(actual.getMessage().indexOf("not found where expected") > 0);
 
         header.removeCard("DUMMY");
 
@@ -951,9 +950,9 @@ public class HeaderTest {
         } catch (FitsException e) {
             actual = e;
         }
-        assertNotNull(actual);
+        Assertions.assertNotNull(actual);
 
-        assertTrue(actual.getMessage().indexOf("terminates before") > 0);
+        Assertions.assertTrue(actual.getMessage().indexOf("terminates before") > 0);
     }
 
     @Test
@@ -1002,7 +1001,7 @@ public class HeaderTest {
 
                 Header headerRewriter = f.getHDU(0).getHeader();
 
-                assertEquals("aaaaaaaabbbbbbbbbcccccccccccdddddddddddeeeeeeeeeee",
+                Assertions.assertEquals("aaaaaaaabbbbbbbbbcccccccccccdddddddddddeeeeeeeeeee",
                         headerRewriter.findCard(Hierarch.key("TEST.THIS.LONG.HEADER")).getValue());
                 for (int index = 1; index < 60; index++) {
                     StringBuilder buildder = new StringBuilder();
@@ -1010,9 +1009,9 @@ public class HeaderTest {
                         buildder.append((char) ('A' + (charIndex % 26)));
                     }
                     HeaderCard card = headerRewriter.findCard(Hierarch.key("X") + buildder.toString());
-                    assertEquals("_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!", card.getValue());
+                    Assertions.assertEquals("_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!", card.getValue());
                     if (card.getComment() != null) {
-                        assertTrue(buildder.toString().startsWith(card.getComment()));
+                        Assertions.assertTrue(buildder.toString().startsWith(card.getComment()));
                     }
                 }
             } finally {
@@ -1029,28 +1028,32 @@ public class HeaderTest {
         String card = "TESTTEST= 'TESTVALUE ''QUOTED'' TRIMMSTUFF     '  / comment";
 
         HeaderCard hc = HeaderCard.create(card);
-        assertEquals("comment", hc.getComment());
+        Assertions.assertEquals("comment", hc.getComment());
         // lets see if the blanks after the value are removed.
-        assertEquals("TESTVALUE 'QUOTED' TRIMMSTUFF", hc.getValue());
+        Assertions.assertEquals("TESTVALUE 'QUOTED' TRIMMSTUFF", hc.getValue());
 
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void writeEmptyHeader() throws Exception {
-        ArrayDataOutput dos = new FitsOutputStream(new ByteArrayOutputStream() {
+        Assertions.assertThrows(FitsException.class, () -> {
 
-            @Override
-            public synchronized void write(byte[] b, int off, int len) {
-                ThrowAnyException.throwIOException("all goes wrong!");
-            }
-        }, 80);
-        Header header = new Header();
-        header.addValue(SIMPLE, true);
-        header.addValue(BITPIX, 8);
-        header.addValue(NAXIS, 0);
-        header.insertCommentStyle(END.key(), null);
+            ArrayDataOutput dos = new FitsOutputStream(new ByteArrayOutputStream() {
 
-        header.write(dos);
+                @Override
+                public synchronized void write(byte[] b, int off, int len) {
+                    ThrowAnyException.throwIOException("all goes wrong!");
+                }
+            }, 80);
+            Header header = new Header();
+            header.addValue(SIMPLE, true);
+            header.addValue(BITPIX, 8);
+            header.addValue(NAXIS, 0);
+            header.insertCommentStyle(END.key(), null);
+
+            header.write(dos);
+
+        });
     }
 
     /** Truncate header test. */
@@ -1079,25 +1082,33 @@ public class HeaderTest {
             SafeClose.close(fits);
         }
 
-        assertTrue(isTruncated);
+        Assertions.assertTrue(isTruncated);
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void truncatedFileExceptionTest() throws Exception {
-        String header = "SIMPLE                                                                          " + //
-                "XXXXXX                                                                          ";
-        FitsInputStream data = new FitsInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(header)));
-        new Header().read(data);
+        Assertions.assertThrows(IOException.class, () -> {
+
+            String header = "SIMPLE                                                                          " + //
+                    "XXXXXX                                                                          ";
+            FitsInputStream data = new FitsInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(header)));
+            new Header().read(data);
+
+        });
     }
 
     @Test
     public void testFailedReset() throws Exception {
-        Assert.assertFalse(new Header().reset());
+        Assertions.assertFalse(new Header().reset());
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testFailedRewrite() throws Exception {
-        new Header().rewrite();
+        Assertions.assertThrows(FitsException.class, () -> {
+
+            new Header().rewrite();
+
+        });
     }
 
     @Test
@@ -1106,8 +1117,8 @@ public class HeaderTest {
         header.setNaxes(1);
         header.setNaxis(1, 2);
         header.setSimple(true);
-        assertEquals("T", header.findCard(SIMPLE).getValue());
-        assertEquals("T", header.findCard(EXTEND).getValue());
+        Assertions.assertEquals("T", header.findCard(SIMPLE).getValue());
+        Assertions.assertEquals("T", header.findCard(EXTEND).getValue());
     }
 
     @Test
@@ -1135,7 +1146,7 @@ public class HeaderTest {
                 extendIndex = index;
             }
         }
-        Assert.assertTrue(votMetaIndex > extendIndex);
+        Assertions.assertTrue(votMetaIndex > extendIndex);
         hdr.setHeaderSorter(new HeaderOrder() {
 
             private static final long serialVersionUID = 1L;
@@ -1165,7 +1176,7 @@ public class HeaderTest {
                 extendIndex = index;
             }
         }
-        Assert.assertTrue(votMetaIndex < extendIndex);
+        Assertions.assertTrue(votMetaIndex < extendIndex);
 
     }
 
@@ -1195,7 +1206,7 @@ public class HeaderTest {
                 extendIndex = index;
             }
         }
-        Assert.assertTrue(votMetaIndex < extendIndex);
+        Assertions.assertTrue(votMetaIndex < extendIndex);
 
     }
 
@@ -1208,38 +1219,42 @@ public class HeaderTest {
         hdr.addValue("FIX_F", 1234.56f, "Fixed Float");
         hdr.addValue("BIGDEC", new BigDecimal("12345678901234567890.1234567890"), 8, "Fixed Big Decimal");
 
-        assertEquals(1234.5678945, hdr.findCard("FIX_D").getValue(Double.class, null), 1e-10);
-        assertEquals(1234.5678945, hdr.getDoubleValue("FIX_D"), 1e-12);
+        Assertions.assertEquals(1234.5678945, hdr.findCard("FIX_D").getValue(Double.class, null), 1e-10);
+        Assertions.assertEquals(1234.5678945, hdr.getDoubleValue("FIX_D"), 1e-12);
 
-        assertEquals("1.23456789E19", hdr.findCard("BIGDEC").getValue());
-        assertEquals(1.23456789E19, hdr.getDoubleValue("BIGDEC"), 1.1e11);
+        Assertions.assertEquals("1.23456789E19", hdr.findCard("BIGDEC").getValue());
+        Assertions.assertEquals(1.23456789E19, hdr.getDoubleValue("BIGDEC"), 1.1e11);
 
         // Update the cards
         hdr.findCard("FIX_D").setValue(1345.676344, 3);
-        assertEquals(1346.0, hdr.getDoubleValue("FIX_D"), 1e-6);
+        Assertions.assertEquals(1346.0, hdr.getDoubleValue("FIX_D"), 1e-6);
 
         hdr.findCard("BIGDEC").setValue(new BigDecimal("0.00707703"), 4);
-        assertEquals(new BigDecimal("0.007077"), hdr.getBigDecimalValue("BIGDEC"));
+        Assertions.assertEquals(new BigDecimal("0.007077"), hdr.getBigDecimalValue("BIGDEC"));
 
         hdr.findCard("FIX_F").setValue(2468.123f, 4);
-        assertEquals(2468.1f, hdr.getFloatValue("FIX_F"), 0.01f);
+        Assertions.assertEquals(2468.1f, hdr.getFloatValue("FIX_F"), 0.01f);
 
         hdr.findCard("FIX_D").setValue(13456.76344, 3);
-        assertEquals(13460.0, hdr.getDoubleValue("FIX_D"), 1e-6);
+        Assertions.assertEquals(13460.0, hdr.getDoubleValue("FIX_D"), 1e-6);
     }
 
     @Test
     public void testToggleParserWarnings() throws Exception {
         Header.setParserWarningsEnabled(true);
-        assertTrue(Header.isParserWarningsEnabled());
+        Assertions.assertTrue(Header.isParserWarningsEnabled());
 
         Header.setParserWarningsEnabled(false);
-        assertFalse(Header.isParserWarningsEnabled());
+        Assertions.assertFalse(Header.isParserWarningsEnabled());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testHierarchFormatters() throws Exception {
-        new BlanksDotHierarchKeyFormatter(0);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            new BlanksDotHierarchKeyFormatter(0);
+
+        });
     }
 
     @Test
@@ -1248,8 +1263,8 @@ public class HeaderTest {
         int n = h.getNumberOfCards();
         HeaderCard hc = h.insertCommentStyle("TRUNCATE",
                 "this is a long comment <------------------------------------------------------------------------------> ends here.");
-        assertEquals(n + 1, h.getNumberOfCards());
-        assertTrue(hc.isCommentStyleCard());
+        Assertions.assertEquals(n + 1, h.getNumberOfCards());
+        Assertions.assertTrue(hc.isCommentStyleCard());
     }
 
     @Test
@@ -1257,13 +1272,13 @@ public class HeaderTest {
         Header h = new Header();
         int n = h.getNumberOfCards();
         int k = h.insertComment("this is a comment");
-        assertEquals(n + 1, h.getNumberOfCards());
-        assertEquals(k, 1);
+        Assertions.assertEquals(n + 1, h.getNumberOfCards());
+        Assertions.assertEquals(k, 1);
 
         k = h.insertComment(
                 "this is a long comment <------------------------------------------------------------------------------> ends here.");
-        assertEquals(n + k + 1, h.getNumberOfCards());
-        assertEquals(k, 2);
+        Assertions.assertEquals(n + k + 1, h.getNumberOfCards());
+        Assertions.assertEquals(k, 2);
     }
 
     @Test
@@ -1271,13 +1286,13 @@ public class HeaderTest {
         Header h = new Header();
         int n = h.getNumberOfCards();
         int k = h.insertUnkeyedComment("this is a comment");
-        assertEquals(n + 1, h.getNumberOfCards());
-        assertEquals(k, 1);
+        Assertions.assertEquals(n + 1, h.getNumberOfCards());
+        Assertions.assertEquals(k, 1);
 
         k = h.insertUnkeyedComment(
                 "this is a long comment <------------------------------------------------------------------------------> ends here.");
-        assertEquals(n + k + 1, h.getNumberOfCards());
-        assertEquals(k, 2);
+        Assertions.assertEquals(n + k + 1, h.getNumberOfCards());
+        Assertions.assertEquals(k, 2);
     }
 
     @Test
@@ -1285,13 +1300,13 @@ public class HeaderTest {
         Header h = new Header();
         int n = h.getNumberOfCards();
         int k = h.insertHistory("this is a history entry");
-        assertEquals(n + 1, h.getNumberOfCards());
-        assertEquals(k, 1);
+        Assertions.assertEquals(n + 1, h.getNumberOfCards());
+        Assertions.assertEquals(k, 1);
 
         k = h.insertComment(
                 "this is a long entry <------------------------------------------------------------------------------> ends here.");
-        assertEquals(n + k + 1, h.getNumberOfCards());
-        assertEquals(k, 2);
+        Assertions.assertEquals(n + k + 1, h.getNumberOfCards());
+        Assertions.assertEquals(k, 2);
     }
 
     @Test
@@ -1299,7 +1314,7 @@ public class HeaderTest {
         Header h = new Header();
         int n = h.getNumberOfCards();
         h.addLine(null);
-        assertEquals(n, h.getNumberOfCards());
+        Assertions.assertEquals(n, h.getNumberOfCards());
     }
 
     @SuppressWarnings("deprecation")
@@ -1308,12 +1323,12 @@ public class HeaderTest {
         Header h = new Header();
         int n = h.getNumberOfCards();
         h.addValue("TEST", 1.0, null);
-        assertEquals(n + 1, h.getNumberOfCards());
+        Assertions.assertEquals(n + 1, h.getNumberOfCards());
 
-        assertNull(h.getKey(-1));
-        assertNull(h.getKey(n + 1));
-        assertNotNull(h.getKey(0));
-        assertNotNull(h.getKey(n));
+        Assertions.assertNull(h.getKey(-1));
+        Assertions.assertNull(h.getKey(n + 1));
+        Assertions.assertNotNull(h.getKey(0));
+        Assertions.assertNotNull(h.getKey(n));
     }
 
     @Test
@@ -1322,15 +1337,15 @@ public class HeaderTest {
         ComplexValue z = new ComplexValue(-2.0, 1.0);
         int n = h.getNumberOfCards();
         HeaderCard hc = h.addValue("TEST", z, "comment");
-        assertEquals(hc, h.findCard("TEST"));
-        assertEquals(n + 1, h.getNumberOfCards());
-        assertTrue(hc.isKeyValuePair());
-        assertEquals(ComplexValue.class, hc.valueType());
-        assertEquals(z, hc.getValue(ComplexValue.class, ComplexValue.ZERO));
+        Assertions.assertEquals(hc, h.findCard("TEST"));
+        Assertions.assertEquals(n + 1, h.getNumberOfCards());
+        Assertions.assertTrue(hc.isKeyValuePair());
+        Assertions.assertEquals(ComplexValue.class, hc.valueType());
+        Assertions.assertEquals(z, hc.getValue(ComplexValue.class, ComplexValue.ZERO));
 
-        assertEquals(z, h.getComplexValue("TEST"));
-        assertEquals(z, h.getComplexValue("TEST", ComplexValue.ZERO));
-        assertEquals(ComplexValue.ZERO, h.getComplexValue("NOEXIST", ComplexValue.ZERO));
+        Assertions.assertEquals(z, h.getComplexValue("TEST"));
+        Assertions.assertEquals(z, h.getComplexValue("TEST", ComplexValue.ZERO));
+        Assertions.assertEquals(ComplexValue.ZERO, h.getComplexValue("NOEXIST", ComplexValue.ZERO));
     }
 
     @Test
@@ -1339,15 +1354,15 @@ public class HeaderTest {
         ComplexValue z = new ComplexValue(-2.0, 1.0);
         int n = h.getNumberOfCards();
         HeaderCard hc = h.addValue("TEST", z, 10, "comment");
-        assertEquals(hc, h.findCard("TEST"));
-        assertEquals(n + 1, h.getNumberOfCards());
-        assertTrue(hc.isKeyValuePair());
-        assertEquals(ComplexValue.class, hc.valueType());
-        assertEquals(z, hc.getValue(ComplexValue.class, ComplexValue.ZERO));
+        Assertions.assertEquals(hc, h.findCard("TEST"));
+        Assertions.assertEquals(n + 1, h.getNumberOfCards());
+        Assertions.assertTrue(hc.isKeyValuePair());
+        Assertions.assertEquals(ComplexValue.class, hc.valueType());
+        Assertions.assertEquals(z, hc.getValue(ComplexValue.class, ComplexValue.ZERO));
 
-        assertEquals(z, h.getComplexValue("TEST"));
-        assertEquals(z, h.getComplexValue("TEST", ComplexValue.ZERO));
-        assertEquals(ComplexValue.ZERO, h.getComplexValue("NOEXIST", ComplexValue.ZERO));
+        Assertions.assertEquals(z, h.getComplexValue("TEST"));
+        Assertions.assertEquals(z, h.getComplexValue("TEST", ComplexValue.ZERO));
+        Assertions.assertEquals(ComplexValue.ZERO, h.getComplexValue("NOEXIST", ComplexValue.ZERO));
     }
 
     @Test
@@ -1356,17 +1371,17 @@ public class HeaderTest {
         long l = 20211008L;
         int n = h.getNumberOfCards();
         HeaderCard hc = h.addHexValue("TEST", l, "comment");
-        assertEquals(hc, h.findCard("TEST"));
-        assertEquals(n + 1, h.getNumberOfCards());
-        assertTrue(hc.isKeyValuePair());
-        assertEquals(Long.class, hc.valueType());
-        assertEquals(l, hc.getHexValue());
-        assertEquals(l, h.getHexValue("TEST"));
-        assertEquals(l, h.getHexValue("TEST", 0L));
-        assertEquals(0, h.getHexValue("NOEXIST", 0L));
+        Assertions.assertEquals(hc, h.findCard("TEST"));
+        Assertions.assertEquals(n + 1, h.getNumberOfCards());
+        Assertions.assertTrue(hc.isKeyValuePair());
+        Assertions.assertEquals(Long.class, hc.valueType());
+        Assertions.assertEquals(l, hc.getHexValue());
+        Assertions.assertEquals(l, h.getHexValue("TEST"));
+        Assertions.assertEquals(l, h.getHexValue("TEST", 0L));
+        Assertions.assertEquals(0, h.getHexValue("NOEXIST", 0L));
         String s0 = null;
         hc.setValue(s0);
-        assertEquals(101L, h.getHexValue("TEST", 101L));
+        Assertions.assertEquals(101L, h.getHexValue("TEST", 101L));
     }
 
     @Test
@@ -1375,15 +1390,15 @@ public class HeaderTest {
         Integer n = null;
         h.addValue("TEST1", "string", "comment");
         h.addValue("TEST2", n, "comment");
-        assertEquals(0, h.getHexValue("TEST1", 0L));
-        assertEquals(101L, h.getHexValue("TEST1", 101L));
+        Assertions.assertEquals(0, h.getHexValue("TEST1", 0L));
+        Assertions.assertEquals(101L, h.getHexValue("TEST1", 101L));
     }
 
     @Test
     public void testInsertNullComment() throws Exception {
         Header h = new Header();
-        assertNotNull(h.insertCommentStyle("TEST", null));
-        assertEquals(1, h.insertCommentStyleMultiline("TEST", null));
+        Assertions.assertNotNull(h.insertCommentStyle("TEST", null));
+        Assertions.assertEquals(1, h.insertCommentStyleMultiline("TEST", null));
     }
 
     @Test
@@ -1391,24 +1406,24 @@ public class HeaderTest {
         Header h = new Header();
         int n = h.getNumberOfPhysicalCards();
         h.insertBlankCard();
-        assertEquals(n + 1, h.getNumberOfPhysicalCards());
+        Assertions.assertEquals(n + 1, h.getNumberOfPhysicalCards());
     }
 
     @Test
     public void testInsertInvalidCommentKey() throws Exception {
         Header h = new Header();
         // Keyword has an invalid character
-        assertNull(h.insertCommentStyle("TEST#", "some comment here"));
-        assertEquals(0, h.insertCommentStyleMultiline("TEST#", "some comment here"));
+        Assertions.assertNull(h.insertCommentStyle("TEST#", "some comment here"));
+        Assertions.assertEquals(0, h.insertCommentStyleMultiline("TEST#", "some comment here"));
     }
 
     @Test
     public void testMininumSize() throws Exception {
         Header h = new Header();
         h.ensureCardSpace(37);
-        assertEquals(5760, h.getMinimumSize());
+        Assertions.assertEquals(5760, h.getMinimumSize());
         h.ensureCardSpace(0);
-        assertEquals(2880, h.getMinimumSize());
+        Assertions.assertEquals(2880, h.getMinimumSize());
     }
 
     @Test
@@ -1428,11 +1443,11 @@ public class HeaderTest {
             h.insertCommentStyleMultiline(null, "");
             h.addValue("TEST2", 2, null);
             n = h.getNumberOfPhysicalCards();
-            assertEquals(n0 + 3, n);
+            Assertions.assertEquals(n0 + 3, n);
 
             h.ensureCardSpace(37);
-            assertEquals(0, h.getOriginalSize());
-            assertEquals(5760, h.getMinimumSize());
+            Assertions.assertEquals(0, h.getOriginalSize());
+            Assertions.assertEquals(5760, h.getMinimumSize());
             f.write(new File("target/prealloc.fits"));
             f.close();
         }
@@ -1442,32 +1457,36 @@ public class HeaderTest {
             BasicHDU<?> hdu = f.getHDU(0);
             Header h = hdu.getHeader();
 
-            assertEquals(5760, h.getOriginalSize());
-            assertEquals(5760, h.getMinimumSize());
-            assertEquals(1, h.getIntValue("TEST1"));
-            assertEquals(2, h.getIntValue("TEST2"));
-            assertEquals(n, h.getNumberOfPhysicalCards());
+            Assertions.assertEquals(5760, h.getOriginalSize());
+            Assertions.assertEquals(5760, h.getMinimumSize());
+            Assertions.assertEquals(1, h.getIntValue("TEST1"));
+            Assertions.assertEquals(2, h.getIntValue("TEST2"));
+            Assertions.assertEquals(n, h.getNumberOfPhysicalCards());
             f.close();
         }
 
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testNoSkipStream() throws Exception {
-        ByteArrayOutputStream bo = new ByteArrayOutputStream(4000);
-        FitsOutputStream o = new FitsOutputStream(bo);
-        int[][] i = new int[10][10];
-        BasicHDU<?> hdu = FitsFactory.hduFactory(i);
-        hdu.getHeader().write(o);
+        Assertions.assertThrows(IOException.class, () -> {
 
-        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(bo.toByteArray())) {
-            @Override
-            public void skipAllBytes(long n) throws IOException {
-                throw new IOException("disabled skipping");
-            }
-        };
+            ByteArrayOutputStream bo = new ByteArrayOutputStream(4000);
+            FitsOutputStream o = new FitsOutputStream(bo);
+            int[][] i = new int[10][10];
+            BasicHDU<?> hdu = FitsFactory.hduFactory(i);
+            hdu.getHeader().write(o);
 
-        new Header(in);
+            FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(bo.toByteArray())) {
+                @Override
+                public void skipAllBytes(long n) throws IOException {
+                    throw new IOException("disabled skipping");
+                }
+            };
+
+            new Header(in);
+
+        });
     }
 
     @Test
@@ -1513,22 +1532,22 @@ public class HeaderTest {
 
     private void checkPrimary(Header h) throws Exception {
         Cursor<String, HeaderCard> c = h.iterator();
-        assertEquals("SIMPLE", "SIMPLE", c.next().getKey());
-        assertEquals("BITPIX", "BITPIX", c.next().getKey());
-        assertEquals("NAXIS", "NAXIS", c.next().getKey());
-        assertEquals("EXTEND", "EXTEND", c.next().getKey());
-        assertFalse("!XTENSION", h.containsKey("XTENSION"));
+        Assertions.assertEquals("SIMPLE", c.next().getKey());
+        Assertions.assertEquals("BITPIX", c.next().getKey());
+        Assertions.assertEquals("NAXIS", c.next().getKey());
+        Assertions.assertEquals("EXTEND", c.next().getKey());
+        Assertions.assertFalse(h.containsKey("XTENSION"));
     }
 
     private void checkXtension(Header h) throws Exception {
         Cursor<String, HeaderCard> c = h.iterator();
-        assertEquals("XTENSION", "XTENSION", c.next().getKey());
-        assertEquals("BITPIX", "BITPIX", c.next().getKey());
-        assertEquals("NAXIS", "NAXIS", c.next().getKey());
-        assertEquals("PCOUNT", "PCOUNT", c.next().getKey());
-        assertEquals("GCOUNT", "GCOUNT", c.next().getKey());
-        assertFalse("!SIMPLE", h.containsKey("SIMPLE"));
-        assertFalse("!EXTEND", h.containsKey("EXTEND"));
+        Assertions.assertEquals("XTENSION", c.next().getKey());
+        Assertions.assertEquals("BITPIX", c.next().getKey());
+        Assertions.assertEquals("NAXIS", c.next().getKey());
+        Assertions.assertEquals("PCOUNT", c.next().getKey());
+        Assertions.assertEquals("GCOUNT", c.next().getKey());
+        Assertions.assertFalse(h.containsKey("SIMPLE"));
+        Assertions.assertFalse(h.containsKey("EXTEND"));
     }
 
     @Test
@@ -1566,7 +1585,7 @@ public class HeaderTest {
         Header h = new Header();
         h.insertComment("existing comment");
         h.updateLine(Standard.COMMENT, HeaderCard.createCommentCard("new comment"));
-        assertEquals(2, h.getNumberOfCards());
+        Assertions.assertEquals(2, h.getNumberOfCards());
     }
 
     @Test
@@ -1574,7 +1593,7 @@ public class HeaderTest {
         Header h = new Header();
         h.insertCommentStyle("  ", "existing comment");
         h.updateLine("  ", HeaderCard.createCommentCard("new comment"));
-        assertEquals(2, h.getNumberOfCards());
+        Assertions.assertEquals(2, h.getNumberOfCards());
     }
 
     @Test
@@ -1582,14 +1601,14 @@ public class HeaderTest {
         Header h = new Header();
         h.addValue("TEST1", 1, "comment");
         h.updateLine("TEST1", new HeaderCard("TEST2", 2, "comment"));
-        assertEquals(1, h.getNumberOfCards());
+        Assertions.assertEquals(1, h.getNumberOfCards());
     }
 
     @Test
     public void invalidHeaderSizeTest() throws Exception {
         Header h = new Header();
         h.addValue("TEST", 1.0, "Some value");
-        assertEquals(0, h.getSize());
+        Assertions.assertEquals(0, h.getSize());
     }
 
     @Test
@@ -1604,8 +1623,8 @@ public class HeaderTest {
         Data d1 = h.makeData();
         Data d2 = FitsFactory.dataFactory(h);
 
-        assertEquals(ImageData.class, d1.getClass());
-        assertEquals(d1.getClass(), d2.getClass());
+        Assertions.assertEquals(ImageData.class, d1.getClass());
+        Assertions.assertEquals(d1.getClass(), d2.getClass());
     }
 
     @Test
@@ -1614,15 +1633,15 @@ public class HeaderTest {
         long N = 1L << 20;
         h.addValue(NAXISn.n(1), N);
 
-        assertEquals(N, h.getBigIntegerValue(NAXISn.n(1)).longValue());
-        assertNull(h.getBigIntegerValue(NAXISn.n(2), null));
+        Assertions.assertEquals(N, h.getBigIntegerValue(NAXISn.n(1)).longValue());
+        Assertions.assertNull(h.getBigIntegerValue(NAXISn.n(2), null));
     }
 
     @Test
     public void testGetRandomAccessInputFile() throws Exception {
         Fits f = new Fits(new FitsFile("src/test/resources/nom/tam/fits/test/test.fits", "r"));
         BasicHDU<?> hdu = f.readHDU();
-        assertNotNull(hdu.getHeader().getRandomAccessInput());
+        Assertions.assertNotNull(hdu.getHeader().getRandomAccessInput());
     }
 
     @Test
@@ -1630,14 +1649,14 @@ public class HeaderTest {
         Fits f = new Fits(
                 new FitsInputStream(new FileInputStream(new File("src/test/resources/nom/tam/fits/test/test.fits"))));
         BasicHDU<?> hdu = f.readHDU();
-        assertNull(hdu.getHeader().getRandomAccessInput());
+        Assertions.assertNull(hdu.getHeader().getRandomAccessInput());
     }
 
     @Test
     public void testMergeDistinctCards() throws Exception {
         Header h = new Header();
         h.addValue("EXIST", 1, "existing prior value");
-        assertEquals("orig", 1, h.getIntValue("EXIST", -1));
+        Assertions.assertEquals(1, h.getIntValue("EXIST", -1));
 
         Header h2 = new Header();
         h2.addValue("EXIST", 2, "another value for EXIST");
@@ -1646,14 +1665,14 @@ public class HeaderTest {
 
         h.mergeDistinct(h2);
 
-        assertEquals("EXIST", 1, h.getIntValue("EXIST", -1));
-        assertEquals("TEST", 3, h.getIntValue("TEST", -1));
+        Assertions.assertEquals(1, h.getIntValue("EXIST", -1));
+        Assertions.assertEquals(3, h.getIntValue("TEST", -1));
 
         Cursor<String, HeaderCard> c = h.iterator();
         while (c.hasNext()) {
             HeaderCard card = c.next();
             if (card.isCommentStyleCard()) {
-                assertEquals("comment", card.getComment());
+                Assertions.assertEquals("comment", card.getComment());
                 return;
             }
         }
@@ -1670,19 +1689,19 @@ public class HeaderTest {
         /*
          * ought to find 3 cards, NAXIS, NAXIS1, NAXIS2, that start with NAX
          */
-        assertEquals(3, cds.length);
+        Assertions.assertEquals(3, cds.length);
 
         cds = hdr.findCards(".*Y.*");
         /*
          * ought to find no card which has a key with a Y
          */
-        assertEquals(0, cds.length);
+        Assertions.assertEquals(0, cds.length);
 
         cds = hdr.findCards(".*\\d");
         /*
          * ought to find the two cards that end on digits, namely NAXIS1 and NAXIS2
          */
-        assertEquals(2, cds.length);
+        Assertions.assertEquals(2, cds.length);
     }
 
     @Test
@@ -1699,10 +1718,14 @@ public class HeaderTest {
         /* no exception */
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testImageKeywordCheckingException() throws Exception {
-        Header h = new BinaryTable().toHDU().getHeader();
-        h.addValue(Standard.BUNIT, "blah");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            Header h = new BinaryTable().toHDU().getHeader();
+            h.addValue(Standard.BUNIT, "blah");
+
+        });
     }
 
     @Test
@@ -1712,28 +1735,44 @@ public class HeaderTest {
         /* no exception */
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testGroupsKeywordCheckingException() throws Exception {
-        Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
-        h.addValue(Standard.PTYPEn.n(1), "blah");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
+            h.addValue(Standard.PTYPEn.n(1), "blah");
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testTableKeywordCheckingException() throws Exception {
-        Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
-        h.addValue(Standard.TFORMn.n(1), "blah");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
+            h.addValue(Standard.TFORMn.n(1), "blah");
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAsciiTableKeywordCheckingException() throws Exception {
-        Header h = new BinaryTable().toHDU().getHeader();
-        h.addValue(Standard.TBCOLn.n(1), 10);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            Header h = new BinaryTable().toHDU().getHeader();
+            h.addValue(Standard.TBCOLn.n(1), 10);
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testBinbaryTableKeywordCheckingException() throws Exception {
-        Header h = new AsciiTable().toHDU().getHeader();
-        h.addValue(Standard.TDIMn.n(1), "blah");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            Header h = new AsciiTable().toHDU().getHeader();
+            h.addValue(Standard.TDIMn.n(1), "blah");
+
+        });
     }
 
     @Test
@@ -1751,39 +1790,59 @@ public class HeaderTest {
         /* No exception */
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testKeywordCheckingMandatoryException() throws Exception {
-        Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
-        Header h = new BinaryTable().toHDU().getHeader();
-        h.addValue(Standard.SIMPLE, true);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
+            Header h = new BinaryTable().toHDU().getHeader();
+            h.addValue(Standard.SIMPLE, true);
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testKeywordCheckingIntegralException() throws Exception {
-        Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
-        Header h = new BinaryTable().toHDU().getHeader();
-        h.addValue(Compression.ZIMAGE, true);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
+            Header h = new BinaryTable().toHDU().getHeader();
+            h.addValue(Compression.ZIMAGE, true);
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testKeywordCheckingPrimaryException() throws Exception {
-        Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
-        Header h = new BinaryTable().toHDU().getHeader();
-        h.addValue(Standard.SIMPLE, true);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
+            Header h = new BinaryTable().toHDU().getHeader();
+            h.addValue(Standard.SIMPLE, true);
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testKeywordCheckingExtensionException() throws Exception {
-        Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
-        Header h = new RandomGroupsData(new Object[][] {{new int[4], new int[2]}}).toHDU().getHeader();
-        h.addValue(Standard.INHERIT, true);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
+            Header h = new RandomGroupsData(new Object[][] {{new int[4], new int[2]}}).toHDU().getHeader();
+            h.addValue(Standard.INHERIT, true);
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testStrictKeywordCheckingExtension() throws Exception {
-        Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
-        Header h = new BinaryTable().toHDU().getHeader();
-        h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
+            Header h = new BinaryTable().toHDU().getHeader();
+            h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
+
+        });
     }
 
     @Test
@@ -1800,11 +1859,15 @@ public class HeaderTest {
         h.addValue(NOAOExt.ADCMJD, 0.0);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testReplaceCommentKeyException() throws Exception {
-        Header h = new Header();
-        h.insertComment("blah");
-        h.replaceKey(Standard.COMMENT, Standard.BLANKS);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            Header h = new Header();
+            h.insertComment("blah");
+            h.replaceKey(Standard.COMMENT, Standard.BLANKS);
+
+        });
     }
 
 }

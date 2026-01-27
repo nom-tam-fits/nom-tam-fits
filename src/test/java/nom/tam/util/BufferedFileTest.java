@@ -34,17 +34,17 @@ package nom.tam.util;
 import java.io.EOFException;
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.FitsFactory;
 
 public class BufferedFileTest {
 
-    @Before
-    @After
+    @BeforeEach
+    @AfterEach
     public void setDefaults() {
         FitsFactory.setDefaults();
     }
@@ -57,7 +57,7 @@ public class BufferedFileTest {
         file = new FitsFile("target/BufferedFileCheckEof", "rw");
         try {
             // there are only 2 so ready them
-            Assert.assertEquals(2, file.read(new char[3]));
+            Assertions.assertEquals(2, file.read(new char[3]));
             EOFException eofException = null;
             try {
                 // nothing left now a eof should happen
@@ -65,7 +65,7 @@ public class BufferedFileTest {
             } catch (EOFException e) {
                 eofException = e;
             }
-            Assert.assertNotNull(eofException);
+            Assertions.assertNotNull(eofException);
         } finally {
             file.close();
         }
@@ -76,12 +76,12 @@ public class BufferedFileTest {
         FitsFactory.setUseUnicodeChars(false);
         FitsFile file = new FitsFile("target/BufferedFileReadWriteAscii", "rw");
         file.write(new byte[10]);
-        Assert.assertTrue(file.getChannel().isOpen());
+        Assertions.assertTrue(file.getChannel().isOpen());
         file.close();
         file = new FitsFile("target/BufferedFileReadWriteAscii", "rw");
         try {
             file.write(new char[2]);
-            Assert.assertEquals(3, file.read(new char[3]));
+            Assertions.assertEquals(3, file.read(new char[3]));
         } finally {
             file.close();
         }
@@ -92,12 +92,12 @@ public class BufferedFileTest {
         FitsFactory.setUseUnicodeChars(true);
         FitsFile file = new FitsFile("target/BufferedFileReadWriteUnicode", "rw");
         file.write(new byte[10]);
-        Assert.assertTrue(file.getChannel().isOpen());
+        Assertions.assertTrue(file.getChannel().isOpen());
         file.close();
         file = new FitsFile("target/BufferedFileReadWriteUnicode", "rw");
         try {
             file.write(new char[2]);
-            Assert.assertEquals(6, file.read(new char[3]));
+            Assertions.assertEquals(6, file.read(new char[3]));
         } finally {
             file.close();
         }
@@ -109,14 +109,14 @@ public class BufferedFileTest {
         file.write(new byte[10]);
         file.close();
         file = new FitsFile("target/BufferedFileBigMark", "rw");
-        Assert.assertTrue(file.markSupported());
+        Assertions.assertTrue(file.markSupported());
         try {
             file.read();
             long expected = file.getFilePointer();
             file.mark(20);
             file.read();
             file.reset();
-            Assert.assertEquals(expected, file.getFilePointer());
+            Assertions.assertEquals(expected, file.getFilePointer());
         } finally {
             file.close();
         }
@@ -133,7 +133,7 @@ public class BufferedFileTest {
         try {
             byte[] fully = new byte[3];
             file.readFully(fully);
-            Assert.assertArrayEquals(new byte[] {-1, -1, -1}, fully);
+            Assertions.assertArrayEquals(new byte[] {-1, -1, -1}, fully);
         } finally {
             file.close();
         }
@@ -150,7 +150,7 @@ public class BufferedFileTest {
         try {
             byte[] fully = new byte[3];
             file.readFully(fully, 0, fully.length);
-            Assert.assertArrayEquals(new byte[] {-1, -1, -1}, fully);
+            Assertions.assertArrayEquals(new byte[] {-1, -1, -1}, fully);
         } finally {
             file.close();
         }

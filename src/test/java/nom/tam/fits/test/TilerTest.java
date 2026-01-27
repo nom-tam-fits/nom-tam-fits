@@ -31,15 +31,13 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.Fits;
 import nom.tam.fits.ImageHDU;
@@ -84,7 +82,7 @@ public class TilerTest {
             }
         }
 
-        assertEquals("Tiler" + test, sum0, sum1, 0);
+        Assertions.assertEquals(sum0, sum1, 0);
 
         return true;
     }
@@ -107,7 +105,7 @@ public class TilerTest {
             }
         }
 
-        assertEquals("Tiler" + test, sum0, sum1, 0);
+        Assertions.assertEquals(sum0, sum1, 0);
     }
 
     private void doTile3(final String test, final Object data, final ImageTiler t, final int x, final int y, final int nx,
@@ -137,7 +135,7 @@ public class TilerTest {
             }
         }
 
-        assertEquals("StreamTiler_" + test, expectedSum, resultSum, 0);
+        Assertions.assertEquals(expectedSum, resultSum, 0);
     }
 
     @Test
@@ -245,15 +243,15 @@ public class TilerTest {
             doTile2("t4", data, t, 133, 133, 72, 26);
             doTile3("t4", data, t, 133, 133, 72, 26);
 
-            Assert.assertFalse(doTile("t5", data, t, 500, 500, 72, 26));
+            Assertions.assertFalse(doTile("t5", data, t, 500, 500, 72, 26));
             IOException expected = null;
             try {
                 doTile2("t5", data, t, 500, 500, 72, 26);
             } catch (IOException e) {
                 expected = e;
             }
-            Assert.assertNotNull(expected);
-            Assert.assertTrue(expected.getMessage().contains("within"));
+            Assertions.assertNotNull(expected);
+            Assertions.assertTrue(expected.getMessage().contains("within"));
 
             expected = null;
             try {
@@ -261,8 +259,8 @@ public class TilerTest {
             } catch (IOException e) {
                 expected = e;
             }
-            Assert.assertNotNull(expected);
-            Assert.assertTrue(expected.getMessage().contains("within"));
+            Assertions.assertNotNull(expected);
+            Assertions.assertTrue(expected.getMessage().contains("within"));
 
             expected = null;
             try {
@@ -270,8 +268,8 @@ public class TilerTest {
             } catch (IOException e) {
                 expected = e;
             }
-            Assert.assertNotNull(expected);
-            Assert.assertTrue(expected.getMessage().contains("Inconsistent"));
+            Assertions.assertNotNull(expected);
+            Assertions.assertTrue(expected.getMessage().contains("Inconsistent"));
         } finally {
             SafeClose.close(f);
         }

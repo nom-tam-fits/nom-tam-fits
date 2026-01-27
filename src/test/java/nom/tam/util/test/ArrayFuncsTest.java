@@ -31,19 +31,11 @@ package nom.tam.util.test;
  * #L%
  */
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.Header;
 import nom.tam.util.ArrayFuncs;
@@ -95,12 +87,12 @@ public class ArrayFuncsTest {
         int[][] z = {{1, 2, 3}, {4, 5, 7}};
         int[][] t = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
 
-        assertTrue(TestArrayFuncs.arrayEquals(null, null));
-        assertFalse(TestArrayFuncs.arrayEquals(null, new int[2]));
-        assertTrue(TestArrayFuncs.arrayEquals(x, y));
-        assertFalse(TestArrayFuncs.arrayEquals(x, z));
-        assertFalse(TestArrayFuncs.arrayEquals(x, t));
-        assertTrue(TestArrayFuncs.arrayEquals(x[0], z[0]));
+        Assertions.assertTrue(TestArrayFuncs.arrayEquals(null, null));
+        Assertions.assertFalse(TestArrayFuncs.arrayEquals(null, new int[2]));
+        Assertions.assertTrue(TestArrayFuncs.arrayEquals(x, y));
+        Assertions.assertFalse(TestArrayFuncs.arrayEquals(x, z));
+        Assertions.assertFalse(TestArrayFuncs.arrayEquals(x, t));
+        Assertions.assertTrue(TestArrayFuncs.arrayEquals(x[0], z[0]));
     }
 
     /**
@@ -114,20 +106,20 @@ public class ArrayFuncsTest {
 
         int expResult = 0;
         int result = ArrayFuncs.computeSize(o);
-        assertEquals(expResult, result);
+        Assertions.assertEquals(expResult, result);
         int[][] x = new int[2][3];
-        assertEquals(ArrayFuncs.computeSize(x), 24);
-        assertEquals(ArrayFuncs.computeSize(new double[3]), 24);
-        assertEquals(ArrayFuncs.computeSize("1234"), 4);
-        assertEquals(ArrayFuncs.computeSize(new Object()), 0);
-        assertEquals(ArrayFuncs.computeSize(new Double[5]), 0);
-        assertEquals(ArrayFuncs.computeSize(new Double[] {new Double(0), new Double(1), new Double(2)}), 24);
-        assertEquals(ArrayFuncs.computeLSize(x), 24);
-        assertEquals(ArrayFuncs.computeLSize(new double[3]), 24);
-        assertEquals(ArrayFuncs.computeLSize("1234"), 4);
-        assertEquals(ArrayFuncs.computeLSize(new Object()), 0);
-        assertEquals(ArrayFuncs.computeLSize(new Double[5]), 0);
-        assertEquals(ArrayFuncs.computeLSize(new Double[] {new Double(0), new Double(1), new Double(2)}), 24);
+        Assertions.assertEquals(ArrayFuncs.computeSize(x), 24);
+        Assertions.assertEquals(ArrayFuncs.computeSize(new double[3]), 24);
+        Assertions.assertEquals(ArrayFuncs.computeSize("1234"), 4);
+        Assertions.assertEquals(ArrayFuncs.computeSize(new Object()), 0);
+        Assertions.assertEquals(ArrayFuncs.computeSize(new Double[5]), 0);
+        Assertions.assertEquals(ArrayFuncs.computeSize(new Double[] {new Double(0), new Double(1), new Double(2)}), 24);
+        Assertions.assertEquals(ArrayFuncs.computeLSize(x), 24);
+        Assertions.assertEquals(ArrayFuncs.computeLSize(new double[3]), 24);
+        Assertions.assertEquals(ArrayFuncs.computeLSize("1234"), 4);
+        Assertions.assertEquals(ArrayFuncs.computeLSize(new Object()), 0);
+        Assertions.assertEquals(ArrayFuncs.computeLSize(new Double[5]), 0);
+        Assertions.assertEquals(ArrayFuncs.computeLSize(new Double[] {new Double(0), new Double(1), new Double(2)}), 24);
     }
 
     /**
@@ -142,16 +134,16 @@ public class ArrayFuncsTest {
 
         boolean reuse = true;
         double[][] dres = (double[][]) ArrayFuncs.convertArray(array, newType, reuse);
-        assertEquals(dres.length, array.length);
-        assertEquals(dres[0].length, array[0].length);
+        Assertions.assertEquals(dres.length, array.length);
+        Assertions.assertEquals(dres[0].length, array[0].length);
 
         newType = int.class;
         int[][] ires = (int[][]) ArrayFuncs.convertArray(array, newType, true);
-        assertArrayEquals(array, ires);
+        Assertions.assertArrayEquals(array, ires);
 
         ires = (int[][]) ArrayFuncs.convertArray(array, newType, false);
-        assertNotSame(array, ires);
-        assertTrue(TestArrayFuncs.arrayEquals(array, ires));
+        Assertions.assertNotSame(array, ires);
+        Assertions.assertTrue(TestArrayFuncs.arrayEquals(array, ires));
     }
 
     /**
@@ -164,7 +156,7 @@ public class ArrayFuncsTest {
         double[] start = new double[] {1, 2, 3, 4, 5, 6};
         double[] finish = new double[6];
         ArrayFuncs.copyArray(start, finish);
-        assertTrue(TestArrayFuncs.arrayEquals(start, finish));
+        Assertions.assertTrue(TestArrayFuncs.arrayEquals(start, finish));
     }
 
     /**
@@ -179,8 +171,8 @@ public class ArrayFuncsTest {
 
         ArrayFuncs.copyInto(x, y);
 
-        assertEquals(x[0][0], y[0][0], 0.00001);
-        assertEquals(x[1][2], y[1][2], 0.00001);
+        Assertions.assertEquals(x[0][0], y[0][0], 0.00001);
+        Assertions.assertEquals(x[1][2], y[1][2], 0.00001);
     }
 
     /**
@@ -194,12 +186,12 @@ public class ArrayFuncsTest {
         int[] test = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23};
 
         int[][][] res = (int[][][]) nom.tam.util.ArrayFuncs.curl(test, dimens);
-        assertEquals(res.length, 2);
-        assertEquals(res[0].length, 3);
-        assertEquals(res[0][0].length, 4);
-        assertEquals(res[0][0][0], 0);
-        assertEquals(res[0][0][3], 3);
-        assertEquals(res[1][2][3], 23);
+        Assertions.assertEquals(res.length, 2);
+        Assertions.assertEquals(res[0].length, 3);
+        Assertions.assertEquals(res[0][0].length, 4);
+        Assertions.assertEquals(res[0][0][0], 0);
+        Assertions.assertEquals(res[0][0][3], 3);
+        Assertions.assertEquals(res[1][2][3], 23);
     }
 
     /**
@@ -212,14 +204,14 @@ public class ArrayFuncsTest {
 
         for (int i = 0; i < test.length; i++) {
             for (int j = 0; j < test[i].length; j++) {
-                assertEquals(test[i][j], result[i][j]);
+                Assertions.assertEquals(test[i][j], result[i][j]);
             }
         }
     }
 
     @Test
     public void testDeepCloneNull() {
-        assertNull(ArrayFuncs.deepClone(null));
+        Assertions.assertNull(ArrayFuncs.deepClone(null));
     }
 
     /**
@@ -234,11 +226,11 @@ public class ArrayFuncsTest {
 
         double tol = 0.0;
 
-        assertTrue(TestArrayFuncs.doubleArrayEquals(x, y, tol));
+        Assertions.assertTrue(TestArrayFuncs.doubleArrayEquals(x, y, tol));
         x[0] += 1.e-14;
-        assertFalse(TestArrayFuncs.doubleArrayEquals(x, y, tol));
+        Assertions.assertFalse(TestArrayFuncs.doubleArrayEquals(x, y, tol));
         tol = 1.e-13;
-        assertTrue(TestArrayFuncs.doubleArrayEquals(x, y, tol));
+        Assertions.assertTrue(TestArrayFuncs.doubleArrayEquals(x, y, tol));
     }
 
     /**
@@ -260,7 +252,7 @@ public class ArrayFuncsTest {
         }
 
         int[] result = (int[]) ArrayFuncs.flatten(test);
-        assertArrayEquals(expected, result);
+        Assertions.assertArrayEquals(expected, result);
     }
 
     static class Thing {
@@ -289,7 +281,7 @@ public class ArrayFuncsTest {
             }
         }
         Thing[] result = (Thing[]) ArrayFuncs.flatten(test);
-        assertArrayEquals(expected, result);
+        Assertions.assertArrayEquals(expected, result);
     }
 
     /**
@@ -302,11 +294,11 @@ public class ArrayFuncsTest {
         System.out.println("floatArrayEquals");
 
         float tol = 0.0F;
-        assertTrue(TestArrayFuncs.floatArrayEquals(x, y, tol));
+        Assertions.assertTrue(TestArrayFuncs.floatArrayEquals(x, y, tol));
         x[0] += 1.e-6f;
-        assertFalse(TestArrayFuncs.floatArrayEquals(x, y, tol));
+        Assertions.assertFalse(TestArrayFuncs.floatArrayEquals(x, y, tol));
         tol = 1.e-5f;
-        assertTrue(TestArrayFuncs.floatArrayEquals(x, y, tol));
+        Assertions.assertTrue(TestArrayFuncs.floatArrayEquals(x, y, tol));
     }
 
     /**
@@ -320,11 +312,11 @@ public class ArrayFuncsTest {
         int[] dims = {2, 3, 4};
 
         Object result = nom.tam.util.TestArrayFuncs.generateArray(baseType, dims);
-        assertEquals(result.getClass(), int[][][].class);
+        Assertions.assertEquals(result.getClass(), int[][][].class);
         int[][][] x = (int[][][]) result;
-        assertEquals(x.length, 2);
-        assertEquals(x[0].length, 3);
-        assertEquals(x[0][0].length, 4);
+        Assertions.assertEquals(x.length, 2);
+        Assertions.assertEquals(x[0].length, 3);
+        Assertions.assertEquals(x[0][0].length, 4);
 
     }
 
@@ -337,7 +329,7 @@ public class ArrayFuncsTest {
         } catch (OutOfMemoryError error2) {
             error = error2;
         }
-        assertNotNull(error);
+        Assertions.assertNotNull(error);
     }
 
     /**
@@ -354,13 +346,13 @@ public class ArrayFuncsTest {
         int[] x = (int[]) o;
         int[] y = (int[]) result;
         for (int i = 0; i < x.length; i++) {
-            assertEquals(x[i], y[i]);
+            Assertions.assertEquals(x[i], y[i]);
         }
         CloneTest xa = new CloneTest();
         xa.value = 4;
         Object ya = ArrayFuncs.genericClone(xa);
-        assertTrue(xa != ya);
-        assertTrue(xa.equals(ya));
+        Assertions.assertTrue(xa != ya);
+        Assertions.assertTrue(xa.equals(ya));
     }
 
     /**
@@ -373,7 +365,7 @@ public class ArrayFuncsTest {
         byte b = 0;
         TestArrayFuncs.testPattern(test, b);
 
-        assertEquals(test[0][0], ArrayFuncs.getBaseArray(test));
+        Assertions.assertEquals(test[0][0], ArrayFuncs.getBaseArray(test));
     }
 
     /**
@@ -383,8 +375,8 @@ public class ArrayFuncsTest {
     public void testGetBaseClass() {
         System.out.println("getBaseClass");
 
-        assertEquals(int.class, ArrayFuncs.getBaseClass(new int[2][3]));
-        assertEquals(String.class, ArrayFuncs.getBaseClass(new String[3]));
+        Assertions.assertEquals(int.class, ArrayFuncs.getBaseClass(new int[2][3]));
+        Assertions.assertEquals(String.class, ArrayFuncs.getBaseClass(new String[3]));
     }
 
     /**
@@ -393,14 +385,14 @@ public class ArrayFuncsTest {
     @Test
     public void testGetBaseLength() {
 
-        assertEquals(ElementType.INT.size(), ArrayFuncs.getBaseLength(new int[2][3]));
-        assertEquals(ElementType.DOUBLE.size(), ArrayFuncs.getBaseLength(new double[2][3]));
-        assertEquals(ElementType.BYTE.size(), ArrayFuncs.getBaseLength(new byte[2][3]));
-        assertEquals(ElementType.SHORT.size(), ArrayFuncs.getBaseLength(new short[2][3]));
-        assertEquals(ElementType.CHAR.size(), ArrayFuncs.getBaseLength(new char[2][3]));
-        assertEquals(ElementType.FLOAT.size(), ArrayFuncs.getBaseLength(new float[2][3]));
-        assertEquals(ElementType.BOOLEAN.size(), ArrayFuncs.getBaseLength(new boolean[2][3]));
-        assertEquals(-1, ArrayFuncs.getBaseLength(new Object[2][3]));
+        Assertions.assertEquals(ElementType.INT.size(), ArrayFuncs.getBaseLength(new int[2][3]));
+        Assertions.assertEquals(ElementType.DOUBLE.size(), ArrayFuncs.getBaseLength(new double[2][3]));
+        Assertions.assertEquals(ElementType.BYTE.size(), ArrayFuncs.getBaseLength(new byte[2][3]));
+        Assertions.assertEquals(ElementType.SHORT.size(), ArrayFuncs.getBaseLength(new short[2][3]));
+        Assertions.assertEquals(ElementType.CHAR.size(), ArrayFuncs.getBaseLength(new char[2][3]));
+        Assertions.assertEquals(ElementType.FLOAT.size(), ArrayFuncs.getBaseLength(new float[2][3]));
+        Assertions.assertEquals(ElementType.BOOLEAN.size(), ArrayFuncs.getBaseLength(new boolean[2][3]));
+        Assertions.assertEquals(-1, ArrayFuncs.getBaseLength(new Object[2][3]));
     }
 
     /**
@@ -413,14 +405,14 @@ public class ArrayFuncsTest {
         Object o = null;
         int[] expResult = null;
         int[] result = nom.tam.util.ArrayFuncs.getDimensions(o);
-        assertEquals(expResult, result);
+        Assertions.assertEquals(expResult, result);
 
-        assertEquals(ArrayFuncs.getDimensions(new Integer(0)).length, 0);
+        Assertions.assertEquals(ArrayFuncs.getDimensions(new Integer(0)).length, 0);
         int[][] test = new int[2][3];
         int[] dims = ArrayFuncs.getDimensions(test);
-        assertEquals(2, dims.length);
-        assertEquals(2, dims[0]);
-        assertEquals(3, dims[1]);
+        Assertions.assertEquals(2, dims.length);
+        Assertions.assertEquals(2, dims[0]);
+        Assertions.assertEquals(3, dims[1]);
     }
 
     /**
@@ -434,8 +426,8 @@ public class ArrayFuncsTest {
         Class<?> newType = double.class;
 
         double[][] result = (double[][]) nom.tam.util.ArrayFuncs.mimicArray(array, newType);
-        assertEquals(array.length, result.length);
-        assertEquals(array[0].length, result[0].length);
+        Assertions.assertEquals(array.length, result.length);
+        Assertions.assertEquals(array[0].length, result[0].length);
     }
 
     /**
@@ -447,10 +439,10 @@ public class ArrayFuncsTest {
 
         Object o = null;
 
-        assertEquals(ArrayFuncs.nElements(null), 0);
-        assertEquals(ArrayFuncs.nElements(new int[2][2][3]), 12);
-        assertEquals(ArrayFuncs.nLElements(null), 0);
-        assertEquals(ArrayFuncs.nLElements(new int[2][2][3]), 12);
+        Assertions.assertEquals(ArrayFuncs.nElements(null), 0);
+        Assertions.assertEquals(ArrayFuncs.nElements(new int[2][2][3]), 12);
+        Assertions.assertEquals(ArrayFuncs.nLElements(null), 0);
+        Assertions.assertEquals(ArrayFuncs.nLElements(new int[2][2][3]), 12);
     }
 
     /**
@@ -464,16 +456,16 @@ public class ArrayFuncsTest {
         int[] arr = new int[8];
 
         byte result = nom.tam.util.TestArrayFuncs.testPattern(arr, start);
-        assertEquals(result, (byte) (start + arr.length));
-        assertEquals(start, arr[0]);
-        assertEquals(start + arr.length - 1, arr[arr.length - 1]);
+        Assertions.assertEquals(result, (byte) (start + arr.length));
+        Assertions.assertEquals(start, arr[0]);
+        Assertions.assertEquals(start + arr.length - 1, arr[arr.length - 1]);
     }
 
     @Test
     public void testAsciiFuncs() throws Exception {
         Constructor<?>[] constrs = AsciiFuncs.class.getDeclaredConstructors();
-        assertEquals(constrs.length, 1);
-        assertFalse(constrs[0].isAccessible());
+        Assertions.assertEquals(constrs.length, 1);
+        Assertions.assertFalse(constrs[0].isAccessible());
         constrs[0].setAccessible(true);
         constrs[0].newInstance();
     }
@@ -481,70 +473,82 @@ public class ArrayFuncsTest {
     @Test
     public void testArrayFuncs() throws Exception {
         Constructor<?>[] constrs = ArrayFuncs.class.getDeclaredConstructors();
-        assertEquals(constrs.length, 1);
-        assertFalse(constrs[0].isAccessible());
+        Assertions.assertEquals(constrs.length, 1);
+        Assertions.assertFalse(constrs[0].isAccessible());
         constrs[0].setAccessible(true);
         constrs[0].newInstance();
     }
 
     @Test
     public void testGenericCloneFail1() throws Exception {
-        Assert.assertNull(ArrayFuncs.genericClone(this));
+        Assertions.assertNull(ArrayFuncs.genericClone(this));
     }
 
     @Test
     public void testGenericCloneFail2() throws Exception {
-        Assert.assertNull(ArrayFuncs.genericClone(new CloneFailTest()));
+        Assertions.assertNull(ArrayFuncs.genericClone(new CloneFailTest()));
     }
 
     @Test
     public void testVoidBaseClass() throws Exception {
-        Assert.assertEquals(void.class, ArrayFuncs.getBaseClass(null));
+        Assertions.assertEquals(void.class, ArrayFuncs.getBaseClass(null));
     }
 
     @Test
     public void testVoidBaseLength() throws Exception {
-        Assert.assertEquals(0, ArrayFuncs.getBaseLength(null));
+        Assertions.assertEquals(0, ArrayFuncs.getBaseLength(null));
     }
 
     @Test
     public void testCurlNull() throws Exception {
-        Assert.assertNull(ArrayFuncs.curl(null, null));
+        Assertions.assertNull(ArrayFuncs.curl(null, null));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testCurlNonArray() throws Exception {
-        Assert.assertNull(ArrayFuncs.curl(this, null));
+        Assertions.assertThrows(RuntimeException.class, () -> {
+
+            Assertions.assertNull(ArrayFuncs.curl(this, null));
+
+        });
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testCurlMultiArray() throws Exception {
-        Assert.assertNull(ArrayFuncs.curl(new int[10][10], new int[] {20, 5}));
+        Assertions.assertThrows(RuntimeException.class, () -> {
+
+            Assertions.assertNull(ArrayFuncs.curl(new int[10][10], new int[] {20, 5}));
+
+        });
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testCurlWrongArray() throws Exception {
-        Assert.assertNull(ArrayFuncs.curl(new int[] {1, 2, 3}, new int[] {99}));
+        Assertions.assertThrows(RuntimeException.class, () -> {
+
+            Assertions.assertNull(ArrayFuncs.curl(new int[] {1, 2, 3}, new int[] {99}));
+
+        });
     }
 
     @Test
     public void testDeepCloneFail1() throws Exception {
-        Assert.assertNull(ArrayFuncs.deepClone(this));
+        Assertions.assertNull(ArrayFuncs.deepClone(this));
     }
 
     @Test
     public void testDeepCloneFail2() throws Exception {
-        Assert.assertNull(ArrayFuncs.deepClone(new CloneFailTest()));
+        Assertions.assertNull(ArrayFuncs.deepClone(new CloneFailTest()));
     }
 
     @Test
     public void testnLElementsFail() throws Exception {
-        Assert.assertEquals(1, ArrayFuncs.nLElements(this));
+        Assertions.assertEquals(1, ArrayFuncs.nLElements(this));
     }
 
     @Test
     public void testArrayDescriptionOfNull() throws Exception {
-        Assert.assertEquals("NULL", ArrayFuncs.arrayDescription(null));
+        Assertions.assertEquals("NULL", ArrayFuncs.arrayDescription(null));
     }
 
     @Test
@@ -563,7 +567,7 @@ public class ArrayFuncsTest {
 
         for (int i = 0; i < from.length; i++) {
             for (int j = 0; j < from[i].length; j++) {
-                assertEquals("[" + i + ", " + j + "]", from[i][j], to[i][j]);
+                Assertions.assertEquals(from[i][j], to[i][j], "[" + i + ", " + j + "]");
             }
         }
     }
@@ -576,19 +580,19 @@ public class ArrayFuncsTest {
         Object[] to = new Object[] {new int[i.length], new double[d.length]};
         ArrayFuncs.copyArray(from, to);
 
-        assertTrue(Arrays.equals(i, (int[]) to[0]));
-        assertTrue(Arrays.equals(d, (double[]) to[1]));
+        Assertions.assertTrue(Arrays.equals(i, (int[]) to[0]));
+        Assertions.assertTrue(Arrays.equals(d, (double[]) to[1]));
     }
 
     @Test
     public void testIsEmpty() {
-        Assert.assertTrue("Null should be empty.", ArrayFuncs.isEmpty(null));
-        Assert.assertTrue("Empty array should be empty.", ArrayFuncs.isEmpty(new int[0]));
-        Assert.assertTrue("2-D should be empty.", ArrayFuncs.isEmpty(new int[0][0]));
+        Assertions.assertTrue(ArrayFuncs.isEmpty(null));
+        Assertions.assertTrue(ArrayFuncs.isEmpty(new int[0]));
+        Assertions.assertTrue(ArrayFuncs.isEmpty(new int[0][0]));
 
-        Assert.assertFalse("2-D should not be empty.", ArrayFuncs.isEmpty(new int[][] {new int[3]}));
-        Assert.assertFalse("Should not be empty.", ArrayFuncs.isEmpty(new int[] {4, 6}));
-        Assert.assertFalse("Should not be empty.", ArrayFuncs.isEmpty(new Object[] {"1"}));
+        Assertions.assertFalse(ArrayFuncs.isEmpty(new int[][] {new int[3]}));
+        Assertions.assertFalse(ArrayFuncs.isEmpty(new int[] {4, 6}));
+        Assertions.assertFalse(ArrayFuncs.isEmpty(new Object[] {"1"}));
     }
 
     @Test
@@ -603,8 +607,7 @@ public class ArrayFuncsTest {
         final int[] to = new int[((from.length - offset) / stepValue) + 1];
         ArrayFuncs.copy(from, offset, to, 0, from.length - offset, stepValue);
 
-        Assert.assertArrayEquals("Wrong step copy", new int[] {165, 168, 171, 174, 177, 180, 183, 186, 189, 192, 195, 198},
-                to);
+        Assertions.assertArrayEquals(new int[] {165, 168, 171, 174, 177, 180, 183, 186, 189, 192, 195, 198}, to);
     }
 
     @Test
@@ -619,24 +622,34 @@ public class ArrayFuncsTest {
 
         final int[][] to = new int[from[0].length / stepValue][from[1].length / stepValue];
         ArrayFuncs.copy(from, 0, to, 0, from.length, stepValue);
-        Assert.assertArrayEquals("Wrong multi dimensional step copy",
-                new int[][] {new int[] {0, 2, 4, 6, 8}, new int[] {2, 4, 6, 8, 10}, new int[] {4, 6, 8, 10, 12},
-                        new int[] {6, 8, 10, 12, 14}, new int[] {8, 10, 12, 14, 16}},
-                to);
+        Assertions.assertArrayEquals(new int[][] {new int[] {0, 2, 4, 6, 8}, new int[] {2, 4, 6, 8, 10},
+                new int[] {4, 6, 8, 10, 12}, new int[] {6, 8, 10, 12, 14}, new int[] {8, 10, 12, 14, 16}}, to);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testCopyNotArray() throws Exception {
-        ArrayFuncs.copyArray(new Header(), new Header());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            ArrayFuncs.copyArray(new Header(), new Header());
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testCopyMismatchedType() throws Exception {
-        ArrayFuncs.copyArray(new int[3], new double[3]);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            ArrayFuncs.copyArray(new int[3], new double[3]);
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testCopyMismatchedSize() throws Exception {
-        ArrayFuncs.copyArray(new int[3], new int[4]);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            ArrayFuncs.copyArray(new int[3], new int[4]);
+
+        });
     }
 }

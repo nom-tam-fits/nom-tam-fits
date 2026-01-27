@@ -33,8 +33,8 @@ package nom.tam.manual.intergration;
 
 import java.util.Arrays;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
@@ -53,7 +53,7 @@ public class VeryBigFileTest {
      * @throws Exception
      */
     @Test
-    @Ignore
+    @Disabled
     public void testVeryBigDataFiles() throws Exception {
         Fits f = null;
         try {

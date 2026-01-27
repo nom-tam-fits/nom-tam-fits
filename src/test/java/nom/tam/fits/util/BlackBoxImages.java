@@ -51,7 +51,7 @@ public class BlackBoxImages {
     public static String getBlackBoxImage(final String fileName) {
         String skipBackboxImages = System.getProperty("skip.backbox.images", "false");
         if (skipBackboxImages.equals("true")) {
-            org.junit.Assume.assumeTrue(false);
+            org.junit.jupiter.api.Assumptions.assumeTrue(false);
         }
         if (new File("../blackbox-images/" + fileName).exists()) {
             return "../blackbox-images/" + fileName;

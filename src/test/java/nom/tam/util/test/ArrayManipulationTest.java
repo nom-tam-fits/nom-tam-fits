@@ -33,8 +33,8 @@ package nom.tam.util.test;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.util.array.MultiArrayCopier;
 import nom.tam.util.array.MultiArrayIterator;
@@ -48,57 +48,57 @@ public class ArrayManipulationTest {
     public void testArrayIterator() {
         MultiArrayIterator primitiveArrayIterator = new MultiArrayIterator(testArray);
 
-        Assert.assertEquals("[1.0, 2.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assert.assertEquals("[3.0, 4.0, 5.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assert.assertEquals("[6.0, 7.0, 8.0, 9.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assert.assertEquals("[10.0, 11.0, 12.0, 13.0, 14.0, 15.0]",
+        Assertions.assertEquals("[1.0, 2.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
+        Assertions.assertEquals("[3.0, 4.0, 5.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
+        Assertions.assertEquals("[6.0, 7.0, 8.0, 9.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
+        Assertions.assertEquals("[10.0, 11.0, 12.0, 13.0, 14.0, 15.0]",
                 Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assert.assertEquals("[16.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assert.assertNull(primitiveArrayIterator.next());
-        Assert.assertEquals(16, primitiveArrayIterator.size());
+        Assertions.assertEquals("[16.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
+        Assertions.assertNull(primitiveArrayIterator.next());
+        Assertions.assertEquals(16, primitiveArrayIterator.size());
         primitiveArrayIterator.reset();
-        Assert.assertEquals("[1.0, 2.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
+        Assertions.assertEquals("[1.0, 2.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
     }
 
     @Test
     public void testArrayIteratorSpecials() {
 
         MultiArrayIterator primitiveArrayIterator = new MultiArrayIterator(new double[10]);
-        Assert.assertEquals("[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
+        Assertions.assertEquals("[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
                 Arrays.toString(((double[]) primitiveArrayIterator.next())));
         primitiveArrayIterator.reset();
-        Assert.assertEquals(10, primitiveArrayIterator.size());
+        Assertions.assertEquals(10, primitiveArrayIterator.size());
         primitiveArrayIterator.reset();
-        Assert.assertEquals("[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
+        Assertions.assertEquals("[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
                 Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assert.assertNull(primitiveArrayIterator.next());
+        Assertions.assertNull(primitiveArrayIterator.next());
 
         primitiveArrayIterator = new MultiArrayIterator(new double[2][10]);
-        Assert.assertEquals(20, primitiveArrayIterator.size());
+        Assertions.assertEquals(20, primitiveArrayIterator.size());
         primitiveArrayIterator.reset();
-        Assert.assertEquals("[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
+        Assertions.assertEquals("[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
                 Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assert.assertEquals("[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
+        Assertions.assertEquals("[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
                 Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assert.assertNull(primitiveArrayIterator.next());
+        Assertions.assertNull(primitiveArrayIterator.next());
 
-        Assert.assertFalse(MultiArrayPointer.isSubArray(new Object[0]));
+        Assertions.assertFalse(MultiArrayPointer.isSubArray(new Object[0]));
     }
 
     @Test
     public void testSize() {
-        Assert.assertEquals(16, new MultiArrayIterator(testArray).size());
+        Assertions.assertEquals(16, new MultiArrayIterator(testArray).size());
         double[][] testTargetArray = new double[2][8];
         MultiArrayCopier.copyInto(testArray, testTargetArray);
-        Assert.assertEquals(16, new MultiArrayIterator(testTargetArray).size());
+        Assertions.assertEquals(16, new MultiArrayIterator(testTargetArray).size());
     }
 
     @Test
     public void testArrayCopy() {
         double[][] testTargetArray = new double[2][8];
         MultiArrayCopier.copyInto(testArray, testTargetArray);
-        Assert.assertEquals("[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]", Arrays.toString(testTargetArray[0]));
-        Assert.assertEquals("[9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]", Arrays.toString(testTargetArray[1]));
+        Assertions.assertEquals("[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]", Arrays.toString(testTargetArray[0]));
+        Assertions.assertEquals("[9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]", Arrays.toString(testTargetArray[1]));
     }
 
     @Test
@@ -113,7 +113,7 @@ public class ArrayManipulationTest {
         MultiArrayCopier.copyInto(testArray, testArrayCopy);
         for (int index = 0; index < testArrayCopy.length; index++) {
             for (int index2 = 0; index2 < testArrayCopy[index].length; index2++) {
-                Assert.assertEquals(index + index2, testArrayCopy[index][index2]);
+                Assertions.assertEquals(index + index2, testArrayCopy[index][index2]);
             }
         }
     }
@@ -122,8 +122,8 @@ public class ArrayManipulationTest {
     public void testArrayCopyConvert() {
         int[][] testTargetArray = new int[2][8];
         MultiArrayCopier.copyInto(testArray, testTargetArray);
-        Assert.assertEquals("[1, 2, 3, 4, 5, 6, 7, 8]", Arrays.toString(testTargetArray[0]));
-        Assert.assertEquals("[9, 10, 11, 12, 13, 14, 15, 16]", Arrays.toString(testTargetArray[1]));
+        Assertions.assertEquals("[1, 2, 3, 4, 5, 6, 7, 8]", Arrays.toString(testTargetArray[0]));
+        Assertions.assertEquals("[9, 10, 11, 12, 13, 14, 15, 16]", Arrays.toString(testTargetArray[1]));
     }
 
 }

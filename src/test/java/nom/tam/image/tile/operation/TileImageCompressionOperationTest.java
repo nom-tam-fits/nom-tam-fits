@@ -34,10 +34,10 @@ package nom.tam.image.tile.operation;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
@@ -49,20 +49,24 @@ import nom.tam.util.type.ElementType;
 
 public class TileImageCompressionOperationTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         FitsFactory.setDefaults();
     }
 
-    @After
+    @AfterEach
     public void after() {
         FitsFactory.setDefaults();
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void tileImageOpMultiDimOverrideTest() throws Exception {
-        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
-        op.setTileAxes(new int[] {2, 3, 4});
+        Assertions.assertThrows(FitsException.class, () -> {
+
+            TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+            op.setTileAxes(new int[] {2, 3, 4});
+
+        });
     }
 
     @Test
@@ -74,7 +78,7 @@ public class TileImageCompressionOperationTest {
         op.setAxes(new int[] {100, 100});
         op.setBaseType(ElementType.forNearestBitpix(8));
         op.prepareUncompressedData(buf);
-        Assert.assertArrayEquals(new int[] {1, 10}, op.getTileAxes());
+        Assertions.assertArrayEquals(new int[] {1, 10}, op.getTileAxes());
     }
 
     @Test
@@ -83,10 +87,14 @@ public class TileImageCompressionOperationTest {
         op.setTileAxes(new int[] {1, 3, 4});
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void illegalTileSizeTest() throws Exception {
-        TiledImageCompressionOperation op = new TiledImageCompressionOperation(new BinaryTable());
-        op.setTileAxes(new int[] {2, 3, 4});
+        Assertions.assertThrows(FitsException.class, () -> {
+
+            TiledImageCompressionOperation op = new TiledImageCompressionOperation(new BinaryTable());
+            op.setTileAxes(new int[] {2, 3, 4});
+
+        });
     }
 
     @Test
@@ -94,19 +102,19 @@ public class TileImageCompressionOperationTest {
         TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
 
         op.setQuantAlgorithm(HeaderCard.create(Compression.ZQUANTIZ, Compression.ZQUANTIZ_NO_DITHER));
-        Assert.assertEquals(op.getQuantAlgorithm(), Compression.ZQUANTIZ_NO_DITHER);
+        Assertions.assertEquals(op.getQuantAlgorithm(), Compression.ZQUANTIZ_NO_DITHER);
 
         op.setQuantAlgorithm(HeaderCard.create(Compression.ZQUANTIZ, Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1));
-        Assert.assertEquals(op.getQuantAlgorithm(), Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1);
+        Assertions.assertEquals(op.getQuantAlgorithm(), Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1);
 
         op.setQuantAlgorithm(HeaderCard.create(Compression.ZQUANTIZ, Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2));
-        Assert.assertEquals(op.getQuantAlgorithm(), Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2);
+        Assertions.assertEquals(op.getQuantAlgorithm(), Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2);
 
         op.setQuantAlgorithm(HeaderCard.create(Compression.ZQUANTIZ, "invalid value"));
-        Assert.assertNull(op.getQuantAlgorithm());
+        Assertions.assertNull(op.getQuantAlgorithm());
 
         op.setQuantAlgorithm(null);
-        Assert.assertNull(op.getQuantAlgorithm());
+        Assertions.assertNull(op.getQuantAlgorithm());
     }
 
     @Test
@@ -114,25 +122,25 @@ public class TileImageCompressionOperationTest {
         TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
 
         op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_NOCOMPRESS));
-        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_NOCOMPRESS);
+        Assertions.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_NOCOMPRESS);
 
         op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_GZIP_1));
-        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_GZIP_1);
+        Assertions.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_GZIP_1);
 
         op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_GZIP_2));
-        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_GZIP_2);
+        Assertions.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_GZIP_2);
 
         op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_RICE_1));
-        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_RICE_1);
+        Assertions.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_RICE_1);
 
         op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_PLIO_1));
-        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_PLIO_1);
+        Assertions.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_PLIO_1);
 
         op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_HCOMPRESS_1));
-        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_HCOMPRESS_1);
+        Assertions.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_HCOMPRESS_1);
 
         op.setCompressAlgorithm(null);
-        Assert.assertNull(op.getCompressAlgorithm());
+        Assertions.assertNull(op.getCompressAlgorithm());
     }
 
     @Test
@@ -141,20 +149,28 @@ public class TileImageCompressionOperationTest {
 
         FitsFactory.setAllowHeaderRepairs(true);
         op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_RICE_ONE));
-        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_RICE_1);
+        Assertions.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_RICE_1);
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testZcmptypeRiceOneException() throws Exception {
-        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+        Assertions.assertThrows(FitsException.class, () -> {
 
-        FitsFactory.setAllowHeaderRepairs(false);
-        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_RICE_ONE));
+            TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+
+            FitsFactory.setAllowHeaderRepairs(false);
+            op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_RICE_ONE));
+
+        });
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testZcmptypeException() throws Exception {
-        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
-        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, "invalid value"));
+        Assertions.assertThrows(FitsException.class, () -> {
+
+            TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+            op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, "invalid value"));
+
+        });
     }
 }

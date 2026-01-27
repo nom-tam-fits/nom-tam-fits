@@ -3,8 +3,8 @@ package nom.tam.fits;
 import java.io.ByteArrayOutputStream;
 import java.util.NoSuchElementException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.DateTime;
 import nom.tam.fits.header.FitsKey;
@@ -55,9 +55,9 @@ public class HeaderProtectedTest {
     @Test
     public void testReplaceKey() throws Exception {
         Header header = new Header();
-        Assert.assertFalse(header.replaceKey("XX", "YY"));
+        Assertions.assertFalse(header.replaceKey("XX", "YY"));
         header.addValue("XX", "ZZ", null);
-        Assert.assertTrue(header.replaceKey("XX", "YY"));
+        Assertions.assertTrue(header.replaceKey("XX", "YY"));
 
         header.addValue("AA", "BB", null);
         header.addValue("CC", "DD", null);
@@ -67,123 +67,167 @@ public class HeaderProtectedTest {
         } catch (HeaderCardException e) {
             actual = e;
         }
-        Assert.assertNotNull(actual);
+        Assertions.assertNotNull(actual);
     }
 
-    @Test(expected = HeaderCardException.class)
+    @Test
     public void testInvalidReplaceKey1() throws Exception {
-        Header h = new Header();
-        h.addValue("TEST", "string", "comment");
-        h.replaceKey("TEST", "NOTVALID1");
+        Assertions.assertThrows(HeaderCardException.class, () -> {
+
+            Header h = new Header();
+            h.addValue("TEST", "string", "comment");
+            h.replaceKey("TEST", "NOTVALID1");
+
+        });
     }
 
-    @Test(expected = HeaderCardException.class)
+    @Test
     public void testInvalidReplaceKey2() throws Exception {
-        Header h = new Header();
-        h.addValue("TEST", "string", "comment");
-        h.replaceKey("TEST", "NOT\tVAL");
+        Assertions.assertThrows(HeaderCardException.class, () -> {
+
+            Header h = new Header();
+            h.addValue("TEST", "string", "comment");
+            h.replaceKey("TEST", "NOT\tVAL");
+
+        });
     }
 
-    @Test(expected = HeaderCardException.class)
+    @Test
     public void testInvalidReplaceKey3() throws Exception {
-        Header h = new Header();
-        h.addValue("TEST", "string", "comment");
-        h.replaceKey("TEST", "NOT VAL");
+        Assertions.assertThrows(HeaderCardException.class, () -> {
+
+            Header h = new Header();
+            h.addValue("TEST", "string", "comment");
+            h.replaceKey("TEST", "NOT VAL");
+
+        });
     }
 
-    @Test(expected = HeaderCardException.class)
+    @Test
     public void testInvalidReplaceKey4() throws Exception {
-        Header h = new Header();
-        h.addValue("TEST", "string", "comment");
-        h.replaceKey("TEST", "NOT*VAL");
+        Assertions.assertThrows(HeaderCardException.class, () -> {
+
+            Header h = new Header();
+            h.addValue("TEST", "string", "comment");
+            h.replaceKey("TEST", "NOT*VAL");
+
+        });
     }
 
     @Test
     public void testDataSize() throws Exception {
         Header header = new Header();
         // No BITPIX
-        Assert.assertEquals(0L, header.getDataSize());
+        Assertions.assertEquals(0L, header.getDataSize());
         header.addValue(Standard.BITPIX, 32);
         // No NAXIS
-        Assert.assertEquals(0L, header.getDataSize());
+        Assertions.assertEquals(0L, header.getDataSize());
 
         header = new Header();
         header.nullImage();
         header.write(new FitsOutputStream(new ByteArrayOutputStream(), 80));
-        Assert.assertEquals(0L, header.getDataSize());
+        Assertions.assertEquals(0L, header.getDataSize());
         header.setNaxes(2);
         header.setNaxis(1, 0);
         header.setNaxis(2, 2);
         header.addValue(GROUPS, true);
         header.write(new FitsOutputStream(new ByteArrayOutputStream(), 80));
-        Assert.assertEquals(FitsUtil.addPadding(2L), header.getDataSize());
+        Assertions.assertEquals(FitsUtil.addPadding(2L), header.getDataSize());
     }
 
     @Test
     public void testGenericKey() {
-        Assert.assertEquals(1, GenericKey.getN(Standard.TFORMn.n(1).key()));
-        Assert.assertEquals(12, GenericKey.getN(Standard.TFORMn.n(12).key()));
-        Assert.assertEquals(123, GenericKey.getN(Standard.TFORMn.n(123).key()));
+        Assertions.assertEquals(1, GenericKey.getN(Standard.TFORMn.n(1).key()));
+        Assertions.assertEquals(12, GenericKey.getN(Standard.TFORMn.n(12).key()));
+        Assertions.assertEquals(123, GenericKey.getN(Standard.TFORMn.n(123).key()));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void testKeyIndexNegative() {
-        Standard.TFORMn.n(-1);
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            Standard.TFORMn.n(-1);
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void testKeyIndexTooLarge() {
-        Standard.TFORMn.n(1000);
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            Standard.TFORMn.n(1000);
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWCSInvalidAlt1() {
-        WCS.WCSNAMEa.alt((char) ('A' - 1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            WCS.WCSNAMEa.alt((char) ('A' - 1));
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWCSInvalidAlt2() {
-        WCS.WCSNAMEa.alt((char) ('Z' + 1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            WCS.WCSNAMEa.alt((char) ('Z' + 1));
+
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testWCSLongIndex() {
-        WCS.TCDn_na.n(999, 999);
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+
+            WCS.TCDn_na.n(999, 999);
+
+        });
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testWCSNoAlt() {
-        WCS.OBSGEO_X.alt('A');
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+
+            WCS.OBSGEO_X.alt('A');
+
+        });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testTooManyIndices() {
-        Standard.CTYPEn.n(1, 2);
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+
+            Standard.CTYPEn.n(1, 2);
+
+        });
     }
 
     @Test
     public void testWCSAlt() {
-        Assert.assertEquals("WCSNAME", WCS.WCSNAMEa.key());
-        Assert.assertEquals("WCSNAMEA", WCS.WCSNAMEa.alt('A').key());
-        Assert.assertEquals("WCSNAMEZ", WCS.WCSNAMEa.alt('Z').key());
+        Assertions.assertEquals("WCSNAME", WCS.WCSNAMEa.key());
+        Assertions.assertEquals("WCSNAMEA", WCS.WCSNAMEa.alt('A').key());
+        Assertions.assertEquals("WCSNAMEZ", WCS.WCSNAMEa.alt('Z').key());
     }
 
     @Test
     public void testDateTime() {
-        Assert.assertEquals("DATE-OBS", DateTime.DATE_OBS.key());
-        Assert.assertEquals("MJDREF", DateTime.MJDREF.key());
+        Assertions.assertEquals("DATE-OBS", DateTime.DATE_OBS.key());
+        Assertions.assertEquals("MJDREF", DateTime.MJDREF.key());
     }
 
     @Test
     public void testIFitsHeaderSelfImpl() {
         IFitsHeader key = new FitsKey("BLAH", SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, "for testing only");
-        Assert.assertNotNull(key.impl());
+        Assertions.assertNotNull(key.impl());
     }
 
     @Test
     public void testIFitsHeaderDefaultImpl() {
         class MyKeyword implements IFitsHeader {
         }
-        Assert.assertNull(new MyKeyword().impl());
+        Assertions.assertNull(new MyKeyword().impl());
     }
 }

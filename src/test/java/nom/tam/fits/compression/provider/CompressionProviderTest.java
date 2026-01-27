@@ -1,7 +1,7 @@
 package nom.tam.fits.compression.provider;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /*
  * #%L
@@ -46,10 +46,10 @@ public class CompressionProviderTest {
     public void testNullOptions() {
         ICompressorControl compressor = CompressorProvider.findCompressorControl(null, "GZIP_1", byte.class);
         ICompressOption option = compressor.option();
-        Assert.assertFalse(option.isLossyCompression());
+        Assertions.assertFalse(option.isLossyCompression());
         option.setParameters(null); // nothing should happen ;-)
-        Assert.assertNull(option.unwrap(String.class));
-        Assert.assertSame(option, option.unwrap(ICompressOption.class));
+        Assertions.assertNull(option.unwrap(String.class));
+        Assertions.assertSame(option, option.unwrap(ICompressOption.class));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class CompressionProviderTest {
         ICompressParameters parameters = option.getCompressionParameters();
 
         parameters.addColumnsToTable(null);// nothing should happen ;-)
-        Assert.assertSame(parameters, parameters.copy(option));
+        Assertions.assertSame(parameters, parameters.copy(option));
         parameters.setValuesInColumn(10000);// nothing should happen ;-)
         parameters.setValuesInHeader((HeaderAccess) null);// nothing should happen ;-)
     }

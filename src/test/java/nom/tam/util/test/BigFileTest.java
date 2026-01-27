@@ -31,11 +31,10 @@ package nom.tam.util.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.FileInputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.util.FitsFile;
 import nom.tam.util.FitsInputStream;
@@ -75,15 +74,15 @@ public class BigFileTest {
             int val = bf.read();
             bf.close();
 
-            assertEquals("SkipResult", skip, val1);
-            assertEquals("SkipPos", skip, val2);
-            assertEquals("SkipVal", sample, val);
+            Assertions.assertEquals(skip, val1);
+            Assertions.assertEquals(skip, val2);
+            Assertions.assertEquals(sample, val);
 
             FitsInputStream bdis = new FitsInputStream(new FileInputStream(fname));
             bdis.skipAllBytes(skip);
             val = bdis.read();
             bdis.close();
-            assertEquals("SSkipVal", sample, val);
+            Assertions.assertEquals(sample, val);
         } catch (Exception e) {
             e.printStackTrace(System.err);
             throw e;

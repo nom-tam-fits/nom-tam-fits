@@ -31,9 +31,6 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -41,7 +38,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.compress.CompressionManager;
 import nom.tam.util.SafeClose;
@@ -81,9 +79,9 @@ public class CompressWithoutDependenciesTest {
             SafeClose.close(in1);
             SafeClose.close(in2);
         }
-        assertEquals(assertions.get(0), "ok");
-        assertTrue(assertions.get(1) instanceof InvocationTargetException);
-        assertTrue(((InvocationTargetException) assertions.get(1)).getCause() instanceof NoClassDefFoundError);
+        Assertions.assertEquals(assertions.get(0), "ok");
+        Assertions.assertTrue(assertions.get(1) instanceof InvocationTargetException);
+        Assertions.assertTrue(((InvocationTargetException) assertions.get(1)).getCause() instanceof NoClassDefFoundError);
     }
 
 }

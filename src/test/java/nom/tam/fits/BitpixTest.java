@@ -31,13 +31,11 @@ package nom.tam.fits;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.Bitpix;
 
@@ -45,128 +43,144 @@ public class BitpixTest {
 
     @Test
     public void testByteID() throws Exception {
-        assertEquals('B', Bitpix.BYTE.getArrayID());
+        Assertions.assertEquals('B', Bitpix.BYTE.getArrayID());
     }
 
     @Test
     public void testShortID() throws Exception {
-        assertEquals('S', Bitpix.SHORT.getArrayID());
+        Assertions.assertEquals('S', Bitpix.SHORT.getArrayID());
     }
 
     @Test
     public void testIntID() throws Exception {
-        assertEquals('I', Bitpix.INTEGER.getArrayID());
+        Assertions.assertEquals('I', Bitpix.INTEGER.getArrayID());
     }
 
     @Test
     public void testLongID() throws Exception {
-        assertEquals('J', Bitpix.LONG.getArrayID());
+        Assertions.assertEquals('J', Bitpix.LONG.getArrayID());
     }
 
     @Test
     public void testFloatID() throws Exception {
-        assertEquals('F', Bitpix.FLOAT.getArrayID());
+        Assertions.assertEquals('F', Bitpix.FLOAT.getArrayID());
     }
 
     @Test
     public void testDoubleID() throws Exception {
-        assertEquals('D', Bitpix.DOUBLE.getArrayID());
+        Assertions.assertEquals('D', Bitpix.DOUBLE.getArrayID());
     }
 
     @Test
     public void testByteDescription() throws Exception {
-        assertNotNull(Bitpix.BYTE.getDescription());
-        assertEquals(Bitpix.BYTE.getDescription(), HeaderCard.sanitize(Bitpix.BYTE.getDescription()));
+        Assertions.assertNotNull(Bitpix.BYTE.getDescription());
+        Assertions.assertEquals(Bitpix.BYTE.getDescription(), HeaderCard.sanitize(Bitpix.BYTE.getDescription()));
     }
 
     @Test
     public void testShortDescription() throws Exception {
-        assertNotNull(Bitpix.SHORT.getDescription());
-        assertEquals(Bitpix.SHORT.getDescription(), HeaderCard.sanitize(Bitpix.SHORT.getDescription()));
+        Assertions.assertNotNull(Bitpix.SHORT.getDescription());
+        Assertions.assertEquals(Bitpix.SHORT.getDescription(), HeaderCard.sanitize(Bitpix.SHORT.getDescription()));
     }
 
     @Test
     public void testIntDescription() throws Exception {
-        assertNotNull(Bitpix.INTEGER.getDescription());
-        assertEquals(Bitpix.INTEGER.getDescription(), HeaderCard.sanitize(Bitpix.INTEGER.getDescription()));
+        Assertions.assertNotNull(Bitpix.INTEGER.getDescription());
+        Assertions.assertEquals(Bitpix.INTEGER.getDescription(), HeaderCard.sanitize(Bitpix.INTEGER.getDescription()));
     }
 
     @Test
     public void testLongDescription() throws Exception {
-        assertNotNull(Bitpix.LONG.getDescription());
-        assertEquals(Bitpix.LONG.getDescription(), HeaderCard.sanitize(Bitpix.LONG.getDescription()));
+        Assertions.assertNotNull(Bitpix.LONG.getDescription());
+        Assertions.assertEquals(Bitpix.LONG.getDescription(), HeaderCard.sanitize(Bitpix.LONG.getDescription()));
     }
 
     @Test
     public void testFloatDescription() throws Exception {
-        assertNotNull(Bitpix.FLOAT.getDescription());
-        assertEquals(Bitpix.FLOAT.getDescription(), HeaderCard.sanitize(Bitpix.FLOAT.getDescription()));
+        Assertions.assertNotNull(Bitpix.FLOAT.getDescription());
+        Assertions.assertEquals(Bitpix.FLOAT.getDescription(), HeaderCard.sanitize(Bitpix.FLOAT.getDescription()));
     }
 
     @Test
     public void testDoubleDescription() throws Exception {
-        assertNotNull(Bitpix.DOUBLE.getDescription());
-        assertEquals(Bitpix.DOUBLE.getDescription(), HeaderCard.sanitize(Bitpix.DOUBLE.getDescription()));
+        Assertions.assertNotNull(Bitpix.DOUBLE.getDescription());
+        Assertions.assertEquals(Bitpix.DOUBLE.getDescription(), HeaderCard.sanitize(Bitpix.DOUBLE.getDescription()));
     }
 
     @Test
     public void testByteObject() throws Exception {
-        assertEquals(Bitpix.BYTE, Bitpix.forNumberType(Byte.class));
+        Assertions.assertEquals(Bitpix.BYTE, Bitpix.forNumberType(Byte.class));
     }
 
     @Test
     public void testShortObject() throws Exception {
-        assertEquals(Bitpix.SHORT, Bitpix.forNumberType(Short.class));
+        Assertions.assertEquals(Bitpix.SHORT, Bitpix.forNumberType(Short.class));
     }
 
     @Test
     public void testIntObject() throws Exception {
-        assertEquals(Bitpix.INTEGER, Bitpix.forNumberType(Integer.class));
+        Assertions.assertEquals(Bitpix.INTEGER, Bitpix.forNumberType(Integer.class));
     }
 
     @Test
     public void testLongObject() throws Exception {
-        assertEquals(Bitpix.LONG, Bitpix.forNumberType(Long.class));
+        Assertions.assertEquals(Bitpix.LONG, Bitpix.forNumberType(Long.class));
     }
 
     @Test
     public void testFloatObject() throws Exception {
-        assertEquals(Bitpix.FLOAT, Bitpix.forNumberType(Float.class));
+        Assertions.assertEquals(Bitpix.FLOAT, Bitpix.forNumberType(Float.class));
     }
 
     @Test
     public void testDoubleObject() throws Exception {
-        assertEquals(Bitpix.DOUBLE, Bitpix.forNumberType(Double.class));
+        Assertions.assertEquals(Bitpix.DOUBLE, Bitpix.forNumberType(Double.class));
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testInvalidPrimitiveType() throws Exception {
-        FitsFactory.setAllowHeaderRepairs(false);
-        Bitpix.forPrimitiveType(Object.class);
+        Assertions.assertThrows(FitsException.class, () -> {
+
+            FitsFactory.setAllowHeaderRepairs(false);
+            Bitpix.forPrimitiveType(Object.class);
+
+        });
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testInvalidNumberType1() throws Exception {
-        Bitpix.forNumberType(BigInteger.class);
+        Assertions.assertThrows(FitsException.class, () -> {
+
+            Bitpix.forNumberType(BigInteger.class);
+
+        });
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testInvalidNumberType2() throws Exception {
-        Bitpix.forNumberType(BigDecimal.class);
+        Assertions.assertThrows(FitsException.class, () -> {
+
+            Bitpix.forNumberType(BigDecimal.class);
+
+        });
     }
 
     @Test
     public void testForArrayID() throws Exception {
-        assertEquals(Bitpix.BYTE, Bitpix.forArrayID('B'));
-        assertEquals(Bitpix.SHORT, Bitpix.forArrayID('S'));
-        assertEquals(Bitpix.INTEGER, Bitpix.forArrayID('I'));
-        assertEquals(Bitpix.LONG, Bitpix.forArrayID('J'));
-        assertEquals(Bitpix.FLOAT, Bitpix.forArrayID('F'));
-        assertEquals(Bitpix.DOUBLE, Bitpix.forArrayID('D'));
+        Assertions.assertEquals(Bitpix.BYTE, Bitpix.forArrayID('B'));
+        Assertions.assertEquals(Bitpix.SHORT, Bitpix.forArrayID('S'));
+        Assertions.assertEquals(Bitpix.INTEGER, Bitpix.forArrayID('I'));
+        Assertions.assertEquals(Bitpix.LONG, Bitpix.forArrayID('J'));
+        Assertions.assertEquals(Bitpix.FLOAT, Bitpix.forArrayID('F'));
+        Assertions.assertEquals(Bitpix.DOUBLE, Bitpix.forArrayID('D'));
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testForInvalidArrayID() throws Exception {
-        Bitpix.forArrayID('?');
+        Assertions.assertThrows(FitsException.class, () -> {
+
+            Bitpix.forArrayID('?');
+
+        });
     }
 }

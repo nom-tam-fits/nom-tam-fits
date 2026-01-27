@@ -31,8 +31,8 @@ package nom.tam.image.compression;
  * #L%
  */
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.Header;
@@ -57,18 +57,18 @@ public class HeaderAccessTest {
         ha.addValue(Standard.XTENSION, "Test");
 
         HeaderCard c = ha.findCard(Standard.BITPIX);
-        Assert.assertNotNull(c);
-        Assert.assertEquals(Standard.BITPIX.key(), c.getKey());
-        Assert.assertEquals(32, (int) c.getValue(Integer.class, -1));
+        Assertions.assertNotNull(c);
+        Assertions.assertEquals(Standard.BITPIX.key(), c.getKey());
+        Assertions.assertEquals(32, (int) c.getValue(Integer.class, -1));
 
         c = ha.findCard(Standard.XTENSION);
-        Assert.assertNotNull(c);
-        Assert.assertEquals(Standard.XTENSION.key(), c.getKey());
-        Assert.assertEquals("Test", c.getValue());
+        Assertions.assertNotNull(c);
+        Assertions.assertEquals(Standard.XTENSION.key(), c.getKey());
+        Assertions.assertEquals("Test", c.getValue());
 
         // Check if findCard(String) returns the same as findCard(IFitsHeader)
-        Assert.assertEquals(ha.findCard(Standard.BITPIX), ha.findCard(Standard.BITPIX.key()));
-        Assert.assertEquals(ha.findCard(Standard.XTENSION), ha.findCard(Standard.XTENSION.key()));
+        Assertions.assertEquals(ha.findCard(Standard.BITPIX), ha.findCard(Standard.BITPIX.key()));
+        Assertions.assertEquals(ha.findCard(Standard.XTENSION), ha.findCard(Standard.XTENSION.key()));
     }
 
     @Test
@@ -76,18 +76,18 @@ public class HeaderAccessTest {
         HeaderCardAccess ha = new HeaderCardAccess(Standard.AUTHOR, "Test");
 
         Header h = ha.getHeader();
-        Assert.assertNotNull(h);
-        Assert.assertEquals(1, h.getNumberOfCards());
-        Assert.assertTrue(h.containsKey(Standard.AUTHOR));
+        Assertions.assertNotNull(h);
+        Assertions.assertEquals(1, h.getNumberOfCards());
+        Assertions.assertTrue(h.containsKey(Standard.AUTHOR));
 
-        Assert.assertEquals(Standard.AUTHOR.key(), ha.getHeaderCard().getKey());
-        Assert.assertEquals("Test", ha.getHeaderCard().getValue());
+        Assertions.assertEquals(Standard.AUTHOR.key(), ha.getHeaderCard().getKey());
+        Assertions.assertEquals("Test", ha.getHeaderCard().getValue());
 
         ha.addValue(Standard.BITPIX, 32);
-        Assert.assertNull(ha.findCard(Standard.BITPIX));
+        Assertions.assertNull(ha.findCard(Standard.BITPIX));
 
         ha.addValue(Standard.XTENSION, 32);
-        Assert.assertNull(ha.findCard(Standard.XTENSION));
+        Assertions.assertNull(ha.findCard(Standard.XTENSION));
     }
 
     @Test
@@ -128,15 +128,15 @@ public class HeaderAccessTest {
             p2.getValueFromHeader(ha);
 
             CompressHeaderParameter<?> cp2 = (CompressHeaderParameter<?>) p2;
-            Assert.assertNotNull(cp2.findZVal(ha));
+            Assertions.assertNotNull(cp2.findZVal(ha));
             int idx = cp2.nextFreeZVal(ha);
 
-            Assert.assertFalse(usedIndex[idx]);
+            Assertions.assertFalse(usedIndex[idx]);
             usedIndex[idx] = true;
         }
 
-        Assert.assertEquals(2, o2.getScale());
-        Assert.assertTrue(o2.isSmooth());
+        Assertions.assertEquals(2, o2.getScale());
+        Assertions.assertTrue(o2.isSmooth());
 
         o2.setScale(3);
         o2.setSmooth(false);
@@ -147,7 +147,7 @@ public class HeaderAccessTest {
         }
         hp1.getValuesFromHeader(ha);
 
-        Assert.assertEquals(3, o1.getScale());
-        Assert.assertFalse(o1.isSmooth());
+        Assertions.assertEquals(3, o1.getScale());
+        Assertions.assertFalse(o1.isSmooth());
     }
 }

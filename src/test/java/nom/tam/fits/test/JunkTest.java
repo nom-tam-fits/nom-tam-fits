@@ -31,11 +31,10 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
@@ -50,12 +49,12 @@ import nom.tam.util.SafeClose;
  */
 public class JunkTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         FitsFactory.setDefaults();
     }
 
-    @After
+    @AfterEach
     public void after() {
         FitsFactory.setDefaults();
         Header.setCommentAlignPosition(Header.DEFAULT_COMMENT_ALIGN);
@@ -133,20 +132,20 @@ public class JunkTest {
         }
 
         FitsFactory.setDefaults();
-        assertTrue("allow junk", FitsFactory.getAllowTerminalJunk());
+        Assertions.assertTrue(FitsFactory.getAllowTerminalJunk());
 
         FitsFactory.setAllowTerminalJunk(true);
 
-        assertTrue("Junk Test: Valid File OK,with junk", readSuccess("target/j1.fits"));
-        assertTrue("Junk Test: Invalid File Fails, with junk", !readSuccess("target/j2.fits"));
-        assertTrue("Junk Test: Short junk OK, with junk", readSuccess("target/j3.fits"));
-        assertTrue("Junk Test: Long junk OK, with junk", readSuccess("target/j4.fits"));
+        Assertions.assertTrue(readSuccess("target/j1.fits"));
+        Assertions.assertFalse(readSuccess("target/j2.fits"));
+        Assertions.assertTrue(readSuccess("target/j3.fits"));
+        Assertions.assertTrue(readSuccess("target/j4.fits"));
 
         FitsFactory.setAllowTerminalJunk(false);
 
-        assertTrue("Junk Test: Valid File OK,No junk", readSuccess("target/j1.fits"));
-        assertTrue("Junk Test: Invalid File Fails, No junk", !readSuccess("target/j2.fits"));
-        assertTrue("Junk Test: Short junk fails, No junk", !readSuccess("target/j3.fits"));
-        assertTrue("Junk Test: Long junk fails, No junk", !readSuccess("target/j4.fits"));
+        Assertions.assertTrue(readSuccess("target/j1.fits"));
+        Assertions.assertFalse(readSuccess("target/j2.fits"));
+        Assertions.assertFalse(readSuccess("target/j3.fits"));
+        Assertions.assertFalse(readSuccess("target/j4.fits"));
     }
 }

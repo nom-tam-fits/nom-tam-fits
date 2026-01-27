@@ -31,8 +31,8 @@ package nom.tam.fits;
  * #L%
  */
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ComplexValue;
@@ -51,8 +51,8 @@ public class ImageDataTest {
         ImageData im2 = new ImageData(h);
         Quantizer q = im2.getQuantizer();
 
-        Assert.assertEquals(0.5, q.toDouble(0), 1e-12);
-        Assert.assertEquals(2.5, q.toDouble(1), 1e-12);
+        Assertions.assertEquals(0.5, q.toDouble(0), 1e-12);
+        Assertions.assertEquals(2.5, q.toDouble(1), 1e-12);
     }
 
     @Test
@@ -78,20 +78,20 @@ public class ImageDataTest {
             ImageData zim = im.convertTo(ComplexValue.class);
             ComplexValue[] z = (ComplexValue[]) zim.getData();
 
-            Assert.assertEquals(2, z.length);
-            Assert.assertEquals(1.0, z[0].re(), 1e-12);
-            Assert.assertEquals(3.0, z[0].im(), 1e-12);
-            Assert.assertEquals(2.0, z[1].re(), 1e-12);
-            Assert.assertEquals(4.0, z[1].im(), 1e-12);
+            Assertions.assertEquals(2, z.length);
+            Assertions.assertEquals(1.0, z[0].re(), 1e-12);
+            Assertions.assertEquals(3.0, z[0].im(), 1e-12);
+            Assertions.assertEquals(2.0, z[1].re(), 1e-12);
+            Assertions.assertEquals(4.0, z[1].im(), 1e-12);
 
             ImageData zfim = im.convertTo(ComplexValue.Float.class);
             ComplexValue.Float[] zf = (ComplexValue.Float[]) zfim.getData();
 
-            Assert.assertEquals(2, zf.length);
-            Assert.assertEquals(1.0F, zf[0].re(), 1e-6);
-            Assert.assertEquals(3.0F, zf[0].im(), 1e-6);
-            Assert.assertEquals(2.0F, zf[1].re(), 1e-6);
-            Assert.assertEquals(4.0F, zf[1].im(), 1e-6);
+            Assertions.assertEquals(2, zf.length);
+            Assertions.assertEquals(1.0F, zf[0].re(), 1e-6);
+            Assertions.assertEquals(3.0F, zf[0].im(), 1e-6);
+            Assertions.assertEquals(2.0F, zf[1].re(), 1e-6);
+            Assertions.assertEquals(4.0F, zf[1].im(), 1e-6);
         }
     }
 
@@ -102,7 +102,7 @@ public class ImageDataTest {
         ImageData im = new ImageData(z);
 
         ComplexValue[] z1 = (ComplexValue[]) im.getData();
-        Assert.assertEquals(2, z1.length);
+        Assertions.assertEquals(2, z1.length);
 
         try (Fits fits = new Fits()) {
             fits.addHDU(im.toHDU());
@@ -114,20 +114,20 @@ public class ImageDataTest {
             im = (ImageData) fits.getHDU(0).getData();
 
             double[][] d = (double[][]) im.getData();
-            Assert.assertEquals(2, d.length);
-            Assert.assertEquals(2, d[0].length);
-            Assert.assertEquals(1.0, d[0][0], 1e-12);
-            Assert.assertEquals(2.0, d[0][1], 1e-12);
-            Assert.assertEquals(3.0, d[1][0], 1e-12);
-            Assert.assertEquals(4.0, d[1][1], 1e-12);
+            Assertions.assertEquals(2, d.length);
+            Assertions.assertEquals(2, d[0].length);
+            Assertions.assertEquals(1.0, d[0][0], 1e-12);
+            Assertions.assertEquals(2.0, d[0][1], 1e-12);
+            Assertions.assertEquals(3.0, d[1][0], 1e-12);
+            Assertions.assertEquals(4.0, d[1][1], 1e-12);
 
             ComplexValue[] z2 = (ComplexValue[]) im.convertTo(ComplexValue.class).getData();
 
-            Assert.assertEquals(2, z2.length);
-            Assert.assertEquals(1.0, z2[0].re(), 1e-12);
-            Assert.assertEquals(2.0, z2[0].im(), 1e-12);
-            Assert.assertEquals(3.0, z2[1].re(), 1e-12);
-            Assert.assertEquals(4.0, z2[1].im(), 1e-12);
+            Assertions.assertEquals(2, z2.length);
+            Assertions.assertEquals(1.0, z2[0].re(), 1e-12);
+            Assertions.assertEquals(2.0, z2[0].im(), 1e-12);
+            Assertions.assertEquals(3.0, z2[1].re(), 1e-12);
+            Assertions.assertEquals(4.0, z2[1].im(), 1e-12);
         }
     }
 
@@ -138,7 +138,7 @@ public class ImageDataTest {
         ImageData im = new ImageData(z);
 
         ComplexValue[] z1 = (ComplexValue[]) im.getData();
-        Assert.assertEquals(2, z1.length);
+        Assertions.assertEquals(2, z1.length);
 
         try (Fits fits = new Fits()) {
             fits.addHDU(im.toHDU());
@@ -150,20 +150,20 @@ public class ImageDataTest {
             im = (ImageData) fits.getHDU(0).getData();
 
             float[][] f = (float[][]) im.getData();
-            Assert.assertEquals(2, f.length);
-            Assert.assertEquals(2, f[0].length);
-            Assert.assertEquals(1.0F, f[0][0], 1e-6);
-            Assert.assertEquals(2.0F, f[0][1], 1e-6);
-            Assert.assertEquals(3.0F, f[1][0], 1e-6);
-            Assert.assertEquals(4.0F, f[1][1], 1e-6);
+            Assertions.assertEquals(2, f.length);
+            Assertions.assertEquals(2, f[0].length);
+            Assertions.assertEquals(1.0F, f[0][0], 1e-6);
+            Assertions.assertEquals(2.0F, f[0][1], 1e-6);
+            Assertions.assertEquals(3.0F, f[1][0], 1e-6);
+            Assertions.assertEquals(4.0F, f[1][1], 1e-6);
 
             ComplexValue.Float[] z2 = (ComplexValue.Float[]) im.convertTo(ComplexValue.Float.class).getData();
 
-            Assert.assertEquals(2, z2.length);
-            Assert.assertEquals(1.0F, z2[0].re(), 1e-6);
-            Assert.assertEquals(2.0F, z2[0].im(), 1e-6);
-            Assert.assertEquals(3.0F, z2[1].re(), 1e-6);
-            Assert.assertEquals(4.0F, z2[1].im(), 1e-6);
+            Assertions.assertEquals(2, z2.length);
+            Assertions.assertEquals(1.0F, z2[0].re(), 1e-6);
+            Assertions.assertEquals(2.0F, z2[0].im(), 1e-6);
+            Assertions.assertEquals(3.0F, z2[1].re(), 1e-6);
+            Assertions.assertEquals(4.0F, z2[1].im(), 1e-6);
         }
     }
 
@@ -176,13 +176,13 @@ public class ImageDataTest {
 
         int[][] idata = (int[][]) iim.getData();
 
-        Assert.assertEquals(3, idata.length);
-        Assert.assertEquals(2, idata[0].length);
+        Assertions.assertEquals(3, idata.length);
+        Assertions.assertEquals(2, idata[0].length);
 
-        Assert.assertEquals(1, idata[0][0]);
-        Assert.assertEquals(2, idata[0][1]);
-        Assert.assertEquals(5, idata[2][0]);
-        Assert.assertEquals(6, idata[2][1]);
+        Assertions.assertEquals(1, idata[0][0]);
+        Assertions.assertEquals(2, idata[0][1]);
+        Assertions.assertEquals(5, idata[2][0]);
+        Assertions.assertEquals(6, idata[2][1]);
     }
 
     @Test
@@ -195,21 +195,21 @@ public class ImageDataTest {
         h.addValue(Standard.CTYPEn.n(1), "COMPLEX");
 
         ImageData im2 = new ImageData(h);
-        Assert.assertFalse(im2.isComplexValued());
+        Assertions.assertFalse(im2.isComplexValued());
 
         h = new Header();
         im.fillHeader(h);
         h.addValue(Standard.CTYPEn.n(2), "COMPLEX");
 
         im2 = new ImageData(h);
-        Assert.assertFalse(im2.isComplexValued());
+        Assertions.assertFalse(im2.isComplexValued());
 
         h = new Header();
         im.fillHeader(h);
         h.addValue(Standard.CTYPEn.n(3), "COMPLEX");
 
         im2 = new ImageData(h);
-        Assert.assertFalse(im2.isComplexValued());
+        Assertions.assertFalse(im2.isComplexValued());
     }
 
     @Test
@@ -221,13 +221,13 @@ public class ImageDataTest {
 
         int[][] idata = (int[][]) iim.getData();
 
-        Assert.assertEquals(3, idata.length);
-        Assert.assertEquals(2, idata[0].length);
+        Assertions.assertEquals(3, idata.length);
+        Assertions.assertEquals(2, idata[0].length);
 
-        Assert.assertEquals(1, idata[0][0]);
-        Assert.assertEquals(2, idata[0][1]);
-        Assert.assertEquals(5, idata[2][0]);
-        Assert.assertEquals(6, idata[2][1]);
+        Assertions.assertEquals(1, idata[0][0]);
+        Assertions.assertEquals(2, idata[0][1]);
+        Assertions.assertEquals(5, idata[2][0]);
+        Assertions.assertEquals(6, idata[2][1]);
     }
 
     @Test
@@ -239,11 +239,11 @@ public class ImageDataTest {
 
         ComplexValue.Float[] fz = (ComplexValue.Float[]) fim.getData();
 
-        Assert.assertEquals(3, fz.length);
+        Assertions.assertEquals(3, fz.length);
 
-        Assert.assertEquals(1.0F, fz[0].re(), 1e-6);
-        Assert.assertEquals(2.0F, fz[0].im(), 1e-6);
-        Assert.assertEquals(5.0F, fz[2].re(), 1e-6);
-        Assert.assertEquals(6.0F, fz[2].im(), 1e-6);
+        Assertions.assertEquals(1.0F, fz[0].re(), 1e-6);
+        Assertions.assertEquals(2.0F, fz[0].im(), 1e-6);
+        Assertions.assertEquals(5.0F, fz[2].re(), 1e-6);
+        Assertions.assertEquals(6.0F, fz[2].im(), 1e-6);
     }
 }

@@ -31,25 +31,28 @@ package nom.tam.util;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.EOFException;
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class DefaultMethodsTest {
 
     @Test
     public void testMarkSupported() throws Exception {
-        assertEquals(true, new DefaultInput().markSupported());
+        Assertions.assertTrue(new DefaultInput().markSupported());
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testReadArrayFullyException() throws Exception {
-        int[] array = new int[2];
-        new DefaultInput().readArrayFully(array);
-        // throws EOFException since the test read() returns 0 always...
+        Assertions.assertThrows(EOFException.class, () -> {
+
+            int[] array = new int[2];
+            new DefaultInput().readArrayFully(array);
+            // throws EOFException since the test read() returns 0 always...
+
+        });
     }
 
     @Test
@@ -66,8 +69,8 @@ public class DefaultMethodsTest {
     @Test
     public void testReadBooleanArray() throws Exception {
         Boolean[] b = new Boolean[1];
-        assertEquals(b.length, new DefaultInput().read(b));
-        assertEquals(false, b[0]);
+        Assertions.assertEquals(b.length, new DefaultInput().read(b));
+        Assertions.assertFalse(b[0]);
     }
 
     @Test
@@ -77,11 +80,15 @@ public class DefaultMethodsTest {
         // No exception thrown...
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testWriteBooleanNull() throws Exception {
-        Boolean[] b = new Boolean[] {Boolean.TRUE, Boolean.FALSE, null};
-        new DefaultOutput().write(b);
-        // A NullPointerException is thrown, because the deffault implementation does not handle null...
+        Assertions.assertThrows(NullPointerException.class, () -> {
+
+            Boolean[] b = new Boolean[] {Boolean.TRUE, Boolean.FALSE, null};
+            new DefaultOutput().write(b);
+            // A NullPointerException is thrown, because the deffault implementation does not handle null...
+
+        });
     }
 
     class DefaultInput implements ArrayDataInput {

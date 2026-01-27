@@ -31,9 +31,6 @@ package nom.tam.image.compression.tile.mask;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import java.lang.reflect.Constructor;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -44,8 +41,8 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.image.tile.operation.buffer.TileBuffer;
 import nom.tam.image.tile.operation.buffer.TileBufferFactory;
@@ -62,19 +59,27 @@ public class ImageMaskTest {
     @Test
     public void testNoByteMask() {
         byte[][] result = doTestByteMask("RICE_1");
-        assertEquals(2, result.length);
-        assertEquals(0, result[0].length);
-        assertEquals(0, result[1].length);
+        Assertions.assertEquals(2, result.length);
+        Assertions.assertEquals(0, result[0].length);
+        Assertions.assertEquals(0, result[1].length);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testWrongCompression() {
-        doTestByteMask("UNKNOWN1", 2, 7);
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+
+            doTestByteMask("UNKNOWN1", 2, 7);
+
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testCompressionFailed() {
-        doTestByteMask("FAIL", 2, 7);
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+
+            doTestByteMask("FAIL", 2, 7);
+
+        });
     }
 
     private byte[][] doTestByteMask(String compression, int... nullIndexes) {
@@ -104,7 +109,7 @@ public class ImageMaskTest {
 
         actualPixelBuffer.rewind();
         for (int index = 0; index < orgPixels.length; index++) {
-            Assert.assertEquals(expectedPixels[index], actualPixelBuffer.get());
+            Assertions.assertEquals(expectedPixels[index], actualPixelBuffer.get());
         }
         return preservedNulls;
     }
@@ -136,7 +141,7 @@ public class ImageMaskTest {
 
         actualPixelBuffer.rewind();
         for (int index = 0; index < orgPixels.length; index++) {
-            Assert.assertEquals(expectedPixels[index], actualPixelBuffer.get(), 0.00000001d);
+            Assertions.assertEquals(expectedPixels[index], actualPixelBuffer.get(), 0.00000001d);
         }
     }
 
@@ -166,7 +171,7 @@ public class ImageMaskTest {
 
         actualPixelBuffer.rewind();
         for (int index = 0; index < orgPixels.length; index++) {
-            Assert.assertEquals(expectedPixels[index], actualPixelBuffer.get(), 0.00000001f);
+            Assertions.assertEquals(expectedPixels[index], actualPixelBuffer.get(), 0.00000001f);
         }
     }
 
@@ -197,7 +202,7 @@ public class ImageMaskTest {
 
         actualPixelBuffer.rewind();
         for (int index = 0; index < orgPixels.length; index++) {
-            Assert.assertEquals(expectedPixels[index], actualPixelBuffer.get());
+            Assertions.assertEquals(expectedPixels[index], actualPixelBuffer.get());
         }
     }
 
@@ -228,7 +233,7 @@ public class ImageMaskTest {
 
         actualPixelBuffer.rewind();
         for (int index = 0; index < orgPixels.length; index++) {
-            Assert.assertEquals(expectedPixels[index], actualPixelBuffer.get());
+            Assertions.assertEquals(expectedPixels[index], actualPixelBuffer.get());
         }
     }
 
@@ -259,15 +264,15 @@ public class ImageMaskTest {
 
         actualPixelBuffer.rewind();
         for (int index = 0; index < orgPixels.length; index++) {
-            Assert.assertEquals(expectedPixels[index], actualPixelBuffer.get());
+            Assertions.assertEquals(expectedPixels[index], actualPixelBuffer.get());
         }
     }
 
     @Test
     public void testTileBufferFactoryPrivate() throws Exception {
         Constructor<?>[] constrs = TileBufferFactory.class.getDeclaredConstructors();
-        assertEquals(constrs.length, 1);
-        assertFalse(constrs[0].isAccessible());
+        Assertions.assertEquals(constrs.length, 1);
+        Assertions.assertFalse(constrs[0].isAccessible());
         constrs[0].setAccessible(true);
         constrs[0].newInstance();
     }

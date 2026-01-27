@@ -31,8 +31,8 @@ package nom.tam.fits.header.extra;
  * #L%
  */
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.IFitsHeader.VALUE;
@@ -43,7 +43,7 @@ public class ESOExtTest {
     public void testESOExt() throws Exception {
         IFitsHeader key = ESOExt.UTC;
 
-        Assert.assertEquals("UTC", key.key());
-        Assert.assertEquals(VALUE.REAL, key.valueType());
+        Assertions.assertEquals("UTC", key.key());
+        Assertions.assertEquals(VALUE.REAL, key.valueType());
     }
 }

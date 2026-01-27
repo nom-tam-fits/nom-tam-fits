@@ -31,50 +31,62 @@ package nom.tam.util;
  * #L%
  */
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("javadoc")
 public class ArrayFuncsTest {
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void assertRegularArrayNull() throws Exception {
-        ArrayFuncs.checkRegularArray(null, true);
+        Assertions.assertThrows(NullPointerException.class, () -> {
+
+            ArrayFuncs.checkRegularArray(null, true);
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertRegularArrayNonArray() throws Exception {
-        ArrayFuncs.checkRegularArray("abc", true);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            ArrayFuncs.checkRegularArray("abc", true);
+
+        });
     }
 
     @Test
     public void assertRegularPrimitiveArray() throws Exception {
-        Assert.assertArrayEquals(new int[] {3}, ArrayFuncs.checkRegularArray(new int[] {1, 2, 3}, true));
+        Assertions.assertArrayEquals(new int[] {3}, ArrayFuncs.checkRegularArray(new int[] {1, 2, 3}, true));
     }
 
     @Test
     public void assertRegularEmptyArray() throws Exception {
-        Assert.assertArrayEquals(new int[] {0}, ArrayFuncs.checkRegularArray(new String[0], true));
+        Assertions.assertArrayEquals(new int[] {0}, ArrayFuncs.checkRegularArray(new String[0], true));
     }
 
     @Test
     public void assertRegularArrayAllowFirstNull() throws Exception {
-        Assert.assertEquals(2, ArrayFuncs.checkRegularArray(new String[] {null, "abc"}, true)[0]);
+        Assertions.assertEquals(2, ArrayFuncs.checkRegularArray(new String[] {null, "abc"}, true)[0]);
     }
 
     @Test
     public void assertRegularArrayAllowNull() throws Exception {
-        Assert.assertEquals(2, ArrayFuncs.checkRegularArray(new String[] {"abc", null}, true)[0]);
+        Assertions.assertEquals(2, ArrayFuncs.checkRegularArray(new String[] {"abc", null}, true)[0]);
     }
 
     @Test
     public void newScalarInstance() {
-        Assert.assertArrayEquals(new int[] {0}, (int[]) ArrayFuncs.newInstance(int.class, new int[0]));
+        Assertions.assertArrayEquals(new int[] {0}, (int[]) ArrayFuncs.newInstance(int.class, new int[0]));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void arrayCopyMismatchedType() {
-        ArrayFuncs.copy(new int[2], 0, new long[2], 0, 2, 1);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            ArrayFuncs.copy(new int[2], 0, new long[2], 0, 2, 1);
+
+        });
     }
 
     @Test
@@ -82,12 +94,12 @@ public class ArrayFuncsTest {
         float[][] re = {{1.0F}, {2.0F}};
         float[][] im = {{-1.0F}, {-2.0F}};
         ComplexValue.Float[][] z = (ComplexValue.Float[][]) ArrayFuncs.decimalsToComplex(re, im);
-        Assert.assertEquals(2, z.length);
-        Assert.assertEquals(1, z[0].length);
-        Assert.assertEquals(1.0, z[0][0].re(), 1e-6);
-        Assert.assertEquals(-1.0, z[0][0].im(), 1e-6);
-        Assert.assertEquals(2.0, z[1][0].re(), 1e-6);
-        Assert.assertEquals(-2.0, z[1][0].im(), 1e-6);
+        Assertions.assertEquals(2, z.length);
+        Assertions.assertEquals(1, z[0].length);
+        Assertions.assertEquals(1.0, z[0][0].re(), 1e-6);
+        Assertions.assertEquals(-1.0, z[0][0].im(), 1e-6);
+        Assertions.assertEquals(2.0, z[1][0].re(), 1e-6);
+        Assertions.assertEquals(-2.0, z[1][0].im(), 1e-6);
     }
 
     @Test
@@ -95,27 +107,39 @@ public class ArrayFuncsTest {
         double[][] re = {{1.0}, {2.0}};
         double[][] im = {{-1.0}, {-2.0}};
         ComplexValue[][] z = (ComplexValue[][]) ArrayFuncs.decimalsToComplex(re, im);
-        Assert.assertEquals(2, z.length);
-        Assert.assertEquals(1, z[0].length);
-        Assert.assertEquals(1.0, z[0][0].re(), 1e-12);
-        Assert.assertEquals(-1.0, z[0][0].im(), 1e-12);
-        Assert.assertEquals(2.0, z[1][0].re(), 1e-12);
-        Assert.assertEquals(-2.0, z[1][0].im(), 1e-12);
+        Assertions.assertEquals(2, z.length);
+        Assertions.assertEquals(1, z[0].length);
+        Assertions.assertEquals(1.0, z[0][0].re(), 1e-12);
+        Assertions.assertEquals(-1.0, z[0][0].im(), 1e-12);
+        Assertions.assertEquals(2.0, z[1][0].re(), 1e-12);
+        Assertions.assertEquals(-2.0, z[1][0].im(), 1e-12);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void decimals2ComplexMismatchedComponents() throws Exception {
-        ArrayFuncs.decimalsToComplex(new float[2], new double[2]);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            ArrayFuncs.decimalsToComplex(new float[2], new double[2]);
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void decimals2ComplexMismatchedComponentDims() throws Exception {
-        ArrayFuncs.decimalsToComplex(new float[2], new float[2][2]);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            ArrayFuncs.decimalsToComplex(new float[2], new float[2][2]);
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void decimals2ComplexUnsupportedComponents() throws Exception {
-        ArrayFuncs.decimalsToComplex(new boolean[2], new boolean[2]);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            ArrayFuncs.decimalsToComplex(new boolean[2], new boolean[2]);
+
+        });
     }
 
     @Test
@@ -123,14 +147,14 @@ public class ArrayFuncsTest {
         int[][] i = {{1, 2}};
 
         ComplexValue[] z = (ComplexValue[]) ArrayFuncs.convertArray(i, ComplexValue.class, null);
-        Assert.assertEquals(1, z.length);
-        Assert.assertEquals(1.0, z[0].re(), 1e-12);
-        Assert.assertEquals(2.0, z[0].im(), 1e-12);
+        Assertions.assertEquals(1, z.length);
+        Assertions.assertEquals(1.0, z[0].re(), 1e-12);
+        Assertions.assertEquals(2.0, z[0].im(), 1e-12);
 
         ComplexValue.Float[] zf = (ComplexValue.Float[]) ArrayFuncs.convertArray(i, ComplexValue.Float.class, null);
-        Assert.assertEquals(1, zf.length);
-        Assert.assertEquals(1.0F, zf[0].re(), 1e-6);
-        Assert.assertEquals(2.0F, zf[0].im(), 1e-6);
+        Assertions.assertEquals(1, zf.length);
+        Assertions.assertEquals(1.0F, zf[0].re(), 1e-6);
+        Assertions.assertEquals(2.0F, zf[0].im(), 1e-6);
     }
 
     @Test
@@ -138,33 +162,33 @@ public class ArrayFuncsTest {
         int[][] i = {{1, 2}};
 
         ComplexValue[] z = (ComplexValue[]) ArrayFuncs.convertArray(i, ComplexValue.class, new Quantizer(1.5, 0.5, null));
-        Assert.assertEquals(1, z.length);
-        Assert.assertEquals(2.0, z[0].re(), 1e-12);
-        Assert.assertEquals(3.5, z[0].im(), 1e-12);
+        Assertions.assertEquals(1, z.length);
+        Assertions.assertEquals(2.0, z[0].re(), 1e-12);
+        Assertions.assertEquals(3.5, z[0].im(), 1e-12);
 
         ComplexValue.Float[] zf = (ComplexValue.Float[]) ArrayFuncs.convertArray(i, ComplexValue.Float.class,
                 new Quantizer(1.5, 0.5, null));
-        Assert.assertEquals(1, zf.length);
-        Assert.assertEquals(2.0F, zf[0].re(), 1e-6);
-        Assert.assertEquals(3.5F, zf[0].im(), 1e-6);
+        Assertions.assertEquals(1, zf.length);
+        Assertions.assertEquals(2.0F, zf[0].re(), 1e-6);
+        Assertions.assertEquals(3.5F, zf[0].im(), 1e-6);
 
         z = (ComplexValue[]) ArrayFuncs.convertArray(new byte[][] {{1, 2}}, ComplexValue.class,
                 new Quantizer(1.5, 0.5, null));
-        Assert.assertEquals(1, z.length);
-        Assert.assertEquals(2.0, z[0].re(), 1e-12);
-        Assert.assertEquals(3.5, z[0].im(), 1e-12);
+        Assertions.assertEquals(1, z.length);
+        Assertions.assertEquals(2.0, z[0].re(), 1e-12);
+        Assertions.assertEquals(3.5, z[0].im(), 1e-12);
 
         z = (ComplexValue[]) ArrayFuncs.convertArray(new short[][] {{1, 2}}, ComplexValue.class,
                 new Quantizer(1.5, 0.5, null));
-        Assert.assertEquals(1, z.length);
-        Assert.assertEquals(2.0, z[0].re(), 1e-12);
-        Assert.assertEquals(3.5, z[0].im(), 1e-12);
+        Assertions.assertEquals(1, z.length);
+        Assertions.assertEquals(2.0, z[0].re(), 1e-12);
+        Assertions.assertEquals(3.5, z[0].im(), 1e-12);
 
         z = (ComplexValue[]) ArrayFuncs.convertArray(new long[][] {{1L, 2L}}, ComplexValue.class,
                 new Quantizer(1.5, 0.5, null));
-        Assert.assertEquals(1, z.length);
-        Assert.assertEquals(2.0, z[0].re(), 1e-12);
-        Assert.assertEquals(3.5, z[0].im(), 1e-12);
+        Assertions.assertEquals(1, z.length);
+        Assertions.assertEquals(2.0, z[0].re(), 1e-12);
+        Assertions.assertEquals(3.5, z[0].im(), 1e-12);
     }
 
     @Test
@@ -172,11 +196,11 @@ public class ArrayFuncsTest {
         int[][] i = {{1, 2}, {3, 4}};
 
         ComplexValue[] z = (ComplexValue[]) ArrayFuncs.convertArray(i, ComplexValue.class, null);
-        Assert.assertEquals(2, z.length);
-        Assert.assertEquals(1.0, z[0].re(), 1e-12);
-        Assert.assertEquals(2.0, z[0].im(), 1e-12);
-        Assert.assertEquals(3.0, z[1].re(), 1e-12);
-        Assert.assertEquals(4.0, z[1].im(), 1e-12);
+        Assertions.assertEquals(2, z.length);
+        Assertions.assertEquals(1.0, z[0].re(), 1e-12);
+        Assertions.assertEquals(2.0, z[0].im(), 1e-12);
+        Assertions.assertEquals(3.0, z[1].re(), 1e-12);
+        Assertions.assertEquals(4.0, z[1].im(), 1e-12);
     }
 
     @Test
@@ -184,18 +208,18 @@ public class ArrayFuncsTest {
         ComplexValue[] z = {new ComplexValue(0.5, 1.5)};
 
         int[][] i = (int[][]) ArrayFuncs.convertArray(z, int.class, null);
-        Assert.assertEquals(1, i.length);
-        Assert.assertEquals(2, i[0].length);
-        Assert.assertEquals(1, i[0][0]);
-        Assert.assertEquals(2, i[0][1]);
+        Assertions.assertEquals(1, i.length);
+        Assertions.assertEquals(2, i[0].length);
+        Assertions.assertEquals(1, i[0][0]);
+        Assertions.assertEquals(2, i[0][1]);
 
         ComplexValue.Float[] zf = {new ComplexValue.Float(1.0F, 2.0F)};
 
         i = (int[][]) ArrayFuncs.convertArray(zf, int.class, null);
-        Assert.assertEquals(1, i.length);
-        Assert.assertEquals(2, i[0].length);
-        Assert.assertEquals(1, i[0][0]);
-        Assert.assertEquals(2, i[0][1]);
+        Assertions.assertEquals(1, i.length);
+        Assertions.assertEquals(2, i[0].length);
+        Assertions.assertEquals(1, i[0][0]);
+        Assertions.assertEquals(2, i[0][1]);
     }
 
     @Test
@@ -204,36 +228,36 @@ public class ArrayFuncsTest {
         Quantizer q = new Quantizer(1.5, 0.5, null);
 
         int[][] i = (int[][]) ArrayFuncs.convertArray(z, int.class, q);
-        Assert.assertEquals(1, i.length);
-        Assert.assertEquals(2, i[0].length);
-        Assert.assertEquals(1, i[0][0]);
-        Assert.assertEquals(2, i[0][1]);
+        Assertions.assertEquals(1, i.length);
+        Assertions.assertEquals(2, i[0].length);
+        Assertions.assertEquals(1, i[0][0]);
+        Assertions.assertEquals(2, i[0][1]);
 
         ComplexValue.Float[] zf = {new ComplexValue.Float(2.0F, 3.5F)};
 
         i = (int[][]) ArrayFuncs.convertArray(zf, int.class, q);
-        Assert.assertEquals(1, i.length);
-        Assert.assertEquals(2, i[0].length);
-        Assert.assertEquals(1, i[0][0]);
-        Assert.assertEquals(2, i[0][1]);
+        Assertions.assertEquals(1, i.length);
+        Assertions.assertEquals(2, i[0].length);
+        Assertions.assertEquals(1, i[0][0]);
+        Assertions.assertEquals(2, i[0][1]);
 
         byte[][] b = (byte[][]) ArrayFuncs.convertArray(z, byte.class, q);
-        Assert.assertEquals(1, b.length);
-        Assert.assertEquals(2, b[0].length);
-        Assert.assertEquals(1, b[0][0]);
-        Assert.assertEquals(2, b[0][1]);
+        Assertions.assertEquals(1, b.length);
+        Assertions.assertEquals(2, b[0].length);
+        Assertions.assertEquals(1, b[0][0]);
+        Assertions.assertEquals(2, b[0][1]);
 
         short[][] s = (short[][]) ArrayFuncs.convertArray(z, short.class, q);
-        Assert.assertEquals(1, s.length);
-        Assert.assertEquals(2, s[0].length);
-        Assert.assertEquals(1, s[0][0]);
-        Assert.assertEquals(2, s[0][1]);
+        Assertions.assertEquals(1, s.length);
+        Assertions.assertEquals(2, s[0].length);
+        Assertions.assertEquals(1, s[0][0]);
+        Assertions.assertEquals(2, s[0][1]);
 
         long[][] l = (long[][]) ArrayFuncs.convertArray(z, long.class, q);
-        Assert.assertEquals(1, l.length);
-        Assert.assertEquals(2, l[0].length);
-        Assert.assertEquals(1, l[0][0]);
-        Assert.assertEquals(2, l[0][1]);
+        Assertions.assertEquals(1, l.length);
+        Assertions.assertEquals(2, l[0].length);
+        Assertions.assertEquals(1, l[0][0]);
+        Assertions.assertEquals(2, l[0][1]);
     }
 
     @Test
@@ -242,16 +266,16 @@ public class ArrayFuncsTest {
         Quantizer q = new Quantizer(2.0, 0.5, null);
 
         double[][] d = (double[][]) ArrayFuncs.convertArray(f, double.class, q);
-        Assert.assertEquals(1, d.length);
-        Assert.assertEquals(2, d[0].length);
-        Assert.assertEquals(1.0, d[0][0], 1e-6);
-        Assert.assertEquals(2.0, d[0][1], 1e-6);
+        Assertions.assertEquals(1, d.length);
+        Assertions.assertEquals(2, d[0].length);
+        Assertions.assertEquals(1.0, d[0][0], 1e-6);
+        Assertions.assertEquals(2.0, d[0][1], 1e-6);
 
         float[][] f2 = (float[][]) ArrayFuncs.convertArray(d, float.class, q);
-        Assert.assertEquals(1, f2.length);
-        Assert.assertEquals(2, f2[0].length);
-        Assert.assertEquals(1.0F, f2[0][0], 1e-6);
-        Assert.assertEquals(2.0F, f2[0][1], 1e-6);
+        Assertions.assertEquals(1, f2.length);
+        Assertions.assertEquals(2, f2[0].length);
+        Assertions.assertEquals(1.0F, f2[0][0], 1e-6);
+        Assertions.assertEquals(2.0F, f2[0][1], 1e-6);
     }
 
     @Test
@@ -260,48 +284,64 @@ public class ArrayFuncsTest {
         Quantizer q = new Quantizer(2.0, 0.5, null);
 
         long[][] l = (long[][]) ArrayFuncs.convertArray(i, long.class, q);
-        Assert.assertEquals(1, l.length);
-        Assert.assertEquals(2, l[0].length);
-        Assert.assertEquals(1, l[0][0]);
-        Assert.assertEquals(2, l[0][1]);
+        Assertions.assertEquals(1, l.length);
+        Assertions.assertEquals(2, l[0].length);
+        Assertions.assertEquals(1, l[0][0]);
+        Assertions.assertEquals(2, l[0][1]);
 
         int[][] i2 = (int[][]) ArrayFuncs.convertArray(l, int.class, q);
-        Assert.assertEquals(1, i2.length);
-        Assert.assertEquals(2, i2[0].length);
-        Assert.assertEquals(1, i2[0][0]);
-        Assert.assertEquals(2, i2[0][1]);
+        Assertions.assertEquals(1, i2.length);
+        Assertions.assertEquals(2, i2[0].length);
+        Assertions.assertEquals(1, i2[0][0]);
+        Assertions.assertEquals(2, i2[0][1]);
 
         short[][] s = (short[][]) ArrayFuncs.convertArray(i, short.class, q);
-        Assert.assertEquals(1, s.length);
-        Assert.assertEquals(2, s[0].length);
-        Assert.assertEquals(1, s[0][0]);
-        Assert.assertEquals(2, s[0][1]);
+        Assertions.assertEquals(1, s.length);
+        Assertions.assertEquals(2, s[0].length);
+        Assertions.assertEquals(1, s[0][0]);
+        Assertions.assertEquals(2, s[0][1]);
 
         byte[][] b = (byte[][]) ArrayFuncs.convertArray(s, byte.class, q);
-        Assert.assertEquals(1, b.length);
-        Assert.assertEquals(2, b[0].length);
-        Assert.assertEquals(1, b[0][0]);
-        Assert.assertEquals(2, b[0][1]);
+        Assertions.assertEquals(1, b.length);
+        Assertions.assertEquals(2, b[0].length);
+        Assertions.assertEquals(1, b[0][0]);
+        Assertions.assertEquals(2, b[0][1]);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void convertComplexChar() throws Exception {
-        ArrayFuncs.convertArray(new int[1], char.class, null);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            ArrayFuncs.convertArray(new int[1], char.class, null);
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void convertComplexBoolean() throws Exception {
-        ArrayFuncs.convertArray(new int[1], boolean.class, null);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            ArrayFuncs.convertArray(new int[1], boolean.class, null);
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void convertComplexNonPrimitive() throws Exception {
-        ArrayFuncs.convertArray(new int[1], String.class, null);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            ArrayFuncs.convertArray(new int[1], String.class, null);
+
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void convertNotArray() throws Exception {
-        ArrayFuncs.convertArray("blah", int.class, null);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            ArrayFuncs.convertArray("blah", int.class, null);
+
+        });
     }
 
     @Test
@@ -310,11 +350,11 @@ public class ArrayFuncsTest {
 
         int[][] sub = (int[][]) ArrayFuncs.slice(array, new int[] {1, 2});
 
-        Assert.assertEquals(2, sub.length);
-        Assert.assertEquals(1, sub[0].length);
+        Assertions.assertEquals(2, sub.length);
+        Assertions.assertEquals(1, sub[0].length);
 
-        Assert.assertEquals(6, sub[0][0]);
-        Assert.assertEquals(9, sub[1][0]);
+        Assertions.assertEquals(6, sub[0][0]);
+        Assertions.assertEquals(9, sub[1][0]);
     }
 
     @Test
@@ -323,13 +363,13 @@ public class ArrayFuncsTest {
 
         int[][] sub = (int[][]) ArrayFuncs.slice(array, new int[] {1}, new int[] {2});
 
-        Assert.assertEquals(2, sub.length);
-        Assert.assertEquals(3, sub[0].length);
+        Assertions.assertEquals(2, sub.length);
+        Assertions.assertEquals(3, sub[0].length);
 
-        Assert.assertEquals(4, sub[0][0]);
-        Assert.assertEquals(5, sub[0][1]);
-        Assert.assertEquals(7, sub[1][0]);
-        Assert.assertEquals(8, sub[1][1]);
+        Assertions.assertEquals(4, sub[0][0]);
+        Assertions.assertEquals(5, sub[0][1]);
+        Assertions.assertEquals(7, sub[1][0]);
+        Assertions.assertEquals(8, sub[1][1]);
     }
 
     @Test
@@ -338,13 +378,13 @@ public class ArrayFuncsTest {
 
         int[][] sub = (int[][]) ArrayFuncs.slice(array, new int[] {1}, new int[] {-2});
 
-        Assert.assertEquals(2, sub.length);
-        Assert.assertEquals(3, sub[0].length);
+        Assertions.assertEquals(2, sub.length);
+        Assertions.assertEquals(3, sub[0].length);
 
-        Assert.assertEquals(4, sub[0][0]);
-        Assert.assertEquals(5, sub[0][1]);
-        Assert.assertEquals(1, sub[1][0]);
-        Assert.assertEquals(2, sub[1][1]);
+        Assertions.assertEquals(4, sub[0][0]);
+        Assertions.assertEquals(5, sub[0][1]);
+        Assertions.assertEquals(1, sub[1][0]);
+        Assertions.assertEquals(2, sub[1][1]);
     }
 
     @Test
@@ -353,13 +393,13 @@ public class ArrayFuncsTest {
 
         int[][] sub = (int[][]) ArrayFuncs.slice(array, null, new int[] {-2, -2});
 
-        Assert.assertEquals(2, sub.length);
-        Assert.assertEquals(2, sub[0].length);
+        Assertions.assertEquals(2, sub.length);
+        Assertions.assertEquals(2, sub[0].length);
 
-        Assert.assertEquals(9, sub[0][0]);
-        Assert.assertEquals(8, sub[0][1]);
-        Assert.assertEquals(6, sub[1][0]);
-        Assert.assertEquals(5, sub[1][1]);
+        Assertions.assertEquals(9, sub[0][0]);
+        Assertions.assertEquals(8, sub[0][1]);
+        Assertions.assertEquals(6, sub[1][0]);
+        Assertions.assertEquals(5, sub[1][1]);
     }
 
     @Test
@@ -368,13 +408,13 @@ public class ArrayFuncsTest {
 
         int[][] sub = (int[][]) ArrayFuncs.sample(array, 2);
 
-        Assert.assertEquals(2, sub.length);
-        Assert.assertEquals(2, sub[0].length);
+        Assertions.assertEquals(2, sub.length);
+        Assertions.assertEquals(2, sub[0].length);
 
-        Assert.assertEquals(1, sub[0][0]);
-        Assert.assertEquals(3, sub[0][1]);
-        Assert.assertEquals(7, sub[1][0]);
-        Assert.assertEquals(9, sub[1][1]);
+        Assertions.assertEquals(1, sub[0][0]);
+        Assertions.assertEquals(3, sub[0][1]);
+        Assertions.assertEquals(7, sub[1][0]);
+        Assertions.assertEquals(9, sub[1][1]);
     }
 
     @Test
@@ -383,13 +423,13 @@ public class ArrayFuncsTest {
 
         int[][] sub = (int[][]) ArrayFuncs.sample(array, 0);
 
-        Assert.assertEquals(3, sub.length);
-        Assert.assertEquals(3, sub[0].length);
+        Assertions.assertEquals(3, sub.length);
+        Assertions.assertEquals(3, sub[0].length);
 
-        Assert.assertEquals(1, sub[0][0]);
-        Assert.assertEquals(2, sub[0][1]);
-        Assert.assertEquals(4, sub[1][0]);
-        Assert.assertEquals(5, sub[1][1]);
+        Assertions.assertEquals(1, sub[0][0]);
+        Assertions.assertEquals(2, sub[0][1]);
+        Assertions.assertEquals(4, sub[1][0]);
+        Assertions.assertEquals(5, sub[1][1]);
     }
 
     @Test
@@ -398,13 +438,13 @@ public class ArrayFuncsTest {
 
         int[][] sub = (int[][]) ArrayFuncs.sample(array, null, new int[2], null);
 
-        Assert.assertEquals(3, sub.length);
-        Assert.assertEquals(3, sub[0].length);
+        Assertions.assertEquals(3, sub.length);
+        Assertions.assertEquals(3, sub[0].length);
 
-        Assert.assertEquals(1, sub[0][0]);
-        Assert.assertEquals(2, sub[0][1]);
-        Assert.assertEquals(4, sub[1][0]);
-        Assert.assertEquals(5, sub[1][1]);
+        Assertions.assertEquals(1, sub[0][0]);
+        Assertions.assertEquals(2, sub[0][1]);
+        Assertions.assertEquals(4, sub[1][0]);
+        Assertions.assertEquals(5, sub[1][1]);
     }
 
     @Test
@@ -413,42 +453,58 @@ public class ArrayFuncsTest {
 
         int[][] sub = (int[][]) ArrayFuncs.sample(array, null, new int[] {3, -3}, new int[] {-2, -2});
 
-        Assert.assertEquals(2, sub.length);
-        Assert.assertEquals(2, sub[0].length);
+        Assertions.assertEquals(2, sub.length);
+        Assertions.assertEquals(2, sub[0].length);
 
-        Assert.assertEquals(9, sub[0][0]);
-        Assert.assertEquals(7, sub[0][1]);
-        Assert.assertEquals(3, sub[1][0]);
-        Assert.assertEquals(1, sub[1][1]);
+        Assertions.assertEquals(9, sub[0][0]);
+        Assertions.assertEquals(7, sub[0][1]);
+        Assertions.assertEquals(3, sub[1][0]);
+        Assertions.assertEquals(1, sub[1][1]);
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void sliceFromLow() throws Exception {
-        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-        ArrayFuncs.slice(array, new int[] {-1});
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+            ArrayFuncs.slice(array, new int[] {-1});
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void sliceFromHigh() throws Exception {
-        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-        ArrayFuncs.slice(array, new int[] {3});
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+            ArrayFuncs.slice(array, new int[] {3});
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void sliceToLow() throws Exception {
-        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-        ArrayFuncs.slice(array, null, new int[] {-4});
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+            ArrayFuncs.slice(array, null, new int[] {-4});
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void sliceToHigh() throws Exception {
-        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-        ArrayFuncs.slice(array, null, new int[] {4});
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+            ArrayFuncs.slice(array, null, new int[] {4});
+
+        });
     }
 
     @Test
     public void booleanToArray() throws Exception {
-        Assert.assertEquals(boolean[].class, ArrayFuncs.objectToArray(true, false).getClass());
-        Assert.assertEquals(Boolean[].class, ArrayFuncs.objectToArray(true, true).getClass());
+        Assertions.assertEquals(boolean[].class, ArrayFuncs.objectToArray(true, false).getClass());
+        Assertions.assertEquals(Boolean[].class, ArrayFuncs.objectToArray(true, true).getClass());
     }
 }

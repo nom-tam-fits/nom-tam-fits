@@ -1,5 +1,7 @@
 package nom.tam.fits;
 
+import org.junit.jupiter.api.Assertions;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -31,11 +33,7 @@ package nom.tam.fits;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.util.FitsFile;
 
@@ -44,7 +42,7 @@ public class TruncatedFileExceptionTest {
     @Test
     public void testConstructorWithCause() {
         Exception e = new TruncatedFileException("test exception", new IllegalArgumentException("test cause"));
-        assertEquals(IllegalArgumentException.class, e.getCause().getClass());
+        Assertions.assertEquals(IllegalArgumentException.class, e.getCause().getClass());
     }
 
     @Test
@@ -52,10 +50,10 @@ public class TruncatedFileExceptionTest {
         try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
             f.seek(10);
             f.setLength(5);
-            assertEquals(5, f.getFilePointer());
-            assertFalse(Fits.checkTruncated(f));
+            Assertions.assertEquals(5, f.getFilePointer());
+            Assertions.assertFalse(Fits.checkTruncated(f));
             f.seek(10);
-            assertTrue(Fits.checkTruncated(f));
+            Assertions.assertTrue(Fits.checkTruncated(f));
         }
     }
 }

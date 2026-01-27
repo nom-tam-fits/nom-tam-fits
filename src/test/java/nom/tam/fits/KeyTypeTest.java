@@ -31,17 +31,14 @@ package nom.tam.fits;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
@@ -49,7 +46,7 @@ import nom.tam.util.ComplexValue;
 
 public class KeyTypeTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         HeaderCard.setValueCheckingPolicy(HeaderCard.ValueCheck.LOGGING);
     }
@@ -135,7 +132,7 @@ public class KeyTypeTest {
         LogCounter counter = initLogCounter(Header.class);
         int i = counter.getCount();
         h.replaceKey(Standard.SIMPLE, Standard.COMMENT);
-        assertNotEquals(i, counter.getCount());
+        Assertions.assertNotEquals(i, counter.getCount());
     }
 
     @Test
@@ -143,7 +140,7 @@ public class KeyTypeTest {
         Header h = new Header();
         HeaderCard c = h.addValue(Standard.SIMPLE, true);
         h.replaceKey(Standard.SIMPLE, Standard.EXTEND);
-        assertEquals(Standard.EXTEND.key(), c.getKey());
+        Assertions.assertEquals(Standard.EXTEND.key(), c.getKey());
     }
 
     @Test
@@ -153,7 +150,7 @@ public class KeyTypeTest {
         LogCounter counter = initLogCounter(Header.class);
         int i = counter.getCount();
         h.replaceKey(Standard.SIMPLE, Standard.BUNIT);
-        assertNotEquals(i, counter.getCount());
+        Assertions.assertNotEquals(i, counter.getCount());
     }
 
     @Test
@@ -161,7 +158,7 @@ public class KeyTypeTest {
         Header h = new Header();
         HeaderCard c = h.addValue(Standard.BSCALE, 1.0);
         h.replaceKey(Standard.BSCALE, Standard.BZERO);
-        assertEquals(Standard.BZERO.key(), c.getKey());
+        Assertions.assertEquals(Standard.BZERO.key(), c.getKey());
     }
 
     @Test
@@ -171,7 +168,7 @@ public class KeyTypeTest {
         LogCounter counter = initLogCounter(Header.class);
         int i = counter.getCount();
         h.replaceKey(Standard.BSCALE, Standard.NAXIS);
-        assertNotEquals(i, counter.getCount());
+        Assertions.assertNotEquals(i, counter.getCount());
     }
 
     @Test
@@ -179,7 +176,7 @@ public class KeyTypeTest {
         Header h = new Header();
         HeaderCard c = h.addValue(Standard.NAXIS, -1);
         h.replaceKey(Standard.NAXIS, Standard.BITPIX);
-        assertEquals(Standard.BITPIX.key(), c.getKey());
+        Assertions.assertEquals(Standard.BITPIX.key(), c.getKey());
     }
 
     @Test
@@ -187,7 +184,7 @@ public class KeyTypeTest {
         Header h = new Header();
         HeaderCard c = h.addValue(Standard.NAXIS, -1);
         h.replaceKey(Standard.NAXIS, Standard.BZERO);
-        assertEquals(Standard.BZERO.key(), c.getKey());
+        Assertions.assertEquals(Standard.BZERO.key(), c.getKey());
     }
 
     @Test
@@ -196,7 +193,7 @@ public class KeyTypeTest {
         HeaderCard c = h.addValue(Standard.NAXIS, -1);
         ComplexKey k = new ComplexKey("CKEY");
         h.replaceKey(Standard.NAXIS, k);
-        assertEquals(k.key(), c.getKey());
+        Assertions.assertEquals(k.key(), c.getKey());
     }
 
     @Test
@@ -206,7 +203,7 @@ public class KeyTypeTest {
         LogCounter counter = initLogCounter(Header.class);
         int i = counter.getCount();
         h.replaceKey(Standard.NAXIS, Standard.BUNIT);
-        assertNotEquals(i, counter.getCount());
+        Assertions.assertNotEquals(i, counter.getCount());
     }
 
     @Test
@@ -216,7 +213,7 @@ public class KeyTypeTest {
         ComplexKey k2 = new ComplexKey("CVAL2");
         HeaderCard c = h.addValue(k1, new ComplexDerived(1.0, -1.0));
         h.replaceKey(k1, k2);
-        assertEquals(k2.key(), c.getKey());
+        Assertions.assertEquals(k2.key(), c.getKey());
     }
 
     @Test
@@ -227,7 +224,7 @@ public class KeyTypeTest {
         LogCounter counter = initLogCounter(Header.class);
         int i = counter.getCount();
         h.replaceKey(k, Standard.BZERO);
-        assertNotEquals(i, counter.getCount());
+        Assertions.assertNotEquals(i, counter.getCount());
     }
 
     @Test
@@ -235,7 +232,7 @@ public class KeyTypeTest {
         Header h = new Header();
         HeaderCard c = h.addValue(Standard.TELESCOP, "CSO");
         h.replaceKey(Standard.TELESCOP, Standard.INSTRUME);
-        assertEquals(Standard.INSTRUME.key(), c.getKey());
+        Assertions.assertEquals(Standard.INSTRUME.key(), c.getKey());
     }
 
     @Test
@@ -245,14 +242,14 @@ public class KeyTypeTest {
         LogCounter counter = initLogCounter(Header.class);
         int i = counter.getCount();
         h.replaceKey(Standard.TELESCOP, Standard.BZERO);
-        assertNotEquals(i, counter.getCount());
+        Assertions.assertNotEquals(i, counter.getCount());
     }
 
     @Test
     public void createBooleanKey() throws Exception {
         HeaderCard c = HeaderCard.create(Standard.SIMPLE, true);
-        assertEquals(Standard.SIMPLE.key(), c.getKey());
-        assertTrue(c.getValue(Boolean.class, false));
+        Assertions.assertEquals(Standard.SIMPLE.key(), c.getKey());
+        Assertions.assertTrue(c.getValue(Boolean.class, false));
     }
 
     @Test
@@ -260,14 +257,14 @@ public class KeyTypeTest {
         LogCounter counter = initLogCounter(HeaderCard.class);
         int i = counter.getCount();
         HeaderCard.create(Standard.SIMPLE, 1.0);
-        assertNotEquals(i, counter.getCount());
+        Assertions.assertNotEquals(i, counter.getCount());
     }
 
     @Test
     public void createIntKey() throws Exception {
         HeaderCard c = HeaderCard.create(Standard.NAXIS, 1);
-        assertEquals(Standard.NAXIS.key(), c.getKey());
-        assertEquals(1, c.getValue(Integer.class, -1).intValue());
+        Assertions.assertEquals(Standard.NAXIS.key(), c.getKey());
+        Assertions.assertEquals(1, c.getValue(Integer.class, -1).intValue());
     }
 
     @Test
@@ -275,21 +272,21 @@ public class KeyTypeTest {
         LogCounter counter = initLogCounter(HeaderCard.class);
         int i = counter.getCount();
         HeaderCard.create(Standard.NAXIS, 1.0);
-        assertNotEquals(i, counter.getCount());
+        Assertions.assertNotEquals(i, counter.getCount());
     }
 
     @Test
     public void createRealKey() throws Exception {
         HeaderCard c = HeaderCard.create(Standard.BZERO, 1.0);
-        assertEquals(Standard.BZERO.key(), c.getKey());
-        assertEquals(1.0, c.getValue(Double.class, Double.NaN).intValue(), 1e-12);
+        Assertions.assertEquals(Standard.BZERO.key(), c.getKey());
+        Assertions.assertEquals(1.0, c.getValue(Double.class, Double.NaN).intValue(), 1e-12);
     }
 
     @Test
     public void createRealKeyInt() throws Exception {
         HeaderCard c = HeaderCard.create(Standard.BZERO, new Integer(1));
-        assertEquals(Standard.BZERO.key(), c.getKey());
-        assertEquals(1.0, c.getValue(Double.class, Double.NaN).intValue(), 1e-12);
+        Assertions.assertEquals(Standard.BZERO.key(), c.getKey());
+        Assertions.assertEquals(1.0, c.getValue(Double.class, Double.NaN).intValue(), 1e-12);
     }
 
     @Test
@@ -297,7 +294,7 @@ public class KeyTypeTest {
         LogCounter counter = initLogCounter(HeaderCard.class);
         int i = counter.getCount();
         HeaderCard.create(Standard.BZERO, "string");
-        assertNotEquals(i, counter.getCount());
+        Assertions.assertNotEquals(i, counter.getCount());
     }
 
     @Test
@@ -305,8 +302,8 @@ public class KeyTypeTest {
         ComplexKey k = new ComplexKey("CVAL");
         ComplexValue z = new ComplexValue(1.0, -1.0);
         HeaderCard c = HeaderCard.create(k, z);
-        assertEquals(k.key(), c.getKey());
-        assertEquals(z, c.getValue(ComplexValue.class, null));
+        Assertions.assertEquals(k.key(), c.getKey());
+        Assertions.assertEquals(z, c.getValue(ComplexValue.class, null));
     }
 
     @Test
@@ -314,8 +311,8 @@ public class KeyTypeTest {
         ComplexKey k = new ComplexKey("CVAL");
         ComplexValue z = new ComplexValue(1.0, 0.0);
         HeaderCard c = HeaderCard.create(k, 1.0);
-        assertEquals(k.key(), c.getKey());
-        assertEquals(z, c.getValue(ComplexValue.class, null));
+        Assertions.assertEquals(k.key(), c.getKey());
+        Assertions.assertEquals(z, c.getValue(ComplexValue.class, null));
     }
 
     @Test
@@ -323,8 +320,8 @@ public class KeyTypeTest {
         ComplexKey k = new ComplexKey("CVAL");
         ComplexValue z = new ComplexValue(1.0, 0.0);
         HeaderCard c = HeaderCard.create(k, new Integer(1));
-        assertEquals(k.key(), c.getKey());
-        assertEquals(z, c.getValue(ComplexValue.class, null));
+        Assertions.assertEquals(k.key(), c.getKey());
+        Assertions.assertEquals(z, c.getValue(ComplexValue.class, null));
     }
 
     @Test
@@ -332,7 +329,7 @@ public class KeyTypeTest {
         LogCounter counter = initLogCounter(HeaderCard.class);
         int i = counter.getCount();
         HeaderCard.create(new ComplexKey("CVAL"), "string");
-        assertNotEquals(i, counter.getCount());
+        Assertions.assertNotEquals(i, counter.getCount());
     }
 
 }

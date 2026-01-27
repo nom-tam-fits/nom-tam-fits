@@ -31,22 +31,20 @@ package nom.tam.util.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.FitsDate;
 import nom.tam.fits.FitsException;
 
 public class FitsDateTest {
 
-    @Before
+    @BeforeEach
     public void setup() {
         Logger.getLogger(FitsDate.class.getName()).setLevel(Level.FINEST);
     }
@@ -58,40 +56,40 @@ public class FitsDateTest {
 
     @Test
     public void miscBad() {
-        assertEquals("EX", testArg("5-Aug-1992"));
-        assertEquals("EX", testArg("28/02/91 16:32:00"));
-        assertEquals("EX", testArg("18-Feb-1993"));
-        assertEquals("EX", testArg("nn/nn/nn"));
+        Assertions.assertEquals("EX", testArg("5-Aug-1992"));
+        Assertions.assertEquals("EX", testArg("28/02/91 16:32:00"));
+        Assertions.assertEquals("EX", testArg("18-Feb-1993"));
+        Assertions.assertEquals("EX", testArg("nn/nn/nn"));
     }
 
     @Test
     public void badNew() {
-        assertEquals("EX", testArg("1997-07"));
-        assertEquals("EX", testArg("-07-25"));
-        assertEquals("EX", testArg("1997--07-25"));
-        assertEquals("EX", testArg("1997-07-25-"));
+        Assertions.assertEquals("EX", testArg("1997-07"));
+        Assertions.assertEquals("EX", testArg("-07-25"));
+        Assertions.assertEquals("EX", testArg("1997--07-25"));
+        Assertions.assertEquals("EX", testArg("1997-07-25-"));
     }
 
     @Test
     public void badOld() {
-        assertEquals("EX", testArg("20/09/"));
-        assertEquals("EX", testArg("/09/79"));
-        assertEquals("EX", testArg("09//79"));
-        assertEquals("EX", testArg("20/09/79/"));
+        Assertions.assertEquals("EX", testArg("20/09/"));
+        Assertions.assertEquals("EX", testArg("/09/79"));
+        Assertions.assertEquals("EX", testArg("09//79"));
+        Assertions.assertEquals("EX", testArg("20/09/79/"));
     }
 
     @Test
     public void goodEmpty() {
-        assertEquals("", testArg(null));
-        assertEquals("", testArg("        "));
+        Assertions.assertEquals("", testArg(null));
+        Assertions.assertEquals("", testArg("        "));
     }
 
     @Test
     public void goodNew() throws FitsException {
-        assertEquals("1997-07-25T00:00:00.000", FitsDate.getFitsDateString(new FitsDate("1997-07-25").toDate()));
-        assertEquals("1997-07-25", testArg("1997-07-25"));
-        assertEquals("1987-06-05T04:03:02.010", testArg("1987-06-05T04:03:02.01"));
-        assertEquals("1998-03-10T16:58:34", testArg("1998-03-10T16:58:34"));
+        Assertions.assertEquals("1997-07-25T00:00:00.000", FitsDate.getFitsDateString(new FitsDate("1997-07-25").toDate()));
+        Assertions.assertEquals("1997-07-25", testArg("1997-07-25"));
+        Assertions.assertEquals("1987-06-05T04:03:02.010", testArg("1987-06-05T04:03:02.01"));
+        Assertions.assertEquals("1998-03-10T16:58:34", testArg("1998-03-10T16:58:34"));
     }
 
     @Test
@@ -104,25 +102,26 @@ public class FitsDateTest {
             now2 = FitsDate.getFitsDateString(new Date());
             tryCount--;
         }
-        Assert.assertTrue(tryCount > 0);
+        Assertions.assertTrue(tryCount > 0);
     }
 
     @Test
     public void special() throws FitsException {
-        assertEquals("1997-07-25T10:50:01.999",
+        Assertions.assertEquals("1997-07-25T10:50:01.999",
                 FitsDate.getFitsDateString(new FitsDate("   1997-07-25T10:50:01.999").toDate()));
-        assertEquals("1997-07-25T10:50:01.999",
+        Assertions.assertEquals("1997-07-25T10:50:01.999",
                 FitsDate.getFitsDateString(new FitsDate("1997-07-25T10:50:01.999   ").toDate()));
-        assertEquals("1997-07-25T10:50:01.999",
+        Assertions.assertEquals("1997-07-25T10:50:01.999",
                 FitsDate.getFitsDateString(new FitsDate("1997-07-25T10:50:01.999").toDate()));
-        assertEquals("1997-07-25T10:50:01.009",
+        Assertions.assertEquals("1997-07-25T10:50:01.009",
                 FitsDate.getFitsDateString(new FitsDate("1997-07-25T10:50:01.009").toDate()));
-        assertEquals("1997-07-25T10:50:01.000", FitsDate.getFitsDateString(new FitsDate("1997-07-25T10:50:01").toDate()));
+        Assertions.assertEquals("1997-07-25T10:50:01.000",
+                FitsDate.getFitsDateString(new FitsDate("1997-07-25T10:50:01").toDate()));
     }
 
     @Test
     public void goodOld() {
-        assertEquals("1979-09-20", testArg("20/09/79"));
+        Assertions.assertEquals("1979-09-20", testArg("20/09/79"));
     }
 
     private String testArg(String arg) {
@@ -138,16 +137,16 @@ public class FitsDateTest {
         FitsDate fitsDate = new FitsDate("1997-07-25");
         FitsDate fitsDate2 = new FitsDate("1997-07-25");
 
-        assert (fitsDate.equals(fitsDate));
-        assert (fitsDate2.equals(fitsDate) && fitsDate.equals(fitsDate2));
-        assert (fitsDate.hashCode() == fitsDate2.hashCode());
-        assert (!fitsDate.equals(null));
+        Assertions.assertTrue(fitsDate.equals(fitsDate));
+        Assertions.assertTrue(fitsDate2.equals(fitsDate) && fitsDate.equals(fitsDate2));
+        Assertions.assertTrue(fitsDate.hashCode() == fitsDate2.hashCode());
+        Assertions.assertTrue(!fitsDate.equals(null));
 
         fitsDate = new FitsDate("2019-07-12");
-        assert (!fitsDate.equals(fitsDate2));
-        assert (!(fitsDate.hashCode() == fitsDate2.hashCode()));
+        Assertions.assertTrue(!fitsDate.equals(fitsDate2));
+        Assertions.assertTrue(!(fitsDate.hashCode() == fitsDate2.hashCode()));
 
-        assert (FitsDate.getFitsDateString(new FitsDate("   1997-07-25T10:50:01.999").toDate())
+        Assertions.assertTrue(FitsDate.getFitsDateString(new FitsDate("   1997-07-25T10:50:01.999").toDate())
                 .equals(FitsDate.getFitsDateString(new FitsDate("   1997-07-25T10:50:01.999").toDate())));
     }
 
@@ -157,9 +156,9 @@ public class FitsDateTest {
         FitsDate fitsDate2 = new FitsDate("2997-07-25");
         FitsDate fitsDate3 = new FitsDate("1997-07-25");
 
-        assert (fitsDate1.compareTo(fitsDate2) < 0);
-        assert (fitsDate2.compareTo(fitsDate1) > 0);
-        assert (fitsDate1.compareTo(fitsDate3) == 0);
+        Assertions.assertTrue(fitsDate1.compareTo(fitsDate2) < 0);
+        Assertions.assertTrue(fitsDate2.compareTo(fitsDate1) > 0);
+        Assertions.assertTrue(fitsDate1.compareTo(fitsDate3) == 0);
     }
 
 }

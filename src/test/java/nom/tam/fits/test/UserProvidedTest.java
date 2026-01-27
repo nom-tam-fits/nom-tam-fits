@@ -38,10 +38,10 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTableHDU;
@@ -63,13 +63,13 @@ import nom.tam.util.SafeClose;
 
 public class UserProvidedTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         FitsFactory.setDefaults();
         FitsFactory.setHierarchFormater(new StandardIHierarchKeyFormatter());
     }
 
-    @After
+    @AfterEach
     public void after() {
         FitsFactory.setDefaults();
     }
@@ -118,8 +118,8 @@ public class UserProvidedTest {
     public void testDoRead() throws FileNotFoundException, Exception {
         FitsFactory.setLongStringsEnabled(true);
         ArrayList<Header> headers = getHeaders(BlackBoxImages.getBlackBoxImage("bad.fits"));
-        Assert.assertTrue(headers.get(0).getStringValue("INFO____").endsWith("&"));
-        Assert.assertEquals(6, headers.size());
+        Assertions.assertTrue(headers.get(0).getStringValue("INFO____").endsWith("&"));
+        Assertions.assertEquals(6, headers.size());
     }
 
     @Test
@@ -160,7 +160,7 @@ public class UserProvidedTest {
                     }
                 }
             }
-            Assert.assertEquals(2, foundComments);
+            Assertions.assertEquals(2, foundComments);
         } finally {
             SafeClose.close(f);
         }
@@ -174,7 +174,7 @@ public class UserProvidedTest {
         try {
             f = new Fits(BlackBoxImages.getBlackBoxImage("16913-1.fits"));
             Header header = f.readHDU().getHeader();
-            Assert.assertEquals("", header.findCard("META_0").getValue());
+            Assertions.assertEquals("", header.findCard("META_0").getValue());
             Cursor<String, HeaderCard> iter = header.iterator();
             while (iter.hasNext()) {
                 HeaderCard headerCard = iter.next();
@@ -182,7 +182,7 @@ public class UserProvidedTest {
                     hierarchKeys++;
                 }
             }
-            Assert.assertEquals(10, hierarchKeys);
+            Assertions.assertEquals(10, hierarchKeys);
         } finally {
             SafeClose.close(f);
         }
@@ -200,7 +200,7 @@ public class UserProvidedTest {
             for (int i = 0; i < data.getNCols(); i++) {
                 printArray(data.getColumn(i), 0, builder);
             }
-            Assert.assertEquals("StringColumns:\n"//
+            Assertions.assertEquals("StringColumns:\n"//
                     + "[2]\n"//
                     + "[2]\n"//
                     + "[S2]\n"//
@@ -286,7 +286,7 @@ public class UserProvidedTest {
                     "".toString();
                 }
                 start = (start + "         ").substring(0, 8);
-                Assert.assertTrue(headerCard.toString().startsWith(start));
+                Assertions.assertTrue(headerCard.toString().startsWith(start));
             }
 
         } finally {
@@ -323,7 +323,7 @@ public class UserProvidedTest {
             SafeClose.close(fitsEmpty);
         }
 
-        Assert.assertSame(bhduMainAgain, bhduMain);
+        Assertions.assertSame(bhduMainAgain, bhduMain);
     }
 
     @Test
@@ -378,22 +378,22 @@ public class UserProvidedTest {
 
             fitsSrc = new Fits(new File(file1));
             BasicHDU<?>[] image1 = fitsSrc.read();
-            Assert.assertEquals(4, image1.length);
+            Assertions.assertEquals(4, image1.length);
             fitsSrc = new Fits(new File(file2));
             BasicHDU<?>[] image2 = fitsSrc.read();
-            Assert.assertEquals(1, image2.length);
+            Assertions.assertEquals(1, image2.length);
             fitsSrc = new Fits(new File(file3));
             BasicHDU<?>[] image3 = fitsSrc.read();
-            Assert.assertEquals(1, image3.length);
+            Assertions.assertEquals(1, image3.length);
             fitsSrc = new Fits(new File(file4));
             BasicHDU<?>[] image4 = fitsSrc.read();
-            Assert.assertEquals(1, image4.length);
+            Assertions.assertEquals(1, image4.length);
             fitsSrc = new Fits(new File(file5));
             BasicHDU<?>[] image5 = fitsSrc.read();
-            Assert.assertEquals(1, image5.length);
+            Assertions.assertEquals(1, image5.length);
             fitsSrc = new Fits(new File(file6));
             BasicHDU<?>[] image6 = fitsSrc.read();
-            Assert.assertEquals(1, image6.length);
+            Assertions.assertEquals(1, image6.length);
         } finally {
             SafeClose.close(fitsSrc);
             SafeClose.close(stream);
@@ -419,17 +419,17 @@ public class UserProvidedTest {
                         {75, 47, 109}, {45}, {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
                         {109, 109, 32, 47, 32, 109, 109, 32, 47, 32, 109, 109},}};
         // @formatter:on
-        Assert.assertEquals(4, bhduMain.getNCols());
-        Assert.assertEquals(10, bhduMain.getNRows());
+        Assertions.assertEquals(4, bhduMain.getNCols());
+        Assertions.assertEquals(10, bhduMain.getNRows());
         for (int column = 0; column < 4; column++) {
             for (int row = 0; row < 10; row++) {
                 Object element = bhduMain.getElement(row, column);
                 if (column == 0 || column == 2) {
-                    Assert.assertArrayEquals((double[]) expected[column][row], (double[]) element, 0.00001);
+                    Assertions.assertArrayEquals((double[]) expected[column][row], (double[]) element, 0.00001);
                 } else if (column == 1) {
-                    Assert.assertEquals(expected[column][row], element);
+                    Assertions.assertEquals(expected[column][row], element);
                 } else if (column == 3) {
-                    Assert.assertArrayEquals((byte[]) expected[column][row], ((String) element).getBytes());
+                    Assertions.assertArrayEquals((byte[]) expected[column][row], ((String) element).getBytes());
                 }
             }
         }
@@ -463,8 +463,8 @@ public class UserProvidedTest {
             ImageHDU hdu = (ImageHDU) fits2.getHDU(0);
             ImageTiler tiler = hdu.getTiler();
             double[] values = (double[]) tiler.getTile(new int[] {0, 231607}, new int[] {1000, 1});
-            Assert.assertEquals(((double[][]) hdu.getKernel())[800][231607], values[800], 0.00000000001d);
-            Assert.assertEquals(((double[][]) hdu.getKernel())[850][231607], values[850], 0.00000000001d);
+            Assertions.assertEquals(((double[][]) hdu.getKernel())[800][231607], values[800], 0.00000000001d);
+            Assertions.assertEquals(((double[][]) hdu.getKernel())[850][231607], values[850], 0.00000000001d);
         } finally {
             fits2.close();
         }

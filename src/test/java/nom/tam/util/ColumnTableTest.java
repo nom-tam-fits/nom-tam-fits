@@ -36,9 +36,9 @@ import java.io.EOFException;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.type.ElementType;
@@ -46,7 +46,7 @@ import nom.tam.util.type.ElementType;
 @SuppressWarnings("javadoc")
 public class ColumnTableTest {
 
-    @After
+    @AfterEach
     public void setDefaults() {
         FitsFactory.setDefaults();
     }
@@ -114,206 +114,312 @@ public class ColumnTableTest {
         checkReadWrite(new double[] {1, 2, 3});
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddWrongSizeColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1}, 1);
-        tab.addColumn(new int[] {1, 2}, 1);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1}, 1);
+            tab.addColumn(new int[] {1, 2}, 1);
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddColumnNegativeElementSize() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1}, -1);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1}, -1);
+        });
     }
 
     @Test
     public void checkAddColumnZeroElementSize() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1}, 0);
-        Assert.assertEquals(1, tab.getNCols());
-        Assert.assertEquals(0, tab.getNRows());
-        Assert.assertEquals(0, tab.getElementSize(0));
+        Assertions.assertEquals(1, tab.getNCols());
+        Assertions.assertEquals(0, tab.getNRows());
+        Assertions.assertEquals(0, tab.getElementSize(0));
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddColumnNonDividingSize() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 3);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 3);
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddWrongSizeRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addRow(new int[][] {{1}});
-        tab.addRow(new int[][] {{1}, {2}});
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addRow(new int[][] {{1}});
+            tab.addRow(new int[][] {{1}, {2}});
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddInvalidFirstRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addRow(new String[][] {{"a"}});
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addRow(new String[][] {{"a"}});
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddNullFirstRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addRow(null);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addRow(null);
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddTypeRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addRow(new int[][] {{1}});
-        tab.addRow(new short[][] {{1}});
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addRow(new int[][] {{1}});
+            tab.addRow(new short[][] {{1}});
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddNullTypeColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn((Class<?>) null, 1);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn((Class<?>) null, 1);
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddNullDataColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn((Object) null, 1);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn((Object) null, 1);
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddNonPrimitiveColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new String[] {"a", "b"}, 1);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new String[] {"a", "b"}, 1);
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddNonPrimitiveArrayColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new String[] {"a", "b"}, 2);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new String[] {"a", "b"}, 2);
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddWrongSizeWrapped() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addWrappedColumn(new Object[] {new int[] {1}, new int[] {2}});
-        Assert.assertEquals(0, tab.getNRows());
+        Assertions.assertThrows(TableException.class, () -> {
 
-        tab.addWrappedColumn(new Object[] {new int[] {1}});
-        // exception
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addWrappedColumn(new Object[] {new int[] {1}, new int[] {2}});
+            Assertions.assertEquals(0, tab.getNRows());
+
+            tab.addWrappedColumn(new Object[] {new int[] {1}});
+            // exception
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddNonArrayWrappedColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addWrappedColumn("abc");
-        // exception
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addWrappedColumn("abc");
+            // exception
+
+        });
     }
 
     @Test
     public void checkAddEmptyWrappedColumn() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addWrappedColumn(new int[0][3]);
-        Assert.assertEquals(0, tab.getElementSize(0));
+        Assertions.assertEquals(0, tab.getElementSize(0));
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddMismatchedTypesInWrappedColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addWrappedColumn(new Object[] {new int[] {1}, new float[] {2}});
-        // exception
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addWrappedColumn(new Object[] {new int[] {1}, new float[] {2}});
+            // exception
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddNonPrimitiveArrayColymn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addWrappedColumn(new String[] {"abc", "def"});
-        // exception
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addWrappedColumn(new String[] {"abc", "def"});
+            // exception
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddMismatchedSizesInWrappedColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addWrappedColumn(new Object[] {new int[] {1}, new int[] {2, 3}});
-        // exception
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addWrappedColumn(new Object[] {new int[] {1}, new int[] {2, 3}});
+            // exception
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddMismatchedRowsWrappedColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addWrappedColumn(new Object[] {new int[] {1}});
-        tab.addWrappedColumn(new Object[] {new int[] {1}, new int[] {2}});
-        // exception
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addWrappedColumn(new Object[] {new int[] {1}});
+            tab.addWrappedColumn(new Object[] {new int[] {1}, new int[] {2}});
+            // exception
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddNullInWrappedColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addWrappedColumn(new Object[] {new int[] {1}, null});
-        // exception
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addWrappedColumn(new Object[] {new int[] {1}, null});
+            // exception
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddFirstNullInWrappedColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addWrappedColumn(new Object[] {null, new int[] {1}});
-        // exception
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addWrappedColumn(new Object[] {null, new int[] {1}});
+            // exception
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddFirstNonArrayInWrappedColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addWrappedColumn(new Object[] {"abc", new int[] {1}});
-        // exception
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addWrappedColumn(new Object[] {"abc", new int[] {1}});
+            // exception
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddNon2DArrayInWrappedColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addWrappedColumn(new Object[] {new int[1][1]});
-        // exception
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addWrappedColumn(new Object[] {new int[1][1]});
+            // exception
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddNonPrimitiveArrayInWrappedColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addWrappedColumn(new String[][] {{"abc"}, {"def"}});
-        // exception
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addWrappedColumn(new String[][] {{"abc"}, {"def"}});
+            // exception
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddNullWrappedColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addWrappedColumn(null);
-        // exception
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addWrappedColumn(null);
+            // exception
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkDeleteColumnNegativeIndex() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.deleteColumn(-1);
-        // exception
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.deleteColumn(-1);
+            // exception
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkDeleteColumnHighIndex() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.deleteColumn(tab.getNCols());
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.deleteColumn(tab.getNCols());
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkDeleteColumnsNegativeStart() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.deleteColumns(-1, 1);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.deleteColumns(-1, 1);
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkDeleteColumnsNegativeLength() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.deleteColumns(0, -1);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.deleteColumns(0, -1);
+
+        });
     }
 
     @Test
@@ -321,42 +427,62 @@ public class ColumnTableTest {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1, 2}, 1);
         tab.deleteColumns(0, 0);
-        Assert.assertEquals(1, tab.getNCols());
+        Assertions.assertEquals(1, tab.getNCols());
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkDeleteColumnsInvalidRange() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.deleteColumns(0, tab.getNCols() + 1);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.deleteColumns(0, tab.getNCols() + 1);
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkDeleteRowNegativeIndex() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.deleteRow(-1);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.deleteRow(-1);
+
+        });
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void checkDeleteRowHighIndex() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.deleteRow(tab.getNRows());
+        Assertions.assertThrows(Exception.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.deleteRow(tab.getNRows());
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkDeleteRowssNegativeStart() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.deleteRows(-1, 1);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.deleteRows(-1, 1);
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkDeleteRowsNegativeLength() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.deleteRows(0, -1);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.deleteRows(0, -1);
+
+        });
     }
 
     @Test
@@ -364,14 +490,18 @@ public class ColumnTableTest {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1, 2}, 1);
         tab.deleteRows(0, 0);
-        Assert.assertEquals(2, tab.getNRows());
+        Assertions.assertEquals(2, tab.getNRows());
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkDeleteRowsInvalidRange() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.deleteRows(0, tab.getNRows() + 1);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.deleteRows(0, tab.getNRows() + 1);
+
+        });
     }
 
     @Test
@@ -379,7 +509,7 @@ public class ColumnTableTest {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1, 2}, 1);
         tab.deleteColumn(0);
-        Assert.assertEquals(0, tab.getNRows());
+        Assertions.assertEquals(0, tab.getNRows());
     }
 
     @Test
@@ -387,189 +517,293 @@ public class ColumnTableTest {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1, 2}, 1);
         tab.deleteColumns(0, 1);
-        Assert.assertEquals(0, tab.getNRows());
+        Assertions.assertEquals(0, tab.getNRows());
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddEmptyWrapped() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new Object[] {}, 1);
-        Assert.assertEquals(0, tab.getNRows());
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new Object[] {}, 1);
+            Assertions.assertEquals(0, tab.getNRows());
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkSetNullDataColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setColumn(0, null);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setColumn(0, null);
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkSetNullRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setRow(0, null);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setRow(0, null);
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkSetNullElement() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setElement(0, 0, null);
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setElement(0, 0, null);
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkSetNonArrayColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setColumn(0, "abc");
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setColumn(0, "abc");
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkSetColumnMismatchedType() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setColumn(0, new long[] {1, 2});
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setColumn(0, new long[] {1, 2});
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkSetColumnMismatchedRows() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setColumn(0, new int[] {1});
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setColumn(0, new int[] {1});
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkSetNonArrayWrappedColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setWrappedColumn(0, "abc");
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setWrappedColumn(0, "abc");
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkSetNonPrimitiveArrayWrappedColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setWrappedColumn(0, new String[] {"abc", "def"});
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setWrappedColumn(0, new String[] {"abc", "def"});
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkSetWrappedColumnMismatchedType() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setWrappedColumn(0, new long[][] {{1}, {2}});
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setWrappedColumn(0, new long[][] {{1}, {2}});
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkSetWrappedColumnMismatchedRows() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setWrappedColumn(0, new int[][] {{1}});
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setWrappedColumn(0, new int[][] {{1}});
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkSetWrappedColumnMismatchedElementSize() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2, 3, 4}, 2);
-        tab.setWrappedColumn(0, new int[][] {{1, 2, 3}, {4, 5, 6}});
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2, 3, 4}, 2);
+            tab.setWrappedColumn(0, new int[][] {{1, 2, 3}, {4, 5, 6}});
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void checkGetElementNegativeRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.getElement(-1, 0);
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.getElement(-1, 0);
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void checkGetElementHighRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.getElement(tab.getNRows(), 0);
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.getElement(tab.getNRows(), 0);
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void checkGetElementNegativeColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.getElement(0, -1);
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.getElement(0, -1);
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void checkGetElementHighColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.getElement(0, tab.getNCols());
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.getElement(0, tab.getNCols());
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void checkGetNegativeRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.getRow(-1);
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.getRow(-1);
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void checkGetHighRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.getRow(tab.getNRows());
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.getRow(tab.getNRows());
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void checkSetElementNegativeRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setElement(-1, 0, new int[] {3});
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setElement(-1, 0, new int[] {3});
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void checkSetElementHighRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setElement(tab.getNRows(), 0, new int[] {3});
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setElement(tab.getNRows(), 0, new int[] {3});
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void checkSetElementNegativeColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setElement(0, -1, new int[] {3});
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setElement(0, -1, new int[] {3});
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void checkSetElementHighColumn() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setElement(0, tab.getNCols(), new int[] {3});
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setElement(0, tab.getNCols(), new int[] {3});
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void checkSetNegativeRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setRow(-1, new int[] {3});
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setRow(-1, new int[] {3});
+
+        });
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void checkSetHighRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setRow(tab.getNRows(), new int[] {3});
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setRow(tab.getNRows(), new int[] {3});
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkAddMismatchedRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.addRow(new Object[] {new int[] {1, 2}});
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.addRow(new Object[] {new int[] {1, 2}});
+
+        });
     }
 
-    @Test(expected = TableException.class)
+    @Test
     public void checkSetMismatchedRow() throws Exception {
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setRow(0, new Object[] {new int[] {1, 2}});
+        Assertions.assertThrows(TableException.class, () -> {
+
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[] {1, 2}, 1);
+            tab.setRow(0, new Object[] {new int[] {1, 2}});
+
+        });
     }
 
     @SuppressWarnings("deprecation")
@@ -577,7 +811,7 @@ public class ColumnTableTest {
     public void testExtraState() throws Exception {
         ColumnTable<String> tab = new ColumnTable<>();
         tab.setExtraState("blah");
-        Assert.assertEquals("blah", tab.getExtraState());
+        Assertions.assertEquals("blah", tab.getExtraState());
     }
 
     private void checkElementAccess(Object element) throws Exception {
@@ -587,11 +821,11 @@ public class ColumnTableTest {
         tab.addColumn(element, eSize);
 
         Object e = tab.getElement(0, 0);
-        Assert.assertEquals(element.getClass(), e.getClass());
-        Assert.assertEquals(eSize, Array.getLength(e));
+        Assertions.assertEquals(element.getClass(), e.getClass());
+        Assertions.assertEquals(eSize, Array.getLength(e));
 
         for (int i = 0; i < eSize; i++) {
-            Assert.assertEquals(" [" + i + "]", Array.get(element, i), Array.get(e, i));
+            Assertions.assertEquals(Array.get(element, i), Array.get(e, i), " [" + i + "]");
         }
 
         Object zeroes = Array.newInstance(e.getClass().getComponentType(), eSize);
@@ -599,13 +833,13 @@ public class ColumnTableTest {
 
         e = tab.getElement(0, 0);
         for (int i = 0; i < eSize; i++) {
-            Assert.assertEquals(" 0[" + i + "]", Array.get(zeroes, i), Array.get(e, i));
+            Assertions.assertEquals(Array.get(zeroes, i), Array.get(e, i), " 0[" + i + "]");
         }
 
         tab.setRow(0, new Object[] {element});
         e = tab.getElement(0, 0);
         for (int i = 0; i < eSize; i++) {
-            Assert.assertEquals(" [" + i + "]", Array.get(element, i), Array.get(e, i));
+            Assertions.assertEquals(Array.get(element, i), Array.get(e, i), " [" + i + "]");
         }
     }
 
@@ -642,7 +876,7 @@ public class ColumnTableTest {
         for (int k = 0, j = 0; k < tab.getNRows(); k++) {
             Object e = tab.getElement(k, 0);
             for (int i = 0; i < eSize; i++, j++) {
-                Assert.assertEquals(" [" + j + "]", Array.get(elements, j), Array.get(e, i));
+                Assertions.assertEquals(Array.get(elements, j), Array.get(e, i), " [" + j + "]");
             }
         }
 
@@ -658,7 +892,7 @@ public class ColumnTableTest {
         for (int k = 0, j = 0; k < tab.getNRows(); k++) {
             Object e = tab.getElement(k, 0);
             for (int i = 0; i < eSize; i++, j++) {
-                Assert.assertEquals(" [" + j + "]", Array.get(elements, j), Array.get(e, i));
+                Assertions.assertEquals(Array.get(elements, j), Array.get(e, i), " [" + j + "]");
             }
         }
 
@@ -672,7 +906,7 @@ public class ColumnTableTest {
         } catch (EOFException e) {
             success = true;
         }
-        Assert.assertTrue(success);
+        Assertions.assertTrue(success);
 
         success = false;
         try {
@@ -680,7 +914,7 @@ public class ColumnTableTest {
         } catch (EOFException e) {
             success = true;
         }
-        Assert.assertTrue(success);
+        Assertions.assertTrue(success);
 
         in.close();
         out.close();
@@ -698,127 +932,127 @@ public class ColumnTableTest {
         tab.addColumn(data, size);
 
         // Check table size
-        Assert.assertEquals(1, tab.getNCols());
-        Assert.assertEquals(rows, tab.getNRows());
+        Assertions.assertEquals(1, tab.getNCols());
+        Assertions.assertEquals(rows, tab.getNRows());
 
         // Check element properties
-        Assert.assertEquals(type, tab.getElementClass(0));
-        Assert.assertEquals(tab.getBases()[0], tab.getElementClass(0));
+        Assertions.assertEquals(type, tab.getElementClass(0));
+        Assertions.assertEquals(tab.getBases()[0], tab.getElementClass(0));
 
-        Assert.assertEquals(ElementType.forClass(type).type(), tab.getTypeChar(0));
-        Assert.assertEquals(tab.getTypes()[0], tab.getTypeChar(0));
+        Assertions.assertEquals(ElementType.forClass(type).type(), tab.getTypeChar(0));
+        Assertions.assertEquals(tab.getTypes()[0], tab.getTypeChar(0));
 
-        Assert.assertEquals(size, tab.getElementSize(0));
-        Assert.assertEquals(tab.getSizes()[0], tab.getElementSize(0));
+        Assertions.assertEquals(size, tab.getElementSize(0));
+        Assertions.assertEquals(tab.getSizes()[0], tab.getElementSize(0));
 
         // Check 1D column access
         Object got = tab.getColumn(0);
-        Assert.assertEquals(type, got.getClass().getComponentType());
-        Assert.assertEquals(rows * size, Array.getLength(data));
+        Assertions.assertEquals(type, got.getClass().getComponentType());
+        Assertions.assertEquals(rows * size, Array.getLength(data));
 
         // Check wrapped column acess, where the top-level array has exactly
         // one component per row
         Object wrapped = tab.getWrappedColumn(0);
 
         if (size == 1) {
-            Assert.assertEquals(tab.getColumn(0), wrapped);
+            Assertions.assertEquals(tab.getColumn(0), wrapped);
         } else {
-            Assert.assertEquals(type, wrapped.getClass().getComponentType().getComponentType());
-            Assert.assertEquals(rows, Array.getLength(wrapped));
+            Assertions.assertEquals(type, wrapped.getClass().getComponentType().getComponentType());
+            Assertions.assertEquals(rows, Array.getLength(wrapped));
         }
 
         tab.addColumn(Array.newInstance(type, rows * size), size);
         tab.setWrappedColumn(1, wrapped);
-        Assert.assertEquals(2, tab.getNCols());
+        Assertions.assertEquals(2, tab.getNCols());
 
         for (int i = 0; i < tab.getNRows(); i++) {
             Object[] row = (Object[]) tab.getRow(i);
             for (int k = 0; k < size; k++) {
-                Assert.assertEquals(Array.get(row[0], k), Array.get(row[1], k));
+                Assertions.assertEquals(Array.get(row[0], k), Array.get(row[1], k));
             }
         }
 
         tab.deleteColumns(1, 1);
-        Assert.assertEquals(1, tab.getNCols());
+        Assertions.assertEquals(1, tab.getNCols());
 
         // Delete a row...
         tab.deleteRow(0);
-        Assert.assertEquals(rows - 1, tab.getNRows());
+        Assertions.assertEquals(rows - 1, tab.getNRows());
 
         // Add a row...
         tab.addRow(new Object[] {Array.newInstance(type, size)});
-        Assert.assertEquals(rows, tab.getNRows());
+        Assertions.assertEquals(rows, tab.getNRows());
 
         // Get a row
         Object[] r = (Object[]) tab.getRow(1);
-        Assert.assertEquals(r.length, tab.getNCols());
+        Assertions.assertEquals(r.length, tab.getNCols());
 
         // Grow capacity
         tab.ensureSize(100);
-        Assert.assertEquals(rows, tab.getNRows());
-        Assert.assertEquals(rows * size, Array.getLength(data));
+        Assertions.assertEquals(rows, tab.getNRows());
+        Assertions.assertEquals(rows * size, Array.getLength(data));
 
         // Populate beyond capacity
         for (int i = tab.getNRows(); i < 101; i++) {
             tab.addRow(new Object[] {Array.newInstance(type, size)});
         }
-        Assert.assertEquals(101, tab.getNRows());
+        Assertions.assertEquals(101, tab.getNRows());
 
         // Delete rows (but keep column)
         tab.deleteRows(1, 100);
-        Assert.assertEquals(1, tab.getNCols());
-        Assert.assertEquals(1, tab.getNRows());
-        Assert.assertFalse(tab.isEmpty());
+        Assertions.assertEquals(1, tab.getNCols());
+        Assertions.assertEquals(1, tab.getNRows());
+        Assertions.assertFalse(tab.isEmpty());
 
         tab.deleteAllRows();
-        Assert.assertEquals(1, tab.getNCols());
-        Assert.assertEquals(0, tab.getNRows());
-        Assert.assertFalse(tab.isEmpty());
+        Assertions.assertEquals(1, tab.getNCols());
+        Assertions.assertEquals(0, tab.getNRows());
+        Assertions.assertFalse(tab.isEmpty());
 
         // Delete everything.
         tab.clear();
-        Assert.assertEquals(0, tab.getNCols());
-        Assert.assertEquals(0, tab.getNRows());
-        Assert.assertTrue(tab.isEmpty());
+        Assertions.assertEquals(0, tab.getNCols());
+        Assertions.assertEquals(0, tab.getNRows());
+        Assertions.assertTrue(tab.isEmpty());
 
         // Add s new empty column
         tab.addColumn(type, size);
-        Assert.assertEquals(1, tab.getNCols());
-        Assert.assertEquals(0, tab.getNRows());
-        Assert.assertEquals(type, tab.getElementClass(0));
-        Assert.assertFalse(tab.isEmpty());
+        Assertions.assertEquals(1, tab.getNCols());
+        Assertions.assertEquals(0, tab.getNRows());
+        Assertions.assertEquals(type, tab.getElementClass(0));
+        Assertions.assertFalse(tab.isEmpty());
 
         // Add a nother column
         tab.addColumn(type, size);
-        Assert.assertEquals(2, tab.getNCols());
-        Assert.assertEquals(0, tab.getNRows());
-        Assert.assertEquals(type, tab.getElementClass(1));
+        Assertions.assertEquals(2, tab.getNCols());
+        Assertions.assertEquals(0, tab.getNRows());
+        Assertions.assertEquals(type, tab.getElementClass(1));
 
         // Delete a column
         tab.deleteColumn(1);
-        Assert.assertEquals(1, tab.getNCols());
-        Assert.assertEquals(0, tab.getNRows());
-        Assert.assertFalse(tab.isEmpty());
+        Assertions.assertEquals(1, tab.getNCols());
+        Assertions.assertEquals(0, tab.getNRows());
+        Assertions.assertFalse(tab.isEmpty());
 
         // delete the last column
         tab.deleteColumn(0);
-        Assert.assertEquals(0, tab.getNCols());
-        Assert.assertEquals(0, tab.getNRows());
-        Assert.assertTrue(tab.isEmpty());
+        Assertions.assertEquals(0, tab.getNCols());
+        Assertions.assertEquals(0, tab.getNRows());
+        Assertions.assertTrue(tab.isEmpty());
 
         tab.addColumn(type, size);
-        Assert.assertNotNull(tab.getColumn(0));
-        Assert.assertEquals(0, Array.getLength(tab.getColumn(0)));
+        Assertions.assertNotNull(tab.getColumn(0));
+        Assertions.assertEquals(0, Array.getLength(tab.getColumn(0)));
         ColumnTable<?> t1 = tab.copy();
-        Assert.assertNotNull(t1.getColumn(0));
-        Assert.assertEquals(0, Array.getLength(t1.getColumn(0)));
+        Assertions.assertNotNull(t1.getColumn(0));
+        Assertions.assertEquals(0, Array.getLength(t1.getColumn(0)));
 
         tab.clear();
         t1.ensureSize(10);
         tab.addColumn(Array.newInstance(type, 10 * size), size);
         tab.addColumn(Array.newInstance(type, 10), 1);
-        Assert.assertEquals(10, tab.getNRows());
-        Assert.assertEquals(2, tab.getNCols());
+        Assertions.assertEquals(10, tab.getNRows());
+        Assertions.assertEquals(2, tab.getNCols());
 
     }
 
