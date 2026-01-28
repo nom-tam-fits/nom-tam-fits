@@ -1,7 +1,5 @@
 package nom.tam.fits.test;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
@@ -9,8 +7,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -107,14 +105,14 @@ public class ImageTest {
             f = new Fits(new File("target/image1.fits"));
             hdus = f.read();
 
-            assertEquals("fbyte image", true, TestArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
-            assertEquals("fshort image", true, TestArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
-            assertEquals("fint image", true, TestArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
-            assertEquals("flong image", true, TestArrayFuncs.arrayEquals(limg, hdus[3].getData().getKernel()));
-            assertEquals("ffloat image", true, TestArrayFuncs.arrayEquals(fimg, hdus[4].getData().getKernel()));
-            assertEquals("fdouble image", true, TestArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
-            assertEquals("fint3 image", true, TestArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
-            assertEquals("fdouble1 image", true, TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(limg, hdus[3].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(fimg, hdus[4].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
         } finally {
             SafeClose.close(f);
         }
@@ -156,7 +154,7 @@ public class ImageTest {
             } catch (Exception ex) {
                 actual = ex;
             }
-            Assert.assertNotNull(actual);
+            Assertions.assertNotNull(actual);
             f.insertHDU(makeHDU(bimg), f.getNumberOfHDUs());
 
             f.addHDU(Fits.makeHDU(simg));
@@ -167,7 +165,7 @@ public class ImageTest {
             f.addHDU(Fits.makeHDU(img3));
             f.addHDU(Fits.makeHDU(img1));
 
-            assertEquals("HDU count before", f.getNumberOfHDUs(), 8);
+            Assertions.assertEquals(f.getNumberOfHDUs(), 8);
 
             // Write a FITS file.
             FitsFile bf = null;
@@ -190,15 +188,15 @@ public class ImageTest {
             // Read a FITS file
             BasicHDU<?>[] hdus = f.read();
 
-            assertEquals("HDU count after", 8, f.getNumberOfHDUs());
-            assertEquals("byte image", true, TestArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
-            assertEquals("[40, 40]", Arrays.toString(hdus[0].getAxes()));
-            assertEquals("he was it", hdus[0].getAuthor());
-            assertEquals(8, hdus[0].getBitPix());
-            assertEquals(1.0, hdus[0].getBScale(), 0.000001);
-            assertEquals(0.0, hdus[0].getBZero(), 0.000001);
-            assertEquals(115, hdus[0].getCreationDate().getYear());
-            assertEquals(2, hdus[0].getCreationDate().getMonth());
+            Assertions.assertEquals(8, f.getNumberOfHDUs());
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
+            Assertions.assertEquals("[40, 40]", Arrays.toString(hdus[0].getAxes()));
+            Assertions.assertEquals("he was it", hdus[0].getAuthor());
+            Assertions.assertEquals(8, hdus[0].getBitPix());
+            Assertions.assertEquals(1.0, hdus[0].getBScale(), 0.000001);
+            Assertions.assertEquals(0.0, hdus[0].getBZero(), 0.000001);
+            Assertions.assertEquals(115, hdus[0].getCreationDate().getYear());
+            Assertions.assertEquals(2, hdus[0].getCreationDate().getMonth());
             // Date works in the local time zone which won't cause
             // issues with the year or month, but may give us an
             // off by one with the day. So we create a Calendar
@@ -206,33 +204,33 @@ public class ImageTest {
             Calendar cal = Calendar.getInstance();
             cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
             cal.setTime(hdus[0].getCreationDate());
-            assertEquals(22, cal.get(Calendar.DAY_OF_MONTH));
-            assertEquals(2000.0, hdus[0].getEquinox(), 0.000001);
-            assertEquals("the biggest ever", hdus[0].getInstrument());
-            assertEquals(0.0, hdus[0].getMinimumValue(), 0.00001);
-            assertEquals(60.0, hdus[0].getMaximumValue(), 0.00001);
-            assertEquals(115, hdus[0].getObservationDate().getYear());
-            assertEquals(2, hdus[0].getObservationDate().getMonth());
+            Assertions.assertEquals(22, cal.get(Calendar.DAY_OF_MONTH));
+            Assertions.assertEquals(2000.0, hdus[0].getEquinox(), 0.000001);
+            Assertions.assertEquals("the biggest ever", hdus[0].getInstrument());
+            Assertions.assertEquals(0.0, hdus[0].getMinimumValue(), 0.00001);
+            Assertions.assertEquals(60.0, hdus[0].getMaximumValue(), 0.00001);
+            Assertions.assertEquals(115, hdus[0].getObservationDate().getYear());
+            Assertions.assertEquals(2, hdus[0].getObservationDate().getMonth());
             cal.setTime(hdus[0].getObservationDate());
-            assertEquals(22, cal.get(Calendar.DAY_OF_MONTH));
-            assertEquals("he was it again", hdus[0].getObserver());
-            assertEquals("thats us", hdus[0].getOrigin());
-            assertEquals("over there", hdus[0].getReference());
-            assertEquals("the biggest ever scope", hdus[0].getTelescope());
-            assertEquals("wow object", hdus[0].getObject());
-            assertEquals(32, hdus[0].getBlankValue());
-            assertEquals("deg", hdus[0].getBUnit());
-            assertEquals(-2000., hdus[0].getEpoch(), 0.0001);
+            Assertions.assertEquals(22, cal.get(Calendar.DAY_OF_MONTH));
+            Assertions.assertEquals("he was it again", hdus[0].getObserver());
+            Assertions.assertEquals("thats us", hdus[0].getOrigin());
+            Assertions.assertEquals("over there", hdus[0].getReference());
+            Assertions.assertEquals("the biggest ever scope", hdus[0].getTelescope());
+            Assertions.assertEquals("wow object", hdus[0].getObject());
+            Assertions.assertEquals(32, hdus[0].getBlankValue());
+            Assertions.assertEquals("deg", hdus[0].getBUnit());
+            Assertions.assertEquals(-2000., hdus[0].getEpoch(), 0.0001);
 
-            assertEquals("short image", true, TestArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
-            assertEquals("int image", true, TestArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
-            assertEquals("long image", true, TestArrayFuncs.arrayEquals(limg, hdus[3].getData().getKernel()));
-            assertEquals("float image", true, TestArrayFuncs.arrayEquals(fimg, hdus[4].getData().getKernel()));
-            assertEquals("double image", true, TestArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
-            assertEquals("int3 image", true, TestArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
-            assertEquals("double1 image", true, TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(limg, hdus[3].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(fimg, hdus[4].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
 
-            Assert.assertArrayEquals(new byte[0], (byte[]) new ImageData().getData());
+            Assertions.assertArrayEquals(new byte[0], (byte[]) new ImageData().getData());
         } finally {
             SafeClose.close(f);
             SafeClose.close(bf);
@@ -262,7 +260,7 @@ public class ImageTest {
 
     @Test
     public void testImageHeaderNull() throws FitsException {
-        Assert.assertNull(ImageHDU.manufactureHeader(null));
+        Assertions.assertNull(ImageHDU.manufactureHeader(null));
     }
 
     @Test
@@ -273,7 +271,7 @@ public class ImageTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintStream print = new PrintStream(out, true);
         image.info(print);
-        Assert.assertTrue(out.toString().contains("bad header"));
+        Assertions.assertTrue(out.toString().contains("bad header"));
 
         image = (ImageHDU) FitsFactory.hduFactory(new byte[10][10]);
         image = new ImageHDU(image.getHeader(), new ImageData((Object) null));
@@ -281,7 +279,7 @@ public class ImageTest {
         out = new ByteArrayOutputStream();
         print = new PrintStream(out, true);
         image.info(print);
-        Assert.assertTrue(out.toString().contains("No Data"));
+        Assertions.assertTrue(out.toString().contains("No Data"));
 
         image = (ImageHDU) FitsFactory.hduFactory(new byte[10][10]);
         image = new ImageHDU(image.getHeader(), new ImageData((Object) null) {
@@ -295,7 +293,7 @@ public class ImageTest {
         out = new ByteArrayOutputStream();
         print = new PrintStream(out, true);
         image.info(print);
-        Assert.assertTrue(out.toString().contains("Unable"));
+        Assertions.assertTrue(out.toString().contains("Unable"));
 
     }
 
@@ -306,25 +304,33 @@ public class ImageTest {
         Header h = hdu.getHeader();
         ImageData.overrideHeaderAxes(h, 5, 7, 11);
 
-        Assert.assertEquals(3, h.getIntValue(Standard.NAXIS));
-        Assert.assertEquals(11, h.getIntValue(Standard.NAXIS1));
-        Assert.assertEquals(7, h.getIntValue(Standard.NAXIS2));
-        Assert.assertEquals(5, h.getIntValue(Standard.NAXISn.n(3)));
+        Assertions.assertEquals(3, h.getIntValue(Standard.NAXIS));
+        Assertions.assertEquals(11, h.getIntValue(Standard.NAXIS1));
+        Assertions.assertEquals(7, h.getIntValue(Standard.NAXIS2));
+        Assertions.assertEquals(5, h.getIntValue(Standard.NAXISn.n(3)));
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testOverrideHeaderAxesInvalid() throws FitsException {
-        ImageHDU hdu = ImageData.from(new float[3][2]).toHDU();
+        Assertions.assertThrows(FitsException.class, () -> {
 
-        Header h = hdu.getHeader();
-        ImageData.overrideHeaderAxes(h, -1);
+            ImageHDU hdu = ImageData.from(new float[3][2]).toHDU();
+
+            Header h = hdu.getHeader();
+            ImageData.overrideHeaderAxes(h, -1);
+
+        });
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testOverrideHeaderAxesNotImage() throws FitsException {
-        Header h = new Header();
-        h.addLine(HeaderCard.create(Standard.XTENSION, "blah"));
-        ImageData.overrideHeaderAxes(h, 5);
+        Assertions.assertThrows(FitsException.class, () -> {
+
+            Header h = new Header();
+            h.addLine(HeaderCard.create(Standard.XTENSION, "blah"));
+            ImageData.overrideHeaderAxes(h, 5);
+
+        });
     }
 
     @Test
@@ -332,8 +338,8 @@ public class ImageTest {
         Header h = new Header();
         h.addLine(HeaderCard.create(Standard.XTENSION, Standard.XTENSION_IMAGE));
         ImageData.overrideHeaderAxes(h, 5);
-        Assert.assertEquals(1, h.getIntValue(Standard.NAXIS));
-        Assert.assertEquals(5, h.getIntValue(Standard.NAXIS1));
+        Assertions.assertEquals(1, h.getIntValue(Standard.NAXIS));
+        Assertions.assertEquals(5, h.getIntValue(Standard.NAXIS1));
     }
 
     @Test
@@ -341,29 +347,41 @@ public class ImageTest {
         Header h = new Header();
         h.addLine(HeaderCard.create(Standard.XTENSION, NonStandard.XTENSION_IUEIMAGE));
         ImageData.overrideHeaderAxes(h, 5);
-        Assert.assertEquals(1, h.getIntValue(Standard.NAXIS));
-        Assert.assertEquals(5, h.getIntValue(Standard.NAXIS1));
+        Assertions.assertEquals(1, h.getIntValue(Standard.NAXIS));
+        Assertions.assertEquals(5, h.getIntValue(Standard.NAXIS1));
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testConstructAsciiTableHeader() throws Exception {
-        Header h = new Header();
-        h.addValue(Standard.XTENSION, Standard.XTENSION_ASCIITABLE);
-        new ImageData(h);
+        Assertions.assertThrows(FitsException.class, () -> {
+
+            Header h = new Header();
+            h.addValue(Standard.XTENSION, Standard.XTENSION_ASCIITABLE);
+            new ImageData(h);
+
+        });
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testConstructBinTableHeader() throws Exception {
-        Header h = new Header();
-        h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
-        new ImageData(h);
+        Assertions.assertThrows(FitsException.class, () -> {
+
+            Header h = new Header();
+            h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
+            new ImageData(h);
+
+        });
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testConstructA3DTableHeader() throws Exception {
-        Header h = new Header();
-        h.addValue(Standard.XTENSION, NonStandard.XTENSION_A3DTABLE);
-        new ImageData(h);
+        Assertions.assertThrows(FitsException.class, () -> {
+
+            Header h = new Header();
+            h.addValue(Standard.XTENSION, NonStandard.XTENSION_A3DTABLE);
+            new ImageData(h);
+
+        });
     }
 
 }

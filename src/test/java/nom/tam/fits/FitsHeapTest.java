@@ -36,8 +36,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
@@ -46,7 +46,7 @@ public class FitsHeapTest {
 
     @Test
     public void testHeapRewriteable() {
-        Assert.assertFalse(new FitsHeap(100).rewriteable());
+        Assertions.assertFalse(new FitsHeap(100).rewriteable());
     }
 
     @Test
@@ -57,8 +57,8 @@ public class FitsHeapTest {
         } catch (IllegalArgumentException e) {
             actual = e;
         }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("illegal size"));
+        Assertions.assertNotNull(actual);
+        Assertions.assertTrue(actual.getMessage().toLowerCase().contains("illegal size"));
     }
 
     @Test
@@ -69,8 +69,8 @@ public class FitsHeapTest {
         } catch (IllegalStateException e) {
             actual = e;
         }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("never alone"));
+        Assertions.assertNotNull(actual);
+        Assertions.assertTrue(actual.getMessage().toLowerCase().contains("never alone"));
     }
 
     @Test
@@ -96,8 +96,8 @@ public class FitsHeapTest {
         } catch (FitsException e) {
             actual = e;
         }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("fits heap > 2 g"));
+        Assertions.assertNotNull(actual);
+        Assertions.assertTrue(actual.getMessage().toLowerCase().contains("fits heap > 2 g"));
     }
 
     @Test
@@ -110,8 +110,8 @@ public class FitsHeapTest {
         } catch (FitsException e) {
             actual = e;
         }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getCause() instanceof EOFException);
+        Assertions.assertNotNull(actual);
+        Assertions.assertTrue(actual.getCause() instanceof EOFException);
 
         actual = null;
         try {
@@ -121,8 +121,8 @@ public class FitsHeapTest {
         } catch (FitsException e) {
             actual = e;
         }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getCause() instanceof EOFException);
+        Assertions.assertNotNull(actual);
+        Assertions.assertTrue(actual.getCause() instanceof EOFException);
     }
 
     @Test
@@ -139,15 +139,19 @@ public class FitsHeapTest {
         } catch (FitsException e) {
             actual = e;
         }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getCause().getMessage().equals("testHeapWriteFailures"));
+        Assertions.assertNotNull(actual);
+        Assertions.assertTrue(actual.getCause().getMessage().equals("testHeapWriteFailures"));
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testHeapGetDataEOF() throws Exception {
-        FitsHeap heap = new FitsHeap(3);
-        // The full size of the float is beyond the heap size.
-        heap.getData(0, new float[1]);
+        Assertions.assertThrows(FitsException.class, () -> {
+
+            FitsHeap heap = new FitsHeap(3);
+            // The full size of the float is beyond the heap size.
+            heap.getData(0, new float[1]);
+
+        });
     }
 
     @Test
@@ -157,21 +161,25 @@ public class FitsHeapTest {
         heap.putData(new int[] {1, 2, 3});
         int[] got = new int[3];
         heap.getData(0, got);
-        Assert.assertArrayEquals(new int[] {1, 2, 3}, got);
+        Assertions.assertArrayEquals(new int[] {1, 2, 3}, got);
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testHeapPutDataEOF() throws Exception {
-        FitsHeap heap = new FitsHeap(3);
-        // Trying to put an object on the heap that does not belong...
-        heap.putData(new Header());
+        Assertions.assertThrows(FitsException.class, () -> {
+
+            FitsHeap heap = new FitsHeap(3);
+            // Trying to put an object on the heap that does not belong...
+            heap.putData(new Header());
+
+        });
     }
 
     @Test
     public void testHeapSize() throws Exception {
         int size = 1033;
         FitsHeap heap = new FitsHeap(size);
-        Assert.assertEquals(size, heap.getSize());
+        Assertions.assertEquals(size, heap.getSize());
 
     }
 

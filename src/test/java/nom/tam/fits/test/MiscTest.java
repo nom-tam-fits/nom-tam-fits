@@ -31,8 +31,6 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -40,7 +38,8 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.Fits;
 
@@ -91,7 +90,7 @@ public class MiscTest {
         props.store(out, "test version");
         out.close();
         String version = Fits.version();
-        assertEquals("1.1.1-SNAPSHOT", version);
+        Assertions.assertEquals("1.1.1-SNAPSHOT", version);
     }
 
     @Test

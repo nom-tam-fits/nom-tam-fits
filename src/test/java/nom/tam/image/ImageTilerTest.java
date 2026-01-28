@@ -99,8 +99,8 @@ package nom.tam.image;
  * #L%
  */
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.ImageData;
 
@@ -112,16 +112,14 @@ public class ImageTilerTest {
             testSubject.getTile(new double[100], new int[2], new int[2], new int[2]);
         } catch (UnsupportedOperationException unsupportedOperationException) {
             // Good
-            Assert.assertEquals("Wrong message.", "Striding feature not yet implemented.",
-                    unsupportedOperationException.getMessage());
+            Assertions.assertEquals("Striding feature not yet implemented.", unsupportedOperationException.getMessage());
         }
 
         try {
             testSubject.getTile(new int[2], new int[2], new int[2]);
         } catch (UnsupportedOperationException unsupportedOperationException) {
             // Good
-            Assert.assertEquals("Wrong message.", "Striding feature not yet implemented.",
-                    unsupportedOperationException.getMessage());
+            Assertions.assertEquals("Striding feature not yet implemented.", unsupportedOperationException.getMessage());
         }
     }
 
@@ -147,6 +145,6 @@ public class ImageTilerTest {
         ImageData im = new ImageData();
         ImageTiler tiler = im.getTiler();
 
-        Assert.assertNotNull(tiler);
+        Assertions.assertNotNull(tiler);
     }
 }

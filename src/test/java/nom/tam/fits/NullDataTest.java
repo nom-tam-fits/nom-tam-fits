@@ -38,8 +38,8 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.Standard;
 
@@ -48,13 +48,13 @@ public class NullDataTest {
     @Test
     public void testNullDataHDU() throws Exception {
         NullDataHDU hdu = new NullDataHDU();
-        Assert.assertEquals(NullData.class, hdu.getData().getClass());
-        Assert.assertEquals(Standard.XTENSION_IMAGE, hdu.getCanonicalXtension());
+        Assertions.assertEquals(NullData.class, hdu.getData().getClass());
+        Assertions.assertEquals(Standard.XTENSION_IMAGE, hdu.getCanonicalXtension());
 
         Data data = hdu.getData();
-        Assert.assertEquals(0, data.getTrueSize());
-        Assert.assertTrue(data.isEmpty());
-        Assert.assertNull(data.getData());
+        Assertions.assertEquals(0, data.getTrueSize());
+        Assertions.assertTrue(data.isEmpty());
+        Assertions.assertNull(data.getData());
 
         data.read(null); // Should not throw exception
     }
@@ -63,16 +63,16 @@ public class NullDataTest {
     public void testNullDataHDUFromHeader() throws Exception {
         Header h = new Header();
         NullDataHDU hdu = new NullDataHDU(h);
-        Assert.assertEquals(h, hdu.getHeader());
+        Assertions.assertEquals(h, hdu.getHeader());
     }
 
     @Test
     public void testNullDataDummy() throws Exception {
         NullDataHDU hdu = BasicHDU.getDummyHDU();
-        Assert.assertEquals(NullData.class, hdu.getData().getClass());
-        Assert.assertEquals(Standard.XTENSION_IMAGE, hdu.getCanonicalXtension());
+        Assertions.assertEquals(NullData.class, hdu.getData().getClass());
+        Assertions.assertEquals(Standard.XTENSION_IMAGE, hdu.getCanonicalXtension());
         Data data = hdu.getData();
-        Assert.assertEquals(0, data.getTrueSize());
+        Assertions.assertEquals(0, data.getTrueSize());
     }
 
     @Test
@@ -85,18 +85,18 @@ public class NullDataTest {
         BufferedReader in = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(bout.toByteArray())));
         String line = in.readLine().toLowerCase();
 
-        Assert.assertFalse(line.contains("image"));
-        Assert.assertFalse(line.contains("table"));
+        Assertions.assertFalse(line.contains("image"));
+        Assertions.assertFalse(line.contains("table"));
     }
 
     @Test
     public void testNullDataHDUFactory1() throws Exception {
-        Assert.assertEquals(NullDataHDU.class, FitsFactory.hduFactory(null).getClass());
+        Assertions.assertEquals(NullDataHDU.class, FitsFactory.hduFactory(null).getClass());
     }
 
     @Test
     public void testNullDataHDUFactory2() throws Exception {
-        Assert.assertEquals(NullDataHDU.class, FitsFactory.hduFactory(new Header(), null).getClass());
+        Assertions.assertEquals(NullDataHDU.class, FitsFactory.hduFactory(new Header(), null).getClass());
     }
 
     @Test

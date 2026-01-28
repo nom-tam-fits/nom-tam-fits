@@ -1,7 +1,7 @@
 package nom.tam.fits;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /*-
  * #%L
@@ -45,8 +45,8 @@ public class SubstringTest {
         Header h = new Header();
         h.addValue(Standard.TFORMn.n(1), "10A2");
         ColumnDesc c = BinaryTable.getDescriptor(h, 0);
-        Assert.assertEquals(2, c.getElementWidth());
-        Assert.assertEquals(5, c.getElementCount());
+        Assertions.assertEquals(2, c.getElementWidth());
+        Assertions.assertEquals(5, c.getElementCount());
     }
 
     @Test
@@ -54,8 +54,8 @@ public class SubstringTest {
         Header h = new Header();
         h.addValue(Standard.TFORMn.n(1), "10A:SSTR");
         ColumnDesc c = BinaryTable.getDescriptor(h, 0);
-        Assert.assertEquals(10, c.getElementWidth());
-        Assert.assertEquals(1, c.getElementCount());
+        Assertions.assertEquals(10, c.getElementWidth());
+        Assertions.assertEquals(1, c.getElementCount());
     }
 
     @Test
@@ -63,8 +63,8 @@ public class SubstringTest {
         Header h = new Header();
         h.addValue(Standard.TFORMn.n(1), "10A:SSTRz");
         ColumnDesc c = BinaryTable.getDescriptor(h, 0);
-        Assert.assertEquals(10, c.getElementWidth());
-        Assert.assertEquals(1, c.getElementCount());
+        Assertions.assertEquals(10, c.getElementWidth());
+        Assertions.assertEquals(1, c.getElementCount());
     }
 
     @Test
@@ -72,9 +72,9 @@ public class SubstringTest {
         Header h = new Header();
         h.addValue(Standard.TFORMn.n(1), "10A:SSTR2/032");
         ColumnDesc c = BinaryTable.getDescriptor(h, 0);
-        Assert.assertEquals(2, c.getElementWidth());
-        Assert.assertEquals(5, c.getElementCount());
-        Assert.assertEquals((byte) 32, c.getStringDelimiter());
+        Assertions.assertEquals(2, c.getElementWidth());
+        Assertions.assertEquals(5, c.getElementCount());
+        Assertions.assertEquals((byte) 32, c.getStringDelimiter());
     }
 
     @Test
@@ -82,9 +82,9 @@ public class SubstringTest {
         Header h = new Header();
         h.addValue(Standard.TFORMn.n(1), "10A:SSTR2/z");
         ColumnDesc c = BinaryTable.getDescriptor(h, 0);
-        Assert.assertEquals(2, c.getElementWidth());
-        Assert.assertEquals(5, c.getElementCount());
-        Assert.assertEquals((byte) 0, c.getStringDelimiter());
+        Assertions.assertEquals(2, c.getElementWidth());
+        Assertions.assertEquals(5, c.getElementCount());
+        Assertions.assertEquals((byte) 0, c.getStringDelimiter());
     }
 
     @SuppressWarnings("deprecation")
@@ -96,13 +96,13 @@ public class SubstringTest {
         tab.addRow(new Object[] {new String[] {"1234567890"}});
 
         ColumnDesc c = tab.getDescriptor(0);
-        Assert.assertEquals((byte) 32, c.getStringDelimiter());
-        Assert.assertEquals(11, c.getStringLength());
+        Assertions.assertEquals((byte) 32, c.getStringDelimiter());
+        Assertions.assertEquals(11, c.getStringLength());
 
         Header h = new Header();
         tab.fillHeader(h);
 
-        Assert.assertEquals("1PA:SSTR11/032", h.getStringValue(Standard.TFORMn.n(1)));
+        Assertions.assertEquals("1PA:SSTR11/032", h.getStringValue(Standard.TFORMn.n(1)));
     }
 
     @Test
@@ -111,26 +111,26 @@ public class SubstringTest {
         h.addValue(Standard.TFORMn.n(1), "30A:SSTR5");
         h.addValue(Standard.TDIMn.n(1), "(10,3)");
         ColumnDesc c = BinaryTable.getDescriptor(h, 0);
-        Assert.assertEquals(10, c.getElementWidth());
-        Assert.assertEquals(3, c.getElementCount());
-        Assert.assertEquals((byte) 0, c.getStringDelimiter());
+        Assertions.assertEquals(10, c.getElementWidth());
+        Assertions.assertEquals(3, c.getElementCount());
+        Assertions.assertEquals((byte) 0, c.getStringDelimiter());
     }
 
     @Test
     public void testSringDelimiter() throws Exception {
         ColumnDesc c = ColumnDesc.createForDelimitedStringArrays((byte) 32);
-        Assert.assertEquals((byte) 32, c.getStringDelimiter());
+        Assertions.assertEquals((byte) 32, c.getStringDelimiter());
     }
 
     @Test
     public void testOutOfRangeDelimiter() throws Exception {
         ColumnDesc c = ColumnDesc.createForDelimitedStringArrays((byte) 31);
-        Assert.assertEquals((byte) 31, c.getStringDelimiter());
+        Assertions.assertEquals((byte) 31, c.getStringDelimiter());
     }
 
     @Test
     public void testOutOfRangeDelimiter2() throws Exception {
         ColumnDesc c = ColumnDesc.createForDelimitedStringArrays((byte) 128);
-        Assert.assertEquals((byte) 128, c.getStringDelimiter());
+        Assertions.assertEquals((byte) 128, c.getStringDelimiter());
     }
 }

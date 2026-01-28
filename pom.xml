@@ -395,7 +395,7 @@
           <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
-            <version>12.3.0</version>
+            <version>13.0.0</version>
           </dependency>
         </dependencies>
         <executions>
@@ -718,12 +718,19 @@
     </dependency>
    
     <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
       <version>6.0.2</version>
       <scope>test</scope>
     </dependency>
-   
+    
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>6.0.2</version>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.nanohttpd</groupId>
       <artifactId>nanohttpd-webserver</artifactId>

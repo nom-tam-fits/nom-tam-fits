@@ -1,7 +1,5 @@
 package nom.tam.util;
 
-import static org.junit.Assert.assertEquals;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -36,22 +34,27 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FitsFileTest {
 
-    @After
+    @AfterEach
     public void cleanup() {
         new File("fftest.bin").delete();
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testWriteNotArray() throws Exception {
-        try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
-            // Not an array
-            f.writeArray("hello");
-        }
+        Assertions.assertThrows(IOException.class, () -> {
+
+            try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
+                // Not an array
+                f.writeArray("hello");
+            }
+
+        });
     }
 
     @Test
@@ -64,24 +67,28 @@ public class FitsFileTest {
             f.read(b2);
             f.close();
             for (int i = 0; i < b.length; i++) {
-                assertEquals("[" + i + "]", b[i], b2[i]);
+                Assertions.assertEquals(b[i], b2[i], "[" + i + "]");
             }
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testSkipBeforeBeginning() throws Exception {
-        try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
-            f.seek(10);
-            f.skipAllBytes(-11L);
-        }
+        Assertions.assertThrows(IOException.class, () -> {
+
+            try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
+                f.seek(10);
+                f.skipAllBytes(-11L);
+            }
+
+        });
     }
 
     @Test
     public void testPosition() throws Exception {
         try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
             f.position(10);
-            assertEquals(10, f.position());
+            Assertions.assertEquals(10, f.position());
         }
     }
 
@@ -89,7 +96,7 @@ public class FitsFileTest {
     public void testAltRandomAccess() throws Exception {
         try (final FitsFile f = new FitsFile(new BufferedFileIO.RandomFileIO(new File("fftest.bin"), "rw"), 1024)) {
             f.seek(12L);
-            assertEquals("Wrong position", 12L, f.position());
+            Assertions.assertEquals(12L, f.position());
         }
     }
 }

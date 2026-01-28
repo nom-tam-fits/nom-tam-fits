@@ -31,13 +31,11 @@ package nom.tam.fits;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ByteBufferInputStream;
@@ -54,7 +52,7 @@ public class BasicHDUTest {
             }
         };
 
-        assertEquals("UNKNOWN", hdu.getCanonicalXtension());
+        Assertions.assertEquals("UNKNOWN", hdu.getCanonicalXtension());
     }
 
     @Test
@@ -62,7 +60,7 @@ public class BasicHDUTest {
         Header h = new Header();
         h.addValue(Standard.BITPIX, 8);
         h.addValue(Standard.NAXIS, 0);
-        Assert.assertTrue(new UndefinedData(h).isEmpty());
+        Assertions.assertTrue(new UndefinedData(h).isEmpty());
     }
 
     @Test
@@ -74,7 +72,7 @@ public class BasicHDUTest {
         h.addValue(Standard.NAXISn.n(2), 10);
         ImageData im = new ImageData(h);
         im.read(null);
-        Assert.assertTrue(im.isEmpty());
+        Assertions.assertTrue(im.isEmpty());
     }
 
     @Test
@@ -83,7 +81,7 @@ public class BasicHDUTest {
         Object[] data = new Object[] {new int[] {1}, new double[] {2.0}, new String[] {"blah"}};
         BasicHDU hdu = FitsFactory.hduFactory(data);
 
-        Assert.assertEquals(AsciiTableHDU.class, hdu.getClass());
+        Assertions.assertEquals(AsciiTableHDU.class, hdu.getClass());
 
         Fits fits = new Fits();
         fits.addHDU(hdu);
@@ -101,14 +99,14 @@ public class BasicHDUTest {
         fits = new Fits(in);
 
         hdu = fits.getHDU(1);
-        Assert.assertEquals(AsciiTableHDU.class, hdu.getClass());
+        Assertions.assertEquals(AsciiTableHDU.class, hdu.getClass());
 
         Object[] readback = (Object[]) hdu.getKernel();
 
-        Assert.assertEquals(data.length, readback.length);
-        Assert.assertArrayEquals((int[]) data[0], (int[]) readback[0]);
-        Assert.assertArrayEquals((double[]) data[1], (double[]) readback[1], 1e-12);
-        Assert.assertArrayEquals((String[]) data[2], (String[]) readback[2]);
+        Assertions.assertEquals(data.length, readback.length);
+        Assertions.assertArrayEquals((int[]) data[0], (int[]) readback[0]);
+        Assertions.assertArrayEquals((double[]) data[1], (double[]) readback[1], 1e-12);
+        Assertions.assertArrayEquals((String[]) data[2], (String[]) readback[2]);
 
         fits.close();
     }
@@ -117,24 +115,28 @@ public class BasicHDUTest {
     public void imageToHDUTest() throws Exception {
         ImageData im = new ImageData();
         ImageHDU hdu = im.toHDU();
-        Assert.assertEquals(im, hdu.getData());
+        Assertions.assertEquals(im, hdu.getData());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void imageToHDUExceptionTest() throws Exception {
-        ImageData im = new ImageData() {
-            @Override
-            public void fillHeader(Header h) throws FitsException {
-                throw new FitsException("Test exception");
-            }
-        };
-        im.toHDU(); // throws exception
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+
+            ImageData im = new ImageData() {
+                @Override
+                public void fillHeader(Header h) throws FitsException {
+                    throw new FitsException("Test exception");
+                }
+            };
+            im.toHDU(); // throws exception
+
+        });
     }
 
     @Test
     public void undefinedToHDUTest() throws Exception {
         UndefinedData ud = new UndefinedData(new int[100]);
         UndefinedHDU hdu = ud.toHDU();
-        Assert.assertEquals(ud, hdu.getData());
+        Assertions.assertEquals(ud, hdu.getData());
     }
 }

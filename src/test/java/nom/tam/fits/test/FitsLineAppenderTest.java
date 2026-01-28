@@ -31,12 +31,10 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.HeaderCard;
@@ -48,12 +46,12 @@ import nom.tam.fits.utilities.FitsSubString;
 
 public class FitsLineAppenderTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         FitsFactory.setDefaults();
     }
 
-    @After
+    @AfterEach
     public void after() {
         FitsFactory.setDefaults();
     }
@@ -62,47 +60,47 @@ public class FitsLineAppenderTest {
     public void testFitsLineAppender() throws Exception {
         FitsLineAppender l = new FitsLineAppender();
 
-        assertEquals(HeaderCard.FITS_HEADER_CARD_SIZE, l.spaceLeftInLine());
+        Assertions.assertEquals(HeaderCard.FITS_HEADER_CARD_SIZE, l.spaceLeftInLine());
 
         l.append('X');
-        assertEquals(1, l.length());
-        assertEquals(HeaderCard.FITS_HEADER_CARD_SIZE - 1, l.spaceLeftInLine());
+        Assertions.assertEquals(1, l.length());
+        Assertions.assertEquals(HeaderCard.FITS_HEADER_CARD_SIZE - 1, l.spaceLeftInLine());
 
         l.append("FILES");
-        assertEquals("XFILES", l.toString());
+        Assertions.assertEquals("XFILES", l.toString());
 
         l.append("bla= bla", 3, 5);
-        assertEquals("XFILES= ", l.toString());
+        Assertions.assertEquals("XFILES= ", l.toString());
 
         l.appendReplacing("xyz", 'y', 'Y');
-        assertEquals("XFILES= xYz", l.toString());
+        Assertions.assertEquals("XFILES= xYz", l.toString());
 
         l.appendSpacesTo(14);
-        assertEquals("XFILES= xYz   ", l.toString());
+        Assertions.assertEquals("XFILES= xYz   ", l.toString());
 
         FitsSubString s = new FitsSubString("Some string here");
         l.append(s);
-        assertEquals("XFILES= xYz   Some string here", l.toString());
+        Assertions.assertEquals("XFILES= xYz   Some string here", l.toString());
 
         l.completeLine();
-        assertEquals(HeaderCard.FITS_HEADER_CARD_SIZE, l.spaceLeftInLine());
+        Assertions.assertEquals(HeaderCard.FITS_HEADER_CARD_SIZE, l.spaceLeftInLine());
 
         l.completeLine();
-        assertEquals(HeaderCard.FITS_HEADER_CARD_SIZE, l.spaceLeftInLine());
+        Assertions.assertEquals(HeaderCard.FITS_HEADER_CARD_SIZE, l.spaceLeftInLine());
 
         l = new FitsLineAppender();
         // Nothing happens if it's an empty appender
         l.appendSpacesTo(14);
-        assertEquals(0, l.length());
+        Assertions.assertEquals(0, l.length());
 
         l.append('X');
         // Now 14
         l.appendSpacesTo(14);
-        assertEquals(14, l.length());
+        Assertions.assertEquals(14, l.length());
 
         l.appendSpacesTo(12);
         // Still 14
-        assertEquals(14, l.length());
+        Assertions.assertEquals(14, l.length());
     }
 
     @Test
@@ -110,42 +108,42 @@ public class FitsLineAppenderTest {
         String text = "Some string here";
 
         FitsSubString s = new FitsSubString(text);
-        assertEquals('S', s.charAt(0));
-        assertEquals(text.length(), s.length());
-        assertEquals(text.length(), s.fullLength());
-        assertEquals(text, toString(s));
+        Assertions.assertEquals('S', s.charAt(0));
+        Assertions.assertEquals(text.length(), s.length());
+        Assertions.assertEquals(text.length(), s.fullLength());
+        Assertions.assertEquals(text, toString(s));
 
         s.skip(5);
-        assertEquals(text.length() - 5, s.length());
-        assertEquals(text.length() - 5, s.fullLength());
-        assertEquals(text.substring(5), toString(s));
+        Assertions.assertEquals(text.length() - 5, s.length());
+        Assertions.assertEquals(text.length() - 5, s.fullLength());
+        Assertions.assertEquals(text.substring(5), toString(s));
 
         s.getAdjustedLength(6);
-        assertEquals(6, s.length());
-        assertEquals(text.length() - 5, s.fullLength());
-        assertEquals(text.substring(5, 11), toString(s));
+        Assertions.assertEquals(6, s.length());
+        Assertions.assertEquals(text.length() - 5, s.fullLength());
+        Assertions.assertEquals(text.substring(5, 11), toString(s));
 
-        assertTrue(s.startsWith(text.substring(5, 9)));
+        Assertions.assertTrue(s.startsWith(text.substring(5, 9)));
 
         s.rest();
-        assertEquals(text.length() - 11, s.length());
-        assertEquals(text.substring(11), toString(s));
+        Assertions.assertEquals(text.length() - 11, s.length());
+        Assertions.assertEquals(text.substring(11), toString(s));
 
         s.getAdjustedLength(-1);
-        assertEquals(0, s.length());
+        Assertions.assertEquals(0, s.length());
 
         text = "   '''''''''''''''  ";
         s = new FitsSubString(text);
         s.getAdjustedLength(5);
-        assertEquals(5, s.length());
-        assertEquals("   ''", toString(s));
+        Assertions.assertEquals(5, s.length());
+        Assertions.assertEquals("   ''", toString(s));
 
         s.getAdjustedLength(100);
-        assertEquals(5, s.length());
+        Assertions.assertEquals(5, s.length());
 
         s = new FitsSubString(null);
-        assertEquals(0, s.length());
-        assertEquals("", toString(s));
+        Assertions.assertEquals(0, s.length());
+        Assertions.assertEquals("", toString(s));
     }
 
     private String toString(FitsSubString s) {
@@ -166,7 +164,7 @@ public class FitsLineAppenderTest {
         String key = "HIERARCH.AAA";
         FitsLineAppender l = new FitsLineAppender();
         f.append(key, l);
-        assertEquals(key.length() + f.getExtraSpaceRequired(key), l.length());
+        Assertions.assertEquals(key.length() + f.getExtraSpaceRequired(key), l.length());
     }
 
 }

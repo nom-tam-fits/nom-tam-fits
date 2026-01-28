@@ -31,10 +31,6 @@ package nom.tam.util.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -49,10 +45,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.compress.CloseIS;
@@ -204,7 +200,7 @@ public class BufferedFileTest {
         try {
             Thread.sleep(10L);
         } catch (InterruptedException e) {
-            Assert.fail("thread interupted");
+            Assertions.fail("thread interupted");
         }
     }
 
@@ -342,37 +338,37 @@ public class BufferedFileTest {
 
         for (int i = 0; i < dim; i++) {
             if (!Double.isNaN(db[i])) {
-                assertFalse("Double error at " + i, db[i] != db2[i]);
+                Assertions.assertFalse(db[i] != db2[i], "Double error at " + i);
             }
             if (!Float.isNaN(fl[i])) {
-                assertFalse("Float error at " + i, fl[i] != fl2[i]);
+                Assertions.assertFalse(fl[i] != fl2[i], "Float error at " + i);
             }
-            assertFalse("Int error at " + i, in[i] != in2[i]);
-            assertFalse("Long error at " + i, ln[i] != ln2[i]);
-            assertFalse("Short error at " + i, sh[i] != sh2[i]);
-            assertFalse("Char error at " + i + ":" + (short) ch[i] + "|" + (short) ch2[i], ch[i] != ch2[i]);
-            assertFalse("Byte error at " + i, by[i] != by2[i]);
-            assertFalse("Bool error at " + i, bl[i] != bl2[i]);
+            Assertions.assertFalse(in[i] != in2[i], "Int error at " + i);
+            Assertions.assertFalse(ln[i] != ln2[i], "Long error at " + i);
+            Assertions.assertFalse(sh[i] != sh2[i], "Short error at " + i);
+            Assertions.assertFalse(ch[i] != ch2[i], "Char error at " + i + ":" + (short) ch[i] + "|" + (short) ch2[i]);
+            Assertions.assertFalse(by[i] != by2[i], "Byte error at " + i);
+            Assertions.assertFalse(bl[i] != bl2[i], "Bool error at " + i);
         }
 
         System.out.println("  Scalars:");
         // Check the scalars.
 
-        assertTrue("mismatch", bls == bls2);
-        assertTrue("mismatch", bs == bs2);
-        assertTrue("mismatch", cs == cs2);
-        assertTrue("mismatch", ss == ss2);
-        assertTrue("mismatch", is == is2);
-        assertTrue("mismatch", ls == ls2);
-        assertTrue("mismatch", fs == fs2);
-        assertTrue("mismatch", ds == ds2);
+        Assertions.assertEquals(bls, bls2);
+        Assertions.assertEquals(bs, bs2);
+        Assertions.assertEquals(cs, cs2);
+        Assertions.assertEquals(ss, ss2);
+        Assertions.assertEquals(is, is2);
+        Assertions.assertEquals(ls, ls2);
+        Assertions.assertEquals(fs, fs2);
+        Assertions.assertEquals(ds, ds2);
 
         System.out.println("  Multi: odd rows should match");
         for (int i = 0; i < 10; i++) {
             System.out.println("      " + i + " " + multi[i][i][i][i] + " " + multi2[i][i][i][i]);
             if (i % 2 == 1) {
-                assertEquals(i, multi[i][i][i][i]);
-                assertEquals(i, multi2[i][i][i][i]);
+                Assertions.assertEquals(i, multi[i][i][i][i]);
+                Assertions.assertEquals(i, multi2[i][i][i][i]);
             }
         }
         System.out.println("Done BufferedFile Tests");
@@ -467,7 +463,8 @@ public class BufferedFileTest {
             for (int i = 0; i < iter; i++) {
                 f.readLArray(fl2);
             }
-            System.out.println("  BDS Flt read:  " + (1e-6 * Float.BYTES * dim * iter / deltaTime()) + " MB/s");
+            System.out.println(
+                    "  BDS\"Bool error at \" + i Flt read:  " + (1e-6 * Float.BYTES * dim * iter / deltaTime()) + " MB/s");
             for (int i = 0; i < iter; i++) {
                 f.readLArray(in2);
             }
@@ -523,31 +520,31 @@ public class BufferedFileTest {
         for (int i = 0; i < dim; i++) {
 
             if (!Double.isNaN(db[i])) {
-                assertFalse("Double error at " + i, db[i] != db2[i]);
+                Assertions.assertFalse(db[i] != db2[i], "Double error at " + i);
             }
             if (!Float.isNaN(fl[i])) {
-                assertFalse("Float error at " + i, fl[i] != fl2[i]);
+                Assertions.assertFalse(fl[i] != fl2[i], "Float error at " + i);
             }
-            assertFalse("Int error at " + i, in[i] != in2[i]);
-            assertFalse("Long error at " + i, ln[i] != ln2[i]);
-            assertFalse("Short error at " + i, sh[i] != sh2[i]);
-            assertFalse("Char error at " + i, ch[i] != ch2[i]);
-            assertFalse("Byte error at " + i, by[i] != by2[i]);
-            assertFalse("Bool error at " + i, bl[i] != bl2[i]);
+            Assertions.assertFalse(in[i] != in2[i], "Int error at " + i);
+            Assertions.assertFalse(ln[i] != ln2[i], "Long error at " + i);
+            Assertions.assertFalse(sh[i] != sh2[i], "Short error at " + i);
+            Assertions.assertFalse(ch[i] != ch2[i], "Char error at " + i);
+            Assertions.assertFalse(by[i] != by2[i], "Byte error at " + i);
+            Assertions.assertFalse(bl[i] != bl2[i], "Bool error at " + i);
 
         }
 
         System.out.println("  Scalars:");
         // Check the scalars.
 
-        assertTrue("mismatch", bls == bls2);
-        assertTrue("mismatch", bs == bs2);
-        assertTrue("mismatch", cs == cs2);
-        assertTrue("mismatch", ss == ss2);
-        assertTrue("mismatch", is == is2);
-        assertTrue("mismatch", ls == ls2);
-        assertTrue("mismatch", fs == fs2);
-        assertTrue("mismatch", ds == ds2);
+        Assertions.assertEquals(bls, bls2);
+        Assertions.assertEquals(bs, bs2);
+        Assertions.assertEquals(cs, cs2);
+        Assertions.assertEquals(ss, ss2);
+        Assertions.assertEquals(is, is2);
+        Assertions.assertEquals(ls, ls2);
+        Assertions.assertEquals(fs, fs2);
+        Assertions.assertEquals(ds, ds2);
 
         System.out.println("  Multi: odd rows should match");
         for (int i = 0; i < 10; i++) {
@@ -589,8 +586,8 @@ public class BufferedFileTest {
         return (lastTime - time) / 1000.;
     }
 
-    @Before
-    @After
+    @BeforeEach
+    @AfterEach
     public void setDefaults() {
         FitsFactory.setDefaults();
     }
@@ -810,7 +807,7 @@ public class BufferedFileTest {
         Object newArray = ArrayFuncs.mimicArray(array, ArrayFuncs.getBaseClass(array));
         bf.readLArray(newArray);
         boolean state = TestArrayFuncs.arrayEquals(array, newArray);
-        assertEquals(label, true, state);
+        Assertions.assertTrue(state, label);
     }
 
     @Test
@@ -883,7 +880,7 @@ public class BufferedFileTest {
             thrown = true;
         }
 
-        assertEquals("BufferedFile protections", true, thrown);
+        Assertions.assertTrue(thrown);
         try {
             bf.close();
         } catch (Exception e) {
@@ -991,7 +988,7 @@ public class BufferedFileTest {
         testArray(bi, "slongnull", tl1);
         testArray(bi, "sshort2", ts);
         bi.skipAllBytes(10000);
-        assertEquals('Y', bi.read());
+        Assertions.assertEquals('Y', bi.read());
     }
 
     @Test
@@ -1007,33 +1004,33 @@ public class BufferedFileTest {
         FitsFactory.setUseUnicodeChars(false);
         bf.writeChars("def");
         bf.writeBytes("test\n");
-        assertEquals(80, bf.length());
+        Assertions.assertEquals(80, bf.length());
 
         bf.close();
 
         bf = new BufferedFile("target/bufferedFilePrim.test");
-        assertEquals(120, bf.read());
-        assertEquals(255, bf.readUnsignedByte());
+        Assertions.assertEquals(120, bf.read());
+        Assertions.assertEquals(255, bf.readUnsignedByte());
 
         byte[] bytes = new byte[8 * 5];
         bf.readFully(bytes);
-        assertEquals("string 1string 2string 3string 4string 5", AsciiFuncs.asciiString(bytes));
+        Assertions.assertEquals("string 1string 2string 3string 4string 5", AsciiFuncs.asciiString(bytes));
 
         byte[] bytes2 = new byte[8 * 3];
         bf.read(bytes2);
-        assertEquals("string 2string 3string 4", AsciiFuncs.asciiString(bytes2));
+        Assertions.assertEquals("string 2string 3string 4", AsciiFuncs.asciiString(bytes2));
 
         FitsFactory.setUseUnicodeChars(true);
-        assertEquals('a', bf.readChar());
-        assertEquals('b', bf.readChar());
-        assertEquals('c', bf.readChar());
+        Assertions.assertEquals('a', bf.readChar());
+        Assertions.assertEquals('b', bf.readChar());
+        Assertions.assertEquals('c', bf.readChar());
 
         FitsFactory.setUseUnicodeChars(false);
-        assertEquals('d', bf.readChar());
-        assertEquals('e', bf.readChar());
-        assertEquals('f', bf.readChar());
+        Assertions.assertEquals('d', bf.readChar());
+        Assertions.assertEquals('e', bf.readChar());
+        Assertions.assertEquals('f', bf.readChar());
 
-        assertEquals("test", bf.readLine());
+        Assertions.assertEquals("test", bf.readLine());
 
         bf.close();
 
@@ -1049,7 +1046,7 @@ public class BufferedFileTest {
         while (!proc.err.started || !compressed.started) {
             Thread.sleep(10L);
             if (System.currentTimeMillis() - start > 2000) {
-                Assert.fail("not all streams started");
+                Assertions.fail("not all streams started");
             }
         }
         compressed.exception = true;
@@ -1059,7 +1056,7 @@ public class BufferedFileTest {
         while (!compressed.closed) {
             Thread.sleep(10L);
             if (System.currentTimeMillis() - start > 2000) {
-                Assert.fail("not all streams closed");
+                Assertions.fail("not all streams closed");
             }
         }
         IOException expected = null;
@@ -1068,15 +1065,15 @@ public class BufferedFileTest {
         } catch (IOException e) {
             expected = e;
         }
-        Assert.assertNotNull(expected);
+        Assertions.assertNotNull(expected);
         // check if this was the original exception of the compressed stream.
-        Assert.assertEquals("" + compressed.hashCode(), expected.getMessage());
+        Assertions.assertEquals("" + compressed.hashCode(), expected.getMessage());
         closeIs.close();
         start = System.currentTimeMillis();
         while (!proc.in.closed || !proc.err.closed || !proc.out.closed || !compressed.closed) {
             Thread.sleep(10L);
             if (System.currentTimeMillis() - start > 2000) {
-                Assert.fail("not all streams closed");
+                Assertions.fail("not all streams closed");
             }
         }
     }
@@ -1084,33 +1081,49 @@ public class BufferedFileTest {
     @Test
     public void testNullArray() throws IOException {
         BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        assertEquals(bf.readLArray(null), 0L);
+        Assertions.assertEquals(bf.readLArray(null), 0L);
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testNoArray() throws IOException {
-        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        assertEquals(bf.readLArray(Integer.valueOf(0)), 0L);
+        Assertions.assertThrows(IOException.class, () -> {
+
+            BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
+            Assertions.assertEquals(bf.readLArray(Integer.valueOf(0)), 0L);
+
+        });
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testSmallArray() throws IOException {
-        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        assertEquals(bf.readLArray(new byte[11]), 0L);
+        Assertions.assertThrows(EOFException.class, () -> {
+
+            BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
+            Assertions.assertEquals(bf.readLArray(new byte[11]), 0L);
+
+        });
     }
 
     // AK: Was throwing IOException, but there is no IO involved at all. It's a classic case
     // for IndexOutOfBoundsException, which is exavctly what the underlying read throws
     // in such a case.
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void testFullyOutside() throws IOException {
-        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        bf.readFully(new byte[5], 10, 5);
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+
+            BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
+            bf.readFully(new byte[5], 10, 5);
+
+        });
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testFullyEOF() throws IOException {
-        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        bf.readFully(new byte[12], 0, 12);
+        Assertions.assertThrows(EOFException.class, () -> {
+
+            BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
+            bf.readFully(new byte[12], 0, 12);
+
+        });
     }
 }

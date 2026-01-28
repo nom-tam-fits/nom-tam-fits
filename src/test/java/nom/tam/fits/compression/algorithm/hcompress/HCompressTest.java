@@ -38,8 +38,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
@@ -86,11 +86,11 @@ public class HCompressTest {
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
-            Assert.assertArrayEquals(expectedBytes, compressedArray);
+            Assertions.assertArrayEquals(expectedBytes, compressedArray);
 
             byte[] decompressedArray = new byte[byteArray.length];
             byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
-            Assert.assertArrayEquals(byteArray, decompressedArray);
+            Assertions.assertArrayEquals(byteArray, decompressedArray);
         } finally {
             SafeClose.close(expected);
             SafeClose.close(file);
@@ -123,11 +123,11 @@ public class HCompressTest {
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
-            Assert.assertArrayEquals(expectedBytes, compressedArray);
+            Assertions.assertArrayEquals(expectedBytes, compressedArray);
 
             byte[] decompressedArray = new byte[byteArray.length];
             byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
-            Assert.assertArrayEquals(byteArray, decompressedArray);
+            Assertions.assertArrayEquals(byteArray, decompressedArray);
         } finally {
             SafeClose.close(expected);
             SafeClose.close(file);
@@ -161,11 +161,11 @@ public class HCompressTest {
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
-            Assert.assertArrayEquals(expectedBytes, compressedArray);
+            Assertions.assertArrayEquals(expectedBytes, compressedArray);
 
             byte[] decompressedArray = new byte[byteArray.length];
             byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
-            Assert.assertArrayEquals(byteArray, decompressedArray);
+            Assertions.assertArrayEquals(byteArray, decompressedArray);
         } finally {
             SafeClose.close(expected);
             SafeClose.close(file);
@@ -203,7 +203,7 @@ public class HCompressTest {
 
             double[] decompressedArray = new double[doubleArray.length];
             doubleHCompress.decompress(ByteBuffer.wrap(compressedArray), DoubleBuffer.wrap(decompressedArray));
-            Assert.assertArrayEquals(doubleArray, decompressedArray, quant.getBScale() * 1.5);
+            Assertions.assertArrayEquals(doubleArray, decompressedArray, quant.getBScale() * 1.5);
         } finally {
             SafeClose.close(file);
         }
@@ -241,7 +241,7 @@ public class HCompressTest {
 
             float[] decompressedArray = new float[floatArray.length];
             floatHCompress.decompress(ByteBuffer.wrap(compressedArray), FloatBuffer.wrap(decompressedArray));
-            Assert.assertArrayEquals(floatArray, decompressedArray, (float) (quant.getBScale() * 1.5));
+            Assertions.assertArrayEquals(floatArray, decompressedArray, (float) (quant.getBScale() * 1.5));
         } finally {
             SafeClose.close(file);
         }
@@ -274,11 +274,11 @@ public class HCompressTest {
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
-            Assert.assertArrayEquals(expectedBytes, compressedArray);
+            Assertions.assertArrayEquals(expectedBytes, compressedArray);
 
             int[] decompressedArray = new int[intArray.length];
             intHCompress.decompress(ByteBuffer.wrap(expectedBytes), IntBuffer.wrap(decompressedArray));
-            Assert.assertArrayEquals(intArray, decompressedArray);
+            Assertions.assertArrayEquals(intArray, decompressedArray);
         } finally {
             SafeClose.close(expected);
             SafeClose.close(file);
@@ -311,11 +311,11 @@ public class HCompressTest {
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
-            Assert.assertArrayEquals(expectedBytes, compressedArray);
+            Assertions.assertArrayEquals(expectedBytes, compressedArray);
 
             int[] decompressedArray = new int[intArray.length];
             intHCompress.decompress(ByteBuffer.wrap(expectedBytes), IntBuffer.wrap(decompressedArray));
-            Assert.assertArrayEquals(intArray, decompressedArray);
+            Assertions.assertArrayEquals(intArray, decompressedArray);
 
         } finally {
             SafeClose.close(expected);
@@ -352,7 +352,7 @@ public class HCompressTest {
             byte[] compressedArray = new byte[expectedBytes.length];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
-            Assert.assertArrayEquals(expectedBytes, compressedArray);
+            Assertions.assertArrayEquals(expectedBytes, compressedArray);
 
             expectedUncompressed.read(bytes);
             asIntBuffer.rewind();
@@ -362,7 +362,7 @@ public class HCompressTest {
             new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             int[] decompressedArray = new int[intArray.length];
             ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
-            Assert.assertArrayEquals(intArray, decompressedArray);
+            Assertions.assertArrayEquals(intArray, decompressedArray);
 
             decompressedLongArray = new long[intArray.length];
             new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), true, decompressedLongArray);
@@ -375,7 +375,7 @@ public class HCompressTest {
                 sum1 += intArray[index];
                 sum2 += decompressedArray[index];
             }
-            Assert.assertEquals(sum1 / intArray.length, sum2 / intArray.length, 0.5d);
+            Assertions.assertEquals(sum1 / intArray.length, sum2 / intArray.length, 0.5d);
         } finally {
             SafeClose.close(expectedUncompressed);
             SafeClose.close(expected);
@@ -410,11 +410,11 @@ public class HCompressTest {
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
-            Assert.assertArrayEquals(expectedBytes, compressedArray);
+            Assertions.assertArrayEquals(expectedBytes, compressedArray);
 
             short[] decompressedArray = new short[shortArray.length];
             shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
-            Assert.assertArrayEquals(shortArray, decompressedArray);
+            Assertions.assertArrayEquals(shortArray, decompressedArray);
         } finally {
             SafeClose.close(expected);
             SafeClose.close(file);
@@ -447,11 +447,11 @@ public class HCompressTest {
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
-            Assert.assertArrayEquals(expectedBytes, compressedArray);
+            Assertions.assertArrayEquals(expectedBytes, compressedArray);
 
             short[] decompressedArray = new short[shortArray.length];
             shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
-            Assert.assertArrayEquals(shortArray, decompressedArray);
+            Assertions.assertArrayEquals(shortArray, decompressedArray);
         } finally {
             SafeClose.close(expected);
             SafeClose.close(file);
@@ -485,11 +485,11 @@ public class HCompressTest {
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
-            Assert.assertArrayEquals(expectedBytes, compressedArray);
+            Assertions.assertArrayEquals(expectedBytes, compressedArray);
 
             short[] decompressedArray = new short[shortArray.length];
             shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
-            Assert.assertArrayEquals(shortArray, decompressedArray);
+            Assertions.assertArrayEquals(shortArray, decompressedArray);
         } finally {
             SafeClose.close(expected);
             SafeClose.close(file);
@@ -506,13 +506,7 @@ public class HCompressTest {
             }
         };
         option.setParameters(new HCompressParameters(option));
-        IllegalStateException expected = null;
-        try {
-            option.copy();
-        } catch (IllegalStateException e) {
-            expected = e;
-        }
-        Assert.assertNotNull(expected);
+        Assertions.assertThrows(IllegalStateException.class, () -> option.copy());
 
         Header header = new Header();
         header.addValue(Compression.ZNAMEn.n(1).key(), Compression.SCALE, null);
@@ -521,48 +515,56 @@ public class HCompressTest {
         header.addValue(Compression.ZVALn.n(2).key(), 1, null);
         option.getCompressionParameters().getValuesFromHeader(new HeaderAccess(header));
 
-        Assert.assertTrue(option.isSmooth());
-        Assert.assertEquals(1, option.getScale());
+        Assertions.assertTrue(option.isSmooth());
+        Assertions.assertEquals(1, option.getScale());
 
-        Assert.assertNull(option.unwrap(String.class));
+        Assertions.assertNull(option.unwrap(String.class));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWrongParameters() throws Exception {
-        HCompressorOption o = new HCompressorOption();
-        o.setParameters(new RiceCompressParameters(null));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            HCompressorOption o = new HCompressorOption();
+            o.setParameters(new RiceCompressParameters(null));
+
+        });
     }
 
     @Test
     public void testCopyWrongOption() throws Exception {
         HCompressParameters p = new HCompressParameters(null);
-        Assert.assertNull(p.copy(new RiceCompressOption()));
+        Assertions.assertNull(p.copy(new RiceCompressOption()));
     }
 
     public void testLossyCheck() throws Exception {
         HCompressorOption o = new HCompressorOption();
 
-        Assert.assertFalse(o.isLossyCompression());
+        Assertions.assertFalse(o.isLossyCompression());
 
         o.setSmooth(true);
-        Assert.assertTrue(o.isLossyCompression());
+        Assertions.assertTrue(o.isLossyCompression());
 
         o.setSmooth(false);
         o.setScale(2);
-        Assert.assertTrue(o.isLossyCompression());
+        Assertions.assertTrue(o.isLossyCompression());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWrongScale() throws Exception {
-        new HCompressorOption().setScale(-1);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+
+            new HCompressorOption().setScale(-1);
+
+        });
     }
 
     @Test
     public void testLossy() throws Exception {
-        Assert.assertFalse(new HCompressorOption().setScale(0).setSmooth(false).isLossyCompression());
-        Assert.assertTrue(new HCompressorOption().setScale(1).setSmooth(false).isLossyCompression());
-        Assert.assertTrue(new HCompressorOption().setScale(0).setSmooth(true).isLossyCompression());
-        Assert.assertTrue(new HCompressorOption().setScale(1).setSmooth(true).isLossyCompression());
+        Assertions.assertFalse(new HCompressorOption().setScale(0).setSmooth(false).isLossyCompression());
+        Assertions.assertTrue(new HCompressorOption().setScale(1).setSmooth(false).isLossyCompression());
+        Assertions.assertTrue(new HCompressorOption().setScale(0).setSmooth(true).isLossyCompression());
+        Assertions.assertTrue(new HCompressorOption().setScale(1).setSmooth(true).isLossyCompression());
     }
 
     @Test
@@ -615,22 +617,27 @@ public class HCompressTest {
     public void testHCompressQuantizeOption() {
         HCompressorOption c = new HCompressorOption();
         HCompressorQuantizeOption o = new HCompressorQuantizeOption(c);
-        Assert.assertEquals(c, o.getHCompressorOption());
+        Assertions.assertEquals(c, o.getHCompressorOption());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testIntHCompressWrongOptions() throws Exception {
-        int[] data = new int[100];
+        Assertions.assertThrows(IllegalStateException.class, () -> {
 
-        for (int i = 0; i < 100; i++) {
-            data[i] = i;
-        }
+            int[] data = new int[100];
 
-        IntBuffer buf = IntBuffer.wrap(data);
-        ByteBuffer zip = ByteBuffer.allocateDirect(800);
+            for (int i = 0; i < 100; i++) {
+                data[i] = i;
+            }
 
-        ICompressorControl c = CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_HCOMPRESS_1, int.class);
-        c.decompress(zip, buf, new RiceCompressOption());
+            IntBuffer buf = IntBuffer.wrap(data);
+            ByteBuffer zip = ByteBuffer.allocateDirect(800);
+
+            ICompressorControl c = CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_HCOMPRESS_1,
+                    int.class);
+            c.decompress(zip, buf, new RiceCompressOption());
+
+        });
     }
 
 }

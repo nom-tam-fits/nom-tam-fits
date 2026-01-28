@@ -1,9 +1,9 @@
 package nom.tam.util.test;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
  * #%L
@@ -44,13 +44,13 @@ public class StreamFileTest {
 
     private FitsFile in;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         out = new FitsFile("target/streamFileTest.bin", "rw");
         in = new FitsFile("target/streamFileTest.bin", "r");
     }
 
-    @After
+    @AfterEach
     public void teardown() throws Exception {
         try {
             out.close();
@@ -79,14 +79,14 @@ public class StreamFileTest {
         out.write(expectedBools);
         out.close();
         in.read(bools);
-        Assert.assertEquals(expectedBools.length, bools.length);
+        Assertions.assertEquals(expectedBools.length, bools.length);
         for (int index = 0; index < expectedBools.length; index++) {
-            Assert.assertEquals("boolean[" + index + "]", expectedBools[index], bools[index]);
+            Assertions.assertEquals(expectedBools[index], bools[index], "boolean[" + index + "]");
             bools[index] = false;
         }
         in.readArray(bools);
         for (int index = 0; index < expectedBools.length; index++) {
-            Assert.assertEquals("boolean[" + index + "]", expectedBools[index], bools[index]);
+            Assertions.assertEquals(expectedBools[index], bools[index], "boolean[" + index + "]");
         }
     }
 
@@ -101,14 +101,14 @@ public class StreamFileTest {
         out.write(expectedChars);
         out.close();
         in.read(chars);
-        Assert.assertEquals(expectedChars.length, chars.length);
+        Assertions.assertEquals(expectedChars.length, chars.length);
         for (int index = 0; index < expectedChars.length; index++) {
-            Assert.assertEquals("char[" + index + "]", expectedChars[index], chars[index]);
+            Assertions.assertEquals(expectedChars[index], chars[index], "char[" + index + "]");
             chars[index] = ' ';
         }
         in.readArray(chars);
         for (int index = 0; index < expectedChars.length; index++) {
-            Assert.assertEquals("char[" + index + "]", expectedChars[index], chars[index]);
+            Assertions.assertEquals(expectedChars[index], chars[index], "char[" + index + "]");
         }
 
     }
@@ -125,14 +125,14 @@ public class StreamFileTest {
         out.write(expectedDoubles);
         out.close();
         in.read(doubles);
-        Assert.assertEquals(expectedDoubles.length, doubles.length);
+        Assertions.assertEquals(expectedDoubles.length, doubles.length);
         for (int index = 0; index < expectedDoubles.length; index++) {
-            Assert.assertEquals("double[" + index + "]", expectedDoubles[index], doubles[index], 0);
+            Assertions.assertEquals(expectedDoubles[index], doubles[index], 0, "double[" + index + "]");
             doubles[index] = 0;
         }
         in.readArray(doubles);
         for (int index = 0; index < expectedDoubles.length; index++) {
-            Assert.assertEquals("double[" + index + "]", expectedDoubles[index], doubles[index], 0);
+            Assertions.assertEquals(expectedDoubles[index], doubles[index], 0, "double[" + index + "]");
         }
 
     }
@@ -148,14 +148,14 @@ public class StreamFileTest {
         out.write(expectedValues);
         out.close();
         in.read(values);
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("float[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "float[" + index + "]");
             values[index] = 0;
         }
         in.readArray(values);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("float[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "float[" + index + "]");
         }
 
     }
@@ -171,14 +171,14 @@ public class StreamFileTest {
         out.write(expectedValues);
         out.close();
         in.read(values);
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("int[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "int[" + index + "]");
             values[index] = 0;
         }
         in.readArray(values);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("int[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "int[" + index + "]");
         }
 
     }
@@ -194,14 +194,14 @@ public class StreamFileTest {
         out.write(expectedValues);
         out.close();
         in.read(values);
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("long[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "long[" + index + "]");
             values[index] = 0;
         }
         in.readArray(values);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("long[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "long[" + index + "]");
         }
 
     }
@@ -217,14 +217,14 @@ public class StreamFileTest {
         out.write(expectedValues);
         out.close();
         in.read(values);
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("short[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "short[" + index + "]");
             values[index] = 0;
         }
         in.readArray(values);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("short[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "short[" + index + "]");
         }
 
     }
@@ -245,9 +245,9 @@ public class StreamFileTest {
         for (int index = 0; index < expectedValue.length; index++) {
             value[index] = in.readBoolean();
         }
-        Assert.assertEquals(expectedValue.length, value.length);
+        Assertions.assertEquals(expectedValue.length, value.length);
         for (int index = 0; index < expectedValue.length; index++) {
-            Assert.assertEquals("boolean[" + index + "]", expectedValue[index], value[index]);
+            Assertions.assertEquals(expectedValue[index], value[index], "boolean[" + index + "]");
         }
 
     }
@@ -264,9 +264,9 @@ public class StreamFileTest {
         for (int index = 0; index < expectedValue.length; index++) {
             value[index] = in.readChar();
         }
-        Assert.assertEquals(expectedValue.length, value.length);
+        Assertions.assertEquals(expectedValue.length, value.length);
         for (int index = 0; index < expectedValue.length; index++) {
-            Assert.assertEquals("boolean[" + index + "]", expectedValue[index], value[index]);
+            Assertions.assertEquals(expectedValue[index], value[index], "boolean[" + index + "]");
         }
 
     }
@@ -283,9 +283,9 @@ public class StreamFileTest {
         for (int index = 0; index < expectedDoubles.length; index++) {
             doubles[index] = in.readDouble();
         }
-        Assert.assertEquals(expectedDoubles.length, doubles.length);
+        Assertions.assertEquals(expectedDoubles.length, doubles.length);
         for (int index = 0; index < expectedDoubles.length; index++) {
-            Assert.assertEquals("double[" + index + "]", expectedDoubles[index], doubles[index], 0);
+            Assertions.assertEquals(expectedDoubles[index], doubles[index], 0, "double[" + index + "]");
         }
 
     }
@@ -302,9 +302,9 @@ public class StreamFileTest {
         for (int index = 0; index < expectedValues.length; index++) {
             values[index] = in.readFloat();
         }
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("float[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "float[" + index + "]");
         }
 
     }
@@ -321,9 +321,9 @@ public class StreamFileTest {
         for (int index = 0; index < expectedValues.length; index++) {
             values[index] = in.readInt();
         }
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("int[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "int[" + index + "]");
         }
 
     }
@@ -340,9 +340,9 @@ public class StreamFileTest {
         for (int index = 0; index < expectedValues.length; index++) {
             values[index] = in.readLong();
         }
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("long[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "long[" + index + "]");
         }
 
     }
@@ -359,9 +359,9 @@ public class StreamFileTest {
         for (int index = 0; index < expectedValues.length; index++) {
             values[index] = in.readShort();
         }
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("short[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "short[" + index + "]");
         }
 
     }
@@ -379,19 +379,19 @@ public class StreamFileTest {
         out.writeArray(expectedValues);
         out.close();
         in.readArray(values);
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
             for (int index2 = 0; index2 < expectedValues[index].length; index2++) {
-                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2],
-                        values[index][index2]);
+                Assertions.assertEquals(expectedValues[index][index2], values[index][index2],
+                        "int[" + index + "][" + index2 + "]");
                 values[index][index2] = 0;
             }
         }
         in.readArray(values);
         for (int index = 0; index < expectedValues.length; index++) {
             for (int index2 = 0; index2 < expectedValues[index].length; index2++) {
-                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2],
-                        values[index][index2]);
+                Assertions.assertEquals(expectedValues[index][index2], values[index][index2],
+                        "int[" + index + "][" + index2 + "]");
             }
         }
 
@@ -401,7 +401,7 @@ public class StreamFileTest {
     public void testString() throws Exception {
         out.writeUTF("Ein test string");
         out.close();
-        Assert.assertEquals("Ein test string", in.readUTF());
+        Assertions.assertEquals("Ein test string", in.readUTF());
 
     }
 
@@ -409,7 +409,7 @@ public class StreamFileTest {
     public void testWriteUnsignedShort() throws Exception {
         out.writeShort(0xFFEE);
         out.close();
-        Assert.assertEquals(0xFFEE, in.readUnsignedShort());
+        Assertions.assertEquals(0xFFEE, in.readUnsignedShort());
 
     }
 }

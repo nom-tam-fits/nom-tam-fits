@@ -34,8 +34,8 @@ package nom.tam.fits.test;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
@@ -83,7 +83,7 @@ public class LongCommentCardTest {
             } catch (LongValueException e) {
                 thrown = true;
             }
-            Assert.assertTrue(thrown);
+            Assertions.assertTrue(thrown);
 
             int n = 2;
 
@@ -103,7 +103,7 @@ public class LongCommentCardTest {
             } finally {
                 stream.close();
             }
-            Assert.assertEquals(2880L, file.length());
+            Assertions.assertEquals(2880L, file.length());
             int commentLike = 0;
             fits = new Fits(file);
             Cursor<String, HeaderCard> iterator = fits.getHDU(0).getHeader().iterator();
@@ -111,11 +111,11 @@ public class LongCommentCardTest {
                 HeaderCard headerCard = iterator.next();
                 if (headerCard.isCommentStyleCard() && !Standard.END.key().equals(headerCard.getKey())) {
                     commentLike++;
-                    Assert.assertTrue(headerCard.getComment(),
-                            headerCard.getComment().length() <= HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH);
+                    Assertions.assertTrue(headerCard.getComment().length() <= HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH,
+                            headerCard.getComment());
                 }
             }
-            Assert.assertEquals(n, commentLike);
+            Assertions.assertEquals(n, commentLike);
 
         } finally {
             FitsFactory.setLongStringsEnabled(longEnabled);

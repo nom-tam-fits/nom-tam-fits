@@ -1,7 +1,5 @@
 package nom.tam.fits.compression;
 
-import static org.junit.Assert.assertEquals;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -56,9 +54,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -94,60 +92,62 @@ public class ReadWriteProvidedCompressedImageTest {
 
     private static int assertionCounter = 1;
 
-    @Before
+    @BeforeEach
     public void setDefaults() {
         FitsFactory.setDefaults();
     }
 
     private void assert_float_image(float[][] actual, float[][] expected, float delta) {
-        Assert.assertEquals(expected.length, actual.length);
+        Assertions.assertEquals(expected.length, actual.length);
         IntStream.range(0, expected.length).parallel()
-                .forEach(axis0 -> Assert.assertArrayEquals(expected[axis0], actual[axis0], delta));
+                .forEach(axis0 -> Assertions.assertArrayEquals(expected[axis0], actual[axis0], delta));
     }
 
     private void assert_int_image(int[][] actual, int[][] expected) {
-        Assert.assertEquals(expected.length, actual.length);
+        Assertions.assertEquals(expected.length, actual.length);
         IntStream.range(0, expected.length).parallel()
-                .forEach(axis0 -> Assert.assertArrayEquals(expected[axis0], actual[axis0]));
+                .forEach(axis0 -> Assertions.assertArrayEquals(expected[axis0], actual[axis0]));
     }
 
     private void assert_short_image(short[][] actual, short[][] expected) {
-        Assert.assertEquals(expected.length, actual.length);
+        Assertions.assertEquals(expected.length, actual.length);
         IntStream.range(0, expected.length).parallel()
-                .forEach(axis0 -> Assert.assertArrayEquals(expected[axis0], actual[axis0]));
+                .forEach(axis0 -> Assertions.assertArrayEquals(expected[axis0], actual[axis0]));
     }
 
     /**
-     * This is an assertion for a special case when a loss full algorithm is used and a quantification with null checks.
-     * The will result in wrong null values, because some of the values representing blank will be lost.
+     * This is an Assertions.assertion for a special case when a loss full algorithm is used and a quantification with
+     * null checks. The will result in wrong null values, because some of the values representing blank will be lost.
      */
     private void assertArrayEquals(double[] expected, double[] actual, double delta, boolean checkNaN) {
-        Assert.assertEquals(expected.length, actual.length);
+        Assertions.assertEquals(expected.length, actual.length);
         for (int index = 0; index < actual.length; index++) {
             double d1 = expected[index];
             double d2 = actual[index];
             if (Double.isNaN(d1) || Double.isNaN(d2)) {
                 if (checkNaN) {
-                    Assert.assertTrue(Double.isNaN(d1) == Double.isNaN(d2)); //
+                    Assertions.assertTrue(Double.isNaN(d1) == Double.isNaN(d2)); //
                 }
             } else {
-                Assert.assertEquals(d1, d2, delta);
+                Assertions.assertEquals(d1, d2, delta);
             }
         }
     }
 
     private void assertArrayEquals(float[][] expected, float[][] actual, float delta) {
-        Assert.assertEquals(expected.length, actual.length);
+        Assertions.assertEquals(expected.length, actual.length);
         for (int index = 0; index < actual.length; index++) {
-            Assert.assertArrayEquals(expected[index], actual[index], delta);
+            Assertions.assertArrayEquals(expected[index], actual[index], delta);
         }
     }
 
     /**
-     * Assert two files files (one compressed and one uncompressed and use as little memory as possible.
+     * Assertions.assert two files files (one compressed and one uncompressed and use as little memory as possible.
      */
-    private <T> void assertCompressedToUncompressedImage(String fileName, String unCompfileName, Class<T> clazz,
-            IHDUAsserter<T> reader) throws Exception {
+    private <T>
+
+            void assertCompressedToUncompressedImage(String fileName, String unCompfileName, Class<T> clazz,
+                    IHDUAsserter<T> reader) throws Exception {
         Fits f = null;
 
         // System.out.println(" checking file: " + fileName);
@@ -179,7 +179,7 @@ public class ReadWriteProvidedCompressedImageTest {
                     f.deleteHDU(0);
                 }
             }
-            Assert.assertFalse(hdu != null || uncompHdu != null);
+            Assertions.assertFalse(hdu != null || uncompHdu != null);
         } finally {
             SafeClose.close(f);
         }
@@ -190,7 +190,7 @@ public class ReadWriteProvidedCompressedImageTest {
     private void assertData(float[][] data) {
         for (int x = 0; x < 300; x++) {
             for (int y = 0; y < 300; y++) {
-                Assert.assertEquals(m13_data_real[x][y], data[x][y], 1f);
+                Assertions.assertEquals(m13_data_real[x][y], data[x][y], 1f);
             }
         }
     }
@@ -198,7 +198,7 @@ public class ReadWriteProvidedCompressedImageTest {
     private void assertData(short[][] data) {
         for (int x = 0; x < 300; x++) {
             for (int y = 0; y < 300; y++) {
-                Assert.assertEquals(m13_data[x][y], data[x][y]);
+                Assertions.assertEquals(m13_data[x][y], data[x][y]);
             }
         }
     }
@@ -207,12 +207,12 @@ public class ReadWriteProvidedCompressedImageTest {
         float[] real = new float[expected[0].length];
         for (float[] expectedPart : expected) {
             result.get(real);
-            Assert.assertEquals(expectedPart.length, real.length);
+            Assertions.assertEquals(expectedPart.length, real.length);
             for (int subindex = 0; subindex < expectedPart.length; subindex++) {
                 float expectedFloat = expectedPart[subindex];
                 float realFloat = real[subindex];
                 if (!Float.isNaN(expectedFloat) && !Float.isNaN(realFloat)) {
-                    Assert.assertEquals(expectedFloat, realFloat, delta);
+                    Assertions.assertEquals(expectedFloat, realFloat, delta);
                 }
             }
         }
@@ -223,11 +223,11 @@ public class ReadWriteProvidedCompressedImageTest {
         for (int index = 0; index < real.length; index++) {
             int[] expectedPart = expected[index];
             result.get(real);
-            Assert.assertEquals(expectedPart.length, real.length);
+            Assertions.assertEquals(expectedPart.length, real.length);
             for (int subindex = 0; subindex < expectedPart.length; subindex++) {
                 int expectedFloat = expectedPart[subindex];
                 int realFloat = real[subindex];
-                Assert.assertEquals("pixel differes at " + subindex + "x" + index, expectedFloat, realFloat);
+                Assertions.assertEquals(expectedFloat, realFloat, "pixel differes at " + subindex + "x" + index);
             }
         }
     }
@@ -498,7 +498,6 @@ public class ReadWriteProvidedCompressedImageTest {
         float[][] data = new float[300][300];
         ArrayFuncs.copyInto(((FloatBuffer) result).array(), data);
         assertData(data);
-
     }
 
     @Test
@@ -537,20 +536,20 @@ public class ReadWriteProvidedCompressedImageTest {
             for (int j = 0; j < ny; j++) {
                 int tileOffset = i + j * nx;
                 if (tileOffset >= length) {
-                    Assert.fail("tile offset wrong");
+                    Assertions.fail("tile offset wrong");
                 }
                 sum0 += ((Number) Array.get(tile, tileOffset)).doubleValue();
                 sum1 += ((Number) Array.get(Array.get(data, j + y), i + x)).doubleValue();
             }
         }
-        assertEquals("Tiler" + test, sum0, sum1, 0);
+        Assertions.assertEquals(sum0, sum1, 0, "Tiler" + test);
     }
 
     private String resolveLocalOrRemoteFileName(String fileName) {
         return BlackBoxImages.getBlackBoxImage(fileName);
     }
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         try (Fits f = new Fits("src/test/resources/nom/tam/image/provided/m13.fits")) {
             m13 = (ImageHDU) f.getHDU(0);
@@ -621,7 +620,7 @@ public class ReadWriteProvidedCompressedImageTest {
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             double[][] actual = (double[][]) hdu.asImageHDU().getData().getData();
             for (int index = 0; index < actual.length; index++) {
-                Assert.assertArrayEquals(data[index], actual[index], 0f);
+                Assertions.assertArrayEquals(data[index], actual[index], 0f);
             }
         } finally {
             SafeClose.close(f);
@@ -657,7 +656,7 @@ public class ReadWriteProvidedCompressedImageTest {
             f.readHDU(); // the primary
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             short[][] actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
-            Assert.assertArrayEquals(array, actualShortArray);
+            Assertions.assertArrayEquals(array, actualShortArray);
         } finally {
             SafeClose.close(f);
         }
@@ -684,7 +683,7 @@ public class ReadWriteProvidedCompressedImageTest {
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             f.write(bdos);
-            Assert.assertEquals(Compression.COMPRESSED_DATA_COLUMN,
+            Assertions.assertEquals(Compression.COMPRESSED_DATA_COLUMN,
                     compressedHdu.getHeader().findCard(Standard.TTYPEn.n(1)).getValue());
         } finally {
             SafeClose.close(f);
@@ -702,16 +701,18 @@ public class ReadWriteProvidedCompressedImageTest {
         }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testUnknownCompression() throws Exception {
-        Fits f = new Fits();
-        try {
-            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(m13, -1, 15);
-            compressedHdu.setCompressAlgorithm("NIX");
-            compressedHdu.compress();
-        } finally {
-            SafeClose.close(f);
-        }
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            Fits f = new Fits();
+            try {
+                CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(m13, -1, 15);
+                compressedHdu.setCompressAlgorithm("NIX");
+                compressedHdu.compress();
+            } finally {
+                SafeClose.close(f);
+            }
+        });
     }
 
     @Test
@@ -726,7 +727,7 @@ public class ReadWriteProvidedCompressedImageTest {
                     /**/.setScale(1);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
-            Assert.assertTrue(compressedHdu.isHeader());
+            Assertions.assertTrue(compressedHdu.isHeader());
             compressedHdu.getHeader().deleteKey(Compression.ZTILEn.n(1));
             FitsOutputStream bdos = null;
             try {
@@ -743,7 +744,7 @@ public class ReadWriteProvidedCompressedImageTest {
             f.readHDU();// the primary
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             short[][] actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
-            Assert.assertArrayEquals(m13_data, actualShortArray);
+            Assertions.assertArrayEquals(m13_data, actualShortArray);
         } finally {
             SafeClose.close(f);
         }
@@ -791,13 +792,13 @@ public class ReadWriteProvidedCompressedImageTest {
             f.readHDU();// the primary
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             short[][] actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
-            Assert.assertArrayEquals(m13_data, actualShortArray);
+            Assertions.assertArrayEquals(m13_data, actualShortArray);
             hdu = (CompressedImageHDU) f.readHDU();
             actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
-            Assert.assertArrayEquals(m13_data, actualShortArray);
+            Assertions.assertArrayEquals(m13_data, actualShortArray);
             hdu = (CompressedImageHDU) f.readHDU();
             actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
-            Assert.assertArrayEquals(m13_data, actualShortArray);
+            Assertions.assertArrayEquals(m13_data, actualShortArray);
         } finally {
             SafeClose.close(f);
         }
@@ -816,8 +817,8 @@ public class ReadWriteProvidedCompressedImageTest {
                     .getCompressOption(HCompressorOption.class)//
                     /**/.setScale(1);
             // ansure same instances of the options
-            Assert.assertSame(compressedHdu.getCompressOption(HCompressorOption.class), option);
-            Assert.assertSame(compressedHdu.getCompressOption(QuantizeOption.class),
+            Assertions.assertSame(compressedHdu.getCompressOption(HCompressorOption.class), option);
+            Assertions.assertSame(compressedHdu.getCompressOption(QuantizeOption.class),
                     compressedHdu.getCompressOption(QuantizeOption.class));
             compressedHdu.compress();
             f.addHDU(compressedHdu);
@@ -909,19 +910,19 @@ public class ReadWriteProvidedCompressedImageTest {
             f.readHDU();// the primary
 
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
-            Assert.assertEquals("2", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
+            Assertions.assertEquals("2", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
             short[][] actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
-            Assert.assertArrayEquals(m13_data, actualShortArray);
+            Assertions.assertArrayEquals(m13_data, actualShortArray);
 
             hdu = (CompressedImageHDU) f.readHDU();
-            Assert.assertEquals("2", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
+            Assertions.assertEquals("2", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
             actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
-            Assert.assertArrayEquals(m13_data, actualShortArray);
+            Assertions.assertArrayEquals(m13_data, actualShortArray);
 
             hdu = (CompressedImageHDU) f.readHDU();
-            Assert.assertEquals("2", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
+            Assertions.assertEquals("2", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
             actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
-            Assert.assertArrayEquals(m13_data, actualShortArray);
+            Assertions.assertArrayEquals(m13_data, actualShortArray);
 
         } finally {
             SafeClose.close(f);
@@ -960,13 +961,13 @@ public class ReadWriteProvidedCompressedImageTest {
             f = new Fits("target/hmi.fits.fz");
             f.readHDU();// the primary
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
-            Assert.assertEquals("4", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
+            Assertions.assertEquals("4", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
             ImageHDU asImageHDU = hdu.asImageHDU();
             int[][] actualIntArray = (int[][]) asImageHDU.getData().getData();
 
-            Assert.assertArrayEquals(expectedIntData, actualIntArray);
-            Assert.assertNull(asImageHDU.getHeader().getStringValue(Standard.TFIELDS.key()));
-            Assert.assertNull(asImageHDU.getHeader().getStringValue(Standard.TTYPEn.n(1).key()));
+            Assertions.assertArrayEquals(expectedIntData, actualIntArray);
+            Assertions.assertNull(asImageHDU.getHeader().getStringValue(Standard.TFIELDS.key()));
+            Assertions.assertNull(asImageHDU.getHeader().getStringValue(Standard.TTYPEn.n(1).key()));
         } finally {
             SafeClose.close(f);
         }
@@ -1064,7 +1065,7 @@ public class ReadWriteProvidedCompressedImageTest {
 
             for (int x = 140; x < 160; x++) {
                 for (int y = 140; y < 160; y++) {
-                    Assert.assertEquals(actualShortArray[x][y], m13_data_real[x][y], 0.0f);
+                    Assertions.assertEquals(actualShortArray[x][y], m13_data_real[x][y], 0.0f);
                 }
             }
         } finally {
@@ -1133,7 +1134,7 @@ public class ReadWriteProvidedCompressedImageTest {
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             f.write(bdos);
-            Assert.assertEquals(Compression.COMPRESSED_DATA_COLUMN,
+            Assertions.assertEquals(Compression.COMPRESSED_DATA_COLUMN,
                     compressedHdu.getHeader().findCard(Standard.TTYPEn.n(1)).getValue());
         } finally {
             SafeClose.close(bdos);

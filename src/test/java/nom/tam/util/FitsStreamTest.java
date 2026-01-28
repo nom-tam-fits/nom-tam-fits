@@ -31,12 +31,11 @@ package nom.tam.util;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FitsStreamTest {
 
@@ -57,10 +56,10 @@ public class FitsStreamTest {
         i.read(b2);
 
         for (int k = 0; k < b.length; k++) {
-            assertEquals("[" + k + "]", b[k], b2[k]);
+            Assertions.assertEquals(b[k], b2[k], "[" + k + "]");
         }
 
-        assertEquals("standalone", b[0].booleanValue(), i.readBoolean());
+        Assertions.assertEquals(b[0].booleanValue(), i.readBoolean());
     }
 
 }

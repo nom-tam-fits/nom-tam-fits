@@ -1,10 +1,8 @@
 package nom.tam.fits.compression;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.compression.provider.CompressorControlNameComputer;
 import nom.tam.fits.header.Compression;
@@ -52,150 +50,151 @@ import static nom.tam.fits.header.Compression.ZQUANTIZ_NO_DITHER;
 public class TileCompressorControlNameComputerTest {
     private CompressorControlNameComputer nameComputer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         nameComputer = new CompressorControlNameComputer();
     }
 
     @Test
     public void withAbsurdBaseType() {
-        assertEquals("TilecompressorcontrolnamecomputertestQuantHCompressor", //
+        Assertions.assertEquals("TilecompressorcontrolnamecomputertestQuantHCompressor",
                 nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, ZCMPTYPE_HCOMPRESS_1,
                         TileCompressorControlNameComputerTest.class));
     }
 
     @Test
     public void withIgnoredQuantizeAlgorithm() {
-        assertEquals("DoublePLIOCompressor",
+        Assertions.assertEquals("DoublePLIOCompressor",
                 nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, ZCMPTYPE_PLIO_1, double.class));
     }
 
     @Test
     public void withoutQuantizeAlgorithm() {
-        assertEquals("IntRiceCompressor", nameComputer.createCompressorClassName(null, ZCMPTYPE_RICE_1, int.class));
+        Assertions.assertEquals("IntRiceCompressor",
+                nameComputer.createCompressorClassName(null, ZCMPTYPE_RICE_1, int.class));
     }
 
     @Test
     public void withValidQuantizeAlgorithm() {
-        assertEquals("LongQuantHCompressor",
+        Assertions.assertEquals("LongQuantHCompressor",
                 nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, ZCMPTYPE_HCOMPRESS_1, long.class));
     }
 
     @Test
     public void withWrongCompressAlgorithm() {
-        assertEquals("ShortQuantUnknownCompressor",
+        Assertions.assertEquals("ShortQuantUnknownCompressor",
                 nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, "DoesNotExist", short.class));
     }
 
     @Test
     public void withWrongQuantizeAlgorithm() {
-        assertEquals("ByteUnknownPLIOCompressor",
+        Assertions.assertEquals("ByteUnknownPLIOCompressor",
                 nameComputer.createCompressorClassName("Whatever", ZCMPTYPE_PLIO_1, byte.class));
     }
 
     @Test
     public void testGZip1() {
         String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_GZIP_1, int.class);
-        assertTrue(name.contains("GZip"));
+        Assertions.assertTrue(name.contains("GZip"));
     }
 
     @Test
     public void testRice() {
         String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_RICE_1, int.class);
-        assertTrue(name.contains("Rice"));
+        Assertions.assertTrue(name.contains("Rice"));
     }
 
     @Test
     public void testRiceAlt() {
         String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_RICE_ONE, int.class);
-        assertTrue(name.contains("Rice"));
+        Assertions.assertTrue(name.contains("Rice"));
     }
 
     @Test
     public void testPLIO() {
         String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_PLIO_1, int.class);
-        assertTrue(name.contains("PLIO"));
+        Assertions.assertTrue(name.contains("PLIO"));
     }
 
     @Test
     public void testHCompress() {
         String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_HCOMPRESS_1,
                 int.class);
-        assertTrue(name.contains("H"));
+        Assertions.assertTrue(name.contains("H"));
     }
 
     @Test
     public void testGZip2() {
         String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_GZIP_2, int.class);
-        assertTrue(name.contains("GZip2"));
+        Assertions.assertTrue(name.contains("GZip2"));
     }
 
     @Test
     public void testNoCompress() {
         String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_NOCOMPRESS,
                 int.class);
-        assertTrue(name.contains("NoCompress"));
+        Assertions.assertTrue(name.contains("NoCompress"));
     }
 
     @Test
     public void testDither1() {
         String name = nameComputer.createCompressorClassName(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1,
                 Compression.ZCMPTYPE_NOCOMPRESS, int.class);
-        assertTrue(name.contains("Quant"));
+        Assertions.assertTrue(name.contains("Quant"));
     }
 
     @Test
     public void testDither2() {
         String name = nameComputer.createCompressorClassName(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2,
                 Compression.ZCMPTYPE_NOCOMPRESS, int.class);
-        assertTrue(name.contains("Quant"));
+        Assertions.assertTrue(name.contains("Quant"));
     }
 
     @Test
     public void testNoDither() {
         String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_NOCOMPRESS,
                 int.class);
-        assertTrue(name.contains("Quant"));
+        Assertions.assertTrue(name.contains("Quant"));
     }
 
     @Test
     public void testUnknonwDither() {
         String name = nameComputer.createCompressorClassName("blah", Compression.ZCMPTYPE_NOCOMPRESS, int.class);
-        assertTrue(name.contains("Unknown"));
+        Assertions.assertTrue(name.contains("Unknown"));
     }
 
     @Test
     public void testByte() {
         String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_NOCOMPRESS,
                 byte.class);
-        assertTrue(name.contains("Byte"));
+        Assertions.assertTrue(name.contains("Byte"));
     }
 
     @Test
     public void testShort() {
         String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_NOCOMPRESS,
                 short.class);
-        assertTrue(name.contains("Short"));
+        Assertions.assertTrue(name.contains("Short"));
     }
 
     @Test
     public void testInt() {
         String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_NOCOMPRESS,
                 int.class);
-        assertTrue(name.contains("Int"));
+        Assertions.assertTrue(name.contains("Int"));
     }
 
     @Test
     public void testFloat() {
         String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_NOCOMPRESS,
                 float.class);
-        assertTrue(name.contains("Float"));
+        Assertions.assertTrue(name.contains("Float"));
     }
 
     @Test
     public void testDouble() {
         String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_NOCOMPRESS,
                 double.class);
-        assertTrue(name.contains("Double"));
+        Assertions.assertTrue(name.contains("Double"));
     }
 }

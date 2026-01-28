@@ -33,7 +33,7 @@ package nom.tam.util;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.FitsFactory;
 

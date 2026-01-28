@@ -31,13 +31,11 @@ package nom.tam.fits;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.FileOutputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.util.FitsFile;
 import nom.tam.util.FitsOutputStream;
@@ -60,9 +58,9 @@ public class IncrementalWriteTest {
             hdus = fits.read();
         }
 
-        assertEquals("Number of HDUs written", 2, hdus.length);
-        assertTrue("First has EXTEND", hdus[0].getHeader().containsKey(EXTEND));
-        assertTrue("First is primary", hdus[0].getHeader().getBooleanValue(EXTEND, false));
+        Assertions.assertEquals(2, hdus.length);
+        Assertions.assertTrue(hdus[0].getHeader().containsKey(EXTEND));
+        Assertions.assertTrue(hdus[0].getHeader().getBooleanValue(EXTEND, false));
     }
 
     @Test

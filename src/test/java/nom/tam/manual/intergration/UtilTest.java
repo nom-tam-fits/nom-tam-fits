@@ -33,9 +33,9 @@ package nom.tam.manual.intergration;
 
 import java.util.Random;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ByteFormatter;
@@ -46,7 +46,7 @@ public class UtilTest {
     ByteFormatter bf = new ByteFormatter();
 
     @Test
-    @Ignore
+    @Disabled
     public void randomTestManyValues() {
         for (int y = 1; y < 40; y++) {
             byte[] array = new byte[y];
@@ -63,7 +63,7 @@ public class UtilTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testEqualArrayCopyPerf() {
 
         int[][] testArray = new int[2000][2000];
@@ -97,7 +97,7 @@ public class UtilTest {
         System.out.println("timeIter:" + timeIter);
         for (int index = 0; index < testArrayCopy.length; index++) {
             for (int index2 = 0; index2 < testArrayCopy[index].length; index2++) {
-                Assert.assertEquals(index + index2, testArrayCopy[index][index2]);
+                Assertions.assertEquals(index + index2, testArrayCopy[index][index2]);
             }
         }
     }

@@ -31,8 +31,8 @@ package nom.tam.fits;
  * #L%
  */
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.Standard;
 
@@ -46,7 +46,7 @@ public class AsciiTableNewTest {
         tab.setColumnName(1, null);
         AsciiTableHDU hdu = tab.toHDU();
 
-        Assert.assertEquals(TableHDU.getDefaultColumnName(0), hdu.getHeader().getStringValue(Standard.TTYPEn.n(1)));
-        Assert.assertFalse(hdu.getHeader().containsKey(Standard.TTYPEn.n(2)));
+        Assertions.assertEquals(TableHDU.getDefaultColumnName(0), hdu.getHeader().getStringValue(Standard.TTYPEn.n(1)));
+        Assertions.assertFalse(hdu.getHeader().containsKey(Standard.TTYPEn.n(2)));
     }
 }

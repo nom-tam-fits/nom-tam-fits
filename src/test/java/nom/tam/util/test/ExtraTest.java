@@ -1,7 +1,7 @@
 package nom.tam.util.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.HeaderCard;
 
@@ -45,14 +45,14 @@ public class ExtraTest {
         FitsLineAppender apender = new FitsLineAppender();
         apender.append("0123456789012345678901234567890123456789012345");
         apender.append("0123456789012345678901234567890123456789012345");
-        Assert.assertEquals(80, apender.toString().length());
+        Assertions.assertEquals(80, apender.toString().length());
     }
 
     @Test
     public void testParseStringComment() {
         HeaderCard hc = HeaderCard.create("KEY = / ' test '");
-        Assert.assertEquals("", hc.getValue());
-        Assert.assertEquals("' test '", hc.getComment());
+        Assertions.assertEquals("", hc.getValue());
+        Assertions.assertEquals("' test '", hc.getComment());
     }
 
 }
