@@ -99,15 +99,9 @@ public class HeaderCardTest {
         Assertions.assertEquals("COMMENT", p.getKey());
         Assertions.assertNull(p.getValue());
         Assertions.assertEquals(lng, p.getComment());
+
         FitsFactory.setAllowHeaderRepairs(false);
-        boolean thrown = false;
-        try {
-            //
-            p = HeaderCard.create("VALUE   = '   ");
-        } catch (Exception e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> HeaderCard.create("VALUE   = '   "));
 
         p = HeaderCard.create("COMMENT " + lng + lng);
         Assertions.assertEquals(lng, p.getComment());
@@ -133,23 +127,11 @@ public class HeaderCardTest {
         Assertions.assertEquals("KEY     =                    T / COMMENT                                        ",
                 p.toString());
 
-        boolean thrown = false;
-        try {
-            p = new HeaderCard("LONGKEYWORD", 123, "COMMENT");
-        } catch (Exception e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("LONGKEYWORD", 123, "COMMENT"));
 
-        thrown = false;
+        Header.setLongStringsEnabled(false);
         String lng = "00000000001111111111222222222233333333334444444444555555555566666666667777777777";
-        try {
-            Header.setLongStringsEnabled(false);
-            p = new HeaderCard("KEY", lng, "COMMENT");
-        } catch (Exception e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("KEY", lng, "COMMENT"));
 
         // Only trailing spaces are stripped.
         p = new HeaderCard("STRING", "VALUE", null);
@@ -240,29 +222,9 @@ public class HeaderCardTest {
 
         FitsFactory.setAllowHeaderRepairs(false);
 
-        try {
-            thrown = false;
-            hc = HeaderCard.create("");
-        } catch (IllegalArgumentException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
-
-        try {
-            thrown = false;
-            hc = HeaderCard.create("CONTINUE '         ");
-        } catch (IllegalArgumentException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
-
-        try {
-            thrown = false;
-            hc = HeaderCard.create("CARD = '         ");
-        } catch (IllegalArgumentException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> HeaderCard.create(""));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> HeaderCard.create("CONTINUE '         "));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> HeaderCard.create("CARD = '         "));
 
         FitsFactory.setAllowHeaderRepairs(true);
 
@@ -483,15 +445,9 @@ public class HeaderCardTest {
 
         HeaderCard hc;
         String key = "HIERARCH.TEST1.TEST2.INT";
-        boolean thrown = false;
 
         FitsFactory.setUseHierarch(false);
-        try {
-            hc = new HeaderCard(key, 123, "Comment");
-        } catch (Exception e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard(key, 123, "Comment"));
 
         String card = "HIERARCH TEST1 TEST2 INT=           123 / Comment                               ";
         hc = HeaderCard.create(card);
@@ -743,21 +699,8 @@ public class HeaderCardTest {
         hc.changeKey("TEST1");
         Assertions.assertEquals("TEST1", hc.getKey());
 
-        boolean thrown = false;
-        try {
-            hc2.changeKey("HIERARCH.ZZZ");
-        } catch (LongStringsNotEnabledException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
-
-        thrown = false;
-        try {
-            hc3.changeKey("HIERARCH.ZZZ");
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
+        Assertions.assertThrows(LongStringsNotEnabledException.class, () -> hc2.changeKey("HIERARCH.ZZZ"));
+        Assertions.assertThrows(LongValueException.class, () -> hc3.changeKey("HIERARCH.ZZZ"));
 
         FitsFactory.setLongStringsEnabled(true);
         Assertions.assertTrue(FitsFactory.isLongStringsEnabled());
@@ -953,13 +896,7 @@ public class HeaderCardTest {
 
         // Unfinished quotes
         FitsFactory.setAllowHeaderRepairs(false);
-        Exception ex = null;
-        try {
-            hc = HeaderCard.create("TEST    = 'bla bla / dummy");
-        } catch (IllegalArgumentException e) {
-            ex = e;
-        }
-        Assertions.assertNotNull(ex);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> HeaderCard.create("TEST    = 'bla bla / dummy"));
 
         FitsFactory.setAllowHeaderRepairs(true);
         hc = HeaderCard.create("TEST    = 'bla bla / dummy");
@@ -1055,13 +992,7 @@ public class HeaderCardTest {
         Assertions.assertTrue(hc.isCommentStyleCard());
         Assertions.assertEquals(hc.toString(), HeaderCard.create(hc.toString()).toString());
 
-        HeaderCardException actual = null;
-        try {
-            new HeaderCard(null, "VALUE", "COMMENT", true);
-        } catch (HeaderCardException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard(null, "VALUE", "COMMENT", true));
     }
 
     @Test
@@ -1128,13 +1059,9 @@ public class HeaderCardTest {
         // AK: Fixed because comment can start at or after byte 11 only!
         Assertions.assertEquals("TEST     COMMENT                                                                ",
                 new HeaderCard("TEST", null, "COMMENT", false).toString());
-        HeaderCardException actual = null;
-        try {
-            new HeaderCard(null, "VALUE", "COMMENT", true);
-        } catch (HeaderCardException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
+
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard(null, "VALUE", "COMMENT", true));
+
         Assertions.assertTrue(new HeaderCard("TEST", "VALUE", "COMMENT", true).isKeyValuePair());
         Assertions.assertTrue(new HeaderCard("TEST", "VALUE", "COMMENT", false).isKeyValuePair());
         Assertions.assertFalse(new HeaderCard("TEST", null, "COMMENT", true).isKeyValuePair());
@@ -1327,42 +1254,14 @@ public class HeaderCardTest {
         FitsFactory.setUseHierarch(true);
         HeaderCard hc = new HeaderCard("HIERARCH.ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ", 0);
 
-        boolean thrown = false;
+        int i = 20211006;
+        Assertions.assertThrows(LongValueException.class, () -> hc.setValue(i));
 
-        try {
-            int i = 20211006;
-            hc.setValue(i);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
+        long l = 202110062256L;
+        Assertions.assertThrows(LongValueException.class, () -> hc.setValue(l));
 
-        thrown = false;
-        try {
-            long l = 202110062256L;
-            hc.setValue(l);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
-
-        thrown = false;
-        try {
-            BigInteger big = new BigInteger("12345678901234567890");
-            hc.setValue(big);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
-
-        thrown = false;
-        try {
-            BigInteger big = new BigInteger("12345678901234567890");
-            hc.setValue(big, 1);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        Assertions.assertFalse(thrown);
+        Assertions.assertThrows(LongValueException.class, () -> hc.setValue(new BigInteger("12345678901234567890")));
+        hc.setValue(new BigInteger("12345678901234567890"), 1);
     }
 
     @Test

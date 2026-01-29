@@ -56,7 +56,6 @@ import nom.tam.fits.compress.CompressionLibLoaderProtection;
 import nom.tam.fits.compress.CompressionManager;
 import nom.tam.fits.compress.ExternalBZip2CompressionProvider;
 import nom.tam.fits.compress.ZCompressionProvider;
-import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
 
 import fi.iki.elonen.SimpleWebServer;
@@ -451,110 +450,82 @@ public class CompressTest {
 
     @Test
     public void testZCompressionProvider() throws Exception {
-        InputStream in = Thread.currentThread().getContextClassLoader()
+        try (InputStream in = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("nom/tam/fits/test/test.fits.Z");
-        Fits f = null;
-        try {
-            f = new Fits(new ZCompressionProvider().decompress(in));
+                Fits f = new Fits(new ZCompressionProvider().decompress(in))) {
             Assertions.assertNotNull(f.readHDU());
-        } finally {
-            SafeClose.close(f);
         }
     }
 
     @Test
     public void testZCompressionProviderFailure() throws Exception {
-        Assertions.assertThrows(IOException.class, () -> {
+        InputStream in = new ByteArrayInputStream(new byte[0]) {
 
-            InputStream in = new ByteArrayInputStream(new byte[0]) {
+            @Override
+            public synchronized int read(byte[] b, int off, int len) {
+                ThrowAnyException.throwIOException("readError");
+                return -1;
+            }
+        };
 
-                @Override
-                public synchronized int read(byte[] b, int off, int len) {
-                    ThrowAnyException.throwIOException("readError");
-                    return -1;
-                }
-            };
-            new ZCompressionProvider().decompress(in);
-
-        });
+        Assertions.assertThrows(IOException.class, () -> new ZCompressionProvider().decompress(in));
     }
 
     @Test
     public void testZCompressionProviderFailureNull() throws Exception {
-        Assertions.assertThrows(IOException.class, () -> {
-
-            new ZCompressionProvider().decompress(null);
-
-        });
+        Assertions.assertThrows(IOException.class, () -> new ZCompressionProvider().decompress(null));
     }
 
     @Test
     public void testBasicCompressFailover() throws Exception {
-        Assertions.assertThrows(IOException.class, () -> {
-
-            new BasicCompressProvider().decompress(null);
-
-        });
+        Assertions.assertThrows(IOException.class, () -> new BasicCompressProvider().decompress(null));
     }
 
     @Test
     public void testCompressionManagerException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        InputStream in = new ByteArrayInputStream(new byte[0]) {
 
-            InputStream in = new ByteArrayInputStream(new byte[0]) {
+            @Override
+            public synchronized int read(byte[] b, int off, int len) {
+                ThrowAnyException.throwIOException("readError");
+                return -1;
+            }
+        };
 
-                @Override
-                public synchronized int read(byte[] b, int off, int len) {
-                    ThrowAnyException.throwIOException("readError");
-                    return -1;
-                }
-            };
-            CompressionManager.decompress(in);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> CompressionManager.decompress(in));
     }
 
     @Test
     public void testBZip2CompressionProviderFailure() throws Exception {
-        Assertions.assertThrows(IOException.class, () -> {
+        InputStream in = new ByteArrayInputStream(new byte[0]) {
 
-            InputStream in = new ByteArrayInputStream(new byte[0]) {
+            @Override
+            public synchronized int read(byte[] b, int off, int len) {
+                ThrowAnyException.throwIOException("readError");
+                return -1;
+            }
+        };
 
-                @Override
-                public synchronized int read(byte[] b, int off, int len) {
-                    ThrowAnyException.throwIOException("readError");
-                    return -1;
-                }
-            };
-            new BZip2CompressionProvider().decompress(in);
-
-        });
+        Assertions.assertThrows(IOException.class, () -> new BZip2CompressionProvider().decompress(in));
     }
 
     @Test
     public void testBZip2CompressionProviderFailureNull() throws Exception {
-        Assertions.assertThrows(IOException.class, () -> {
-
-            new BZip2CompressionProvider().decompress(null);
-
-        });
+        Assertions.assertThrows(IOException.class, () -> new BZip2CompressionProvider().decompress(null));
     }
 
     @Test
     public void testBZip2CompressionProviderFailureOther() throws Exception {
-        Assertions.assertThrows(IOException.class, () -> {
+        InputStream in = new ByteArrayInputStream(new byte[100]) {
 
-            InputStream in = new ByteArrayInputStream(new byte[100]) {
+            @Override
+            public synchronized int read() {
+                ThrowAnyException.throwAnyAsRuntime(new Exception("readError"));
+                return -1;
+            }
+        };
 
-                @Override
-                public synchronized int read() {
-                    ThrowAnyException.throwAnyAsRuntime(new Exception("readError"));
-                    return -1;
-                }
-            };
-            new BZip2CompressionProvider().decompress(in);
-
-        });
+        Assertions.assertThrows(IOException.class, () -> new BZip2CompressionProvider().decompress(in));
     }
 
     @Test
@@ -569,7 +540,7 @@ public class CompressTest {
 
     @Test
     public void testCloseISFailIn() throws Exception {
-        final String message = "could not write!";
+        final String message = "test message";
         OutputStream out = new ByteArrayOutputStream() {
 
             @Override
@@ -585,19 +556,14 @@ public class CompressTest {
         while (err.available() > 0 || compressed.available() > 0) {
             Thread.sleep(100L);
         }
-        Exception actual = null;
-        try {
-            close.read();
-        } catch (Exception e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertEquals(message, actual.getCause().getMessage());
+
+        Exception e = Assertions.assertThrows(IOException.class, () -> close.read());
+        Assertions.assertEquals(message, e.getCause().getMessage());
     }
 
     @Test
     public void testCloseISFailOut() throws Exception {
-        final String message = "could not read!";
+        final String message = "test message";
         OutputStream out = new ByteArrayOutputStream();
         InputStream err = new ByteArrayInputStream("Error".getBytes());
         InputStream compressed = new ByteArrayInputStream(new byte[100]);
@@ -614,23 +580,12 @@ public class CompressTest {
         while (err.available() > 0 || compressed.available() > 0) {
             Thread.sleep(100L);
         }
-        Exception actual = null;
-        try {
-            close.read();
-        } catch (Exception e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertEquals(message, actual.getMessage());
-        actual = null;
-        try {
-            close.read(new byte[100], 0, 100);
-        } catch (Exception e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertEquals(message, actual.getMessage());
 
+        Exception e = Assertions.assertThrows(Exception.class, () -> close.read());
+        Assertions.assertEquals(message, e.getMessage());
+
+        e = Assertions.assertThrows(Exception.class, () -> close.read(new byte[100], 0, 100));
+        Assertions.assertEquals(message, e.getMessage());
     }
 
     @Test
@@ -649,14 +604,8 @@ public class CompressTest {
         InputStream in = new ByteArrayInputStream(new byte[0]);
         CloseIS close = new CloseIS(new DummyProcess(in, out, err), compressed);
 
-        Exception actual = null;
-        try {
-            close.read();
-        } catch (Exception e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertEquals(message, actual.getCause().getMessage());
+        Exception e = Assertions.assertThrows(Exception.class, () -> close.read());
+        Assertions.assertEquals(message, e.getCause().getMessage());
     }
 
     @Test
@@ -674,14 +623,8 @@ public class CompressTest {
         InputStream in = new ByteArrayInputStream(new byte[0]);
         CloseIS close = new CloseIS(new DummyProcess(in, out, err), compressed);
 
-        Exception actual = null;
-        try {
-            close.read();
-        } catch (Exception e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertEquals(message, actual.getCause().getMessage());
+        Exception e = Assertions.assertThrows(Exception.class, () -> close.read());
+        Assertions.assertEquals(message, e.getCause().getMessage());
     }
 
     @Test
@@ -700,34 +643,25 @@ public class CompressTest {
         InputStream in = new ByteArrayInputStream(new byte[0]);
         CloseIS close = new CloseIS(new DummyProcess(in, out, err), compressed);
 
-        Exception actual = null;
-        try {
-            close.read(new byte[100], 0, 100);
-        } catch (Exception e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertEquals(message, actual.getMessage());
+        Exception e = Assertions.assertThrows(Exception.class, () -> close.read(new byte[100], 0, 100));
+        Assertions.assertEquals(message, e.getMessage());
     }
 
     @Test
     public void testCloseISExitValue() throws Exception {
-        Assertions.assertThrows(IOException.class, () -> {
+        OutputStream out = new ByteArrayOutputStream();
+        InputStream err = new ByteArrayInputStream(new byte[0]);
+        InputStream compressed = new ByteArrayInputStream(new byte[0]);
+        InputStream in = new ByteArrayInputStream(new byte[0]);
+        CloseIS close = new CloseIS(new DummyProcess(in, out, err) {
 
-            OutputStream out = new ByteArrayOutputStream();
-            InputStream err = new ByteArrayInputStream(new byte[0]);
-            InputStream compressed = new ByteArrayInputStream(new byte[0]);
-            InputStream in = new ByteArrayInputStream(new byte[0]);
-            CloseIS close = new CloseIS(new DummyProcess(in, out, err) {
-
-                @Override
-                public int exitValue() {
-                    return -1;
-                }
-            }, compressed);
-            close.read();
-
-        });
+            @Override
+            public int exitValue() {
+                return -1;
+            }
+        }, compressed);
+        
+        Assertions.assertThrows(IOException.class, () -> close.read());
     }
 
     @Test
@@ -744,17 +678,14 @@ public class CompressTest {
                 return -1;
             }
         }, compressed);
+        
         // we assume a success even if the join failes
         close.read();
     }
 
     @Test
     public void testBasicCompressProviderFail() throws Exception {
-        Assertions.assertThrows(IOException.class, () -> {
-
-            new BasicCompressProvider().decompress(null);
-
-        });
+        Assertions.assertThrows(IOException.class, () -> new BasicCompressProvider().decompress(null));
     }
 
 }

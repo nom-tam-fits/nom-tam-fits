@@ -900,21 +900,8 @@ public class ColumnTableTest {
         buf.limit(0);
 
         // EOF checks
-        boolean success = false;
-        try {
-            tab.read(in);
-        } catch (EOFException e) {
-            success = true;
-        }
-        Assertions.assertTrue(success);
-
-        success = false;
-        try {
-            tab.read(in, 0, tab.getNRows(), 0);
-        } catch (EOFException e) {
-            success = true;
-        }
-        Assertions.assertTrue(success);
+        Assertions.assertThrows(EOFException.class, () -> tab.read(in));
+        Assertions.assertThrows(EOFException.class, () -> tab.read(in, 0, tab.getNRows(), 0));
 
         in.close();
         out.close();

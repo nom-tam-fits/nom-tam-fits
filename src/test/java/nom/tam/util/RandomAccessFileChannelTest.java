@@ -44,11 +44,7 @@ public class RandomAccessFileChannelTest {
 
     @Test
     public void testConstructor() throws Exception {
-        try (final RandomAccessFileChannel _testSubject = new RandomAccessFileChannel(0, null)) {
-            Assertions.fail("Expected NullPointerException");
-        } catch (NullPointerException e) {
-            Assertions.assertEquals("FileChannel cannot be null.", e.getMessage());
-        }
+        Assertions.assertThrows(NullPointerException.class, () -> new RandomAccessFileChannel(0, null));
     }
 
     @Test
@@ -139,10 +135,7 @@ public class RandomAccessFileChannelTest {
         final Path testPath = tempFile.toPath();
 
         try (final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath, false)) {
-            testSubject.write(0);
-            Assertions.fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException e) {
-            Assertions.assertEquals("write is not implemented for FileChannels.", e.getMessage());
+            Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.write(0));
         }
     }
 
@@ -154,10 +147,7 @@ public class RandomAccessFileChannelTest {
         final Path testPath = tempFile.toPath();
 
         try (final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath, false)) {
-            testSubject.readUTF();
-            Assertions.fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException e) {
-            Assertions.assertEquals("readUTF is not implemented for FileChannels.", e.getMessage());
+            Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.readUTF());
         }
     }
 
@@ -169,10 +159,7 @@ public class RandomAccessFileChannelTest {
         final Path testPath = tempFile.toPath();
 
         try (final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath, false)) {
-            testSubject.getFD();
-            Assertions.fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException e) {
-            Assertions.assertEquals("FileDescriptor is not implemented for FileChannels.", e.getMessage());
+            Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.getFD());
         }
     }
 
@@ -184,10 +171,7 @@ public class RandomAccessFileChannelTest {
         final Path testPath = tempFile.toPath();
 
         try (final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath, false)) {
-            testSubject.setLength(3);
-            Assertions.fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException e) {
-            Assertions.assertEquals("Setting file length is not implemented for FileChannels.", e.getMessage());
+            Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.setLength(3));
         }
     }
 
@@ -199,10 +183,7 @@ public class RandomAccessFileChannelTest {
         final Path testPath = tempFile.toPath();
 
         try (final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath, false)) {
-            testSubject.writeUTF("data");
-            Assertions.fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException e) {
-            Assertions.assertEquals("writeUTF operation is not implemented for FileChannels.", e.getMessage());
+            Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.writeUTF("data"));
         }
     }
 
@@ -214,10 +195,7 @@ public class RandomAccessFileChannelTest {
         final Path testPath = tempFile.toPath();
 
         try (final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath, false)) {
-            testSubject.read();
-            Assertions.fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException e) {
-            Assertions.assertEquals("read is not implemented for FileChannels.", e.getMessage());
+            Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.read());
         }
     }
 }

@@ -173,65 +173,20 @@ public class HeaderCardExceptionsTest {
 
     @Test
     public void testNaNSet() throws Exception {
-        Assertions.assertThrows(NumberFormatException.class, () -> {
-
-            HeaderCard hc = null;
-            try {
-                hc = new HeaderCard("TESTNAN", 0.0);
-            } catch (HeaderCardException e) {
-
-            }
-            Assertions.assertNotNull(hc);
-
-            // This should thrown an exception...
-            hc.setValue(Double.NaN);
-
-        });
+        HeaderCard hc = new HeaderCard("TESTNAN", 0.0);
+        Assertions.assertThrows(NumberFormatException.class, () -> hc.setValue(Double.NaN));
     }
 
     @Test
     public void testInfSet() throws Exception {
-        Assertions.assertThrows(NumberFormatException.class, () -> {
-
-            HeaderCard hc = null;
-            try {
-                hc = new HeaderCard("TESTINF", 0.0);
-            } catch (HeaderCardException e) {
-
-            }
-            Assertions.assertNotNull(hc);
-
-            // This should thrown an exception...
-            hc.setValue(Float.NEGATIVE_INFINITY);
-
-        });
-    }
-
-    @Test
-    public void testInf2Set() throws Exception {
-        Assertions.assertThrows(NumberFormatException.class, () -> {
-
-            HeaderCard hc = null;
-            try {
-                hc = new HeaderCard("TESTINF", 0.0F);
-            } catch (HeaderCardException e) {
-
-            }
-            Assertions.assertNotNull(hc);
-
-            // This should thrown an exception...
-            hc.setValue(Double.POSITIVE_INFINITY);
-
-        });
+        HeaderCard hc = new HeaderCard("TESTINF", 0.0);
+        Assertions.assertThrows(NumberFormatException.class, () -> hc.setValue(Float.NEGATIVE_INFINITY));
+        Assertions.assertThrows(NumberFormatException.class, () -> hc.setValue(Double.POSITIVE_INFINITY));
     }
 
     @Test
     public void testLongBaseKeyword() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("abcDEF123", 0.0F);
-
-        });
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("abcDEF123", 0.0F));
     }
 
     @Test
@@ -272,30 +227,17 @@ public class HeaderCardExceptionsTest {
     public void testLongStringsNotEnabledException1() throws Exception {
         FitsFactory.setLongStringsEnabled(true);
         Assertions.assertTrue(FitsFactory.isLongStringsEnabled());
-        HeaderCard hc = null;
-        try {
-            hc = new HeaderCard("LONG",
-                    "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled.");
-        } catch (HeaderCardException e) {
-        }
-        // The above should not throw an exception.
-        Assertions.assertNotNull(hc);
+
+        new HeaderCard("LONG",
+                "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled.");
 
         FitsFactory.setLongStringsEnabled(false);
         Assertions.assertFalse(FitsFactory.isLongStringsEnabled());
 
-        Throwable cause = null;
+        Exception e = Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("LONG",
+                "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled."));
 
-        // But this one should.
-        try {
-            new HeaderCard("LONG",
-                    "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled.");
-        } catch (HeaderCardException e) {
-            cause = e.getCause();
-        }
-
-        Assertions.assertNotNull(cause);
-        Assertions.assertEquals(LongStringsNotEnabledException.class, cause.getClass());
+        Assertions.assertEquals(LongStringsNotEnabledException.class, e.getCause().getClass());
     }
 
     @Test
@@ -305,56 +247,36 @@ public class HeaderCardExceptionsTest {
         FitsFactory.setLongStringsEnabled(false);
         Assertions.assertFalse(FitsFactory.isLongStringsEnabled());
 
-        boolean thrown = false;
-
-        // But this one should.
-        try {
-            hc.setValue(
-                    "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled.");
-        } catch (LongStringsNotEnabledException e) {
-            thrown = true;
-        }
-
-        Assertions.assertTrue(thrown);
+        Assertions.assertThrows(HeaderCardException.class, () -> hc.setValue(
+                "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled."));
     }
 
     @Test
     public void testLongStringsNotEnabledException3() throws Exception {
-        Assertions.assertThrows(LongStringsNotEnabledException.class, () -> {
+        FitsFactory.setLongStringsEnabled(true);
+        Assertions.assertTrue(FitsFactory.isLongStringsEnabled());
 
-            FitsFactory.setLongStringsEnabled(true);
-            Assertions.assertTrue(FitsFactory.isLongStringsEnabled());
-            HeaderCard hc = null;
-            try {
-                hc = new HeaderCard("LONG",
-                        "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled.");
-            } catch (HeaderCardException e) {
-            }
-            // The above should not throw an exception.
-            Assertions.assertNotNull(hc);
-            Assertions.assertTrue(hc.isStringValue());
-            Assertions.assertTrue(hc.isKeyValuePair());
-            Assertions.assertFalse(hc.hasHierarchKey());
+        HeaderCard hc = new HeaderCard("LONG",
+                "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled.");
 
-            HeaderCard hc2 = null;
-            try {
-                // Parse back...
-                hc2 = HeaderCard.create(hc.toString());
-            } catch (HierarchNotEnabledException e) {
-            }
-            // The above should not throw an exception.
-            Assertions.assertNotNull(hc2);
-            Assertions.assertEquals(hc.getKey(), hc2.getKey());
-            Assertions.assertEquals(hc.getValue(), hc2.getValue());
-            Assertions.assertEquals(hc.getComment(), hc2.getComment());
-            Assertions.assertEquals(hc.isStringValue(), hc2.isStringValue());
+        // The above should not throw an exception.
+        Assertions.assertTrue(hc.isStringValue());
+        Assertions.assertTrue(hc.isKeyValuePair());
+        Assertions.assertFalse(hc.hasHierarchKey());
 
-            FitsFactory.setLongStringsEnabled(false);
-            Assertions.assertFalse(FitsFactory.isLongStringsEnabled());
-            // But this one should.
-            hc2.toString();
+        HeaderCard hc2 = HeaderCard.create(hc.toString());
 
-        });
+        // The above should not throw an exception.
+        Assertions.assertEquals(hc.getKey(), hc2.getKey());
+        Assertions.assertEquals(hc.getValue(), hc2.getValue());
+        Assertions.assertEquals(hc.getComment(), hc2.getComment());
+        Assertions.assertEquals(hc.isStringValue(), hc2.isStringValue());
+
+        FitsFactory.setLongStringsEnabled(false);
+        Assertions.assertFalse(FitsFactory.isLongStringsEnabled());
+
+        // But this one should.
+        Assertions.assertThrows(LongStringsNotEnabledException.class, () -> hc2.toString());
     }
 
     @Test
@@ -410,24 +332,15 @@ public class HeaderCardExceptionsTest {
     public void testHierarchNotEnabledException1() throws Exception {
         FitsFactory.setUseHierarch(true);
         Assertions.assertTrue(FitsFactory.getUseHierarch());
-        HeaderCard hc = null;
-        try {
-            hc = new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE", 1, "comment");
-        } catch (HeaderCardException e) {
-        }
+        HeaderCard hc = new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE", 1, "comment");
+
         // The above should not throw an exception.
-        Assertions.assertNotNull(hc);
         Assertions.assertTrue(hc.hasHierarchKey());
         Assertions.assertTrue(hc.isIntegerType());
 
-        HeaderCard hc2 = null;
-        try {
-            // Parse back...
-            hc2 = HeaderCard.create(hc.toString());
-        } catch (HierarchNotEnabledException e) {
-        }
+        HeaderCard hc2 = HeaderCard.create(hc.toString());
+
         // The above should not throw an exception.
-        Assertions.assertNotNull(hc2);
         Assertions.assertEquals(hc.getKey(), hc2.getKey());
         Assertions.assertEquals(hc.getValue(), hc2.getValue());
         Assertions.assertEquals(hc.getComment(), hc2.getComment());
@@ -437,42 +350,28 @@ public class HeaderCardExceptionsTest {
         FitsFactory.setUseHierarch(false);
         Assertions.assertFalse(FitsFactory.getUseHierarch());
 
-        Throwable cause = null;
-
         // But this one should.
-        try {
-            hc = new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE", 1);
-        } catch (HeaderCardException e) {
-            cause = e.getCause();
-        }
-
-        Assertions.assertNotNull(cause);
-        Assertions.assertEquals(HierarchNotEnabledException.class, cause.getClass());
+        Exception e = Assertions.assertThrows(HeaderCardException.class,
+                () -> new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE", 1));
+        Assertions.assertEquals(HierarchNotEnabledException.class, e.getCause().getClass());
     }
 
     @Test
     public void testHierarchNotEnabledException2() throws Exception {
-        Assertions.assertThrows(HierarchNotEnabledException.class, () -> {
+        FitsFactory.setUseHierarch(true);
+        Assertions.assertTrue(FitsFactory.getUseHierarch());
+        HeaderCard hc = HeaderCard.create("HIERARCH AAA BBB CCC DDD EEE FFF = 1.0 / comment");
 
-            FitsFactory.setUseHierarch(true);
-            Assertions.assertTrue(FitsFactory.getUseHierarch());
-            HeaderCard hc = null;
-            try {
-                hc = HeaderCard.create("HIERARCH AAA BBB CCC DDD EEE FFF = 1.0 / comment");
-            } catch (HierarchNotEnabledException e) {
-            }
-            // The above should not throw an exception.
-            Assertions.assertNotNull(hc);
-            Assertions.assertTrue(hc.hasHierarchKey());
-            Assertions.assertFalse(hc.isIntegerType());
-            Assertions.assertTrue(hc.isDecimalType());
+        // The above should not throw an exception.
+        Assertions.assertTrue(hc.hasHierarchKey());
+        Assertions.assertFalse(hc.isIntegerType());
+        Assertions.assertTrue(hc.isDecimalType());
 
-            FitsFactory.setUseHierarch(false);
-            Assertions.assertFalse(FitsFactory.getUseHierarch());
-            // But this one should.
-            hc.toString();
+        FitsFactory.setUseHierarch(false);
+        Assertions.assertFalse(FitsFactory.getUseHierarch());
 
-        });
+        // But this one should.
+        Assertions.assertThrows(HierarchNotEnabledException.class, () -> hc.toString());
     }
 
     @Test
@@ -483,27 +382,13 @@ public class HeaderCardExceptionsTest {
         FitsFactory.setAllowHeaderRepairs(true);
         Assertions.assertTrue(FitsFactory.isAllowHeaderRepairs());
 
-        HeaderCard hc = null;
+        HeaderCard.create(card);
 
-        try {
-            hc = HeaderCard.create(card);
-        } catch (Exception e) {
-        }
-
-        Assertions.assertNotNull(hc);
         FitsFactory.setAllowHeaderRepairs(false);
         Assertions.assertFalse(FitsFactory.isAllowHeaderRepairs());
 
-        Throwable cause = null;
-
-        try {
-            HeaderCard.create(card);
-        } catch (IllegalArgumentException e) {
-            cause = e.getCause();
-        }
-
-        Assertions.assertNotNull(cause);
-        Assertions.assertEquals(UnclosedQuoteException.class, cause.getClass());
+        Exception e = Assertions.assertThrows(IllegalArgumentException.class, () -> HeaderCard.create(card));
+        Assertions.assertEquals(UnclosedQuoteException.class, e.getCause().getClass());
     }
 
     @Test
@@ -514,26 +399,11 @@ public class HeaderCardExceptionsTest {
         FitsFactory.setAllowHeaderRepairs(true);
         Assertions.assertTrue(FitsFactory.isAllowHeaderRepairs());
 
-        HeaderCard hc = null;
-
-        try {
-            hc = HeaderCard.create(card);
-        } catch (Exception e) {
-        }
-
-        Assertions.assertNotNull(hc);
+        HeaderCard.create(card);
 
         FitsFactory.setAllowHeaderRepairs(false);
 
-        Throwable cause = null;
-
-        try {
-            HeaderCard.create(card);
-        } catch (IllegalArgumentException e) {
-            cause = e.getCause();
-        }
-
-        Assertions.assertNotNull(cause);
-        Assertions.assertEquals(UnclosedQuoteException.class, cause.getClass());
+        Exception e = Assertions.assertThrows(IllegalArgumentException.class, () -> HeaderCard.create(card));
+        Assertions.assertEquals(UnclosedQuoteException.class, e.getCause().getClass());
     }
 }

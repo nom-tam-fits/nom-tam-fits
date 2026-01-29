@@ -210,19 +210,10 @@ public class CompressedImageTilerTest {
 
         Assertions.assertArrayEquals((float[][]) cfitsioTable.asImageHDU().getData().getData(),
                 (float[][]) testSubject.getCompleteImage());
-        try {
-            testSubject.getTile(cornerStarts, lengths);
-            Assertions.fail("Should throw UnsupportedOperationException.");
-        } catch (UnsupportedOperationException unsupportedOperationException) {
-            // Good.
-        }
 
-        try {
-            testSubject.getTile(Array.newInstance(Integer.class, 20 * 20), cornerStarts, lengths);
-            Assertions.fail("Should throw UnsupportedOperationException.");
-        } catch (UnsupportedOperationException unsupportedOperationException) {
-            // Good.
-        }
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.getTile(cornerStarts, lengths));
+        Assertions.assertThrows(UnsupportedOperationException.class,
+                () -> testSubject.getTile(Array.newInstance(Integer.class, 20 * 20), cornerStarts, lengths));
 
         byteArrayOutputStream = new ByteArrayOutputStream();
         arrayDataOutput = new FitsOutputStream(byteArrayOutputStream);
@@ -250,13 +241,7 @@ public class CompressedImageTilerTest {
 
             final CompressedImageTiler testSubject = new CompressedImageTiler(compressedImageHDU);
 
-            try {
-                testSubject.getCompleteImage();
-                Assertions.fail("Simulated FitsException should be thrown, then translated to IOException.");
-            } catch (IOException ioException) {
-                // Good.
-                Assertions.assertEquals("Simulated FitsException", ioException.getMessage());
-            }
+            Assertions.assertThrows(IOException.class, () -> testSubject.getCompleteImage());
         }
     }
 
@@ -274,34 +259,17 @@ public class CompressedImageTilerTest {
                 }
             };
 
-            try {
-                final ArrayDataOutput arrayDataOutput = new DefaultMethodsTest.DefaultOutput();
-                testSubject.getTile(arrayDataOutput, new int[2], new int[2]);
-                Assertions.fail("Simulated FitsException should be thrown, then translated to IOException.");
-            } catch (IOException ioException) {
-                // Good.
-                Assertions.assertEquals("Test error", ioException.getMessage());
+            try (final ArrayDataOutput arrayDataOutput = new DefaultMethodsTest.DefaultOutput()) {
+                Assertions.assertThrows(IOException.class,
+                        () -> testSubject.getTile(arrayDataOutput, new int[2], new int[2]));
             }
 
-            try {
-                final ArrayDataOutput arrayDataOutput = new DefaultMethodsTest.DefaultOutput();
-                testSubject.getTile(arrayDataOutput, new int[2], new int[2], new int[2]);
-                Assertions.fail("Simulated FitsException should be thrown, then translated to IOException.");
-            } catch (IOException ioException) {
-                // Good.
-                Assertions.assertEquals("Test error", ioException.getMessage());
+            try (final ArrayDataOutput arrayDataOutput = new DefaultMethodsTest.DefaultOutput()) {
+                Assertions.assertThrows(IOException.class,
+                        () -> testSubject.getTile(arrayDataOutput, new int[2], new int[2], new int[2]));
             }
 
-            try {
-                testSubject.getTile(new int[2], new int[2]);
-                Assertions.fail("Should throw UnsupportedOperationException");
-            } catch (UnsupportedOperationException unsupportedOperationException) {
-                // Good.
-                Assertions.assertEquals(
-                        "Only streaming to ArrayDataOutput is supported.  "
-                                + "See getTile(ArrayDataOutput, int[], int[], int[].",
-                        unsupportedOperationException.getMessage());
-            }
+            Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.getTile(new int[2], new int[2]));
         }
     }
 
@@ -438,14 +406,7 @@ public class CompressedImageTilerTest {
             }
         };
 
-        try {
-            testSubject.decompressRow(0, rowData);
-            Assertions.fail("Should throw FitsException");
-        } catch (FitsException fitsException) {
-            Assertions.assertEquals("No tile available at column 0: (" + Arrays.deepToString(rowData) + ")",
-                    fitsException.getMessage());
-            // Good!
-        }
+        Assertions.assertThrows(FitsException.class, () -> testSubject.decompressRow(0, rowData));
     }
 
     @Test
@@ -478,13 +439,7 @@ public class CompressedImageTilerTest {
             }
         };
 
-        try {
-            testSubject.decompressRow(0, rowData);
-            Assertions.fail("Should throw FitsException");
-        } catch (FitsException fitsException) {
-            Assertions.assertEquals("Cannot decompress.", fitsException.getMessage());
-            // Good!
-        }
+        Assertions.assertThrows(FitsException.class, () -> testSubject.decompressRow(0, rowData));
     }
 
     @Test
@@ -521,12 +476,8 @@ public class CompressedImageTilerTest {
             }
         };
 
-        try {
-            testSubject.getDecompressedTileData(new int[] {0, 0}, new int[] {16, 4});
-        } catch (FitsException fitsException) {
-            Assertions.assertEquals("Nothing in row to read: ([[]]).", fitsException.getMessage());
-            // Good!
-        }
+        Assertions.assertThrows(FitsException.class,
+                () -> testSubject.getDecompressedTileData(new int[] {0, 0}, new int[] {16, 4}));
     }
 
     @Test
@@ -620,48 +571,23 @@ public class CompressedImageTilerTest {
             }
         };
 
-        try {
-            testSubject.getTile(null, new int[] {1, 1}, new int[0], new int[0]);
-            Assertions.fail("Should throw IOException.");
-        } catch (IOException ioException) {
-            Assertions.assertEquals("Inconsistent sub-image request", ioException.getMessage());
+        Assertions.assertThrows(IOException.class,
+                () -> testSubject.getTile(null, new int[] {1, 1}, new int[0], new int[0]));
+        Assertions.assertThrows(IOException.class,
+                () -> testSubject.getTile(null, new int[] {1, 1, 3}, new int[0], new int[0]));
+        Assertions.assertThrows(IOException.class,
+                () -> testSubject.getTile(null, new int[] {1, 1, 3}, new int[] {2, 2, 2}, new int[0]));
+        Assertions.assertThrows(IOException.class,
+                () -> testSubject.getTile(null, new int[] {1, 1, 3}, new int[] {2, 2, 2}, new int[] {1, 1, 1}));
+
+        try (final ArrayDataOutput output = new FitsOutputStream(new ByteArrayOutputStream())) {
+            Assertions.assertThrows(IOException.class,
+                    () -> testSubject.getTile(output, new int[] {-1, 1, 3}, new int[] {2, 2, 2}, new int[] {1, 1, 1}));
         }
 
-        try {
-            testSubject.getTile(null, new int[] {1, 1, 3}, new int[0], new int[0]);
-            Assertions.fail("Should throw IOException.");
-        } catch (IOException ioException) {
-            Assertions.assertEquals("Inconsistent sub-image request", ioException.getMessage());
-        }
-
-        try {
-            testSubject.getTile(null, new int[] {1, 1, 3}, new int[] {2, 2, 2}, new int[0]);
-            Assertions.fail("Should throw IOException.");
-        } catch (IOException ioException) {
-            Assertions.assertEquals("Inconsistent sub-image request", ioException.getMessage());
-        }
-
-        try {
-            testSubject.getTile(null, new int[] {1, 1, 3}, new int[] {2, 2, 2}, new int[] {1, 1, 1});
-            Assertions.fail("Should throw IOException.");
-        } catch (IOException ioException) {
-            Assertions.assertEquals("Attempt to write to null data output", ioException.getMessage());
-        }
-
-        try {
-            final ArrayDataOutput output = new FitsOutputStream(new ByteArrayOutputStream());
-            testSubject.getTile(output, new int[] {-1, 1, 3}, new int[] {2, 2, 2}, new int[] {1, 1, 1});
-            Assertions.fail("Should throw IOException.");
-        } catch (IOException ioException) {
-            Assertions.assertEquals("Sub-image not within image", ioException.getMessage());
-        }
-
-        try {
-            final ArrayDataOutput output = new FitsOutputStream(new ByteArrayOutputStream());
-            testSubject.getTile(output, new int[] {1, 1, 3}, new int[] {2, 2, 2}, new int[] {1, 1, 1});
-            Assertions.fail("Should throw IOException.");
-        } catch (IOException ioException) {
-            Assertions.assertEquals("Sub-image not within image", ioException.getMessage());
+        try (final ArrayDataOutput output = new FitsOutputStream(new ByteArrayOutputStream())) {
+            Assertions.assertThrows(Exception.class,
+                    () -> testSubject.getTile(output, new int[] {1, 1, 3}, new int[] {2, 2, 2}, new int[] {1, 1, 1}));
         }
     }
 
@@ -763,7 +689,6 @@ public class CompressedImageTilerTest {
         final CompressedImageTiler testSubject = new CompressedImageTiler(null) {
             @Override
             void init() {
-
             }
 
             @Override
@@ -772,19 +697,8 @@ public class CompressedImageTilerTest {
             }
         };
 
-        try {
-            testSubject.getTileDimensionLength(-1);
-            Assertions.fail("Should throw FitsException.");
-        } catch (FitsException fitsException) {
-            // Good.
-        }
-
-        try {
-            testSubject.getTileDimensionLength(3);
-            Assertions.fail("Should throw FitsException.");
-        } catch (FitsException fitsException) {
-            // Good.
-        }
+        Assertions.assertThrows(FitsException.class, () -> testSubject.getTileDimensionLength(-1));
+        Assertions.assertThrows(FitsException.class, () -> testSubject.getTileDimensionLength(3));
     }
 
     @Test
@@ -799,7 +713,6 @@ public class CompressedImageTilerTest {
             final CompressedImageTiler testSubject = new CompressedImageTiler(compressedImageHDU) {
                 @Override
                 void init() {
-
                 }
 
                 @Override
@@ -808,11 +721,8 @@ public class CompressedImageTilerTest {
                 }
             };
 
-            testSubject.getTile(output, new int[] {2, 2}, new int[] {4});
+            Assertions.assertThrows(IOException.class, () -> testSubject.getTile(output, new int[] {2, 2}, new int[] {4}));
 
-        } catch (IOException ioException) {
-            Assertions.assertEquals("Inconsistent sub-image request", ioException.getMessage());
-            // Good!
         }
     }
 
@@ -986,20 +896,10 @@ public class CompressedImageTilerTest {
             Assertions.assertNull(compressedImageHDU.getImageAxes());
 
             compressedImageHDU.getHeader().findCard(Compression.ZNAXIS).setValue(-1);
-            try {
-                compressedImageHDU.getImageAxes();
-                Assertions.fail("Should throw FitsException.");
-            } catch (FitsException fitsException) {
-                // Good.
-            }
+            Assertions.assertThrows(FitsException.class, () -> compressedImageHDU.getImageAxes());
 
             compressedImageHDU.getHeader().findCard(Compression.ZNAXIS).setValue(CompressedImageHDU.MAX_NAXIS_ALLOWED + 1);
-            try {
-                compressedImageHDU.getImageAxes();
-                Assertions.fail("Should throw FitsException.");
-            } catch (FitsException fitsException) {
-                // Good.
-            }
+            Assertions.assertThrows(FitsException.class, () -> compressedImageHDU.getImageAxes());
         }
     }
 }

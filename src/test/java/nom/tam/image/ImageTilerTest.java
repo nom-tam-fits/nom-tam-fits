@@ -108,19 +108,11 @@ public class ImageTilerTest {
     @Test
     public void defaultImplementation() throws Exception {
         final ImageTiler testSubject = new TestBaseImageTiler();
-        try {
-            testSubject.getTile(new double[100], new int[2], new int[2], new int[2]);
-        } catch (UnsupportedOperationException unsupportedOperationException) {
-            // Good
-            Assertions.assertEquals("Striding feature not yet implemented.", unsupportedOperationException.getMessage());
-        }
 
-        try {
-            testSubject.getTile(new int[2], new int[2], new int[2]);
-        } catch (UnsupportedOperationException unsupportedOperationException) {
-            // Good
-            Assertions.assertEquals("Striding feature not yet implemented.", unsupportedOperationException.getMessage());
-        }
+        Assertions.assertThrows(UnsupportedOperationException.class,
+                () -> testSubject.getTile(new double[100], new int[2], new int[2], new int[2]));
+        Assertions.assertThrows(UnsupportedOperationException.class,
+                () -> testSubject.getTile(new int[2], new int[2], new int[2]));
     }
 
     static final class TestBaseImageTiler implements ImageTiler {

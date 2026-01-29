@@ -93,35 +93,15 @@ public class FlexFormatTest {
 
         f.setWidth(10);
         Assertions.assertEquals(10, f.getWidth());
-
-        boolean thrown = false;
-        try {
-            s = f.format(Math.PI);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
+        Assertions.assertThrows(LongValueException.class, () -> f.format(Math.PI));
 
         f.setWidth(-100);
         Assertions.assertEquals(0, f.getWidth());
-
-        thrown = false;
-        try {
-            s = f.format(Math.PI);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
+        Assertions.assertThrows(LongValueException.class, () -> f.format(Math.PI));
 
         f.setWidth(2);
         f.autoPrecision();
-        thrown = false;
-        try {
-            s = f.format(Math.PI);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
+        Assertions.assertThrows(LongValueException.class, () -> f.format(Math.PI));
     }
 
     @Test

@@ -78,6 +78,7 @@ public class UserProvidedTest {
     public void testRewriteableHierarchImageWithLongStrings() throws Exception {
         boolean longStringsEnabled = FitsFactory.isLongStringsEnabled();
         boolean useHierarch = FitsFactory.getUseHierarch();
+
         try {
             FitsFactory.setUseHierarch(true);
             FitsFactory.setLongStringsEnabled(true);

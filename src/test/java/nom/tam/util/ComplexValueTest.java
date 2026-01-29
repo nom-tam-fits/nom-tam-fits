@@ -113,37 +113,10 @@ public class ComplexValueTest {
         z = new ComplexValue(Double.NaN, Double.NEGATIVE_INFINITY);
         Assertions.assertFalse(z.isFinite());
 
-        boolean thrown = false;
+        Assertions.assertThrows(LongValueException.class, () -> new ComplexValue(1.0, -2.0).toBoundedString(4));
 
-        try {
-            z = new ComplexValue(1.0, -2.0);
-            // No ComplexValue should be printable in 4 characters...
-            z.toBoundedString(4);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
-
-        thrown = false;
-        try {
-            z = new ComplexValue(1.1, 2.1);
-            // Should be printable in 9 characters "(1.1,2.1)
-            z.toBoundedString(9);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        Assertions.assertFalse(thrown);
-
-        thrown = false;
-        try {
-            z = new ComplexValue(1.1, -2.1);
-            // Should require at least 10 characters "(1.1,-2.1)
-            z.toBoundedString(9);
-            thrown = true;
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
+        new ComplexValue(1.1, 2.1).toBoundedString(9);
+        Assertions.assertThrows(LongValueException.class, () -> new ComplexValue(1.1, -2.1).toBoundedString(9));
     }
 
     @Test
@@ -385,14 +358,7 @@ public class ComplexValueTest {
     @Test
     public void testComplexNaNSetCard() throws Exception {
         HeaderCard hc = new HeaderCard("COMPLEX", new ComplexValue(1.0, -2.0));
-
-        boolean thrown = false;
-        try {
-            hc.setValue(new ComplexValue(Double.NaN, -2.0));
-        } catch (NumberFormatException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
+        Assertions.assertThrows(NumberFormatException.class, () -> hc.setValue(new ComplexValue(Double.NaN, -2.0)));
     }
 
     @Test
@@ -409,26 +375,11 @@ public class ComplexValueTest {
     @Test
     public void testNoSpaceComplexValue() throws Exception {
         FitsFactory.setUseHierarch(true);
-        HeaderCard hc = null;
+        HeaderCard hc = new HeaderCard(Hierarch.key("SOME.VERY.LONG.COMPLEX.KEYWORD.TAKING.UP.ALL.THE.SPACE"), true,
+                "comment");
 
-        try {
-            hc = new HeaderCard(Hierarch.key("SOME.VERY.LONG.COMPLEX.KEYWORD.TAKING.UP.ALL.THE.SPACE"), true, "comment");
-            hc.setValue(new ComplexValue(0.0, 0.0));
-        } catch (HeaderCardException e) {
-
-        }
-
-        Assertions.assertNotNull(hc);
-
-        boolean thrown = false;
-
-        try {
-            // This should throw an expcetion as there is no space for the value...
-            hc.setValue(new ComplexValue(Math.PI, -Math.PI), 16);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        Assertions.assertTrue(thrown);
+        hc.setValue(new ComplexValue(0.0, 0.0));
+        Assertions.assertThrows(LongValueException.class, () -> hc.setValue(new ComplexValue(Math.PI, -Math.PI), 16));
     }
 
     @Test

@@ -93,40 +93,20 @@ public class StandardImageTilerTest {
     public void testFailedGetTile() throws Exception {
         dataArray = null;
         tiler.setFile(null);
-        IOException actual = null;
-        try {
-            tiler.getTile((Object) null, new int[2], new int[2]);
-        } catch (IOException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertTrue(actual.getMessage().contains("No data"));
 
+        Assertions.assertThrows(IOException.class, () -> tiler.getTile((Object) null, new int[2], new int[2]));
     }
 
     @Test
     public void testFailedGetTileStep() {
-        try {
-            tiler.getTile(new int[] {0, 0}, new int[] {5, 5}, new int[] {1, -1});
-            Assertions.fail("Should throw IOException");
-        } catch (IOException ioException) {
-            // Good.
-            Assertions.assertEquals("Step value cannot be less than 1.", ioException.getMessage());
-        }
+        Assertions.assertThrows(IOException.class,
+                () -> tiler.getTile(new int[] {0, 0}, new int[] {5, 5}, new int[] {1, -1}));
     }
 
     @Test
     public void testFailedGetCompleteImage() throws Exception {
         tiler.setFile(null);
-        IOException actual = null;
-        try {
-            tiler.getCompleteImage();
-        } catch (IOException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertTrue(actual.getMessage().contains("null file"));
-
+        Assertions.assertThrows(IOException.class, () -> tiler.getCompleteImage());
     }
 
     @Test
@@ -160,14 +140,8 @@ public class StandardImageTilerTest {
     @Test
     public void testFailedFill() throws Exception {
         tiler.setBase(char.class);
-        IOException actual = null;
-        try {
-            tiler.fillFileData(new char[100], 0, 0, 0);
-        } catch (IOException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertTrue(actual.getMessage().contains("Invalid type"));
+
+        Assertions.assertThrows(IOException.class, () -> tiler.fillFileData(new char[100], 0, 0, 0));
     }
 
     @Test

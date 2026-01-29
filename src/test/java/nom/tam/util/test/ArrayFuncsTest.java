@@ -322,14 +322,8 @@ public class ArrayFuncsTest {
 
     @Test
     public void testOutOfMemory() {
-        OutOfMemoryError error = null;
-        try {
-            Object result = nom.tam.util.TestArrayFuncs.generateArray(long.class,
-                    new int[] {Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE});
-        } catch (OutOfMemoryError error2) {
-            error = error2;
-        }
-        Assertions.assertNotNull(error);
+        Assertions.assertThrows(OutOfMemoryError.class, () -> nom.tam.util.TestArrayFuncs.generateArray(long.class,
+                new int[] {Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE}));
     }
 
     /**

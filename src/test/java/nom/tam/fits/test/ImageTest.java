@@ -145,16 +145,9 @@ public class ImageTest {
         double[] img1 = (double[]) ArrayFuncs.flatten(dimg);
 
         // Make HDUs of various types.
-        Exception actual = null;
-        Fits f = null;
-        try {
-            f = new Fits();
-            try {
-                f.insertHDU(makeHDU(bimg), f.getNumberOfHDUs() + 1);
-            } catch (Exception ex) {
-                actual = ex;
-            }
-            Assertions.assertNotNull(actual);
+        try (Fits f = new Fits()) {
+            Assertions.assertThrows(FitsException.class, () -> f.insertHDU(makeHDU(bimg), f.getNumberOfHDUs() + 1));
+
             f.insertHDU(makeHDU(bimg), f.getNumberOfHDUs());
 
             f.addHDU(Fits.makeHDU(simg));
@@ -168,22 +161,13 @@ public class ImageTest {
             Assertions.assertEquals(f.getNumberOfHDUs(), 8);
 
             // Write a FITS file.
-            FitsFile bf = null;
-            try {
-                bf = new FitsFile("target/image1.fits", "rw");
+            try (FitsFile bf = new FitsFile("target/image1.fits", "rw")) {
                 f.write(bf);
                 bf.flush();
-            } finally {
-                SafeClose.close(bf);
             }
-        } finally {
-            SafeClose.close(f);
         }
 
-        FitsFile bf = null;
-        try {
-            bf = new FitsFile(new File("target/image1.fits"));
-            f = new Fits("target/image1.fits");
+        try (FitsFile bf = new FitsFile(new File("target/image1.fits")); Fits f = new Fits("target/image1.fits")) {
 
             // Read a FITS file
             BasicHDU<?>[] hdus = f.read();
@@ -231,9 +215,6 @@ public class ImageTest {
             Assertions.assertTrue(TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
 
             Assertions.assertArrayEquals(new byte[0], (byte[]) new ImageData().getData());
-        } finally {
-            SafeClose.close(f);
-            SafeClose.close(bf);
         }
     }
 

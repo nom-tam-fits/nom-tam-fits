@@ -1904,7 +1904,6 @@ public class BinaryTableNewTest {
                 throw new Exception(e.getMessage(), e);
             }
             new BinaryTable(h);
-
         });
     }
 

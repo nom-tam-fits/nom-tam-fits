@@ -54,6 +54,7 @@ import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.SafeClose;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class StreamTest {
 
     private static FitsOutputStream ou;
@@ -513,19 +514,24 @@ public class StreamTest {
     @Test
     public void testReadFully() throws Exception {
         PipedInputStream pipeInput = new PipedInputStream(1024);
-        FitsOutputStream out = new FitsOutputStream(new PipedOutputStream(pipeInput));
-        FitsInputStream in = new FitsInputStream(pipeInput);
-        for (int index = 0; index < 255; index++) {
-            out.writeByte(index);
-        }
-        out.close();
         byte[] readBytes = new byte[255];
-        in.readFully(readBytes);
-        in = new FitsInputStream(new ByteArrayInputStream(readBytes));
-        for (int index = 0; index < readBytes.length; index++) {
-            Assertions.assertEquals(index, in.readUnsignedByte());
+
+        try (FitsOutputStream out = new FitsOutputStream(new PipedOutputStream(pipeInput));
+                FitsInputStream in = new FitsInputStream(pipeInput)) {
+            for (int index = 0; index < 255; index++) {
+                out.writeByte(index);
+            }
+            out.close();
+
+            in.readFully(readBytes);
         }
-        Assertions.assertEquals(0, in.available());
+
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(readBytes))) {
+            for (int index = 0; index < readBytes.length; index++) {
+                Assertions.assertEquals(index, in.readUnsignedByte());
+            }
+            Assertions.assertEquals(0, in.available());
+        }
     }
 
     @Test
@@ -571,13 +577,8 @@ public class StreamTest {
     @Test
     public void testIntEof() throws Exception {
         FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[3]));
-        EOFException expectedEof = null;
-        try {
-            in.readInt();
-        } catch (EOFException eof) {
-            expectedEof = eof;
-        }
-        Assertions.assertNotNull(expectedEof);
+
+        Assertions.assertThrows(EOFException.class, () -> in.readInt());
         Assertions.assertEquals(0, in.available());
     }
 
@@ -599,84 +600,95 @@ public class StreamTest {
 
     @Test
     public void testEofHandlingCharArray() throws Exception {
-        Assertions.assertEquals(8, create8ByteInput().read(new char[10]));
-        Assertions.assertEquals(8, create8ByteInput().readArray(new char[10]));
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.read(new char[10]));
+        }
+
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.readArray(new char[10]));
+        }
     }
 
     @Test
     public void testEofHandlingBooleanArray() throws Exception {
-        Assertions.assertEquals(8, create8ByteInput().read(new boolean[10]));
-        Assertions.assertEquals(8, create8ByteInput().readArray(new boolean[10]));
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.read(new boolean[10]));
+        }
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.readArray(new boolean[10]));
+        }
     }
 
     @Test
     public void testEofHandlingDoubleArray() throws Exception {
-        Assertions.assertEquals(8, create8ByteInput().read(new double[10]));
-        Assertions.assertEquals(8, create8ByteInput().readArray(new double[10]));
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.read(new double[10]));
+        }
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.readArray(new double[10]));
+        }
     }
 
     @Test
     public void testEofHandlingFloatArray() throws Exception {
-        Assertions.assertEquals(8, create8ByteInput().read(new float[10]));
-        Assertions.assertEquals(8, create8ByteInput().readArray(new float[10]));
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.read(new float[10]));
+        }
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.readArray(new float[10]));
+        }
     }
 
     @Test
     public void testEofHandlingIntArray() throws Exception {
-        Assertions.assertEquals(8, create8ByteInput().read(new int[10]));
-        Assertions.assertEquals(8, create8ByteInput().readArray(new int[10]));
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.read(new int[10]));
+        }
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.readArray(new int[10]));
+        }
     }
 
     @Test
     public void testEofHandlingLongArray() throws Exception {
-        Assertions.assertEquals(8, create8ByteInput().read(new long[10]));
-        Assertions.assertEquals(8, create8ByteInput().readArray(new long[10]));
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.read(new long[10]));
+        }
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.readArray(new long[10]));
+        }
     }
 
     @Test
     public void testEofHandlingShortArray() throws Exception {
-        Assertions.assertEquals(8, create8ByteInput().read(new short[10]));
-        FitsInputStream create8ByteInput = create8ByteInput();
-        Assertions.assertEquals(8, create8ByteInput.readArray(new short[10]));
-        EOFException expectedEof = null;
-        try {
-            create8ByteInput.readArray(new short[10]);
-        } catch (EOFException eof) {
-            expectedEof = eof;
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.read(new short[10]));
         }
-        Assertions.assertNotNull(expectedEof);
+
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.readArray(new short[10]));
+            Assertions.assertThrows(EOFException.class, () -> in.readArray(new short[10]));
+        }
     }
 
     @Test
     public void testEofHandlingByteArray() throws Exception {
-
-        FitsInputStream create8ByteInput = create8ByteInput();
-        EOFException expectedEof = null;
-        try {
-            create8ByteInput.read(new byte[0], 0, 0);
-        } catch (EOFException eof) {
-            expectedEof = eof;
+        try (FitsInputStream in = create8ByteInput()) {
+            in.read(new byte[0], 0, 0);
         }
-        Assertions.assertNull(expectedEof);
     }
 
     @Test
     public void testReadWriteLine() throws Exception {
         ByteArrayOutputStream o = new ByteArrayOutputStream();
-        FitsOutputStream out = null;
-        try {
-            out = new FitsOutputStream(o);
+
+        try (FitsOutputStream out = new FitsOutputStream(o)) {
             out.writeBytes("bla bla\n");
-        } finally {
-            SafeClose.close(out);
         }
-        FitsInputStream input = null;
-        try {
-            input = new FitsInputStream(new ByteArrayInputStream(o.toByteArray()));
+
+        try (FitsInputStream input = new FitsInputStream(new ByteArrayInputStream(o.toByteArray()))) {
             String line = input.readLine();
             Assertions.assertEquals("bla bla", line);
-        } finally {
-            SafeClose.close(input);
         }
     }
 
@@ -722,7 +734,9 @@ public class StreamTest {
 
     @Test
     public void testReadWithoutSource() throws FitsException, IOException {
-        Assertions.assertNull(new Fits().readHDU());
+        try (Fits f = new Fits()) {
+            Assertions.assertNull(f.readHDU());
+        }
     }
 
 }

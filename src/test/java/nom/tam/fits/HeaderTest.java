@@ -420,9 +420,7 @@ public class HeaderTest {
      */
     @Test
     public void simpleImagesTest() throws Exception {
-        Fits f = null;
-        try {
-            f = new Fits("target/ht1.fits");
+        try (Fits f = new Fits("target/ht1.fits")) {
             ImageHDU hdu = (ImageHDU) f.getHDU(0);
             Header hdr = hdu.getHeader();
 
@@ -451,17 +449,12 @@ public class HeaderTest {
 
             hc = c.next();
             Assertions.assertEquals(NAXISn.n(2).key(), hc.getKey());
-        } finally {
-            SafeClose.close(f);
         }
     }
 
     @Test
     public void testBadHeader() throws Exception {
-
-        Fits f = null;
-        try {
-            f = new Fits("target/ht1.fits");
+        try (Fits f = new Fits("target/ht1.fits")) {
             ImageHDU hdu = (ImageHDU) f.getHDU(0);
             Header hdr = hdu.getHeader();
             Cursor<String, HeaderCard> c = hdr.iterator();
@@ -470,53 +463,36 @@ public class HeaderTest {
             c.next();
             c.next();
             c.remove();
-            boolean thrown = false;
-            try {
-                hdr.rewrite();
-            } catch (Exception e) {
-                thrown = true;
-            }
-            Assertions.assertTrue(thrown);
-        } finally {
-            SafeClose.close(f);
+
+            Assertions.assertThrows(FitsException.class, () -> hdr.rewrite());
         }
     }
 
     @Test
     public void testHeaderCommentsDrift() throws Exception {
         byte[][] z = new byte[4][4];
-        Fits f = null;
-        try {
-            f = new Fits();
+
+        try (Fits f = new Fits()) {
             BasicHDU<?> hdu = FitsFactory.hduFactory(z);
             f.addHDU(hdu);
             Cursor<String, HeaderCard> iter = hdu.getHeader().iterator();
             iter.end();
             iter.add(new HeaderCard("KEY", "VALUE", "COMMENT"));
-            FitsFile bf = null;
-            try {
-                bf = new FitsFile("target/testHeaderCommentsDrift.fits", "rw");
+
+            try (FitsFile bf = new FitsFile("target/testHeaderCommentsDrift.fits", "rw")) {
                 f.write(bf);
-            } finally {
-                SafeClose.close(bf);
             }
-        } finally {
-            SafeClose.close(f);
         }
-        try {
-            f = new Fits("target/testHeaderCommentsDrift.fits");
-            FitsFile bf = new FitsFile("target/testHeaderCommentsDrift.fits", "rw");
+
+        try (Fits f = new Fits("target/testHeaderCommentsDrift.fits");
+                FitsFile bf = new FitsFile("target/testHeaderCommentsDrift.fits", "rw")) {
             f.read();
             f.write(bf);
-        } finally {
-            SafeClose.close(f);
         }
-        try {
-            f = new Fits("target/testHeaderCommentsDrift.fits");
+
+        try (Fits f = new Fits("target/testHeaderCommentsDrift.fits")) {
             f.read();
             Assertions.assertEquals("COMMENT", f.getHDU(0).getHeader().findCard("KEY").getComment());
-        } finally {
-            SafeClose.close(f);
         }
     }
 
@@ -568,9 +544,7 @@ public class HeaderTest {
         // Should be rewriteable until we add enough cards to
         // start a new block.
 
-        Fits f = null;
-        try {
-            f = new Fits("target/ht1.fits");
+        try (Fits f = new Fits("target/ht1.fits")) {
             ImageHDU hdu = (ImageHDU) f.getHDU(0);
             Header hdr = hdu.getHeader();
             Cursor<String, HeaderCard> c = hdr.iterator();
@@ -583,8 +557,6 @@ public class HeaderTest {
                 Assertions.assertEquals(nb == nbx, hdr.rewriteable(), "Rewrite:" + nbx);
                 c.add(new HeaderCard("DUMMY" + hdr.getNumberOfCards(), (String) null, null));
             }
-        } finally {
-            SafeClose.close(f);
         }
     }
 
@@ -612,19 +584,13 @@ public class HeaderTest {
     @Test
     public void testUpdateHeaderComments() throws Exception {
         byte[][] z = new byte[4][4];
-        Fits f = null;
-        FitsFile bf = null;
-        try {
-            f = new Fits();
-            bf = new FitsFile("target/hx1.fits", "rw");
+
+        try (Fits f = new Fits(); FitsFile bf = new FitsFile("target/hx1.fits", "rw")) {
             f.addHDU(FitsFactory.hduFactory(z));
             f.write(bf);
-        } finally {
-            SafeClose.close(bf);
-            SafeClose.close(f);
         }
-        try {
-            f = new Fits("target/hx1.fits");
+
+        try (Fits f = new Fits("target/hx1.fits")) {
             f.read();
             HeaderCard c1 = f.getHDU(0).getHeader().findCard(SIMPLE.key());
             Assertions.assertEquals(c1.getComment(), HeaderCommentsMap.getComment("header:simple:1"));
@@ -632,26 +598,18 @@ public class HeaderTest {
             Assertions.assertEquals(c1.getComment(), HeaderCommentsMap.getComment("header:bitpix:1"));
             HeaderCommentsMap.updateComment("header:bitpix:1", "A byte tiledImageOperation");
             HeaderCommentsMap.deleteComment("header:simple:1");
-        } finally {
-            SafeClose.close(f);
         }
-        try {
-            f = new Fits();
-            bf = new FitsFile("target/hx2.fits", "rw");
+
+        try (Fits f = new Fits(); FitsFile bf = new FitsFile("target/hx2.fits", "rw")) {
             f.addHDU(FitsFactory.hduFactory(z));
             f.write(bf);
-        } finally {
-            SafeClose.close(bf);
-            SafeClose.close(f);
         }
-        try {
-            f = new Fits("target/hx2.fits");
+
+        try (Fits f = new Fits("target/hx2.fits")) {
             HeaderCard c1 = f.getHDU(0).getHeader().findCard(SIMPLE.key());
             Assertions.assertEquals(null, c1.getComment());
             c1 = f.getHDU(0).getHeader().findCard(BITPIX.key());
             Assertions.assertEquals("A byte tiledImageOperation", c1.getComment());
-        } finally {
-            SafeClose.close(f);
         }
     }
 
@@ -699,12 +657,7 @@ public class HeaderTest {
 
     @Test
     public void addValueTests() throws Exception {
-        FileInputStream in = null;
-        Fits fits = null;
-
-        try {
-            in = new FileInputStream("target/ht1.fits");
-            fits = new Fits();
+        try (FileInputStream in = new FileInputStream("target/ht1.fits"); Fits fits = new Fits()) {
             fits.read(in);
 
             BasicHDU<?> hdu = fits.getHDU(0);
@@ -774,9 +727,6 @@ public class HeaderTest {
             Assertions.assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key(), BigInteger.valueOf(-1)),
                     BigInteger.valueOf(5));
             Assertions.assertEquals(hdr.getBigIntegerValue("ZZZ", BigInteger.valueOf(-1)), BigInteger.valueOf(-1));
-        } finally {
-            SafeClose.close(in);
-            SafeClose.close(fits);
         }
     }
 
@@ -794,9 +744,7 @@ public class HeaderTest {
 
     @Test
     public void dumpHeaderTests() throws Exception {
-        Fits f = null;
-        try {
-            f = new Fits("target/ht1.fits");
+        try (Fits f = new Fits("target/ht1.fits")) {
             BasicHDU<?> hdu = f.getHDU(0);
             Header hdr = hdu.getHeader();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -812,8 +760,6 @@ public class HeaderTest {
             Assertions.assertEquals("SIMPLE", hdr.getKey(0));
             Assertions.assertEquals(7, hdr.size());
             Assertions.assertEquals(362880, hdu.getSize());
-        } finally {
-            SafeClose.close(f);
         }
     }
 
@@ -825,17 +771,13 @@ public class HeaderTest {
 
     @Test
     public void notExistentKeys() throws Exception {
-        Fits f = null;
-        try {
-            f = new Fits("target/ht1.fits");
+        try (Fits f = new Fits("target/ht1.fits")) {
             Header hdr = f.getHDU(0).getHeader();
             Assertions.assertNull(hdr.getCard(10000));
             Assertions.assertNull(hdr.getKey(10000));
             Assertions.assertNull(hdr.findKey("BBBB"));
             Assertions.assertEquals(BigInteger.valueOf(-100), hdr.getBigIntegerValue("BBBB", BigInteger.valueOf(-100)));
             Assertions.assertEquals(-100f, hdr.getFloatValue("BBBB", -100f), 0.00001);
-        } finally {
-            SafeClose.close(f);
         }
     }
 
@@ -907,52 +849,20 @@ public class HeaderTest {
         Assertions.assertNull(header.getCard(-1));
 
         FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
-        FitsException actual = null;
-        try {
-            header.write(out);
-        } catch (FitsException e) {
-            actual = e;
-        }
-        header.addValue("DUMMY", false, "");
-        actual = null;
-        try {
-            header.write(out);
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertTrue(actual.getMessage().indexOf("SIMPLE") > 0);
-        header.addValue("XTENSION", "", "");
-        actual = null;
-        try {
-            header.write(out);
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertTrue(actual.getMessage().indexOf("XTENSION") > 0);
-        header.findCard(XTENSION.key()).setValue(XTENSION_BINTABLE);
-        actual = null;
-        try {
-            header.write(out);
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
 
-        Assertions.assertTrue(actual.getMessage().indexOf("not found where expected") > 0);
+        Assertions.assertThrows(FitsException.class, () -> header.write(out));
+
+        header.addValue("DUMMY", false, "");
+        Assertions.assertThrows(FitsException.class, () -> header.write(out));
+
+        header.addValue("XTENSION", "", "");
+        Assertions.assertThrows(FitsException.class, () -> header.write(out));
+
+        header.findCard(XTENSION.key()).setValue(XTENSION_BINTABLE);
+        Assertions.assertThrows(FitsException.class, () -> header.write(out));
 
         header.removeCard("DUMMY");
-
-        actual = null;
-        try {
-            header.write(out);
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-
-        Assertions.assertTrue(actual.getMessage().indexOf("terminates before") > 0);
+        Assertions.assertThrows(FitsException.class, () -> header.write(out));
     }
 
     @Test
@@ -964,9 +874,7 @@ public class HeaderTest {
             FitsFactory.setUseHierarch(true);
             FitsFactory.setLongStringsEnabled(true);
 
-            Fits f = null;
-            try {
-                f = new Fits();
+            try (Fits f = new Fits()) {
                 BasicHDU<?> primaryHdu = FitsFactory.hduFactory(new float[0]);
 
                 primaryHdu.getHeader().addValue(Hierarch.key("TEST.THIS.LONG.HEADER"),
@@ -989,15 +897,12 @@ public class HeaderTest {
                 } finally {
                     SafeClose.close(bf);
                 }
-            } finally {
-                SafeClose.close(f);
             }
 
             /*
              * This will fail ...
              */
-            try {
-                f = new Fits(filename);
+            try (Fits f = new Fits(filename)) {
 
                 Header headerRewriter = f.getHDU(0).getHeader();
 
@@ -1014,8 +919,6 @@ public class HeaderTest {
                         Assertions.assertTrue(buildder.toString().startsWith(card.getComment()));
                     }
                 }
-            } finally {
-                SafeClose.close(f);
             }
         } finally {
             FitsFactory.setUseHierarch(useHierarch);

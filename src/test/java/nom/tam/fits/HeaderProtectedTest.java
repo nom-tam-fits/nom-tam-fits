@@ -61,13 +61,8 @@ public class HeaderProtectedTest {
 
         header.addValue("AA", "BB", null);
         header.addValue("CC", "DD", null);
-        HeaderCardException actual = null;
-        try {
-            header.replaceKey("AA", "CC");
-        } catch (HeaderCardException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
+
+        Assertions.assertThrows(HeaderCardException.class, () -> header.replaceKey("AA", "CC"));
     }
 
     @Test

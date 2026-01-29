@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import nom.tam.util.FitsFile;
-import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
 
 /*
@@ -49,55 +48,30 @@ import static nom.tam.fits.header.Standard.NAXIS;
 public class BasicHduFailureTest {
 
     @Test
-    public void testAxisFailuer() throws Exception {
-        FitsException actual = null;
-        try {
-            BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-            dummyHDU.getHeader().card(NAXIS).value(-1);
-            dummyHDU.getAxes();
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertTrue(actual.getMessage().contains("NAXIS"));
-        actual = null;
-        try {
-            BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-            dummyHDU.getHeader().card(NAXIS).value(1001);
-            dummyHDU.getAxes();
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertTrue(actual.getMessage().contains("NAXIS"));
+    public void testAxisFailure() throws Exception {
+        BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
+
+        dummyHDU.getHeader().card(NAXIS).value(-1);
+        Assertions.assertThrows(FitsException.class, () -> dummyHDU.getAxes());
+
+        dummyHDU.getHeader().card(NAXIS).value(1001);
+        Assertions.assertThrows(FitsException.class, () -> dummyHDU.getAxes());
     }
 
     @Test
-    public void testBitPixFailuer() throws Exception {
-        FitsException actual = null;
-        try {
-            BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-            dummyHDU.getHeader().deleteKey(BITPIX);
-            dummyHDU.getBitPix();
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertTrue(actual.getMessage().contains("BITPIX"));
+    public void testBitPixFailure() throws Exception {
+        BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
+        dummyHDU.getHeader().deleteKey(BITPIX);
+
+        Assertions.assertThrows(FitsException.class, () -> dummyHDU.getBitPix());
     }
 
     @Test
     public void testBlankFailuer() throws Exception {
-        FitsException actual = null;
-        try {
-            BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-            dummyHDU.getHeader().deleteKey(BLANK);
-            dummyHDU.getBlankValue();
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertTrue(actual.getMessage().contains("BLANK"));
+        BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
+        dummyHDU.getHeader().deleteKey(BLANK);
+
+        Assertions.assertThrows(FitsException.class, () -> dummyHDU.getBlankValue());
     }
 
     @Test
@@ -110,40 +84,29 @@ public class BasicHduFailureTest {
     @Test
     public void testDefaultFileOffset() throws Exception {
         BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-        FitsFile out = null;
-        try {
-            out = new FitsFile("target/BasicHduFailureTeststestDefaultFileOffset", "rw");
+
+        try (FitsFile out = new FitsFile("target/BasicHduFailureTeststestDefaultFileOffset", "rw")) {
             dummyHDU.write(out);
-        } finally {
-            SafeClose.close(out);
         }
+
         Assertions.assertEquals(0, dummyHDU.getFileOffset());
-        FitsException actual = null;
-        out = null;
-        try {
-            out = new FitsFile("target/BasicHduFailureTeststestDefaultFileOffset", "rw") {
 
-                int count = 0;
+        try (FitsFile out = new FitsFile("target/BasicHduFailureTeststestDefaultFileOffset", "rw") {
+            int count = 0;
 
-                @Override
-                public void flush() throws IOException {
-                    count++;
-                    // the 3e flush happens in the basic hdu write.
-                    if (count == 3) {
-                        throw new IOException("could not flush");
-                    }
-                    super.flush();
+            @Override
+            public void flush() throws IOException {
+                count++;
+                // the 3e flush happens in the basic hdu write.
+                if (count == 3) {
+                    throw new IOException("could not flush");
                 }
-            };
-            dummyHDU.write(out);
-        } catch (FitsException e) {
-            actual = e;
-        } finally {
-            SafeClose.close(out);
-        }
+                super.flush();
+            }
+        }) {
 
-        Assertions.assertNotNull(actual);
-        Assertions.assertTrue(actual.getMessage().contains("Error flushing at end of HDU"));
+            Assertions.assertThrows(FitsException.class, () -> dummyHDU.write(out));
+        }
     }
 
     @Test

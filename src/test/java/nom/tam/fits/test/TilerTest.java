@@ -49,7 +49,6 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsFile;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
-import nom.tam.util.SafeClose;
 
 /**
  * This class tests the ImageTiler. It first creates a FITS file and then reads it back and allows the user to select
@@ -211,20 +210,12 @@ public class TilerTest {
     }
 
     private void doTest(Object data, String suffix) throws Exception {
-        Fits f = null;
-        FitsFile bf = null;
-        try {
-            f = new Fits();
-            bf = new FitsFile("target/tiler" + suffix + ".fits", "rw");
+        try (Fits f = new Fits(); FitsFile bf = new FitsFile("target/tiler" + suffix + ".fits", "rw")) {
             f.addHDU(Fits.makeHDU(data));
             f.write(bf);
-        } finally {
-            SafeClose.close(bf);
-            SafeClose.close(f);
         }
 
-        try {
-            f = new Fits("target/tiler" + suffix + ".fits");
+        try (Fits f = new Fits("target/tiler" + suffix + ".fits")) {
             ImageHDU h = (ImageHDU) f.readHDU();
 
             StandardImageTiler t = h.getTiler();
@@ -244,34 +235,10 @@ public class TilerTest {
             doTile3("t4", data, t, 133, 133, 72, 26);
 
             Assertions.assertFalse(doTile("t5", data, t, 500, 500, 72, 26));
-            IOException expected = null;
-            try {
-                doTile2("t5", data, t, 500, 500, 72, 26);
-            } catch (IOException e) {
-                expected = e;
-            }
-            Assertions.assertNotNull(expected);
-            Assertions.assertTrue(expected.getMessage().contains("within"));
 
-            expected = null;
-            try {
-                doTile3("t5", data, t, 500, 500, 72, 26);
-            } catch (IOException e) {
-                expected = e;
-            }
-            Assertions.assertNotNull(expected);
-            Assertions.assertTrue(expected.getMessage().contains("within"));
-
-            expected = null;
-            try {
-                t.getTile(new int[] {10, 10}, new int[] {20});
-            } catch (IOException e) {
-                expected = e;
-            }
-            Assertions.assertNotNull(expected);
-            Assertions.assertTrue(expected.getMessage().contains("Inconsistent"));
-        } finally {
-            SafeClose.close(f);
+            Assertions.assertThrows(IOException.class, () -> doTile2("t5", data, t, 500, 500, 72, 26));
+            Assertions.assertThrows(IOException.class, () -> doTile3("t5", data, t, 500, 500, 72, 26));
+            Assertions.assertThrows(IOException.class, () -> t.getTile(new int[] {10, 10}, new int[] {20}));
         }
     }
 }

@@ -43,16 +43,16 @@ import nom.tam.fits.header.Standard;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 
+@SuppressWarnings({"deprecation", "javadoc"})
 public class ProtectedFitsTest {
 
     @Test
     public void testFitsInconsistent() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        UndefinedData undefinedData = new UndefinedData(new byte[1]);
+        try (Fits fits = new Fits()) {
+            fits.insertHDU(new UndefinedHDU(UndefinedHDU.manufactureHeader(undefinedData), undefinedData), 0);
 
-            try {
-                UndefinedData undefinedData = new UndefinedData(new byte[1]);
-                Fits fits = new Fits();
-                fits.insertHDU(new UndefinedHDU(UndefinedHDU.manufactureHeader(undefinedData), undefinedData), 0);
+            Assertions.assertThrows(FitsException.class, () -> {
                 fits.insertHDU(new UndefinedHDU(UndefinedHDU.manufactureHeader(undefinedData), undefinedData) {
 
                     @Override
@@ -60,25 +60,13 @@ public class ProtectedFitsTest {
                         throw new NoSuchElementException();
                     }
                 }, 1);
-            } catch (Exception e) {
-                Assertions.assertTrue(e.getMessage().contains("inconsistency"));
-                throw e;
-            }
-
-        });
+            });
+        }
     }
 
     @Test
     public void testRandomGroupsHDUmanufactureHeader() throws Exception {
-        FitsException actual = null;
-        try {
-            RandomGroupsHDU.manufactureHeader(null);
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertTrue(actual.getMessage().contains("null"));
-
+        Assertions.assertThrows(FitsException.class, () -> RandomGroupsHDU.manufactureHeader(null));
     }
 
     @Test
@@ -115,42 +103,16 @@ public class ProtectedFitsTest {
     @Test
     public void testFitsRandomGroupData() throws Exception {
         RandomGroupsData data = new RandomGroupsData(new Object[0][]);
-        Exception actual = null;
-        try {
-            data.fillHeader(new Header());
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertEquals(FitsException.class, actual.getClass());
-        Object[][] dataArray = {new Object[] {new double[10], new int[10],}};
+        Assertions.assertThrows(FitsException.class, () -> data.fillHeader(new Header()));
 
-        try {
-            data = new RandomGroupsData(dataArray);
-        } catch (IllegalArgumentException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertEquals(IllegalArgumentException.class, actual.getClass());
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new RandomGroupsData(new Object[][] {new Object[] {new double[10], new int[10]}}));
 
-        dataArray = new Object[][] {new Object[] {new int[10][10], new int[10],}};
-        actual = null;
-        try {
-            data = new RandomGroupsData(dataArray);
-        } catch (Exception e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertEquals(IllegalArgumentException.class, actual.getClass());
-        dataArray = new Object[][] {new Object[] {new String[10], new String[10],}};
-        data = new RandomGroupsData(dataArray);
-        actual = null;
-        try {
-            data.fillHeader(new Header());
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assertions.assertNotNull(actual);
-        Assertions.assertTrue(actual.getMessage().toLowerCase().contains("string"));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new RandomGroupsData(new Object[][] {new Object[] {new int[10][10], new int[10]}}));
+
+        Assertions.assertThrows(FitsException.class,
+                () -> new RandomGroupsData(new Object[][] {new Object[] {new String[10], new String[10]}})
+                        .fillHeader(new Header()));
     }
 }

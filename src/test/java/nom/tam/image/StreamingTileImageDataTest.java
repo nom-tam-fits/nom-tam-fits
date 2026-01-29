@@ -59,26 +59,12 @@ public class StreamingTileImageDataTest {
         header.setNaxis(2, 200);
         header.setBitpix(Bitpix.FLOAT);
 
-        try {
-            new StreamingTileImageData(header, null, null, null, null);
-            Assertions.fail("Should throw IllegalArgumentException");
-        } catch (IllegalArgumentException _ignored) {
-            // Good!
-        }
-
-        try {
-            new StreamingTileImageData(header, new TestTiler(), new int[2], null, null);
-            Assertions.fail("Should throw IllegalArgumentException");
-        } catch (IllegalArgumentException _ignored) {
-            // Good!
-        }
-
-        try {
-            new StreamingTileImageData(header, new TestTiler(), new int[2], new int[2], new int[] {-1, 1});
-            Assertions.fail("Should throw IllegalArgumentException for negative steps");
-        } catch (IllegalArgumentException _ignored) {
-            // Good!
-        }
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new StreamingTileImageData(header, null, null, null, null));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new StreamingTileImageData(header, new TestTiler(), new int[2], null, null));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new StreamingTileImageData(header, new TestTiler(), new int[2], new int[2], new int[] {-1, 1}));
 
         final StreamingTileImageData testSubject = new StreamingTileImageData(header, new TestTiler(), new int[2],
                 new int[2], null);
@@ -218,10 +204,8 @@ public class StreamingTileImageDataTest {
             final StreamingTileImageData streamingTileImageData = new StreamingTileImageData(tileHeader,
                     new ErrorTestTiler(), tileStarts, tileLengths, tileSteps);
             outputFits.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
-            outputFits.write(outputFitsFile);
-            Assertions.fail("Should throw FitsException.");
-        } catch (FitsException fitsException) {
-            Assertions.assertEquals("Simulated error.", fitsException.getMessage());
+
+            Assertions.assertThrows(FitsException.class, () -> outputFits.write(outputFitsFile));
         }
     }
 
