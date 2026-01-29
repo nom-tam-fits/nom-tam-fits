@@ -45,6 +45,7 @@ import nom.tam.util.FitsFile;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.RandomAccess;
 
+@SuppressWarnings("javadoc")
 public class StandardImageTilerTest {
 
     private final class TestImageTiler extends StandardImageTiler {

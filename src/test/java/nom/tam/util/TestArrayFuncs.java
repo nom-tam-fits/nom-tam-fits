@@ -33,6 +33,7 @@ package nom.tam.util;
 
 import java.util.Arrays;
 
+@SuppressWarnings("javadoc")
 public class TestArrayFuncs {
 
     private TestArrayFuncs() {

@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class UndefinedDataTest {
 
     @Test

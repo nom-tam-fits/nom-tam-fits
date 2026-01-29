@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.LongValueException;
 
+@SuppressWarnings("javadoc")
 public class FlexFormatTest {
 
     @Test

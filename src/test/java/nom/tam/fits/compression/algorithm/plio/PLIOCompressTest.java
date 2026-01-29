@@ -45,6 +45,7 @@ import nom.tam.fits.compression.algorithm.plio.PLIOCompress.IntPLIOCompressor;
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.ShortPLIOCompressor;
 import nom.tam.util.SafeClose;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class PLIOCompressTest {
 
     @Test

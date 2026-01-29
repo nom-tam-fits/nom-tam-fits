@@ -50,6 +50,7 @@ import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class CompressedTableBlackBoxTest {
 
     @Test

@@ -49,6 +49,7 @@ import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Bitpix;
 import nom.tam.util.ArrayFuncs;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class StreamingTileImageDataTest {
     @Test
     public void testConstructor() throws Exception {

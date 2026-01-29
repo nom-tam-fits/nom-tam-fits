@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.Bitpix;
 
+@SuppressWarnings("javadoc")
 public class BitpixTest {
 
     @Test

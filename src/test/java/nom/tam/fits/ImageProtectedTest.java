@@ -46,6 +46,7 @@ import nom.tam.util.test.ThrowAnyException;
 
 import static nom.tam.fits.header.Standard.GCOUNT;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class ImageProtectedTest {
 
     @Test

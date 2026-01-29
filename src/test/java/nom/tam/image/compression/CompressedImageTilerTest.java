@@ -139,6 +139,7 @@ import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.type.ElementType;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class CompressedImageTilerTest {
     private static final Logger LOGGER = Logger.getLogger(CompressedImageTilerTest.class.getName());
 

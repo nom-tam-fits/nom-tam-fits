@@ -74,6 +74,7 @@ import static nom.tam.fits.header.extra.NOAOExt.WATn_nnn;
 /**
  * Check out header manipulation.
  */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class EnumHeaderTest {
 
     public Header createHeader() throws FitsException {

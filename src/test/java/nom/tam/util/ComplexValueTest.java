@@ -44,6 +44,7 @@ import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.LongValueException;
 import nom.tam.fits.header.hierarch.Hierarch;
 
+@SuppressWarnings("javadoc")
 public class ComplexValueTest {
 
     @BeforeEach

@@ -37,6 +37,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("javadoc")
 public class DefaultMethodsTest {
 
     @Test

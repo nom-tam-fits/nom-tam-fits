@@ -40,6 +40,7 @@ import org.junit.jupiter.api.Test;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 
+@SuppressWarnings("javadoc")
 public class StokesTest {
 
     @Test

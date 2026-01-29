@@ -44,6 +44,7 @@ import nom.tam.fits.LongStringsNotEnabledException;
 import nom.tam.fits.LongValueException;
 import nom.tam.fits.UnclosedQuoteException;
 
+@SuppressWarnings("javadoc")
 public class HeaderCardExceptionsTest {
 
     @BeforeEach

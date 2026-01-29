@@ -65,6 +65,7 @@ import nom.tam.util.SafeClose;
 import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 import static nom.tam.image.compression.bintable.BinaryTableTileDescription.tile;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class CompressedTableTest {
 
     private final double[][][] doubles = new double[50][5][5];

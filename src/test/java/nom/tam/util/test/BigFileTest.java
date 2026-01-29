@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 import nom.tam.util.FitsFile;
 import nom.tam.util.FitsInputStream;
 
+@SuppressWarnings("javadoc")
 public class BigFileTest {
 
     @Test

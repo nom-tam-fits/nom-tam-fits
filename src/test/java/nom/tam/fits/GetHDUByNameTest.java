@@ -45,6 +45,7 @@ import nom.tam.util.FitsOutputStream;
 import static nom.tam.fits.header.Standard.EXTNAME;
 import static nom.tam.fits.header.Standard.EXTVER;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class GetHDUByNameTest {
 
     private final String extensionFile = "target/testExtensions.fits";

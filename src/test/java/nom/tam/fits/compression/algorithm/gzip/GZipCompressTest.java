@@ -58,6 +58,7 @@ import nom.tam.util.ByteBufferInputStream;
 import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.SafeClose;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class GZipCompressTest {
 
     @Test

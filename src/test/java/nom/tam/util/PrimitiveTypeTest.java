@@ -48,6 +48,7 @@ import nom.tam.util.type.ElementType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 import nom.tam.util.type.PrimitiveTypes;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class PrimitiveTypeTest {
 
     private <T extends Buffer> Buffer bufferAtPosition(ElementType<T> type, int length, int position) {

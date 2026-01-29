@@ -55,6 +55,7 @@ import nom.tam.util.SafeClose;
 /**
  * Test random groups formats in FITS data. Write and read random groups data
  */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class RandomGroupsTest {
 
     @Test

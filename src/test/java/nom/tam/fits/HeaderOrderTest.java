@@ -45,6 +45,7 @@ import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.THEAP;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class HeaderOrderTest {
 
     private HeaderOrder headerOrder = new HeaderOrder();

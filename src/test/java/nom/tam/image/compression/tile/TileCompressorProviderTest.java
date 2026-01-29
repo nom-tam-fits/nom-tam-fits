@@ -72,6 +72,7 @@ import static nom.tam.fits.header.Compression.ZNAXIS;
 import static nom.tam.fits.header.Compression.ZNAXISn;
 import static nom.tam.fits.header.Compression.ZTILEn;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class TileCompressorProviderTest {
 
     private final class TileImageCompressionOperationWithPublicMethods extends TiledImageCompressionOperation {

@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.Bitpix;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"javadoc", "deprecation"})
 public class DeprecatedTest {
 
     @Test

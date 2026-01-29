@@ -58,6 +58,7 @@ import nom.tam.fits.header.Compression;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.SafeClose;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class HCompressTest {
 
     @Test

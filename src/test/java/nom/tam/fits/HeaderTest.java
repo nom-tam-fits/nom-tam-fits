@@ -81,6 +81,7 @@ import static nom.tam.fits.header.extra.NOAOExt.CRVAL2;
 import static nom.tam.fits.header.extra.NOAOExt.CTYPE1;
 import static nom.tam.fits.header.extra.NOAOExt.CTYPE2;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class HeaderTest {
 
     @BeforeEach

@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.IFitsHeader.VALUE;
 
+@SuppressWarnings("javadoc")
 public class CommonExtTest {
 
     @Test

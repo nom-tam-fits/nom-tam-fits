@@ -50,6 +50,7 @@ import nom.tam.util.FitsOutputStream;
 
 import static nom.tam.fits.header.Standard.GROUPS;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class HeaderProtectedTest {
 
     @Test

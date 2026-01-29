@@ -49,6 +49,7 @@ import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.IntN
 import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.LongNoCompressCompressor;
 import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.ShortNoCompressCompressor;
 
+@SuppressWarnings("javadoc")
 public class UnCompressedCompressTest {
 
     @Test

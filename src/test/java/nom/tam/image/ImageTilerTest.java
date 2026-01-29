@@ -104,6 +104,7 @@ import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.ImageData;
 
+@SuppressWarnings("javadoc")
 public class ImageTilerTest {
     @Test
     public void defaultImplementation() throws Exception {

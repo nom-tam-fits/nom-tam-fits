@@ -59,6 +59,7 @@ import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 /**
  * Test that we can read files that fail due to lack of padding in the final HDU.
  */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class PaddingTest {
 
     @Test

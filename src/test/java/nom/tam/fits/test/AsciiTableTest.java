@@ -80,6 +80,7 @@ import static nom.tam.fits.header.DataDescription.TLMINn;
  * columns and elements from in-memory kernel. Specify width of columns. Rewrite data/header in place. Set and read null
  * elements.
  */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class AsciiTableTest {
 
     @Test

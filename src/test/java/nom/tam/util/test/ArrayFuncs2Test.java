@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.TestArrayFuncs;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class ArrayFuncs2Test {
 
     /**

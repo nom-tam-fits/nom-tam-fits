@@ -38,6 +38,7 @@ import nom.tam.fits.HeaderCard;
 
 import nom.tam.fits.utilities.FitsLineAppender;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class ExtraTest {
 
     @Test

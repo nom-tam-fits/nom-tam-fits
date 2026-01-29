@@ -43,6 +43,7 @@ import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.Standard;
 import nom.tam.image.compression.hdu.CompressedImageHDU;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class TileCompressionTest {
 
     public int[][] getRectangularImage(int nx, int ny) {

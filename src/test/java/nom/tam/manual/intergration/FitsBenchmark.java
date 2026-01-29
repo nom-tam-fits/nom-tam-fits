@@ -45,6 +45,7 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.util.BlackBoxImages;
 
 @State(Scope.Benchmark)
+@SuppressWarnings("javadoc")
 public class FitsBenchmark {
 
     String blankKey = "      ";

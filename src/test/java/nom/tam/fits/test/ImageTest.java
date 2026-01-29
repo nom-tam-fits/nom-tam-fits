@@ -72,6 +72,7 @@ import static nom.tam.fits.header.Standard.TELESCOP;
  * creating and reading arrays of all permitted types. - Tiles of 1, 2 and 3 dimensions - from a file - from internal
  * data - Multiple tiles extracted from an image.
  */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class ImageTest {
 
     @Test

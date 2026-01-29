@@ -34,6 +34,7 @@ package nom.tam.fits;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 
+@SuppressWarnings("javadoc")
 public class BadData extends Data {
 
     @Override

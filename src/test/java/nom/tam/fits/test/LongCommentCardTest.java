@@ -46,6 +46,7 @@ import nom.tam.fits.header.Standard;
 import nom.tam.util.Cursor;
 import nom.tam.util.FitsOutputStream;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class LongCommentCardTest {
 
     private static int length = 200;

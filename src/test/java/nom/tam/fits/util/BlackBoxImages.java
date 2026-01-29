@@ -43,6 +43,7 @@ import java.util.zip.GZIPInputStream;
 
 import nom.tam.util.SafeClose;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class BlackBoxImages {
 
     private BlackBoxImages() {
@@ -78,12 +79,14 @@ public class BlackBoxImages {
             return loadedFileName;
         }
         int partNumber = 0;
-        url = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName + String.format("%02d", partNumber) + ".part";
+        url = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName
+                + String.format("%02d", partNumber) + ".part";
         loadedFileName = "target/blackbox-images/" + fileName;
         String partFileName = loadedFileName + String.format("%02d", partNumber) + ".part";
         while (new File(partFileName).exists() || downloadImage(url, partFileName)) {
             partNumber++;
-            url = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName + String.format("%02d", partNumber) + ".part";
+            url = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName
+                    + String.format("%02d", partNumber) + ".part";
             partFileName = loadedFileName + String.format("%02d", partNumber) + ".part";
         }
         if (new File(loadedFileName + "00.part").exists()) {

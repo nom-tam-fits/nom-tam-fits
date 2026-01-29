@@ -52,6 +52,7 @@ import org.junit.jupiter.api.Test;
  * The fourth set consists of all other test methods that test special cases of the implementation of the various
  * methods of HashedList - to obtain 100% code coverage for HashedList.
  */
+@SuppressWarnings("javadoc")
 public class HashedListTest {
 
     static class TestCursorValue implements CursorValue<String> {

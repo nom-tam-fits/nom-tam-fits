@@ -53,6 +53,7 @@ import static nom.tam.fits.header.Standard.ORIGIN;
 import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.Standard.TZEROn;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class BuilderApiTest {
 
     public Header createHeader() throws FitsException {

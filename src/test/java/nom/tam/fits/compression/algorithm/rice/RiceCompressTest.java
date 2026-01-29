@@ -59,6 +59,7 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.SafeClose;
 import nom.tam.util.type.PrimitiveTypes;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class RiceCompressTest {
 
     private static final RiceCompressOption option = new RiceCompressOption().setBlockSize(32);

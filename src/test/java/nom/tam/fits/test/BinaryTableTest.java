@@ -96,6 +96,7 @@ import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
  *     Rewrite binary table in place
  * </pre>
  */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class BinaryTableTest {
 
     private static final Object[] TEST_ROW = new Object[] {new float[] {1f}, new int[] {2, 2}, new double[] {3d, 3d, 3d}};

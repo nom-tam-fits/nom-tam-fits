@@ -43,6 +43,7 @@ import nom.tam.util.ByteFormatter;
 import nom.tam.util.ByteParser;
 import nom.tam.util.FormatException;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class ByteFormatParseTest {
 
     byte[] buffer = new byte[100000];

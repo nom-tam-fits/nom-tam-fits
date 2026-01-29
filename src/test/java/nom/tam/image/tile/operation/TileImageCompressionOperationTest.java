@@ -47,6 +47,7 @@ import nom.tam.fits.header.Compression;
 import nom.tam.image.compression.tile.TiledImageCompressionOperation;
 import nom.tam.util.type.ElementType;
 
+@SuppressWarnings("javadoc")
 public class TileImageCompressionOperationTest {
 
     @BeforeEach

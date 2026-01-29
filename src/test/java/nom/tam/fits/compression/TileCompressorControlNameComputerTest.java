@@ -47,6 +47,7 @@ import static nom.tam.fits.header.Compression.ZQUANTIZ_NO_DITHER;
  * Note that the purpose of these tests is to demonstrate how the class names are computed, not to achieve high code
  * coverage - integration tests are used for the latter purpose.
  */
+@SuppressWarnings("javadoc")
 public class TileCompressorControlNameComputerTest {
     private CompressorControlNameComputer nameComputer;
 

@@ -38,6 +38,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("javadoc")
 public class BufferedFileIOTest {
 
     private String fileName = "target/biotest.bin";

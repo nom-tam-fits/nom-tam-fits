@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 
 import nom.tam.util.FitsOutputStream;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class RepositionTest {
 
     @Test

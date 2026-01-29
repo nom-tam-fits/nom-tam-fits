@@ -40,7 +40,7 @@ import nom.tam.fits.header.IFitsHeader.HDU;
 import nom.tam.fits.header.IFitsHeader.SOURCE;
 import nom.tam.fits.header.IFitsHeader.VALUE;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"javadoc", "deprecation"})
 public class DeprecatedTest {
 
     @Test

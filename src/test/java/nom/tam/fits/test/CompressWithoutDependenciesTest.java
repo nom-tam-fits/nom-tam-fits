@@ -47,6 +47,7 @@ import nom.tam.util.SafeClose;
 /**
  * Test reading .Z and .gz compressed files.
  */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class CompressWithoutDependenciesTest {
 
     @Test

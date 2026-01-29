@@ -44,6 +44,7 @@ import nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter;
 import nom.tam.fits.utilities.FitsLineAppender;
 import nom.tam.fits.utilities.FitsSubString;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class FitsLineAppenderTest {
 
     @BeforeEach

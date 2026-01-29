@@ -43,6 +43,7 @@ import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ComplexValue;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class HeaderCardStaticTest {
 
     @AfterEach

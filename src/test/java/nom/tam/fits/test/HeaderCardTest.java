@@ -58,6 +58,7 @@ import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
 import nom.tam.util.FitsInputStream;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class HeaderCardTest {
 
     @BeforeEach

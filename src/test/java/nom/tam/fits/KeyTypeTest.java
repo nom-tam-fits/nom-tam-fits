@@ -44,6 +44,7 @@ import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ComplexValue;
 
+@SuppressWarnings("javadoc")
 public class KeyTypeTest {
 
     @BeforeEach

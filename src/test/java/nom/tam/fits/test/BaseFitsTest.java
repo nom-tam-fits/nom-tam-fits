@@ -94,6 +94,7 @@ import nom.tam.util.test.ThrowAnyException;
 
 import static nom.tam.fits.header.Standard.NAXISn;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class BaseFitsTest {
 
     private static final class TestUndefinedData extends UndefinedData {

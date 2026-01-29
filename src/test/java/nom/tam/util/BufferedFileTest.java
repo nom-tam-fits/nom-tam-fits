@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.FitsFactory;
 
+@SuppressWarnings("javadoc")
 public class BufferedFileTest {
 
     @BeforeEach

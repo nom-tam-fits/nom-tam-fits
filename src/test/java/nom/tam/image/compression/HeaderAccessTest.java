@@ -45,7 +45,7 @@ import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.header.Standard;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"javadoc", "deprecation"})
 public class HeaderAccessTest {
 
     @Test

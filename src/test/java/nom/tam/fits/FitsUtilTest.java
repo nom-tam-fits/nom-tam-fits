@@ -169,6 +169,7 @@ public class FitsUtilTest {
         Assertions.assertEquals(FitsUtil.addPadding(2881), FitsUtil.addPadding(2881L));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testMaxStringLengthContainsNull() throws Exception {
         Assertions.assertEquals(3, FitsUtil.maxLength(new String[] {null, "abc", "ab"}));

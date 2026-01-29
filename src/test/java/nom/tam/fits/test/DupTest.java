@@ -52,6 +52,7 @@ import nom.tam.fits.HeaderCard;
  * continue to fail) Short (<80 byte) junk after valid HDU Long (>80 byte) junk after valid HDU The last two should
  * succeed after FitsFactory.setAllowTerminalJunk(true).
  */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class DupTest {
 
     class LogCounter extends Handler {

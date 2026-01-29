@@ -49,6 +49,7 @@ import nom.tam.image.tile.operation.buffer.TileBufferFactory;
 import nom.tam.util.type.ElementType;
 import nom.tam.util.type.PrimitiveTypes;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class ImageMaskTest {
 
     @Test

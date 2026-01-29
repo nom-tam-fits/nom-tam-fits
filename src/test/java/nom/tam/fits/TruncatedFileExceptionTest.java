@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 
 import nom.tam.util.FitsFile;
 
+@SuppressWarnings("javadoc")
 public class TruncatedFileExceptionTest {
 
     @Test

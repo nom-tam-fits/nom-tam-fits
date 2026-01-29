@@ -63,6 +63,7 @@ import fi.iki.elonen.SimpleWebServer;
 /**
  * Test reading .Z and .gz compressed files.
  */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class CompressTest {
 
     static class DummyProcess extends Process {
@@ -660,7 +661,7 @@ public class CompressTest {
                 return -1;
             }
         }, compressed);
-        
+
         Assertions.assertThrows(IOException.class, () -> close.read());
     }
 
@@ -678,7 +679,7 @@ public class CompressTest {
                 return -1;
             }
         }, compressed);
-        
+
         // we assume a success even if the join failes
         close.read();
     }

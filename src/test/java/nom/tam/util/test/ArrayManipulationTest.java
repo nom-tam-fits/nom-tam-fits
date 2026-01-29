@@ -40,6 +40,7 @@ import nom.tam.util.array.MultiArrayCopier;
 import nom.tam.util.array.MultiArrayIterator;
 import nom.tam.util.array.MultiArrayPointer;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class ArrayManipulationTest {
 
     private double[][][] testArray = {{{1, 2}, {3, 4, 5}, {}}, {null, {6, 7, 8, 9}, {10, 11, 12, 13, 14, 15}, {16}}};

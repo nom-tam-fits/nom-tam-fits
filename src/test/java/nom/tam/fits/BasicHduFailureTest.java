@@ -45,6 +45,7 @@ import static nom.tam.fits.header.Standard.DATE;
 import static nom.tam.fits.header.Standard.DATE_OBS;
 import static nom.tam.fits.header.Standard.NAXIS;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class BasicHduFailureTest {
 
     @Test

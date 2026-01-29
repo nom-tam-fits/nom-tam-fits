@@ -39,6 +39,7 @@ import java.util.TimeZone;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("javadoc")
 public class FitsDateTest {
     private static long REF_TIME_MS = 1543407194000L;
 

@@ -42,6 +42,7 @@ import nom.tam.util.FitsOutputStream;
 
 import static nom.tam.fits.header.Standard.EXTEND;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class IncrementalWriteTest {
 
     private static String fileName = "target/incfile.fits";

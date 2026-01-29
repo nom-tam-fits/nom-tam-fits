@@ -55,6 +55,7 @@ import nom.tam.util.FitsOutputStream;
  * tiles. The values of the corner and center pixels for the selected tile are displayed. Both file and memory tiles are
  * checked.
  */
+@SuppressWarnings("javadoc")
 public class TilerTest {
 
     private boolean doTile(String test, Object data, StandardImageTiler t, int x, int y, int nx, int ny) throws Exception {

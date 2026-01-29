@@ -38,6 +38,7 @@ import nom.tam.fits.header.Standard;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.Quantizer;
 
+@SuppressWarnings("javadoc")
 public class ImageDataTest {
 
     @Test

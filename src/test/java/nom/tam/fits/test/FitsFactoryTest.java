@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.FitsFactory;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class FitsFactoryTest {
 
     @Test

@@ -43,9 +43,7 @@ import nom.tam.util.AsciiFuncs;
 import nom.tam.util.TestArrayFuncs;
 import nom.tam.util.type.ElementType;
 
-/**
- * @author Thomas McGlynn
- */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class ArrayFuncsTest {
 
     public static class CloneFailTest implements Cloneable {

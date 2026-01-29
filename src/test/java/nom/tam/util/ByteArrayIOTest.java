@@ -36,6 +36,7 @@ import java.io.EOFException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("javadoc")
 public class ByteArrayIOTest {
 
     @Test

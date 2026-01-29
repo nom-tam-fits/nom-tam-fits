@@ -65,9 +65,7 @@ import nom.tam.util.test.ThrowAnyException;
 import static nom.tam.fits.header.Checksum.CHECKSUM;
 import static nom.tam.fits.header.Checksum.DATASUM;
 
-/**
- * @author tmcglynn
- */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class ChecksumTest {
 
     @Test

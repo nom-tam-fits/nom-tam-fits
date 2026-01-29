@@ -61,6 +61,7 @@ import nom.tam.util.Cursor;
 import nom.tam.util.FitsFile;
 import nom.tam.util.SafeClose;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class UserProvidedTest {
 
     @BeforeEach

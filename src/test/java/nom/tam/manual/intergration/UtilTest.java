@@ -41,6 +41,7 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ByteFormatter;
 import nom.tam.util.array.MultiArrayCopier;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class UtilTest {
 
     ByteFormatter bf = new ByteFormatter();

@@ -42,6 +42,7 @@ import org.junit.jupiter.api.Test;
 import nom.tam.fits.FitsDate;
 import nom.tam.fits.FitsException;
 
+@SuppressWarnings("javadoc")
 public class FitsDateTest {
 
     @BeforeEach

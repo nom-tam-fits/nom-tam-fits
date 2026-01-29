@@ -46,6 +46,7 @@ import nom.tam.util.FitsFile;
  * continue to fail) Short (<80 byte) junk after valid HDU Long (>80 byte) junk after valid HDU The last two should
  * succeed after FitsFactory.setAllowTerminalJunk(true).
  */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class JunkTest {
 
     @BeforeEach

@@ -34,6 +34,7 @@ package nom.tam.image.tile.operation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("javadoc")
 public class TileAreaTest {
 
     @Test

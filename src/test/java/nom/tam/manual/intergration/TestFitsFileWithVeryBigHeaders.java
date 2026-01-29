@@ -42,6 +42,7 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.SafeClose;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class TestFitsFileWithVeryBigHeaders {
 
     private BasicHDU<?> hdu;

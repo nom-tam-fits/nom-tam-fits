@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 
 import nom.tam.util.FitsFile;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class StreamFileTest {
 
     private FitsFile out;

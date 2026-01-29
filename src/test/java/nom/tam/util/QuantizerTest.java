@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import nom.tam.fits.Header;
 import nom.tam.fits.header.Standard;
 
+@SuppressWarnings("javadoc")
 public class QuantizerTest {
 
     @Test

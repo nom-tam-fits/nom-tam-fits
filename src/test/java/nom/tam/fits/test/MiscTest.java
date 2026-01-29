@@ -43,6 +43,7 @@ import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.Fits;
 
+@SuppressWarnings("javadoc")
 public class MiscTest {
 
     private String extractComment(String string, int end) {

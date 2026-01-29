@@ -34,6 +34,7 @@ package nom.tam.util.type;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("javadoc")
 public class ElementTypeTest {
 
     @Test

@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 
+@SuppressWarnings("javadoc")
 public class DeferredTest {
 
     @Test

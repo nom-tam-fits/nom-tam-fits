@@ -50,6 +50,7 @@ import nom.tam.util.FitsFile;
  * #L%
  */
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class CreateTstImages {
 
     private static final String FPACK = "/home/nir/ws/cfitsio/fpack";

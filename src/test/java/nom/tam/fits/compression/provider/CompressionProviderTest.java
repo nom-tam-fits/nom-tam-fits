@@ -40,6 +40,7 @@ import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class CompressionProviderTest {
 
     @Test
