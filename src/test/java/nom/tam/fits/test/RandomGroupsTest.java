@@ -163,11 +163,8 @@ public class RandomGroupsTest {
 
     @Test
     public void illegalTypedRandomGroup() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            testGroupCreationAndRecreationByType(new Double[20][20], new Double[3], -64, "Double");
-
-        });
+        Assertions.assertThrows(FitsException.class,
+                () -> testGroupCreationAndRecreationByType(new Double[20][20], new Double[3], -64, "Double"));
     }
 
     @Test
@@ -236,22 +233,18 @@ public class RandomGroupsTest {
 
     @Test
     public void testMismatchedDataFillHeader() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            class RGData extends RandomGroupsData {
-                public RGData() {
-                    super();
-                }
-
-                @Override
-                public void fillHeader(Header h) throws FitsException {
-                    super.fillHeader(h);
-                }
+        class RGData extends RandomGroupsData {
+            public RGData() {
+                super();
             }
 
-            new RGData().fillHeader(new Header());
+            @Override
+            public void fillHeader(Header h) throws FitsException {
+                super.fillHeader(h);
+            }
+        }
 
-        });
+        Assertions.assertThrows(FitsException.class, () -> new RGData().fillHeader(new Header()));
     }
 
     @Test
@@ -295,20 +288,14 @@ public class RandomGroupsTest {
 
     @Test
     public void testCreateWrongDataType1() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new float[10][10], new float[3]}});
-
-        });
+        Assertions.assertThrows(FitsException.class,
+                () -> RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new float[10][10], new float[3]}}));
     }
 
     @Test
     public void testCreateWrongDataType2() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new int[10][10]}});
-
-        });
+        Assertions.assertThrows(FitsException.class,
+                () -> RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new int[10][10]}}));
     }
 
     @Test
@@ -335,22 +322,14 @@ public class RandomGroupsTest {
 
     @Test
     public void testNoHeaderBlank() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            RandomGroupsHDU hdu = RandomGroupsHDU.createFrom(new Object[][] {{new int[5], new int[10][10]}});
-            hdu.getBlankValue(); // throws FitsException
-
-        });
+        RandomGroupsHDU hdu = RandomGroupsHDU.createFrom(new Object[][] {{new int[5], new int[10][10]}});
+        Assertions.assertThrows(FitsException.class, () -> hdu.getBlankValue());
     }
 
     @Test
     public void testBlankException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            RandomGroupsHDU hdu = RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new float[10][10]}});
-            hdu.getBlankValue(); // throws FitsException
-
-        });
+        RandomGroupsHDU hdu = RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new float[10][10]}});
+        Assertions.assertThrows(FitsException.class, () -> hdu.getBlankValue());
     }
 
     @Test
@@ -415,20 +394,16 @@ public class RandomGroupsTest {
 
     @Test
     public void testRandomGroupsInExtensionException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        short[][] img = new short[7][11];
+        short[] parms = new short[] {1, 2, 3, 4, 5, 6};
 
-            short[][] img = new short[7][11];
-            short[] parms = new short[] {1, 2, 3, 4, 5, 6};
+        RandomGroupsData data = new RandomGroupsData(new Object[][] {{parms, img}});
+        RandomGroupsHDU hdu = data.toHDU();
 
-            RandomGroupsData data = new RandomGroupsData(new Object[][] {{parms, img}});
-            RandomGroupsHDU hdu = data.toHDU();
-
-            try (FitsFile out = new FitsFile("target/random-extension.fits", "rw")) {
-                new NullDataHDU().write(out);
-                hdu.write(out);
-            }
-
-        });
+        try (FitsFile out = new FitsFile("target/random-extension.fits", "rw")) {
+            new NullDataHDU().write(out);
+            Assertions.assertThrows(FitsException.class, () -> hdu.write(out));
+        }
     }
 
     @Test
@@ -454,26 +429,20 @@ public class RandomGroupsTest {
 
     @Test
     public void toHDUEmptyTest() throws Exception {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-
-            RandomGroupsData rg = new RandomGroupsData();
-            rg.toHDU(); // Throws exception because of empry group
-
-        });
+        RandomGroupsData rg = new RandomGroupsData();
+        // Throws exception because of empty group
+        Assertions.assertThrows(IllegalStateException.class, () -> rg.toHDU());
     }
 
     @Test
     public void toHDUExceptionTest() throws Exception {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
+        RandomGroupsData rg = new RandomGroupsData() {
+            @Override
+            public void fillHeader(Header h) throws FitsException {
+                throw new FitsException("Test exception");
+            }
+        };
 
-            RandomGroupsData rg = new RandomGroupsData() {
-                @Override
-                public void fillHeader(Header h) throws FitsException {
-                    throw new FitsException("Test exception");
-                }
-            };
-            rg.toHDU(); // throws exception
-
-        });
+        Assertions.assertThrows(IllegalStateException.class, () -> rg.toHDU());
     }
 }

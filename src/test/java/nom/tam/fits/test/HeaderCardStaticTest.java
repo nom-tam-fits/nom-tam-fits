@@ -188,74 +188,44 @@ public class HeaderCardStaticTest {
 
     @Test
     public void testCreateBadStringIFitsHeaderCard() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            HeaderCard hc = HeaderCard.create(Standard.XTENSION, "name\t");
-            Assertions.assertNull(hc);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> HeaderCard.create(Standard.XTENSION, "name\t"));
     }
 
     @Test
     public void testCreateIllegalIFitsHeaderCard1() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            HeaderCard hc = HeaderCard.create(new CustomIFitsHeader("TEST\t", null, VALUE.ANY), true);
-            Assertions.assertNull(hc);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> HeaderCard.create(new CustomIFitsHeader("TEST\t", null, VALUE.ANY), true));
     }
 
     @Test
     public void testCreateIllegalIFitsHeaderCard2() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            HeaderCard hc = HeaderCard.create(new CustomIFitsHeader("TEST\t", null, VALUE.ANY), 1);
-            Assertions.assertNull(hc);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> HeaderCard.create(new CustomIFitsHeader("TEST\t", null, VALUE.ANY), 1));
     }
 
     @Test
     public void testCreateIllegalIFitsHeaderCard3() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            HeaderCard hc = HeaderCard.create(new CustomIFitsHeader("TEST\t", null, VALUE.ANY), 1.0);
-            Assertions.assertNull(hc);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> HeaderCard.create(new CustomIFitsHeader("TEST\t", null, VALUE.ANY), 1.0));
     }
 
     @Test
     public void testCreateIllegalIFitsHeaderCard4() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            HeaderCard hc = HeaderCard.create(new CustomIFitsHeader("TEST\t", null, VALUE.ANY),
-                    new ComplexValue(-1.0, 2.0));
-            Assertions.assertNull(hc);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> HeaderCard.create(new CustomIFitsHeader("TEST\t", null, VALUE.ANY), new ComplexValue(-1.0, 2.0)));
     }
 
     @Test
     public void testCreateIllegalIFitsHeaderCard5() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            HeaderCard hc = HeaderCard.create(new CustomIFitsHeader("TEST\t", null, VALUE.ANY), "value");
-            Assertions.assertNull(hc);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> HeaderCard.create(new CustomIFitsHeader("TEST\t", null, VALUE.ANY), "value"));
     }
 
     @Test
     public void testCreateWrongValueTypeFitsCard1() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            HeaderCard.setValueCheckingPolicy(HeaderCard.DEFAULT_VALUE_CHECK_POLICY);
-            HeaderCard hc = HeaderCard.create(new CustomIFitsHeader("TEST", null, VALUE.STRING), 1);
-            Assertions.assertNotNull(hc);
-
-        });
+        HeaderCard.setValueCheckingPolicy(HeaderCard.DEFAULT_VALUE_CHECK_POLICY);
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> HeaderCard.create(new CustomIFitsHeader("TEST", null, VALUE.STRING), 1));
     }
 
     private class CustomIFitsHeader implements IFitsHeader {

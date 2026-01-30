@@ -121,17 +121,13 @@ public class BasicHDUTest {
 
     @Test
     public void imageToHDUExceptionTest() throws Exception {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-
-            ImageData im = new ImageData() {
-                @Override
-                public void fillHeader(Header h) throws FitsException {
-                    throw new FitsException("Test exception");
-                }
-            };
-            im.toHDU(); // throws exception
-
-        });
+        ImageData im = new ImageData() {
+            @Override
+            public void fillHeader(Header h) throws FitsException {
+                throw new FitsException("Test exception");
+            }
+        };
+        Assertions.assertThrows(IllegalStateException.class, () -> im.toHDU());
     }
 
     @Test

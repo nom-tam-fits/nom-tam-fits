@@ -212,23 +212,18 @@ public class RiceCompressTest {
 
     @Test
     public void testAdditionalBytes() throws Exception {
-        Assertions.assertThrows(BufferUnderflowException.class, () -> {
+        try (RandomAccessFile compressedFile = new RandomAccessFile(
+                "src/test/resources/nom/tam/image/comp/rise/test100Data8.rise", "r")) {
+            byte[] compressedBytes = new byte[(int) compressedFile.length()];
+            compressedFile.read(compressedBytes);
 
-            RandomAccessFile compressedFile = null;
-            try {
-                compressedFile = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data8.rise", "r");//
-                byte[] compressedBytes = new byte[(int) compressedFile.length()];
-                compressedFile.read(compressedBytes);
+            byte[] decompressedArray = new byte[10100];
+            ByteBuffer compressed = ByteBuffer.wrap(compressedBytes);
+            ByteRiceCompressor compressor = new ByteRiceCompressor(option.setBytePix(PrimitiveTypes.BYTE.size()));
 
-                byte[] decompressedArray = new byte[10100];
-                ByteBuffer compressed = ByteBuffer.wrap(compressedBytes);
-                ByteRiceCompressor compressor = new ByteRiceCompressor(option.setBytePix(PrimitiveTypes.BYTE.size()));
-                compressor.decompress(compressed, ByteBuffer.wrap(decompressedArray));
-            } finally {
-                SafeClose.close(compressedFile);
-            }
-
-        });
+            Assertions.assertThrows(BufferUnderflowException.class,
+                    () -> compressor.decompress(compressed, ByteBuffer.wrap(decompressedArray)));
+        }
     }
 
     @Test
@@ -260,10 +255,8 @@ public class RiceCompressTest {
 
     @Test
     public void testWrongParameters() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            RiceCompressOption o = new RiceCompressOption();
-            o.setParameters(new HCompressParameters(null));
-        });
+        RiceCompressOption o = new RiceCompressOption();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> o.setParameters(new HCompressParameters(null)));
     }
 
     @Test

@@ -929,24 +929,21 @@ public class HeaderTest {
 
     @Test
     public void writeEmptyHeader() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header header = new Header();
+        header.addValue(SIMPLE, true);
+        header.addValue(BITPIX, 8);
+        header.addValue(NAXIS, 0);
+        header.insertCommentStyle(END.key(), null);
 
-            ArrayDataOutput dos = new FitsOutputStream(new ByteArrayOutputStream() {
+        try (ArrayDataOutput dos = new FitsOutputStream(new ByteArrayOutputStream() {
 
-                @Override
-                public synchronized void write(byte[] b, int off, int len) {
-                    ThrowAnyException.throwIOException("all goes wrong!");
-                }
-            }, 80);
-            Header header = new Header();
-            header.addValue(SIMPLE, true);
-            header.addValue(BITPIX, 8);
-            header.addValue(NAXIS, 0);
-            header.insertCommentStyle(END.key(), null);
-
-            header.write(dos);
-
-        });
+            @Override
+            public synchronized void write(byte[] b, int off, int len) {
+                ThrowAnyException.throwIOException("all goes wrong!");
+            }
+        }, 80)) {
+            Assertions.assertThrows(FitsException.class, () -> header.write(dos));
+        }
     }
 
     /** Truncate header test. */
@@ -972,14 +969,11 @@ public class HeaderTest {
 
     @Test
     public void truncatedFileExceptionTest() throws Exception {
-        Assertions.assertThrows(IOException.class, () -> {
+        String header = "SIMPLE                                                                          " + //
+                "XXXXXX                                                                          ";
+        FitsInputStream data = new FitsInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(header)));
 
-            String header = "SIMPLE                                                                          " + //
-                    "XXXXXX                                                                          ";
-            FitsInputStream data = new FitsInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(header)));
-            new Header().read(data);
-
-        });
+        Assertions.assertThrows(IOException.class, () -> new Header().read(data));
     }
 
     @Test
@@ -989,11 +983,7 @@ public class HeaderTest {
 
     @Test
     public void testFailedRewrite() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            new Header().rewrite();
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> new Header().rewrite());
     }
 
     @Test
@@ -1135,11 +1125,7 @@ public class HeaderTest {
 
     @Test
     public void testHierarchFormatters() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            new BlanksDotHierarchKeyFormatter(0);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new BlanksDotHierarchKeyFormatter(0));
     }
 
     @Test
@@ -1353,10 +1339,7 @@ public class HeaderTest {
 
     @Test
     public void testNoSkipStream() throws Exception {
-        Assertions.assertThrows(IOException.class, () -> {
-
-            ByteArrayOutputStream bo = new ByteArrayOutputStream(4000);
-            FitsOutputStream o = new FitsOutputStream(bo);
+        try (ByteArrayOutputStream bo = new ByteArrayOutputStream(4000); FitsOutputStream o = new FitsOutputStream(bo)) {
             int[][] i = new int[10][10];
             BasicHDU<?> hdu = FitsFactory.hduFactory(i);
             hdu.getHeader().write(o);
@@ -1368,9 +1351,8 @@ public class HeaderTest {
                 }
             };
 
-            new Header(in);
-
-        });
+            Assertions.assertThrows(IOException.class, () -> new Header(in));
+        }
     }
 
     @Test
@@ -1613,12 +1595,8 @@ public class HeaderTest {
 
     @Test
     public void testImageKeywordCheckingException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Header h = new BinaryTable().toHDU().getHeader();
-            h.addValue(Standard.BUNIT, "blah");
-
-        });
+        Header h = new BinaryTable().toHDU().getHeader();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> h.addValue(Standard.BUNIT, "blah"));
     }
 
     @Test
@@ -1630,42 +1608,26 @@ public class HeaderTest {
 
     @Test
     public void testGroupsKeywordCheckingException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
-            h.addValue(Standard.PTYPEn.n(1), "blah");
-
-        });
+        Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> h.addValue(Standard.PTYPEn.n(1), "blah"));
     }
 
     @Test
     public void testTableKeywordCheckingException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
-            h.addValue(Standard.TFORMn.n(1), "blah");
-
-        });
+        Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> h.addValue(Standard.TFORMn.n(1), "blah"));
     }
 
     @Test
     public void testAsciiTableKeywordCheckingException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Header h = new BinaryTable().toHDU().getHeader();
-            h.addValue(Standard.TBCOLn.n(1), 10);
-
-        });
+        Header h = new BinaryTable().toHDU().getHeader();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> h.addValue(Standard.TBCOLn.n(1), 10));
     }
 
     @Test
     public void testBinbaryTableKeywordCheckingException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Header h = new AsciiTable().toHDU().getHeader();
-            h.addValue(Standard.TDIMn.n(1), "blah");
-
-        });
+        Header h = new AsciiTable().toHDU().getHeader();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> h.addValue(Standard.TDIMn.n(1), "blah"));
     }
 
     @Test
@@ -1685,57 +1647,38 @@ public class HeaderTest {
 
     @Test
     public void testKeywordCheckingMandatoryException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
-            Header h = new BinaryTable().toHDU().getHeader();
-            h.addValue(Standard.SIMPLE, true);
-
-        });
+        Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
+        Header h = new BinaryTable().toHDU().getHeader();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> h.addValue(Standard.SIMPLE, true));
     }
 
     @Test
     public void testKeywordCheckingIntegralException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
-            Header h = new BinaryTable().toHDU().getHeader();
-            h.addValue(Compression.ZIMAGE, true);
-
-        });
+        Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
+        Header h = new BinaryTable().toHDU().getHeader();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> h.addValue(Compression.ZIMAGE, true));
     }
 
     @Test
     public void testKeywordCheckingPrimaryException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
-            Header h = new BinaryTable().toHDU().getHeader();
-            h.addValue(Standard.SIMPLE, true);
-
-        });
+        Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
+        Header h = new BinaryTable().toHDU().getHeader();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> h.addValue(Standard.SIMPLE, true));
     }
 
     @Test
     public void testKeywordCheckingExtensionException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
-            Header h = new RandomGroupsData(new Object[][] {{new int[4], new int[2]}}).toHDU().getHeader();
-            h.addValue(Standard.INHERIT, true);
-
-        });
+        Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
+        Header h = new RandomGroupsData(new Object[][] {{new int[4], new int[2]}}).toHDU().getHeader();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> h.addValue(Standard.INHERIT, true));
     }
 
     @Test
     public void testStrictKeywordCheckingExtension() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
-            Header h = new BinaryTable().toHDU().getHeader();
-            h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
-
-        });
+        Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
+        Header h = new BinaryTable().toHDU().getHeader();
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE));
     }
 
     @Test
@@ -1754,13 +1697,9 @@ public class HeaderTest {
 
     @Test
     public void testReplaceCommentKeyException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Header h = new Header();
-            h.insertComment("blah");
-            h.replaceKey(Standard.COMMENT, Standard.BLANKS);
-
-        });
+        Header h = new Header();
+        h.insertComment("blah");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> h.replaceKey(Standard.COMMENT, Standard.BLANKS));
     }
 
 }

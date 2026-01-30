@@ -1072,22 +1072,14 @@ public class BufferedFileTest {
 
     @Test
     public void testNoArray() throws IOException {
-        Assertions.assertThrows(IOException.class, () -> {
-
-            BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-            Assertions.assertEquals(bf.readLArray(Integer.valueOf(0)), 0L);
-
-        });
+        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
+        Assertions.assertThrows(IOException.class, () -> Assertions.assertEquals(bf.readLArray(Integer.valueOf(0)), 0L));
     }
 
     @Test
     public void testSmallArray() throws IOException {
-        Assertions.assertThrows(EOFException.class, () -> {
-
-            BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-            Assertions.assertEquals(bf.readLArray(new byte[11]), 0L);
-
-        });
+        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
+        Assertions.assertThrows(EOFException.class, () -> Assertions.assertEquals(bf.readLArray(new byte[11]), 0L));
     }
 
     // AK: Was throwing IOException, but there is no IO involved at all. It's a classic case
@@ -1095,21 +1087,13 @@ public class BufferedFileTest {
     // in such a case.
     @Test
     public void testFullyOutside() throws IOException {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-            bf.readFully(new byte[5], 10, 5);
-
-        });
+        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> bf.readFully(new byte[5], 10, 5));
     }
 
     @Test
     public void testFullyEOF() throws IOException {
-        Assertions.assertThrows(EOFException.class, () -> {
-
-            BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-            bf.readFully(new byte[12], 0, 12);
-
-        });
+        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
+        Assertions.assertThrows(EOFException.class, () -> bf.readFully(new byte[12], 0, 12));
     }
 }

@@ -48,14 +48,10 @@ public class FitsFileTest {
 
     @Test
     public void testWriteNotArray() throws Exception {
-        Assertions.assertThrows(IOException.class, () -> {
-
-            try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
-                // Not an array
-                f.writeArray("hello");
-            }
-
-        });
+        try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
+            // Not an array
+            Assertions.assertThrows(IOException.class, () -> f.writeArray("hello"));
+        }
     }
 
     @Test
@@ -75,14 +71,10 @@ public class FitsFileTest {
 
     @Test
     public void testSkipBeforeBeginning() throws Exception {
-        Assertions.assertThrows(IOException.class, () -> {
-
-            try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
-                f.seek(10);
-                f.skipAllBytes(-11L);
-            }
-
-        });
+        try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
+            f.seek(10);
+            Assertions.assertThrows(IOException.class, () -> f.skipAllBytes(-11L));
+        }
     }
 
     @Test

@@ -140,30 +140,18 @@ public class BitpixTest {
 
     @Test
     public void testInvalidPrimitiveType() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            FitsFactory.setAllowHeaderRepairs(false);
-            Bitpix.forPrimitiveType(Object.class);
-
-        });
+        FitsFactory.setAllowHeaderRepairs(false);
+        Assertions.assertThrows(FitsException.class, () -> Bitpix.forPrimitiveType(Object.class));
     }
 
     @Test
     public void testInvalidNumberType1() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Bitpix.forNumberType(BigInteger.class);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Bitpix.forNumberType(BigInteger.class));
     }
 
     @Test
     public void testInvalidNumberType2() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Bitpix.forNumberType(BigDecimal.class);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Bitpix.forNumberType(BigDecimal.class));
     }
 
     @Test
@@ -178,10 +166,6 @@ public class BitpixTest {
 
     @Test
     public void testForInvalidArrayID() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Bitpix.forArrayID('?');
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Bitpix.forArrayID('?'));
     }
 }

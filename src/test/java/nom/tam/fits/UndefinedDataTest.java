@@ -70,10 +70,6 @@ public class UndefinedDataTest {
 
     @Test
     public void testUknownSizeData() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            new UndefinedData(new File("blah"));
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new UndefinedData(new File("blah")));
     }
 }

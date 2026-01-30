@@ -67,20 +67,12 @@ public class ImageMaskTest {
 
     @Test
     public void testWrongCompression() {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-
-            doTestByteMask("UNKNOWN1", 2, 7);
-
-        });
+        Assertions.assertThrows(IllegalStateException.class, () -> doTestByteMask("UNKNOWN1", 2, 7));
     }
 
     @Test
     public void testCompressionFailed() {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-
-            doTestByteMask("FAIL", 2, 7);
-
-        });
+        Assertions.assertThrows(IllegalStateException.class, () -> doTestByteMask("FAIL", 2, 7));
     }
 
     private byte[][] doTestByteMask(String compression, int... nullIndexes) {

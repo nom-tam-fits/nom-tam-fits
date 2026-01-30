@@ -42,11 +42,7 @@ public class QuantizerTest {
 
     @Test
     public void testNaNNoBlanking() throws Exception {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-
-            new Quantizer(2.0, 0.5, null).toLong(Double.NaN);
-
-        });
+        Assertions.assertThrows(IllegalStateException.class, () -> new Quantizer(2.0, 0.5, null).toLong(Double.NaN));
     }
 
     @Test

@@ -84,11 +84,7 @@ public class FitsUtilTest {
 
     @Test
     public void booleansToBytesWrongType() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            FitsUtil.booleansToBytes("abc");
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> FitsUtil.booleansToBytes("abc"));
     }
 
     @Test
@@ -113,11 +109,7 @@ public class FitsUtilTest {
 
     @Test
     public void bytesToBooleanObjectsWrongType() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            FitsUtil.bytesToBooleanObjects("abc");
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> FitsUtil.bytesToBooleanObjects("abc"));
     }
 
     @Test

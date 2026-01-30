@@ -273,11 +273,7 @@ public class EnumHeaderTest {
 
     @Test
     public void testResolveIndicesException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            WCS.CTYPEna.extractIndices("CRPIX1");
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> WCS.CTYPEna.extractIndices("CRPIX1"));
     }
 
     @Test
@@ -288,29 +284,17 @@ public class EnumHeaderTest {
 
     @Test
     public void testFitsKeyConstructorLongException() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            new FitsKey("AZ_100-300na", VALUE.ANY, "blah");
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new FitsKey("AZ_100-300na", VALUE.ANY, "blah"));
     }
 
     @Test
     public void testFitsKeyConstructorIllegalAltException() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            new FitsKey("AZ_1-3an", VALUE.ANY, "blah");
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new FitsKey("AZ_1-3an", VALUE.ANY, "blah"));
     }
 
     @Test
     public void testFitsKeyConstructorIllegalCharacterException() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            new FitsKey("AZ_1-3nb", VALUE.ANY, "blah");
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new FitsKey("AZ_1-3nb", VALUE.ANY, "blah"));
     }
 
 }

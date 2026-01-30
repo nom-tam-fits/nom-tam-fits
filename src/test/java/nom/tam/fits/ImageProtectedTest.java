@@ -232,37 +232,33 @@ public class ImageProtectedTest {
 
     @Test
     public void testGetDataHeaderduringWriteImposibleFailing() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header header = new Header();
+        header.nullImage();
+        header.setNaxes(2);
+        header.setNaxis(1, 2);
+        header.setNaxis(2, 2);
+        ImageData data = new ImageData(header);
 
-            Header header = new Header();
-            header.nullImage();
-            header.setNaxes(2);
-            header.setNaxis(1, 2);
-            header.setNaxis(2, 2);
-            ImageData data = new ImageData(header);
+        try (FitsFile input = new FitsFile("target/testGetDataHeaderduringWriteImposibleFailing.bin", "rw")) {
+            input.write(new byte[2880]);
+        }
 
-            try (FitsFile input = new FitsFile("target/testGetDataHeaderduringWriteImposibleFailing.bin", "rw")) {
-                input.write(new byte[2880]);
+        try (FitsFile input = new FitsFile("target/testGetDataHeaderduringWriteImposibleFailing.bin", "rw")) {
+            data.read(input);
+            input.close();
+            data.setTiler(null);
+
+            // this can not realy happen but just to be sure
+            Field field = data.getClass().getDeclaredField("dataDescription");
+            field.setAccessible(true);
+            field.set(data, null);
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+            try (FitsOutputStream out = new FitsOutputStream(outputStream)) {
+                Assertions.assertThrows(FitsException.class, () -> data.write(out));
             }
-
-            try (FitsFile input = new FitsFile("target/testGetDataHeaderduringWriteImposibleFailing.bin", "rw")) {
-                data.read(input);
-                input.close();
-                data.setTiler(null);
-
-                // this can not realy happen but just to be sure
-                Field field = data.getClass().getDeclaredField("dataDescription");
-                field.setAccessible(true);
-                field.set(data, null);
-
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-                try (FitsOutputStream out = new FitsOutputStream(outputStream)) {
-                    data.write(out);
-                }
-            }
-
-        });
+        }
     }
 
     @Test

@@ -133,22 +133,14 @@ public class BasicHduFailureTest {
 
     @Test
     public void testRewriteFailuer() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-            dummyHDU.rewrite();
-
-        });
+        BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
+        Assertions.assertThrows(FitsException.class, () -> dummyHDU.rewrite());
     }
 
     @Test
     public void testSetPrimaryFailuer() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            UndefinedData data = new UndefinedData(new long[10]);
-            BasicHDU<?> dummyHDU = new UndefinedHDU(UndefinedHDU.manufactureHeader(data), data);
-            dummyHDU.setPrimaryHDU(true);
-
-        });
+        UndefinedData data = new UndefinedData(new long[10]);
+        BasicHDU<?> dummyHDU = new UndefinedHDU(UndefinedHDU.manufactureHeader(data), data);
+        Assertions.assertThrows(FitsException.class, () -> dummyHDU.setPrimaryHDU(true));
     }
 }

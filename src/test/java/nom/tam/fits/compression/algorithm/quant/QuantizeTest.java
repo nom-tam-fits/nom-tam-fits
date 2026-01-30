@@ -779,12 +779,8 @@ public class QuantizeTest {
 
     @Test
     public void testBundledParametersCopyException() throws Exception {
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
-
-            BundledParameters p = new BundledParameters();
-            p.copy(new QuantizeOption());
-
-        });
+        BundledParameters p = new BundledParameters();
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> p.copy(new QuantizeOption()));
     }
 
     @Test

@@ -432,54 +432,51 @@ public class BaseFitsTest {
         head.addValue("GCOUNT", 2, null);
         final UndefinedHDU hdu = (UndefinedHDU) FitsFactory.hduFactory(head);
 
-        Assertions.assertThrows(FitsException.class, () -> {
-            FitsOutputStream os = new FitsOutputStream(new ByteArrayOutputStream()) {
+        try (FitsOutputStream os = new FitsOutputStream(new ByteArrayOutputStream()) {
 
-                @Override
-                public void write(byte[] b) throws IOException {
-                    ThrowAnyException.throwIOException("could not write");
-                }
-            };
-            hdu.getData().write(os);
-        });
+            @Override
+            public void write(byte[] b) throws IOException {
+                ThrowAnyException.throwIOException("could not write");
+            }
+        }) {
+            Assertions.assertThrows(FitsException.class, () -> hdu.getData().write(os));
+        }
 
-        Assertions.assertThrows(FitsException.class, () -> {
-            FitsInputStream is = new FitsInputStream(new ByteArrayInputStream(new byte[1000]) {
+        try (FitsInputStream is = new FitsInputStream(new ByteArrayInputStream(new byte[1000]) {
 
-                @Override
-                public synchronized int read(byte[] b, int off, int len) {
-                    ThrowAnyException.throwIOException("could not write");
-                    return -1;
-                }
-            });
-            hdu.getData().read(is);
-        });
+            @Override
+            public synchronized int read(byte[] b, int off, int len) {
+                ThrowAnyException.throwIOException("could not write");
+                return -1;
+            }
+        })) {
+            Assertions.assertThrows(FitsException.class, () -> hdu.getData().read(is));
+        }
 
-        Exception e = Assertions.assertThrows(FitsException.class, () -> {
-            FitsInputStream is = new FitsInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
+        try (FitsInputStream is = new FitsInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
 
-                @Override
-                public void skipAllBytes(long toSkip) throws IOException {
-                    ThrowAnyException.throwIOException("could not write");
-                    super.skipAllBytes(toSkip);
-                }
-            };
-            hdu.getData().read(is);
-        });
-        Assertions.assertTrue(e.getCause() instanceof IOException);
+            @Override
+            public void skipAllBytes(long toSkip) throws IOException {
+                ThrowAnyException.throwIOException("could not write");
+                super.skipAllBytes(toSkip);
+            }
+        }) {
 
-        e = Assertions.assertThrows(FitsException.class, () -> {
-            FitsInputStream is = new FitsInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
+            Exception e = Assertions.assertThrows(FitsException.class, () -> hdu.getData().read(is));
+            Assertions.assertTrue(e.getCause() instanceof IOException);
+        }
 
-                @Override
-                public void skipAllBytes(long toSkip) throws IOException {
-                    ThrowAnyException.throwAnyAsRuntime(new EOFException("could not write"));
-                    super.skipAllBytes(toSkip);
-                }
-            };
-            hdu.getData().read(is);
-        });
-        Assertions.assertTrue(e.getCause() instanceof EOFException);
+        try (FitsInputStream is = new FitsInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
+
+            @Override
+            public void skipAllBytes(long toSkip) throws IOException {
+                ThrowAnyException.throwAnyAsRuntime(new EOFException("could not write"));
+                super.skipAllBytes(toSkip);
+            }
+        }) {
+            Exception e = Assertions.assertThrows(FitsException.class, () -> hdu.getData().read(is));
+            Assertions.assertTrue(e.getCause() instanceof EOFException);
+        }
     }
 
     @Test

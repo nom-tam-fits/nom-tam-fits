@@ -179,14 +179,10 @@ public class TileCompressorProviderTest {
 
     @Test
     public void testBadProviderCasesBadCompressConstruct() {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-
-            ICompressorControl provider = new BrokenClass(null).getProvider();
-            ICompressOption options = provider.option();
-            exceptionInConstructor = true;
-            provider.decompress(null, null, options);
-
-        });
+        ICompressorControl provider = new BrokenClass(null).getProvider();
+        ICompressOption options = provider.option();
+        exceptionInConstructor = true;
+        Assertions.assertThrows(IllegalStateException.class, () -> provider.decompress(null, null, options));
     }
 
     @Test
@@ -199,25 +195,17 @@ public class TileCompressorProviderTest {
 
     @Test
     public void testBadProviderCasesBadDeCompressMethod() {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-
-            ICompressorControl provider = new BrokenClass(null).getProvider();
-            ICompressOption options = provider.option();
-            exceptionInMethod = true;
-            provider.decompress(null, null, options);
-
-        });
+        ICompressorControl provider = new BrokenClass(null).getProvider();
+        ICompressOption options = provider.option();
+        exceptionInMethod = true;
+        Assertions.assertThrows(IllegalStateException.class, () -> provider.decompress(null, null, options));
     }
 
     @Test
     public void testBadProviderCasesBadOption() {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-
-            ICompressorControl provider = new BrokenClass(null).getProvider();
-            exceptionInConstructor = true;
-            provider.option();
-
-        });
+        ICompressorControl provider = new BrokenClass(null).getProvider();
+        exceptionInConstructor = true;
+        Assertions.assertThrows(IllegalStateException.class, () -> provider.option());
     }
 
     @Test
@@ -238,14 +226,10 @@ public class TileCompressorProviderTest {
     @SuppressWarnings("resource")
     @Test
     public void testTileCompressionError() throws Exception {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-
-            TileCompressionOperation tileOperation = new Access2().getTile();
-            tileOperation.execute(FitsFactory.threadPool());
-            Thread.sleep(20);
-            tileOperation.waitForResult();
-
-        });
+        TileCompressionOperation tileOperation = new Access2().getTile();
+        tileOperation.execute(FitsFactory.threadPool());
+        // Thread.sleep(20);
+        Assertions.assertThrows(IllegalStateException.class, () -> tileOperation.waitForResult());
     }
 
     @Test
@@ -256,18 +240,15 @@ public class TileCompressorProviderTest {
 
     @Test
     public void testTileWrongHeader1() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        TiledImageCompressionOperation operationsOfImage = new TiledImageCompressionOperation(null);
+        Header header = new Header();
+        header.addValue(ZBITPIX, 32);
+        header.addValue(ZNAXIS, 2);
+        header.addValue(ZNAXISn.n(1), 100);
+        header.addValue(ZTILEn.n(1), 15);
+        header.addValue(ZTILEn.n(2), 15);
 
-            TiledImageCompressionOperation operationsOfImage = new TiledImageCompressionOperation(null);
-            Header header = new Header();
-            header.addValue(ZBITPIX, 32);
-            header.addValue(ZNAXIS, 2);
-            header.addValue(ZNAXISn.n(1), 100);
-            header.addValue(ZTILEn.n(1), 15);
-            header.addValue(ZTILEn.n(2), 15);
-            operationsOfImage.readPrimaryHeaders(header);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> operationsOfImage.readPrimaryHeaders(header));
     }
 
     @Test
@@ -303,30 +284,26 @@ public class TileCompressorProviderTest {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     public void testFailedDecompression() throws Exception {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
+        final ICompressorControl control = CompressorProvider.findCompressorControl(null, "GZIP_1", byte.class);
+        TiledImageCompressionOperation image = new TiledImageCompressionOperation(null) {
 
-            final ICompressorControl control = CompressorProvider.findCompressorControl(null, "GZIP_1", byte.class);
-            TiledImageCompressionOperation image = new TiledImageCompressionOperation(null) {
+            @Override
+            public ICompressOption compressOptions() {
+                return control.option();
+            }
+        };
 
-                @Override
-                public ICompressOption compressOptions() {
-                    return control.option();
-                }
-            };
+        final TileBuffer tileBuffer = TileBufferFactory.createTileBuffer((ElementType) PrimitiveTypes.BYTE, 0, 10, 10, 10);
+        TileDecompressor tileDecompressor = new TileDecompressor(image, 1, new TileArea()) {
 
-            final TileBuffer tileBuffer = TileBufferFactory.createTileBuffer((ElementType) PrimitiveTypes.BYTE, 0, 10, 10,
-                    10);
-            TileDecompressor tileDecompressor = new TileDecompressor(image, 1, new TileArea()) {
+            @Override
+            protected TileBuffer getTileBuffer() {
+                return tileBuffer;
+            }
+        };
+        tileDecompressor.setCompressed(new byte[10], null);
 
-                @Override
-                protected TileBuffer getTileBuffer() {
-                    return tileBuffer;
-                }
-            };
-            tileDecompressor.setCompressed(new byte[10], null);
-            tileDecompressor.run();
-
-        });
+        Assertions.assertThrows(IllegalStateException.class, () -> tileDecompressor.run());
     }
 
     @Test
@@ -341,48 +318,46 @@ public class TileCompressorProviderTest {
 
     @Test
     public void headerCardAccessStringExceptionTest() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        IFitsHeader key = new IFitsHeader() {
 
-            new HeaderCardAccess(new IFitsHeader() {
+            @Override
+            public VALUE valueType() {
+                ThrowAnyException.throwHeaderCardException("");
+                return null;
+            }
 
-                @Override
-                public VALUE valueType() {
-                    ThrowAnyException.throwHeaderCardException("");
-                    return null;
-                }
+            @Override
+            public SOURCE status() {
+                ThrowAnyException.throwHeaderCardException("");
+                return null;
+            }
 
-                @Override
-                public SOURCE status() {
-                    ThrowAnyException.throwHeaderCardException("");
-                    return null;
-                }
+            @Override
+            public IFitsHeader n(int... number) {
+                ThrowAnyException.throwHeaderCardException("");
+                return null;
+            }
 
-                @Override
-                public IFitsHeader n(int... number) {
-                    ThrowAnyException.throwHeaderCardException("");
-                    return null;
-                }
+            @Override
+            public String key() {
+                ThrowAnyException.throwHeaderCardException("");
+                return null;
+            }
 
-                @Override
-                public String key() {
-                    ThrowAnyException.throwHeaderCardException("");
-                    return null;
-                }
+            @Override
+            public HDU hdu() {
+                ThrowAnyException.throwHeaderCardException("");
+                return null;
+            }
 
-                @Override
-                public HDU hdu() {
-                    ThrowAnyException.throwHeaderCardException("");
-                    return null;
-                }
+            @Override
+            public String comment() {
+                ThrowAnyException.throwHeaderCardException("");
+                return null;
+            }
+        };
 
-                @Override
-                public String comment() {
-                    ThrowAnyException.throwHeaderCardException("");
-                    return null;
-                }
-            }, "XXX");
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new HeaderCardAccess(key, "XXX"));
     }
 
     @Test

@@ -51,12 +51,8 @@ public class TileAreaTest {
 
     @Test
     public void testIntersectException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            TileArea middle = new TileArea().start(140, 140).end(160, 160);
-            middle.intersects(new TileArea().start(2, 3, 4));
-
-        });
+        TileArea middle = new TileArea().start(140, 140).end(160, 160);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> middle.intersects(new TileArea().start(2, 3, 4)));
     }
 
     @Test

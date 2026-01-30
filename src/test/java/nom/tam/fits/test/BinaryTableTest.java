@@ -1135,46 +1135,42 @@ public class BinaryTableTest {
         };
         ByteArrayInputStream in = new ByteArrayInputStream(new byte[1000]);
 
-        Exception e = Assertions.assertThrows(FitsException.class, () -> {
-            btab.read(new FitsInputStream(in) {
+        try (FitsInputStream fin = new FitsInputStream(in) {
+            @Override
+            public void skipAllBytes(long toSkip) throws IOException {
+                throw new IOException("all went wrong ;-)");
+            }
+        }) {
+            Exception e = Assertions.assertThrows(FitsException.class, () -> btab.read(fin));
+            Assertions.assertEquals(IOException.class, e.getCause().getClass());
+        }
 
-                @Override
-                public void skipAllBytes(long toSkip) throws IOException {
+        try (FitsInputStream fin = new FitsInputStream(in) {
+            int pass = 0;
+
+            @Override
+            public void skipAllBytes(long toSkip) throws IOException {
+                if (pass++ == 1) {
                     throw new IOException("all went wrong ;-)");
                 }
-            });
-        });
+            }
+        }) {
+            Exception e = Assertions.assertThrows(FitsException.class, () -> btab.read(fin));
+            Assertions.assertEquals(IOException.class, e.getCause().getClass());
+        }
 
-        Assertions.assertEquals(IOException.class, e.getCause().getClass());
+        try (FitsInputStream fin = new FitsInputStream(in) {
+            int pass = 0;
 
-        e = Assertions.assertThrows(FitsException.class, () -> {
-            btab.read(new FitsInputStream(in) {
-
-                int pass = 0;
-
-                @Override
-                public void skipAllBytes(long toSkip) throws IOException {
-                    if (pass++ == 1) {
-                        throw new IOException("all went wrong ;-)");
-                    }
+            @Override
+            public void skipAllBytes(long toSkip) throws IOException {
+                if (pass++ == 1) {
+                    throw new EOFException("all went wrong ;-)");
                 }
-            });
-        });
-        Assertions.assertEquals(IOException.class, e.getCause().getClass());
-
-        Assertions.assertThrows(PaddingException.class, () -> {
-            btab.read(new FitsInputStream(in) {
-
-                int pass = 0;
-
-                @Override
-                public void skipAllBytes(long toSkip) throws IOException {
-                    if (pass++ == 1) {
-                        throw new EOFException("all went wrong ;-)");
-                    }
-                }
-            });
-        });
+            }
+        }) {
+            Assertions.assertThrows(PaddingException.class, () -> btab.read(fin));
+        }
     }
 
     @Test
@@ -1187,43 +1183,43 @@ public class BinaryTableTest {
             }
         };
 
-        Assertions.assertThrows(FitsException.class, () -> {
-            btab.read(new FitsFile("target/testReadExceptions2", "rw") {
+        try (FitsFile f = new FitsFile("target/testReadExceptions2", "rw") {
+            @Override
+            public void skipAllBytes(long toSkip) throws IOException {
+                throw new IOException("all went wrong ;-)");
+            }
+        }) {
 
-                @Override
-                public void skipAllBytes(long toSkip) throws IOException {
+            Assertions.assertThrows(FitsException.class, () -> btab.read(f));
+        }
+
+        try (FitsFile f = new FitsFile("target/testReadExceptions2") {
+
+            int pass = 0;
+
+            @Override
+            public void skipAllBytes(long toSkip) throws IOException {
+                if (pass++ == 1) {
                     throw new IOException("all went wrong ;-)");
                 }
-            });
-        });
+            }
+        }) {
+            Assertions.assertThrows(FitsException.class, () -> btab.read(f));
+        }
 
-        Assertions.assertThrows(FitsException.class, () -> {
-            btab.read(new FitsFile("target/testReadExceptions2") {
+        try (FitsFile f = new FitsFile("target/testReadExceptions2") {
 
-                int pass = 0;
+            int pass = 0;
 
-                @Override
-                public void skipAllBytes(long toSkip) throws IOException {
-                    if (pass++ == 1) {
-                        throw new IOException("all went wrong ;-)");
-                    }
+            @Override
+            public void skipAllBytes(long toSkip) throws IOException {
+                if (pass++ == 1) {
+                    throw new EOFException("all went wrong ;-)");
                 }
-            });
-        });
-
-        Assertions.assertThrows(PaddingException.class, () -> {
-            btab.read(new FitsFile("target/testReadExceptions2") {
-
-                int pass = 0;
-
-                @Override
-                public void skipAllBytes(long toSkip) throws IOException {
-                    if (pass++ == 1) {
-                        throw new EOFException("all went wrong ;-)");
-                    }
-                }
-            });
-        });
+            }
+        }) {
+            Assertions.assertThrows(PaddingException.class, () -> btab.read(f));
+        }
     }
 
     @Test
@@ -1237,15 +1233,15 @@ public class BinaryTableTest {
 
         btab.write(new FitsOutputStream(out));
 
-        Assertions.assertThrows(FitsException.class, () -> {
-            btab.write(new FitsOutputStream(out) {
+        try (FitsOutputStream f = new FitsOutputStream(out) {
 
-                @Override
-                public void write(byte[] b) throws IOException {
-                    throw new IOException("all went wrong ;-)");
-                }
-            });
-        });
+            @Override
+            public void write(byte[] b) throws IOException {
+                throw new IOException("all went wrong ;-)");
+            }
+        }) {
+            Assertions.assertThrows(FitsException.class, () -> btab.write(f));
+        }
     }
 
     @Test
@@ -1267,17 +1263,15 @@ public class BinaryTableTest {
 
     @Test
     public void testAddFlattendColumnWrongType() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        BinaryTable table = createTestTable();
+        long[] flat = new long[longs.length * 2];
+        System.arraycopy(longs, 0, flat, 0, longs.length);
+        System.arraycopy(longs, 0, flat, longs.length, longs.length);
 
-            BinaryTable table = createTestTable();
-            long[] flat = new long[longs.length * 2];
-            System.arraycopy(longs, 0, flat, 0, longs.length);
-            System.arraycopy(longs, 0, flat, longs.length, longs.length);
+        int columnSize = table.addFlattenedColumn(flat, new int[] {2});
 
-            int columnSize = table.addFlattenedColumn(flat, new int[] {2});
-            table.setFlattenedColumn(columnSize - 1, new float[flat.length]);
-
-        });
+        Assertions.assertThrows(FitsException.class,
+                () -> table.setFlattenedColumn(columnSize - 1, new float[flat.length]));
     }
 
     @Test

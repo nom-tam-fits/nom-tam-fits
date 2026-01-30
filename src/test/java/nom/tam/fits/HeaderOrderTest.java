@@ -108,13 +108,9 @@ public class HeaderOrderTest {
 
     @Test
     public void testSaveNewCard() {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-
-            HeaderCard.saveNewHeaderCard(
-                    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-                    "", false);
-
-        });
+        Assertions.assertThrows(IllegalStateException.class, () -> HeaderCard.saveNewHeaderCard(
+                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                "", false));
     }
 
     @Test

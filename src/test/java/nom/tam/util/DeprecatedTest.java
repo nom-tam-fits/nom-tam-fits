@@ -134,15 +134,11 @@ public class DeprecatedTest {
 
     @Test
     public void testBufferDecoderEOFException() throws Exception {
-        Assertions.assertThrows(EOFException.class, () -> {
-
-            byte[] b = new byte[100];
-            BufferPointer p = new BufferPointer(b);
-            BufferDecoder d = new BufferDecoder(p) {
-            };
-            d.eofCheck(new EOFException(), 2, 2, 4);
-
-        });
+        byte[] b = new byte[100];
+        BufferPointer p = new BufferPointer(b);
+        BufferDecoder d = new BufferDecoder(p) {
+        };
+        Assertions.assertThrows(EOFException.class, () -> d.eofCheck(new EOFException(), 2, 2, 4));
     }
 
     @Test
@@ -153,39 +149,27 @@ public class DeprecatedTest {
 
     @Test
     public void testBENoOverride() throws Exception {
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
-
-            BufferEncoder be = new BufferEncoder(new BufferPointer()) {
-            };
-            be.write(1);
-
-        });
+        BufferEncoder be = new BufferEncoder(new BufferPointer()) {
+        };
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> be.write(1));
     }
 
     @Test
     public void testBDNoOverride() throws Exception {
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
-
-            BufferDecoder bd = new BufferDecoder(new BufferPointer()) {
-            };
-            bd.read();
-
-        });
+        BufferDecoder bd = new BufferDecoder(new BufferPointer()) {
+        };
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> bd.read());
     }
 
     @Test
     public void testBEUncheckedWriteException() throws Exception {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-
-            BufferEncoder be = new BufferEncoder(new BufferPointer()) {
-                @Override
-                public void write(byte[] b, int off, int len) throws IOException {
-                    throw new EOFException();
-                }
-            };
-            be.writeUncheckedByte((byte) 1);
-
-        });
+        BufferEncoder be = new BufferEncoder(new BufferPointer()) {
+            @Override
+            public void write(byte[] b, int off, int len) throws IOException {
+                throw new EOFException();
+            }
+        };
+        Assertions.assertThrows(IllegalStateException.class, () -> be.writeUncheckedByte((byte) 1));
     }
 
     @Test
@@ -215,13 +199,9 @@ public class DeprecatedTest {
 
     @Test
     public void testReadInvalidArray() throws Exception {
-        Assertions.assertThrows(IOException.class, () -> {
-
-            BufferDecoder bd = new BufferDecoder(new BufferPointer()) {
-            };
-            bd.readLArray(new Header());
-
-        });
+        BufferDecoder bd = new BufferDecoder(new BufferPointer()) {
+        };
+        Assertions.assertThrows(IOException.class, () -> bd.readLArray(new Header()));
     }
 
     @Test

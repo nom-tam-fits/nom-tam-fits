@@ -70,31 +70,24 @@ public class ChecksumTest {
 
     @Test
     public void testChecksumDataFail() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            FitsCheckSum.checksum(new byte[999]);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> FitsCheckSum.checksum(new byte[999]));
     }
 
     @Test
     public void testChecksumDataFailException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        int[][] data = new int[][] {{1, 2}, {3, 4}, {5, 6}};
+        ImageData d = ImageHDU.encapsulate(data);
+        Header h = ImageHDU.manufactureHeader(d);
+        BasicHDU<?> bhdu = new ImageHDU(h, d) {
 
-            int[][] data = new int[][] {{1, 2}, {3, 4}, {5, 6}};
-            ImageData d = ImageHDU.encapsulate(data);
-            Header h = ImageHDU.manufactureHeader(d);
-            BasicHDU<?> bhdu = new ImageHDU(h, d) {
+            @Override
+            public ImageData getData() {
+                ThrowAnyException.throwIOException("fake");
+                return null;
+            }
+        };
 
-                @Override
-                public ImageData getData() {
-                    ThrowAnyException.throwIOException("fake");
-                    return null;
-                }
-            };
-            Fits.setChecksum(bhdu);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Fits.setChecksum(bhdu));
     }
 
     @Test
@@ -220,23 +213,19 @@ public class ChecksumTest {
 
     @Test
     public void testCheckSumVerifyModifiedDatasumFail() throws Exception {
-        Assertions.assertThrows(FitsIntegrityException.class, () -> {
+        File copy = new File("target/checksum-moddata.fits");
 
-            File copy = new File("target/checksum-moddata.fits");
+        Files.copy(new File("src/test/resources/nom/tam/fits/test/checksum.fits").toPath(), copy.toPath(),
+                StandardCopyOption.REPLACE_EXISTING);
 
-            Files.copy(new File("src/test/resources/nom/tam/fits/test/checksum.fits").toPath(), copy.toPath(),
-                    StandardCopyOption.REPLACE_EXISTING);
+        try (RandomAccessFile rf = new RandomAccessFile(copy, "rw")) {
+            rf.seek(rf.length() - 1);
+            rf.write('~');
+        }
 
-            try (RandomAccessFile rf = new RandomAccessFile(copy, "rw")) {
-                rf.seek(rf.length() - 1);
-                rf.write('~');
-            }
-
-            try (Fits fits = new Fits(copy)) {
-                fits.verifyIntegrity();
-            }
-
-        });
+        try (Fits fits = new Fits(copy)) {
+            Assertions.assertThrows(FitsIntegrityException.class, () -> fits.verifyIntegrity());
+        }
     }
 
     @Test
@@ -360,40 +349,24 @@ public class ChecksumTest {
 
     @Test
     public void testCheckSumDecodeInvalidLength() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            FitsCheckSum.decode("");
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> FitsCheckSum.decode(""));
     }
 
     @Test
     public void testCheckSumDecodeInvalidChars() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            byte[] b = new byte[16];
-            Arrays.fill(b, (byte) 0x2f);
-            FitsCheckSum.decode(new String(b));
-
-        });
+        byte[] b = new byte[16];
+        Arrays.fill(b, (byte) 0x2f);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> FitsCheckSum.decode(new String(b)));
     }
 
     @Test
     public void testCheckSumNoDatasum() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            FitsCheckSum.getStoredDatasum(new Header());
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> FitsCheckSum.getStoredDatasum(new Header()));
     }
 
     @Test
     public void testCheckSumNoChecksum() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            FitsCheckSum.getStoredChecksum(new Header());
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> FitsCheckSum.getStoredChecksum(new Header()));
     }
 
     @Test

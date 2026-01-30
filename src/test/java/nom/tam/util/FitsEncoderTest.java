@@ -59,13 +59,9 @@ public class FitsEncoderTest {
 
     @Test
     public void testWriteInvalidArray() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            FitsEncoder e = new FitsEncoder(OutputWriter.from(new ByteArrayOutputStream(100)));
-            Object[] array = new Object[] {new BigInteger("123235536566547747")};
-            e.writeArray(array);
-
-        });
+        FitsEncoder e = new FitsEncoder(OutputWriter.from(new ByteArrayOutputStream(100)));
+        Object[] array = new Object[] {new BigInteger("123235536566547747")};
+        Assertions.assertThrows(IllegalArgumentException.class, () -> e.writeArray(array));
     }
 
     @Test

@@ -606,53 +606,43 @@ public class CompressedTableTest {
 
     @Test
     public void testBinaryTableTileCompressorError() throws Exception {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-
-            class MyCompressor extends BinaryTableTileCompressor {
-                public MyCompressor(CompressedTableData compressedTable, ColumnTable<?> table,
-                        BinaryTableTileDescription description) {
-                    super(compressedTable, table, description);
-                }
-
-                @Override
-                public ICompressorControl getCompressorControl() {
-                    return new ICompressorControl() {
-
-                        @Override
-                        public boolean compress(Buffer in, ByteBuffer out, ICompressOption option) {
-                            return false;
-                        }
-
-                        @Override
-                        public void decompress(ByteBuffer in, Buffer out, ICompressOption option) {
-                        }
-
-                        @Override
-                        public ICompressOption option() {
-                            return null;
-                        }
-                    };
-                }
+        class MyCompressor extends BinaryTableTileCompressor {
+            public MyCompressor(CompressedTableData compressedTable, ColumnTable<?> table,
+                    BinaryTableTileDescription description) {
+                super(compressedTable, table, description);
             }
 
-            MyCompressor tile = null;
+            @Override
+            public ICompressorControl getCompressorControl() {
+                return new ICompressorControl() {
 
-            try {
-                ColumnTable<?> tab = new ColumnTable<>();
-                tab.addColumn(new int[100], 10);
+                    @Override
+                    public boolean compress(Buffer in, ByteBuffer out, ICompressOption option) {
+                        return false;
+                    }
 
-                tile = new MyCompressor(new CompressedTableData(), tab, tile()//
-                        .rowStart(0)//
-                        .rowEnd(10)//
-                        .column(0)//
-                        .tileIndex(1));
-            } catch (Exception e) {
-                throw new Exception(e.getMessage(), e);
+                    @Override
+                    public void decompress(ByteBuffer in, Buffer out, ICompressOption option) {
+                    }
+
+                    @Override
+                    public ICompressOption option() {
+                        return null;
+                    }
+                };
             }
+        }
 
-            tile.run();
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addColumn(new int[100], 10);
 
-        });
+        MyCompressor tile = new MyCompressor(new CompressedTableData(), tab, tile()//
+                .rowStart(0)//
+                .rowEnd(10)//
+                .column(0)//
+                .tileIndex(1));
+
+        Assertions.assertThrows(IllegalStateException.class, () -> tile.run());
     }
 
 }

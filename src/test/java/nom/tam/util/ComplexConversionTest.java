@@ -83,12 +83,8 @@ public class ComplexConversionTest {
 
     @Test
     public void testFloatFlatConvertOddElements() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            float[] f = {1.0F, 2.0F, 3.0F};
-            ArrayFuncs.decimalsToComplex(f);
-
-        });
+        float[] f = {1.0F, 2.0F, 3.0F};
+        Assertions.assertThrows(IllegalArgumentException.class, () -> ArrayFuncs.decimalsToComplex(f));
     }
 
     @Test
@@ -137,12 +133,8 @@ public class ComplexConversionTest {
 
     @Test
     public void testDoubleFlatConvertOddElements() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            double[] d = {1.0, 2.0, 3.0};
-            ArrayFuncs.decimalsToComplex(d);
-
-        });
+        double[] d = {1.0, 2.0, 3.0};
+        Assertions.assertThrows(IllegalArgumentException.class, () -> ArrayFuncs.decimalsToComplex(d));
     }
 
     @Test
@@ -162,22 +154,14 @@ public class ComplexConversionTest {
 
     @Test
     public void testToComplexWrongType() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            int[] i = {1, 2};
-            ArrayFuncs.decimalsToComplex(i);
-
-        });
+        int[] i = {1, 2};
+        Assertions.assertThrows(IllegalArgumentException.class, () -> ArrayFuncs.decimalsToComplex(i));
     }
 
     @Test
     public void testFromComplexWrongType() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            float[] f = {1.0F, 2.0F};
-            ArrayFuncs.complexToDecimals(f, float.class);
-
-        });
+        float[] f = {1.0F, 2.0F};
+        Assertions.assertThrows(IllegalArgumentException.class, () -> ArrayFuncs.complexToDecimals(f, float.class));
     }
 
 }

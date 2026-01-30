@@ -52,15 +52,15 @@ public class ProtectedFitsTest {
         try (Fits fits = new Fits()) {
             fits.insertHDU(new UndefinedHDU(UndefinedHDU.manufactureHeader(undefinedData), undefinedData), 0);
 
-            Assertions.assertThrows(FitsException.class, () -> {
-                fits.insertHDU(new UndefinedHDU(UndefinedHDU.manufactureHeader(undefinedData), undefinedData) {
+            UndefinedHDU hdu = new UndefinedHDU(UndefinedHDU.manufactureHeader(undefinedData), undefinedData) {
 
-                    @Override
-                    void setPrimaryHDU(boolean newPrimary) throws FitsException {
-                        throw new NoSuchElementException();
-                    }
-                }, 1);
-            });
+                @Override
+                void setPrimaryHDU(boolean newPrimary) throws FitsException {
+                    throw new NoSuchElementException();
+                }
+            };
+
+            Assertions.assertThrows(FitsException.class, () -> fits.insertHDU(hdu, 1));
         }
     }
 

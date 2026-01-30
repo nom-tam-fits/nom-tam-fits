@@ -39,20 +39,12 @@ public class ArrayFuncsTest {
 
     @Test
     public void assertRegularArrayNull() throws Exception {
-        Assertions.assertThrows(NullPointerException.class, () -> {
-
-            ArrayFuncs.checkRegularArray(null, true);
-
-        });
+        Assertions.assertThrows(NullPointerException.class, () -> ArrayFuncs.checkRegularArray(null, true));
     }
 
     @Test
     public void assertRegularArrayNonArray() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ArrayFuncs.checkRegularArray("abc", true);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> ArrayFuncs.checkRegularArray("abc", true));
     }
 
     @Test
@@ -82,11 +74,7 @@ public class ArrayFuncsTest {
 
     @Test
     public void arrayCopyMismatchedType() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ArrayFuncs.copy(new int[2], 0, new long[2], 0, 2, 1);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> ArrayFuncs.copy(new int[2], 0, new long[2], 0, 2, 1));
     }
 
     @Test
@@ -117,29 +105,20 @@ public class ArrayFuncsTest {
 
     @Test
     public void decimals2ComplexMismatchedComponents() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ArrayFuncs.decimalsToComplex(new float[2], new double[2]);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> ArrayFuncs.decimalsToComplex(new float[2], new double[2]));
     }
 
     @Test
     public void decimals2ComplexMismatchedComponentDims() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ArrayFuncs.decimalsToComplex(new float[2], new float[2][2]);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> ArrayFuncs.decimalsToComplex(new float[2], new float[2][2]));
     }
 
     @Test
     public void decimals2ComplexUnsupportedComponents() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ArrayFuncs.decimalsToComplex(new boolean[2], new boolean[2]);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> ArrayFuncs.decimalsToComplex(new boolean[2], new boolean[2]));
     }
 
     @Test
@@ -310,38 +289,25 @@ public class ArrayFuncsTest {
 
     @Test
     public void convertComplexChar() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ArrayFuncs.convertArray(new int[1], char.class, null);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> ArrayFuncs.convertArray(new int[1], char.class, null));
     }
 
     @Test
     public void convertComplexBoolean() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ArrayFuncs.convertArray(new int[1], boolean.class, null);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> ArrayFuncs.convertArray(new int[1], boolean.class, null));
     }
 
     @Test
     public void convertComplexNonPrimitive() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ArrayFuncs.convertArray(new int[1], String.class, null);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> ArrayFuncs.convertArray(new int[1], String.class, null));
     }
 
     @Test
     public void convertNotArray() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ArrayFuncs.convertArray("blah", int.class, null);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> ArrayFuncs.convertArray("blah", int.class, null));
     }
 
     @Test
@@ -464,42 +430,26 @@ public class ArrayFuncsTest {
 
     @Test
     public void sliceFromLow() throws Exception {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-            ArrayFuncs.slice(array, new int[] {-1});
-
-        });
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> ArrayFuncs.slice(array, new int[] {-1}));
     }
 
     @Test
     public void sliceFromHigh() throws Exception {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-            ArrayFuncs.slice(array, new int[] {3});
-
-        });
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> ArrayFuncs.slice(array, new int[] {3}));
     }
 
     @Test
     public void sliceToLow() throws Exception {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-            ArrayFuncs.slice(array, null, new int[] {-4});
-
-        });
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> ArrayFuncs.slice(array, null, new int[] {-4}));
     }
 
     @Test
     public void sliceToHigh() throws Exception {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-            ArrayFuncs.slice(array, null, new int[] {4});
-
-        });
+        int[][] array = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> ArrayFuncs.slice(array, null, new int[] {4}));
     }
 
     @Test

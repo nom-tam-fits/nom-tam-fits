@@ -68,46 +68,30 @@ public class HeaderProtectedTest {
 
     @Test
     public void testInvalidReplaceKey1() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            Header h = new Header();
-            h.addValue("TEST", "string", "comment");
-            h.replaceKey("TEST", "NOTVALID1");
-
-        });
+        Header h = new Header();
+        h.addValue("TEST", "string", "comment");
+        Assertions.assertThrows(HeaderCardException.class, () -> h.replaceKey("TEST", "NOTVALID1"));
     }
 
     @Test
     public void testInvalidReplaceKey2() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            Header h = new Header();
-            h.addValue("TEST", "string", "comment");
-            h.replaceKey("TEST", "NOT\tVAL");
-
-        });
+        Header h = new Header();
+        h.addValue("TEST", "string", "comment");
+        Assertions.assertThrows(HeaderCardException.class, () -> h.replaceKey("TEST", "NOT\tVAL"));
     }
 
     @Test
     public void testInvalidReplaceKey3() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            Header h = new Header();
-            h.addValue("TEST", "string", "comment");
-            h.replaceKey("TEST", "NOT VAL");
-
-        });
+        Header h = new Header();
+        h.addValue("TEST", "string", "comment");
+        Assertions.assertThrows(HeaderCardException.class, () -> h.replaceKey("TEST", "NOT VAL"));
     }
 
     @Test
     public void testInvalidReplaceKey4() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            Header h = new Header();
-            h.addValue("TEST", "string", "comment");
-            h.replaceKey("TEST", "NOT*VAL");
-
-        });
+        Header h = new Header();
+        h.addValue("TEST", "string", "comment");
+        Assertions.assertThrows(HeaderCardException.class, () -> h.replaceKey("TEST", "NOT*VAL"));
     }
 
     @Test
@@ -148,65 +132,37 @@ public class HeaderProtectedTest {
 
     @Test
     public void testKeyIndexNegative() {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            Standard.TFORMn.n(-1);
-
-        });
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> Standard.TFORMn.n(-1));
     }
 
     @Test
     public void testKeyIndexTooLarge() {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            Standard.TFORMn.n(1000);
-
-        });
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> Standard.TFORMn.n(1000));
     }
 
     @Test
     public void testWCSInvalidAlt1() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            WCS.WCSNAMEa.alt((char) ('A' - 1));
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> WCS.WCSNAMEa.alt((char) ('A' - 1)));
     }
 
     @Test
     public void testWCSInvalidAlt2() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            WCS.WCSNAMEa.alt((char) ('Z' + 1));
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> WCS.WCSNAMEa.alt((char) ('Z' + 1)));
     }
 
     @Test
     public void testWCSLongIndex() {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-
-            WCS.TCDn_na.n(999, 999);
-
-        });
+        Assertions.assertThrows(IllegalStateException.class, () -> WCS.TCDn_na.n(999, 999));
     }
 
     @Test
     public void testWCSNoAlt() {
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
-
-            WCS.OBSGEO_X.alt('A');
-
-        });
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> WCS.OBSGEO_X.alt('A'));
     }
 
     @Test
     public void testTooManyIndices() {
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
-
-            Standard.CTYPEn.n(1, 2);
-
-        });
+        Assertions.assertThrows(NoSuchElementException.class, () -> Standard.CTYPEn.n(1, 2));
     }
 
     @Test

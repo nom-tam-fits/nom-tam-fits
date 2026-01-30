@@ -158,14 +158,10 @@ public class TileCompressionTest {
 
     @Test
     public void testZBitPixException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Header h = new Header();
-            h.addValue(Compression.ZBITPIX, 0);
-            TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
-            op.readPrimaryHeaders(h);
-
-        });
+        Header h = new Header();
+        h.addValue(Compression.ZBITPIX, 0);
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> op.readPrimaryHeaders(h));
     }
 
     private int[][] makeTileCompressedImage(String fileName) throws Exception {

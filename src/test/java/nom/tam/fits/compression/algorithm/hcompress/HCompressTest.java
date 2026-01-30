@@ -524,12 +524,9 @@ public class HCompressTest {
 
     @Test
     public void testWrongParameters() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        HCompressorOption o = new HCompressorOption();
 
-            HCompressorOption o = new HCompressorOption();
-            o.setParameters(new RiceCompressParameters(null));
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> o.setParameters(new RiceCompressParameters(null)));
     }
 
     @Test
@@ -553,11 +550,7 @@ public class HCompressTest {
 
     @Test
     public void testWrongScale() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            new HCompressorOption().setScale(-1);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new HCompressorOption().setScale(-1));
     }
 
     @Test
@@ -623,22 +616,19 @@ public class HCompressTest {
 
     @Test
     public void testIntHCompressWrongOptions() throws Exception {
-        Assertions.assertThrows(IllegalStateException.class, () -> {
 
-            int[] data = new int[100];
+        int[] data = new int[100];
 
-            for (int i = 0; i < 100; i++) {
-                data[i] = i;
-            }
+        for (int i = 0; i < 100; i++) {
+            data[i] = i;
+        }
 
-            IntBuffer buf = IntBuffer.wrap(data);
-            ByteBuffer zip = ByteBuffer.allocateDirect(800);
+        IntBuffer buf = IntBuffer.wrap(data);
+        ByteBuffer zip = ByteBuffer.allocateDirect(800);
 
-            ICompressorControl c = CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_HCOMPRESS_1,
-                    int.class);
-            c.decompress(zip, buf, new RiceCompressOption());
+        ICompressorControl c = CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_HCOMPRESS_1, int.class);
 
-        });
+        Assertions.assertThrows(IllegalStateException.class, () -> c.decompress(zip, buf, new RiceCompressOption()));
     }
 
 }

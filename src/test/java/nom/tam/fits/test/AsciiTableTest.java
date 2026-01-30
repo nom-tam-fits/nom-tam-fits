@@ -700,21 +700,22 @@ public class AsciiTableTest {
                 .card(Standard.TFORMn.n(1)).value("I1");
         ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream());
 
-        Assertions.assertThrows(FitsException.class, () -> {
-            new AsciiTable(hdr) {
-                @Override
-                public void write(ArrayDataOutput str) throws FitsException {
-                    try {
-                        Field field = AsciiTable.class.getDeclaredField("data");
-                        field.setAccessible(true);
-                        field.set(this, new Object[] {new int[10]});
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                    super.write(str);
+        AsciiTable tab = new AsciiTable(hdr) {
+            @Override
+            public void write(ArrayDataOutput str) throws FitsException {
+                try {
+                    Field field = AsciiTable.class.getDeclaredField("data");
+                    field.setAccessible(true);
+                    field.set(this, new Object[] {new int[10]});
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
-            }.write(str);
-        });
+                super.write(str);
+            }
+        };
+
+        Assertions.assertThrows(FitsException.class, () -> tab.write(str));
+
     }
 
     @Test
@@ -728,16 +729,16 @@ public class AsciiTableTest {
                 .card(Standard.TFORMn.n(1)).value("I1");
         ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream());
 
-        Assertions.assertThrows(FitsException.class, () -> {
-            new AsciiTable(hdr) {
+        AsciiTable tab = new AsciiTable(hdr) {
 
-                // to get over ensure data
-                @Override
-                public Object[] getData() throws FitsException {
-                    return null;
-                }
-            }.write(str);
-        });
+            // to get over ensure data
+            @Override
+            public Object[] getData() throws FitsException {
+                return null;
+            }
+        };
+
+        Assertions.assertThrows(FitsException.class, () -> tab.write(str));
     }
 
     @Test
@@ -797,15 +798,12 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(2)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 * 2]));
 
-        Exception actual = Assertions.assertThrows(FitsException.class, () -> {
-            AsciiTable asciiTable = new AsciiTable(hdr);
-            asciiTable.read(str);
-            asciiTable.getElement(0, 0);
-        });
-
-        Assertions.assertEquals(ArrayIndexOutOfBoundsException.class, actual.getCause().getClass());
+        AsciiTable asciiTable = new AsciiTable(hdr);
+        try (ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 * 2]))) {
+            Exception actual = Assertions.assertThrows(FitsException.class, () -> asciiTable.read(str));
+            Assertions.assertEquals(ArrayIndexOutOfBoundsException.class, actual.getCause().getClass());
+        }
     }
 
     @Test
@@ -818,17 +816,16 @@ public class AsciiTableTest {
                 .card(Standard.TBCOLn.n(1)).value(2)//
                 .card(Standard.TFORMn.n(1)).value("I1");
 
-        Assertions.assertThrows(FitsException.class, () -> {
-            AsciiTable asciiTable = new AsciiTable(hdr) {
+        AsciiTable asciiTable = new AsciiTable(hdr) {
 
-                // to let ensureData think there is data
-                @Override
-                public Object[] getData() throws FitsException {
-                    return null;
-                }
-            };
-            asciiTable.setRow(0, new Object[] {new int[10]});
-        });
+            // to let ensureData think there is data
+            @Override
+            public Object[] getData() throws FitsException {
+                return null;
+            }
+        };
+
+        Assertions.assertThrows(FitsException.class, () -> asciiTable.setRow(0, new Object[] {new int[10]}));
     }
 
     @Test
@@ -841,59 +838,52 @@ public class AsciiTableTest {
                 .card(Standard.TBCOLn.n(1)).value(2)//
                 .card(Standard.TFORMn.n(1)).value("I1");
 
-        Assertions.assertThrows(FitsException.class, () -> {
-            AsciiTable asciiTable = new AsciiTable(hdr);
-            asciiTable.setRow(-1, null);
-        });
+        AsciiTable asciiTable = new AsciiTable(hdr);
+
+        Assertions.assertThrows(FitsException.class, () -> asciiTable.setRow(-1, null));
     }
 
     @Test
     public void testFailedRead() throws Exception {
-        Assertions.assertThrows(PaddingException.class, () -> {
+        Header hdr = new Header();
+        hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
+                .card(Standard.NAXIS1).value(1)//
+                .card(Standard.NAXIS2).value(1)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(2)//
+                .card(Standard.TFORMn.n(1)).value("I1");
+        ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
 
-            Header hdr = new Header();
-            hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
-                    .card(Standard.NAXIS1).value(1)//
-                    .card(Standard.NAXIS2).value(1)//
-                    .card(Standard.TFIELDS).value(1)//
-                    .card(Standard.TBCOLn.n(1)).value(2)//
-                    .card(Standard.TFORMn.n(1)).value("I1");
-            ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
+        AsciiTable asciiTable = new AsciiTable(hdr) {
 
-            AsciiTable asciiTable = new AsciiTable(hdr) {
-
-                @Override
-                protected void loadData(ArrayDataInput in) throws FitsException {
-                    try {
-                        // Read something so we can get to the padding...
-                        in.read();
-                    } catch (IOException e) {
-                        throw new FitsException("read error: " + e, e);
-                    }
+            @Override
+            protected void loadData(ArrayDataInput in) throws FitsException {
+                try {
+                    // Read something so we can get to the padding...
+                    in.read();
+                } catch (IOException e) {
+                    throw new FitsException("read error: " + e, e);
                 }
-            };
-            asciiTable.read(str);
+            }
+        };
 
-        });
+        Assertions.assertThrows(PaddingException.class, () -> asciiTable.read(str));
     }
 
     @Test
     public void testFailedRead2() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header hdr = new Header();
+        hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
+                .card(Standard.NAXIS1).value(1)//
+                .card(Standard.NAXIS2).value(1)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(2)//
+                .card(Standard.TFORMn.n(1)).value("I1");
+        ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
 
-            Header hdr = new Header();
-            hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
-                    .card(Standard.NAXIS1).value(1)//
-                    .card(Standard.NAXIS2).value(1)//
-                    .card(Standard.TFIELDS).value(1)//
-                    .card(Standard.TBCOLn.n(1)).value(2)//
-                    .card(Standard.TFORMn.n(1)).value("I1");
-            ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
+        AsciiTable asciiTable = new AsciiTable(hdr);
 
-            AsciiTable asciiTable = new AsciiTable(hdr);
-            asciiTable.read(str);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> asciiTable.read(str));
     }
 
     @Test
@@ -1160,46 +1150,30 @@ public class AsciiTableTest {
 
     @Test
     public void testConstructBinTableHeader() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Header h = new Header();
-            h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
-            new AsciiTable(h);
-
-        });
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
+        Assertions.assertThrows(FitsException.class, () -> new AsciiTable(h));
     }
 
     @Test
     public void testConstructA3DTableHeader() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Header h = new Header();
-            h.addValue(Standard.XTENSION, NonStandard.XTENSION_A3DTABLE);
-            new AsciiTable(h);
-
-        });
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, NonStandard.XTENSION_A3DTABLE);
+        Assertions.assertThrows(FitsException.class, () -> new AsciiTable(h));
     }
 
     @Test
     public void testConstructImageHeader() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Header h = new Header();
-            h.addValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
-            new AsciiTable(h);
-
-        });
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
+        Assertions.assertThrows(FitsException.class, () -> new AsciiTable(h));
     }
 
     @Test
     public void testConstructIUEImageHeader() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Header h = new Header();
-            h.addValue(Standard.XTENSION, NonStandard.XTENSION_IUEIMAGE);
-            new AsciiTable(h);
-
-        });
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, NonStandard.XTENSION_IUEIMAGE);
+        Assertions.assertThrows(FitsException.class, () -> new AsciiTable(h));
     }
 
     @Test
@@ -1212,155 +1186,100 @@ public class AsciiTableTest {
 
     @Test
     public void testFromColumnMajorException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3][2]};
-            AsciiTable.fromColumnMajor(cols); // ASCII tables can't store arrays...
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3][2]};
+        // ASCII tables can't store arrays...
+        Assertions.assertThrows(FitsException.class, () -> AsciiTable.fromColumnMajor(cols));
     }
 
     @Test
     public void testAddColumnNotAnArrayException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            tab.addColumn("blah");
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tab.addColumn("blah"));
     }
 
     @Test
     public void testAddBooleanColumnException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            tab.addColumn(new boolean[3]);
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        Assertions.assertThrows(FitsException.class, () -> tab.addColumn(new boolean[3]));
     }
 
     @Test
     public void testAddByteColumnException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            tab.addColumn(new byte[3]);
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        Assertions.assertThrows(FitsException.class, () -> tab.addColumn(new byte[3]));
     }
 
     @Test
     public void testAddShortColumnException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            tab.addColumn(new short[3]);
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        Assertions.assertThrows(FitsException.class, () -> tab.addColumn(new short[3]));
     }
 
     @Test
     public void testAddWrongTypeColumnException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            tab.addColumn(new Integer[3]);
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        Assertions.assertThrows(FitsException.class, () -> tab.addColumn(new Integer[3]));
     }
 
     @Test
     public void testAddColumnWrongRowsException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            tab.addColumn(new int[4]);
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        Assertions.assertThrows(FitsException.class, () -> tab.addColumn(new int[4]));
     }
 
     @Test
     public void testAddColumnWidthNotAnArrayException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            tab.addColumn("blah", 10);
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tab.addColumn("blah", 10));
     }
 
     @Test
     public void testAddBooleanColumnWidthException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            tab.addColumn(new boolean[3], 10);
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        Assertions.assertThrows(FitsException.class, () -> tab.addColumn(new boolean[3], 10));
     }
 
     @Test
     public void testAddByteColumnWidthException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            tab.addColumn(new byte[3], 10);
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        Assertions.assertThrows(FitsException.class, () -> tab.addColumn(new byte[3], 10));
     }
 
     @Test
     public void testAddShortColumnWidthException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            tab.addColumn(new short[3], 10);
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        Assertions.assertThrows(FitsException.class, () -> tab.addColumn(new short[3], 10));
     }
 
     @Test
     public void testAddWrongTypeColumnWidthException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            tab.addColumn(new Integer[3], 10);
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        Assertions.assertThrows(FitsException.class, () -> tab.addColumn(new Integer[3], 10));
     }
 
     @Test
     public void testAddColumnInvalidWidthException() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            tab.addColumn(new int[3], 0);
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tab.addColumn(new int[3], 0));
     }
 
     @Test
     public void testFromColumnMajorRecastException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], "blah"};
-            AsciiTable.fromColumnMajor(cols); /// addColumn("blah") throws IllegalArgumentException, recast to
-                                              /// FitsException
-
-        });
+        Object[] cols = new Object[] {new int[3], "blah"};
+        // addColumn("blah") throws IllegalArgumentException, recast the FitsException
+        Assertions.assertThrows(FitsException.class, () -> AsciiTable.fromColumnMajor(cols));
     }
 
     @Test
@@ -1377,41 +1296,29 @@ public class AsciiTableTest {
 
     @Test
     public void testSetColumnNameInvalidString() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            AsciiTableHDU hdu = tab.toHDU();
-
-            hdu.setColumnName(1, "my column\n", "invalid column name");
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        AsciiTableHDU hdu = tab.toHDU();
+        Assertions.assertThrows(HeaderCardException.class,
+                () -> hdu.setColumnName(1, "my column\n", "invalid column name"));
     }
 
     @Test
     public void testSetColumnNameNegativeIndex() throws Exception {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            AsciiTableHDU hdu = tab.toHDU();
-
-            hdu.setColumnName(-1, "my column", "invalid column name");
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        AsciiTableHDU hdu = tab.toHDU();
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> hdu.setColumnName(-1, "my column", "invalid column name"));
     }
 
     @Test
     public void testSetColumnNameIndexOutOfBounds() throws Exception {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            Object[] cols = new Object[] {new int[3], new float[3]};
-            AsciiTable tab = AsciiTable.fromColumnMajor(cols);
-            AsciiTableHDU hdu = tab.toHDU();
-
-            hdu.setColumnName(2, "my column", "invalid column name");
-
-        });
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        AsciiTableHDU hdu = tab.toHDU();
+        Assertions.assertThrows(IndexOutOfBoundsException.class,
+                () -> hdu.setColumnName(2, "my column", "invalid column name"));
     }
 
 }

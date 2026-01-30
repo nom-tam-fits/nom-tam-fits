@@ -66,110 +66,63 @@ public class HeaderCardExceptionsTest {
 
     @Test
     public void testSpaceInBaseKey() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("abc def", "value");
-
-        });
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("abc def", "value"));
     }
 
     @Test
     public void testLFInBaseKey() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("abc\ndef", true);
-
-        });
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("abc\ndef", true));
     }
 
     @Test
     public void testSymbolsInBaseKey() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("abc*&#", true);
-
-        });
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("abc*&#", true));
     }
 
     @Test
     public void testLongBaseKey() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("abcdef123", true);
-
-        });
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("abcdef123", true));
     }
 
     @Test
     public void testExtendedASCIIInBaseKey() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("abc\u0080DEF", 1);
-
-        });
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("abc\u0080DEF", 1));
     }
 
     @Test
     public void testLFInValue() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("TEST", "abc\ndef");
-
-        });
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("TEST", "abc\ndef"));
     }
 
     @Test
     public void testExtendedASCIIInValue() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("TEST", "abc\u0080DEF");
-
-        });
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("TEST", "abc\u0080DEF"));
     }
 
     @Test
     public void testLFInComment() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("TEST", -101, "abc\ndef");
-
-        });
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("TEST", -101, "abc\ndef"));
     }
 
     @Test
     public void testExtendedASCIIInComment() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("TEST", "value", "abc\u0080DEF");
-
-        });
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("TEST", "value", "abc\u0080DEF"));
     }
 
     @Test
     public void testNaNCreate() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("TESTNAN", Double.NaN);
-
-        });
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("TESTNAN", Double.NaN));
     }
 
     @Test
     public void testInfCreate() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("TESTINF", Float.POSITIVE_INFINITY, 10, "comment");
-
-        });
+        Assertions.assertThrows(HeaderCardException.class,
+                () -> new HeaderCard("TESTINF", Float.POSITIVE_INFINITY, 10, "comment"));
     }
 
     @Test
     public void testInf2Create() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("TESTINF2", Double.NEGATIVE_INFINITY);
-
-        });
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("TESTINF2", Double.NEGATIVE_INFINITY));
     }
 
     @Test
@@ -192,7 +145,6 @@ public class HeaderCardExceptionsTest {
 
     @Test
     public void testLongValueExceptionConstructors() throws Exception {
-
         LongValueException e = new LongValueException(70);
         Assertions.assertNotNull(e.getMessage());
 
@@ -205,23 +157,17 @@ public class HeaderCardExceptionsTest {
 
     @Test
     public void testLongValueException1() throws Throwable {
-        Assertions.assertThrows(LongValueException.class, () -> {
-
-            FitsFactory.setUseHierarch(true);
-            new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO", 1234567890123456789L);
-
-        });
+        FitsFactory.setUseHierarch(true);
+        Assertions.assertThrows(LongValueException.class,
+                () -> new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO",
+                        1234567890123456789L));
     }
 
     @Test
     public void testLongValueException2() throws Exception {
-        Assertions.assertThrows(LongValueException.class, () -> {
-
-            FitsFactory.setUseHierarch(true);
-            HeaderCard hc = new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PPP", 1);
-            hc.setValue(1234567890123456789L);
-
-        });
+        FitsFactory.setUseHierarch(true);
+        HeaderCard hc = new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PPP", 1);
+        Assertions.assertThrows(LongValueException.class, () -> hc.setValue(1234567890123456789L));
     }
 
     @Test
@@ -282,51 +228,33 @@ public class HeaderCardExceptionsTest {
 
     @Test
     public void testParseNull() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            HeaderCard.create(null);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> HeaderCard.create(null));
     }
 
     @Test
     public void testMissingHieratchPart() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            FitsFactory.setUseHierarch(true);
-            new HeaderCard("HIERARCH.AAA..BBB", "value");
-
-        });
+        FitsFactory.setUseHierarch(true);
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("HIERARCH.AAA..BBB", "value"));
     }
 
     @Test
     public void testHierarchInvalidChars() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            FitsFactory.setUseHierarch(true);
-            new HeaderCard("HIERARCH.AAA.\n\t", "value");
-
-        });
+        FitsFactory.setUseHierarch(true);
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("HIERARCH.AAA.\n\t", "value"));
     }
 
     @Test
     public void testHierarchInvalidSpaces() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            FitsFactory.setUseHierarch(true);
-            new HeaderCard("HIERARCH.AAA BBB CCC", "value");
-
-        });
+        FitsFactory.setUseHierarch(true);
+        Assertions.assertThrows(HeaderCardException.class, () -> new HeaderCard("HIERARCH.AAA BBB CCC", "value"));
     }
 
     @Test
     public void testHierarchTooLong() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            FitsFactory.setUseHierarch(true);
-            new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PPP.QQQ.RRR.SSS", "value");
-
-        });
+        FitsFactory.setUseHierarch(true);
+        Assertions.assertThrows(HeaderCardException.class,
+                () -> new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PPP.QQQ.RRR.SSS",
+                        "value"));
     }
 
     @Test

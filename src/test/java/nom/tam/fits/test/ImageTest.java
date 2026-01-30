@@ -294,25 +294,16 @@ public class ImageTest {
 
     @Test
     public void testOverrideHeaderAxesInvalid() throws FitsException {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            ImageHDU hdu = ImageData.from(new float[3][2]).toHDU();
-
-            Header h = hdu.getHeader();
-            ImageData.overrideHeaderAxes(h, -1);
-
-        });
+        ImageHDU hdu = ImageData.from(new float[3][2]).toHDU();
+        Header h = hdu.getHeader();
+        Assertions.assertThrows(FitsException.class, () -> ImageData.overrideHeaderAxes(h, -1));
     }
 
     @Test
     public void testOverrideHeaderAxesNotImage() throws FitsException {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Header h = new Header();
-            h.addLine(HeaderCard.create(Standard.XTENSION, "blah"));
-            ImageData.overrideHeaderAxes(h, 5);
-
-        });
+        Header h = new Header();
+        h.addLine(HeaderCard.create(Standard.XTENSION, "blah"));
+        Assertions.assertThrows(FitsException.class, () -> ImageData.overrideHeaderAxes(h, 5));
     }
 
     @Test
@@ -335,35 +326,23 @@ public class ImageTest {
 
     @Test
     public void testConstructAsciiTableHeader() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Header h = new Header();
-            h.addValue(Standard.XTENSION, Standard.XTENSION_ASCIITABLE);
-            new ImageData(h);
-
-        });
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, Standard.XTENSION_ASCIITABLE);
+        Assertions.assertThrows(FitsException.class, () -> new ImageData(h));
     }
 
     @Test
     public void testConstructBinTableHeader() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Header h = new Header();
-            h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
-            new ImageData(h);
-
-        });
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
+        Assertions.assertThrows(FitsException.class, () -> new ImageData(h));
     }
 
     @Test
     public void testConstructA3DTableHeader() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Header h = new Header();
-            h.addValue(Standard.XTENSION, NonStandard.XTENSION_A3DTABLE);
-            new ImageData(h);
-
-        });
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, NonStandard.XTENSION_A3DTABLE);
+        Assertions.assertThrows(FitsException.class, () -> new ImageData(h));
     }
 
 }

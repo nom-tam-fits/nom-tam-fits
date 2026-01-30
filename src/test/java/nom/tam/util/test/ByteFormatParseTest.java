@@ -81,11 +81,7 @@ public class ByteFormatParseTest {
 
     @Test
     public void testFailingBoolean() throws Exception {
-        Assertions.assertThrows(FormatException.class, () -> {
-
-            new ByteParser(new byte[0]).getBoolean();
-
-        });
+        Assertions.assertThrows(FormatException.class, () -> new ByteParser(new byte[0]).getBoolean());
     }
 
     @Test
@@ -402,11 +398,7 @@ public class ByteFormatParseTest {
 
     @Test
     public void testLongCaseError() throws Exception {
-        Assertions.assertThrows(FormatException.class, () -> {
-
-            new ByteParser("  A".getBytes()).getLong(10);
-
-        });
+        Assertions.assertThrows(FormatException.class, () -> new ByteParser("  A".getBytes()).getLong(10));
     }
 
     @Test
@@ -420,11 +412,7 @@ public class ByteFormatParseTest {
 
     @Test
     public void testIntCaseError() throws Exception {
-        Assertions.assertThrows(FormatException.class, () -> {
-
-            new ByteParser("  A".getBytes()).getInt(6);
-
-        });
+        Assertions.assertThrows(FormatException.class, () -> new ByteParser("  A".getBytes()).getInt(6));
     }
 
     @Test
@@ -470,13 +458,8 @@ public class ByteFormatParseTest {
 
     @Test
     public void testDoubleFields4() throws Exception {
-        Assertions.assertThrows(FormatException.class, () -> {
-
-            ByteParser byteParser = new ByteParser("  XXXXX         ".getBytes());
-
-            byteParser.getDouble(10);
-
-        });
+        ByteParser byteParser = new ByteParser("  XXXXX         ".getBytes());
+        Assertions.assertThrows(FormatException.class, () -> byteParser.getDouble(10));
     }
 
     @Test()
@@ -491,13 +474,8 @@ public class ByteFormatParseTest {
 
     @Test
     public void testBoolean2() throws Exception {
-        Assertions.assertThrows(FormatException.class, () -> {
-
-            ByteParser byteParser = new ByteParser("  X         ".getBytes());
-
-            byteParser.getBoolean(10);
-
-        });
+        ByteParser byteParser = new ByteParser("  X         ".getBytes());
+        Assertions.assertThrows(FormatException.class, () -> byteParser.getBoolean(10));
     }
 
     @Test

@@ -62,12 +62,8 @@ public class TileImageCompressionOperationTest {
 
     @Test
     public void tileImageOpMultiDimOverrideTest() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
-            op.setTileAxes(new int[] {2, 3, 4});
-
-        });
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+        Assertions.assertThrows(FitsException.class, () -> op.setTileAxes(new int[] {2, 3, 4}));
     }
 
     @Test
@@ -90,12 +86,8 @@ public class TileImageCompressionOperationTest {
 
     @Test
     public void illegalTileSizeTest() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            TiledImageCompressionOperation op = new TiledImageCompressionOperation(new BinaryTable());
-            op.setTileAxes(new int[] {2, 3, 4});
-
-        });
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(new BinaryTable());
+        Assertions.assertThrows(FitsException.class, () -> op.setTileAxes(new int[] {2, 3, 4}));
     }
 
     @Test
@@ -155,23 +147,16 @@ public class TileImageCompressionOperationTest {
 
     @Test
     public void testZcmptypeRiceOneException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
-
-            FitsFactory.setAllowHeaderRepairs(false);
-            op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_RICE_ONE));
-
-        });
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+        FitsFactory.setAllowHeaderRepairs(false);
+        Assertions.assertThrows(FitsException.class,
+                () -> op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_RICE_ONE)));
     }
 
     @Test
     public void testZcmptypeException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
-            op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, "invalid value"));
-
-        });
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+        Assertions.assertThrows(FitsException.class,
+                () -> op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, "invalid value")));
     }
 }

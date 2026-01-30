@@ -133,23 +133,15 @@ public class ComplexValueTest {
 
     @Test
     public void testBadComplex1() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            // Missing brackets
-            new ComplexValue("5566.2,-1123.1");
-
-        });
+        // Missing brackets
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ComplexValue("5566.2,-1123.1"));
     }
 
     @Test
     public void testBadComplex2() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            FitsFactory.setAllowHeaderRepairs(false);
-            // Missing closing bracket
-            new ComplexValue("(5566.2,-1123.1");
-
-        });
+        FitsFactory.setAllowHeaderRepairs(false);
+        // Missing closing bracket
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ComplexValue("(5566.2,-1123.1"));
     }
 
     @Test
@@ -162,23 +154,15 @@ public class ComplexValueTest {
 
     @Test
     public void testBadComplex3() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            // Missing closing bracket
-            new ComplexValue("(5566.2,-112#.1)");
-
-        });
+        // Missing closing bracket
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ComplexValue("(5566.2,-112#.1)"));
     }
 
     @Test
     public void testBadComplex4() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            FitsFactory.setAllowHeaderRepairs(false);
-            // Missing closing bracket
-            new ComplexValue("(5566.2,,   ");
-
-        });
+        FitsFactory.setAllowHeaderRepairs(false);
+        // Missing closing bracket
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ComplexValue("(5566.2,,   "));
     }
 
     @Test
@@ -191,13 +175,9 @@ public class ComplexValueTest {
 
     @Test
     public void testBadComplex5() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            FitsFactory.setAllowHeaderRepairs(false);
-            // Missing closing bracket
-            new ComplexValue("5566.2   )");
-
-        });
+        FitsFactory.setAllowHeaderRepairs(false);
+        // Missing closing bracket
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ComplexValue("5566.2   )"));
     }
 
     @Test
@@ -210,13 +190,9 @@ public class ComplexValueTest {
 
     @Test
     public void testBadComplex6() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            FitsFactory.setAllowHeaderRepairs(false);
-            // Wrong number of components
-            new ComplexValue("(5566.2,1.0,-11.4)");
-
-        });
+        FitsFactory.setAllowHeaderRepairs(false);
+        // Wrong number of components
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ComplexValue("(5566.2,1.0,-11.4)"));
     }
 
     @Test
@@ -322,38 +298,26 @@ public class ComplexValueTest {
 
     @Test
     public void testComplexNaNCard() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("COMPLEX", new ComplexValue(Double.NaN, -2.0));
-
-        });
+        Assertions.assertThrows(HeaderCardException.class,
+                () -> new HeaderCard("COMPLEX", new ComplexValue(Double.NaN, -2.0)));
     }
 
     @Test
     public void testComplexNaNCard2() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("COMPLEX", new ComplexValue(Double.NaN, -2.0), 10, "comment");
-
-        });
+        Assertions.assertThrows(HeaderCardException.class,
+                () -> new HeaderCard("COMPLEX", new ComplexValue(Double.NaN, -2.0), 10, "comment"));
     }
 
     @Test
     public void testComplexInfCard() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("COMPLEX", new ComplexValue(Double.POSITIVE_INFINITY, -2.0));
-
-        });
+        Assertions.assertThrows(HeaderCardException.class,
+                () -> new HeaderCard("COMPLEX", new ComplexValue(Double.POSITIVE_INFINITY, -2.0)));
     }
 
     @Test
     public void testComplexInfCard2() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            new HeaderCard("COMPLEX", new ComplexValue(Double.NEGATIVE_INFINITY, -2.0), 10, "comment");
-
-        });
+        Assertions.assertThrows(HeaderCardException.class,
+                () -> new HeaderCard("COMPLEX", new ComplexValue(Double.NEGATIVE_INFINITY, -2.0), 10, "comment"));
     }
 
     @Test
@@ -364,13 +328,10 @@ public class ComplexValueTest {
 
     @Test
     public void testNoSpaceComplexCard() throws Exception {
-        Assertions.assertThrows(HeaderCardException.class, () -> {
-
-            FitsFactory.setUseHierarch(true);
-            new HeaderCard(Hierarch.key("SOME.VERY.LONG.COMPLEX.KEYWORD.TAKING.UP.THE.SPACE"),
-                    new ComplexValue(Math.PI, -Math.PI), 16, "comment");
-
-        });
+        FitsFactory.setUseHierarch(true);
+        Assertions.assertThrows(HeaderCardException.class,
+                () -> new HeaderCard(Hierarch.key("SOME.VERY.LONG.COMPLEX.KEYWORD.TAKING.UP.THE.SPACE"),
+                        new ComplexValue(Math.PI, -Math.PI), 16, "comment"));
     }
 
     @Test

@@ -107,13 +107,9 @@ public class FlexFormatTest {
 
     @Test
     public void noSpaceForBigIntTest() throws Exception {
-        Assertions.assertThrows(LongValueException.class, () -> {
-
-            FlexFormat f = new FlexFormat();
-            f.setWidth(18);
-            f.autoPrecision();
-            f.format(new BigInteger("123456789012345678901234567890"));
-
-        });
+        FlexFormat f = new FlexFormat();
+        f.setWidth(18);
+        f.autoPrecision();
+        Assertions.assertThrows(LongValueException.class, () -> f.format(new BigInteger("123456789012345678901234567890")));
     }
 }

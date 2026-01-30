@@ -310,93 +310,57 @@ public class StokesTest {
 
     @Test
     public void testGetNegParameter() throws Exception {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            Stokes.parameters().getParameter(-1);
-
-        });
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> Stokes.parameters().getParameter(-1));
     }
 
     @Test
     public void testGetOutOfBoundsParameter() throws Exception {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            Stokes.parameters().getParameter(4);
-
-        });
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> Stokes.parameters().getParameter(4));
     }
 
     @Test
     public void testFillImageHeaderNoNAXIS() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Stokes.parameters().fillImageHeader(new Header(), 0);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Stokes.parameters().fillImageHeader(new Header(), 0));
     }
 
     @Test
     public void testFillTableHeaderNoTDIM() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Stokes.parameters().fillTableHeader(new Header(), 0, 0);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Stokes.parameters().fillTableHeader(new Header(), 0, 0));
     }
 
     @Test
     public void testFillImageHeaderNegIndex() throws Exception {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            Header h = new Header();
-            h.addValue(Standard.NAXIS, 3);
-            Stokes.parameters().fillImageHeader(h, -1);
-
-        });
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 3);
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> Stokes.parameters().fillImageHeader(h, -1));
     }
 
     @Test
     public void testFillImageHeaderOutOfBoundsIndex() throws Exception {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            Header h = new Header();
-            h.addValue(Standard.NAXIS, 3);
-            Stokes.parameters().fillImageHeader(h, 3);
-
-        });
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 3);
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> Stokes.parameters().fillImageHeader(h, 3));
     }
 
     @Test
     public void testFillTableHeaderInvalidColumn() throws Exception {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            Header h = new Header();
-            h.addValue(Standard.TDIMn.n(1), "(4)");
-            Stokes.parameters().fillTableHeader(h, -1, 0);
-
-        });
+        Header h = new Header();
+        h.addValue(Standard.TDIMn.n(1), "(4)");
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> Stokes.parameters().fillTableHeader(h, -1, 0));
     }
 
     @Test
     public void testFillTableHeaderNegIndex() throws Exception {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            Header h = new Header();
-            h.addValue(Standard.TDIMn.n(1), "(4)");
-            Stokes.parameters().fillTableHeader(h, 0, -1);
-
-        });
+        Header h = new Header();
+        h.addValue(Standard.TDIMn.n(1), "(4)");
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> Stokes.parameters().fillTableHeader(h, 0, -1));
     }
 
     @Test
     public void testFillTableHeaderOutOfBoundsIndex() throws Exception {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            Header h = new Header();
-            h.addValue(Standard.TDIMn.n(1), "(4)");
-            Stokes.parameters().fillTableHeader(h, 0, 3);
-
-        });
+        Header h = new Header();
+        h.addValue(Standard.TDIMn.n(1), "(4)");
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> Stokes.parameters().fillTableHeader(h, 0, 3));
     }
 
     @Test
@@ -415,152 +379,118 @@ public class StokesTest {
 
     @Test
     public void testFromImageHeaderNoNAXIS() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
 
-            Header h = new Header();
-            h.addValue(Standard.NAXIS, 1);
+        Stokes.parameters().fillImageHeader(h, 0);
+        h.deleteKey(Standard.NAXIS);
 
-            Stokes.parameters().fillImageHeader(h, 0);
-            h.deleteKey(Standard.NAXIS);
-            Stokes.fromImageHeader(h);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Stokes.fromImageHeader(h));
     }
 
     @Test
     public void testFromImageHeaderInvalidCRVAL() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
 
-            Header h = new Header();
-            h.addValue(Standard.NAXIS, 1);
+        Stokes.parameters().fillImageHeader(h, 0);
+        h.addValue("CRVAL1", 0.0, null);
 
-            Stokes.parameters().fillImageHeader(h, 0);
-            h.addValue("CRVAL1", 0.0, null);
-            Stokes.fromImageHeader(h);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Stokes.fromImageHeader(h));
     }
 
     @Test
     public void testFromImageHeaderFractionalCRVAL() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
 
-            Header h = new Header();
-            h.addValue(Standard.NAXIS, 1);
+        Stokes.parameters().fillImageHeader(h, 0);
+        h.addValue("CRVAL1", 1.5, null);
 
-            Stokes.parameters().fillImageHeader(h, 0);
-            h.addValue("CRVAL1", 1.5, null);
-            Stokes.fromImageHeader(h);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Stokes.fromImageHeader(h));
     }
 
     @Test
     public void testFromImageHeaderInvalidCRPIX() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
 
-            Header h = new Header();
-            h.addValue(Standard.NAXIS, 1);
+        Stokes.parameters().fillImageHeader(h, 0);
+        h.addValue("CRPIX1", 1.5, null);
 
-            Stokes.parameters().fillImageHeader(h, 0);
-            h.addValue("CRPIX1", 1.5, null);
-            Stokes.fromImageHeader(h);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Stokes.fromImageHeader(h));
     }
 
     @Test
     public void testFromImageHeaderInvalidCDELT() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
 
-            Header h = new Header();
-            h.addValue(Standard.NAXIS, 1);
+        Stokes.parameters().fillImageHeader(h, 0);
+        h.addValue("CDELT1", 1.5, null);
 
-            Stokes.parameters().fillImageHeader(h, 0);
-            h.addValue("CDELT1", 1.5, null);
-            Stokes.fromImageHeader(h);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Stokes.fromImageHeader(h));
     }
 
     @Test
     public void testFromTableHeaderInvalidColumn() throws Exception {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-
-            Header h = new Header();
-            Stokes.fromTableHeader(h, -1);
-
-        });
+        Header h = new Header();
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> Stokes.fromTableHeader(h, -1));
     }
 
     @Test
     public void testFromTableHeaderNoTDIM() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header h = new Header();
+        h.addValue(Standard.TDIMn.n(1), "(4)");
 
-            Header h = new Header();
-            h.addValue(Standard.TDIMn.n(1), "(4)");
+        Stokes.parameters().fillTableHeader(h, 0, 0);
+        h.deleteKey(Standard.TDIMn.n(1));
 
-            Stokes.parameters().fillTableHeader(h, 0, 0);
-            h.deleteKey(Standard.TDIMn.n(1));
-            Stokes.fromTableHeader(h, 0);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Stokes.fromTableHeader(h, 0));
     }
 
     @Test
     public void testFromTableHeaderInvalidCRVAL() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header h = new Header();
+        h.addValue(Standard.TDIMn.n(1), "(4)");
 
-            Header h = new Header();
-            h.addValue(Standard.TDIMn.n(1), "(4)");
+        Stokes.parameters().fillTableHeader(h, 0, 0);
+        h.addValue("1CRVL1", 0.0, null);
 
-            Stokes.parameters().fillTableHeader(h, 0, 0);
-            h.addValue("1CRVL1", 0.0, null);
-            Stokes.fromTableHeader(h, 0);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Stokes.fromTableHeader(h, 0));
     }
 
     @Test
     public void testFromTableHeaderFractionalCRVAL() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header h = new Header();
+        h.addValue(Standard.TDIMn.n(1), "(4)");
 
-            Header h = new Header();
-            h.addValue(Standard.TDIMn.n(1), "(4)");
+        Stokes.parameters().fillTableHeader(h, 0, 0);
+        h.addValue("1CRVL1", 1.5, null);
 
-            Stokes.parameters().fillTableHeader(h, 0, 0);
-            h.addValue("1CRVL1", 1.5, null);
-            Stokes.fromTableHeader(h, 0);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Stokes.fromTableHeader(h, 0));
     }
 
     @Test
     public void testFromTableHeaderInvalidCRPIX() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header h = new Header();
+        h.addValue(Standard.TDIMn.n(1), "(4)");
 
-            Header h = new Header();
-            h.addValue(Standard.TDIMn.n(1), "(4)");
+        Stokes.parameters().fillTableHeader(h, 0, 0);
+        h.addValue("1CRPX1", 1.5, null);
 
-            Stokes.parameters().fillTableHeader(h, 0, 0);
-            h.addValue("1CRPX1", 1.5, null);
-            Stokes.fromTableHeader(h, 0);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Stokes.fromTableHeader(h, 0));
     }
 
     @Test
     public void testFromTableHeaderInvalidCDELT() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header h = new Header();
+        h.addValue(Standard.TDIMn.n(1), "(4)");
 
-            Header h = new Header();
-            h.addValue(Standard.TDIMn.n(1), "(4)");
+        Stokes.parameters().fillTableHeader(h, 0, 0);
+        h.addValue("1CDLT1", 1.5, null);
 
-            Stokes.parameters().fillTableHeader(h, 0, 0);
-            h.addValue("1CDLT1", 1.5, null);
-            Stokes.fromTableHeader(h, 0);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Stokes.fromTableHeader(h, 0));
     }
 
     @Test
@@ -607,18 +537,15 @@ public class StokesTest {
 
     @Test
     public void testInvalidCDELT() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+        h.addValue(Standard.NAXIS1, 4);
 
-            Header h = new Header();
-            h.addValue(Standard.NAXIS, 1);
-            h.addValue(Standard.NAXIS1, 4);
+        Stokes.Parameters p0 = Stokes.parameters();
+        p0.fillImageHeader(h, 0);
+        h.addValue(Standard.CDELTn.n(1), 1.5);
 
-            Stokes.Parameters p0 = Stokes.parameters();
-            p0.fillImageHeader(h, 0);
-            h.addValue(Standard.CDELTn.n(1), 1.5);
-            Stokes.fromImageHeader(h).getValue();
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> Stokes.fromImageHeader(h).getValue());
     }
 
     @Test

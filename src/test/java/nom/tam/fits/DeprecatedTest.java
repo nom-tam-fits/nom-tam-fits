@@ -45,13 +45,9 @@ public class DeprecatedTest {
 
     @Test
     public void testHeaderSetInvalidBitpix() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            FitsFactory.setAllowHeaderRepairs(false);
-            Header h = new Header();
-            h.setBitpix(20);
-
-        });
+        FitsFactory.setAllowHeaderRepairs(false);
+        Header h = new Header();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> h.setBitpix(20));
     }
 
     @Test

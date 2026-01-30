@@ -502,29 +502,17 @@ public class ArrayFuncsTest {
 
     @Test
     public void testCurlNonArray() throws Exception {
-        Assertions.assertThrows(RuntimeException.class, () -> {
-
-            Assertions.assertNull(ArrayFuncs.curl(this, null));
-
-        });
+        Assertions.assertThrows(RuntimeException.class, () -> ArrayFuncs.curl(this, null));
     }
 
     @Test
     public void testCurlMultiArray() throws Exception {
-        Assertions.assertThrows(RuntimeException.class, () -> {
-
-            Assertions.assertNull(ArrayFuncs.curl(new int[10][10], new int[] {20, 5}));
-
-        });
+        Assertions.assertThrows(RuntimeException.class, () -> ArrayFuncs.curl(new int[10][10], new int[] {20, 5}));
     }
 
     @Test
     public void testCurlWrongArray() throws Exception {
-        Assertions.assertThrows(RuntimeException.class, () -> {
-
-            Assertions.assertNull(ArrayFuncs.curl(new int[] {1, 2, 3}, new int[] {99}));
-
-        });
+        Assertions.assertThrows(RuntimeException.class, () -> ArrayFuncs.curl(new int[] {1, 2, 3}, new int[] {99}));
     }
 
     @Test
@@ -624,28 +612,16 @@ public class ArrayFuncsTest {
 
     @Test
     public void testCopyNotArray() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ArrayFuncs.copyArray(new Header(), new Header());
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> ArrayFuncs.copyArray(new Header(), new Header()));
     }
 
     @Test
     public void testCopyMismatchedType() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ArrayFuncs.copyArray(new int[3], new double[3]);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> ArrayFuncs.copyArray(new int[3], new double[3]));
     }
 
     @Test
     public void testCopyMismatchedSize() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ArrayFuncs.copyArray(new int[3], new int[4]);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> ArrayFuncs.copyArray(new int[3], new int[4]));
     }
 }

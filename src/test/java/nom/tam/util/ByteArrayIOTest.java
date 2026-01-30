@@ -41,11 +41,7 @@ public class ByteArrayIOTest {
 
     @Test
     public void testInvalidConstructorArgument() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            new ByteArrayIO(0);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ByteArrayIO(0));
     }
 
     @Test
@@ -87,12 +83,8 @@ public class ByteArrayIOTest {
 
     @Test
     public void testNegativePosition() throws Exception {
-        Assertions.assertThrows(EOFException.class, () -> {
-
-            ByteArrayIO b = new ByteArrayIO(10);
-            b.position(-1);
-
-        });
+        ByteArrayIO b = new ByteArrayIO(10);
+        Assertions.assertThrows(EOFException.class, () -> b.position(-1));
     }
 
     @Test
@@ -121,34 +113,23 @@ public class ByteArrayIOTest {
 
     @Test
     public void testPositionBeyondFixed() throws Exception {
-        Assertions.assertThrows(EOFException.class, () -> {
-
-            ByteArrayIO b = new ByteArrayIO(new byte[10]);
-            b.position(11);
-
-        });
+        ByteArrayIO b = new ByteArrayIO(new byte[10]);
+        Assertions.assertThrows(EOFException.class, () -> b.position(11));
     }
 
     @Test
     public void testWriteBeyondFixed() throws Exception {
-        Assertions.assertThrows(EOFException.class, () -> {
-
-            ByteArrayIO b = new ByteArrayIO(new byte[10]);
-            b.write(new byte[11], 0, 11);
-
-        });
+        ByteArrayIO b = new ByteArrayIO(new byte[10]);
+        Assertions.assertThrows(EOFException.class, () -> b.write(new byte[11], 0, 11));
     }
 
     @Test
     public void testWriteBeyondFixed2() throws Exception {
-        Assertions.assertThrows(EOFException.class, () -> {
-
-            ByteArrayIO b = new ByteArrayIO(new byte[10]);
-            for (int i = 0; i < 11; i++) {
-                b.write(i);
-            }
-
-        });
+        ByteArrayIO b = new ByteArrayIO(new byte[10]);
+        for (int i = 0; i < 10; i++) {
+            b.write(i);
+        }
+        Assertions.assertThrows(EOFException.class, () -> b.write(10));
     }
 
     @Test
@@ -183,22 +164,14 @@ public class ByteArrayIOTest {
 
     @Test
     public void testNegativeLength() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ByteArrayIO b = new ByteArrayIO(new byte[10]);
-            b.setLength(-1);
-
-        });
+        ByteArrayIO b = new ByteArrayIO(new byte[10]);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> b.setLength(-1));
     }
 
     @Test
     public void testSetLengthBeyondFixed() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ByteArrayIO b = new ByteArrayIO(new byte[10]);
-            b.setLength(11);
-
-        });
+        ByteArrayIO b = new ByteArrayIO(new byte[10]);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> b.setLength(11));
     }
 
     @Test

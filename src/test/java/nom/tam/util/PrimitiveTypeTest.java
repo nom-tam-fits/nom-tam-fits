@@ -185,38 +185,22 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testUnknownAsTYpe() throws Exception {
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
-
-            PrimitiveTypes.UNKNOWN.asTypedBuffer(null);
-
-        });
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> PrimitiveTypes.UNKNOWN.asTypedBuffer(null));
     }
 
     @Test
     public void testUnknownPutArray() throws Exception {
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
-
-            PrimitiveTypes.UNKNOWN.putArray(null, null, 0);
-
-        });
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> PrimitiveTypes.UNKNOWN.putArray(null, null, 0));
     }
 
     @Test
     public void testUnknownGetArray() throws Exception {
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
-
-            PrimitiveTypes.UNKNOWN.getArray(null, null, 0);
-
-        });
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> PrimitiveTypes.UNKNOWN.getArray(null, null, 0));
     }
 
     @Test
     public void testUnknownAppendBuffer() throws Exception {
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
-
-            PrimitiveTypes.UNKNOWN.appendBuffer(null, null);
-
-        });
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> PrimitiveTypes.UNKNOWN.appendBuffer(null, null));
     }
 
     @Test
