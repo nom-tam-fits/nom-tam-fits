@@ -18,9 +18,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
  - [#821] Test suite cleanup: fix resource leaks, and cure most compiler warnings. (by @attipaci)
 
  - [#822] `ColumnTable.addWrappedColumn()` and `.setWrappedColumn()` now checks if the new column has the same number of rows as existing columns in the table. (by @attipaci)
+ 
+ - [#823] `CompressorProvider.newCompressor()` used to catch exceptions and return `null` if something went wrong. It's better to throw these exceptions.
+
+ - [#823] Various fixes to cure `javadoc` warnings.
 
  - Uses the latest Maven build and runtime dependencies. (by @attipaci)
 
+
+### Removed
+
+ - [#823] Classes and members that were already documented as deprecated, are now in fact annotated as such also. I.e., as of now the compiler will complain when these are referenced in application code, unless once compiles with the option to enabled deprecations. 
 
 ## [1.21.2] - 2025-09-15
 
