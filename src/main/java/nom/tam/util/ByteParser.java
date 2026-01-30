@@ -161,6 +161,8 @@ public class ByteParser {
     }
 
     /**
+     * Returns the next <code>boolean</code> value from the current parse position.
+     * 
      * @return                 a boolean value from the beginning of the buffer.
      *
      * @throws FormatException if the double was in an unknown format
@@ -170,6 +172,9 @@ public class ByteParser {
     }
 
     /**
+     * Returns the next <code>double</code> value from the current parse position, consuming at most the specified
+     * number of bytes from the input.
+     * 
      * @return                 a boolean value from a specified region of the buffer
      *
      * @param  length          The maximum number of characters used to parse this boolean.
@@ -198,6 +203,8 @@ public class ByteParser {
     }
 
     /**
+     * Returns the underlying buffer to this parser.
+     * 
      * @return the buffer being used by the parser
      */
     public byte[] getBuffer() {
@@ -205,7 +212,8 @@ public class ByteParser {
     }
 
     /**
-     * Read in the buffer until a double is read. This will read the entire buffer if fillFields is set.
+     * Returns the next <code>long</code> value from the current parse position, consuming at most the specified number
+     * of bytes from the input. This will read the entire buffer if fillFields is set.
      *
      * @return                 The value found.
      *
@@ -216,6 +224,9 @@ public class ByteParser {
     }
 
     /**
+     * Returns the next <code>double</code> value from the current parse position, consuming at most the specified
+     * number of bytes from the input.
+     * 
      * @return                 a parsed double from the buffer. Leading spaces are ignored.
      *
      * @param  length          The maximum number of characters used to parse this number. If fillFields is specified
@@ -309,6 +320,8 @@ public class ByteParser {
     }
 
     /**
+     * Returns the next <code>float</code> value from the current parse position.
+     * 
      * @return                 a floating point value from the buffer. (see getDouble(int())
      *
      * @throws FormatException if the float was in an unknown format
@@ -318,6 +331,9 @@ public class ByteParser {
     }
 
     /**
+     * Returns the next <code>float</code> value from the current parse position, consuming at most the specified number
+     * of bytes from the input.
+     * 
      * @return                 a floating point value in a region of the buffer
      *
      * @param  length          The maximum number of characters used to parse this float.
@@ -329,6 +345,8 @@ public class ByteParser {
     }
 
     /**
+     * Returns the next <code>in</code> value from the current parse position.
+     * 
      * @return                 an integer at the beginning of the buffer
      *
      * @throws FormatException if the integer was in an unknown format
@@ -338,6 +356,9 @@ public class ByteParser {
     }
 
     /**
+     * Returns the next <code>int</code> value from the current parse position, consuming at most the specified number
+     * of bytes from the input.
+     * 
      * @return                 a region of the buffer to an integer
      *
      * @param  length          The maximum number of characters used to parse this integer. @throws FormatException if
@@ -379,6 +400,9 @@ public class ByteParser {
     }
 
     /**
+     * Returns the next <code>long</code> value from the current parse position, consuming at most the specified number
+     * of bytes from the input.
+     * 
      * @return                 a long in a specified region of the buffer
      *
      * @param  length          The maximum number of characters used to parse this long.
@@ -421,6 +445,8 @@ public class ByteParser {
     }
 
     /**
+     * Returns the length of the previous string returned (that is the number that was parse last).
+     * 
      * @return the number of characters used to parse the previous number (or the length of the previous String
      *             returned).
      */
@@ -438,12 +464,13 @@ public class ByteParser {
     }
 
     /**
+     * Returns the specified number of bytes as a string.
+     * 
      * @return        a string.
      *
      * @param  length The length of the string.
      */
     public String getString(int length) {
-
         String s = AsciiFuncs.asciiString(input, offset, length);
         offset += length;
         numberLength = length;

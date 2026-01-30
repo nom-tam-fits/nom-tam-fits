@@ -188,51 +188,44 @@ public class CompressorProvider implements ICompressorProvider {
                 option = null;
             }
 
-            try {
-                for (Constructor<ICompressor<Buffer>> c : constructors) {
-                    Class<?>[] parms = c.getParameterTypes();
+            for (Constructor<ICompressor<Buffer>> c : constructors) {
+                Class<?>[] parms = c.getParameterTypes();
 
-                    if (parms.length == 0 && option == null) {
-                        // Use constructor without special options...
-                        compressor = c.newInstance();
+                if (parms.length == 0 && option == null) {
+                    // Use constructor without special options...
+                    compressor = c.newInstance();
+                    break;
+                }
+
+                if (parms.length == 1 && option != null) {
+                    // Use constructor with the option
+                    Class<? extends ICompressOption> p = (Class<? extends ICompressOption>) parms[0];
+                    if (quantOption != null && p.isAssignableFrom(quantOption.getClass())) {
+                        compressor = c.newInstance(quantOption);
+                        quantOption = null; // Don't wrap in a quantizer below...
                         break;
                     }
-
-                    if (parms.length == 1 && option != null) {
-                        // Use constructor with the option
-                        Class<? extends ICompressOption> p = (Class<? extends ICompressOption>) parms[0];
-                        if (quantOption != null && p.isAssignableFrom(quantOption.getClass())) {
-                            compressor = c.newInstance(quantOption);
-                            quantOption = null; // Don't wrap in a quantizer below...
-                            break;
-                        }
-                        if (p.isAssignableFrom(option.getClass())) {
-                            compressor = c.newInstance(option);
-                            break;
-                        }
-                    }
-
-                }
-
-                if (compressor == null) {
-                    throw new FitsException("Could not instantiate (de)compressor for the specified options");
-                }
-
-                if (quantOption != null && quantType != null) {
-                    if (quantType.equals(double.class)) {
-                        return (ICompressor) new DoubleQuantCompressor(quantOption, (ICompressor) compressor);
-                    }
-                    if (quantType.equals(float.class)) {
-                        return (ICompressor) new FloatQuantCompressor(quantOption, (ICompressor) compressor);
+                    if (p.isAssignableFrom(option.getClass())) {
+                        compressor = c.newInstance(option);
+                        break;
                     }
                 }
-
-                return compressor;
-            } catch (Exception e) {
-                e.printStackTrace();
             }
 
-            return null;
+            if (compressor == null) {
+                throw new FitsException("Could not instantiate (de)compressor for the specified options");
+            }
+
+            if (quantOption != null && quantType != null) {
+                if (quantType.equals(double.class)) {
+                    return (ICompressor) new DoubleQuantCompressor(quantOption, (ICompressor) compressor);
+                }
+                if (quantType.equals(float.class)) {
+                    return (ICompressor) new FloatQuantCompressor(quantOption, (ICompressor) compressor);
+                }
+            }
+
+            return compressor;
         }
     }
 

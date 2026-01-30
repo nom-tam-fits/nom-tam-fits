@@ -53,6 +53,8 @@ import nom.tam.util.type.ElementType;
  */
 public abstract class StandardImageTiler implements ImageTiler {
     /**
+     * Returns the linear element offset in the image data for a given index position.
+     * 
      * @param  dims The dimensions of the array.
      * @param  pos  The index requested.
      *

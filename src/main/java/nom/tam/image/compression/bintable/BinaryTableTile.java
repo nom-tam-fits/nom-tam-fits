@@ -92,6 +92,7 @@ public abstract class BinaryTableTile implements Runnable {
     /**
      * @deprecated (<i> for internal use</i>) No longer used.
      */
+    @Deprecated
     public void fillHeader(Header header) throws HeaderCardException {
         header.card(Compression.ZCTYPn.n(column + 1)).value(compressionAlgorithm);
     }

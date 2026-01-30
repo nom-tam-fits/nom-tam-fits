@@ -62,6 +62,7 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
      *                 take a binary table as its argument, with heap and all. It cannot be used for decompressing
      *                 binary tables with variable-length columns.
      */
+    @Deprecated
     public BinaryTableTileDecompressor(CompressedTableData compressedTable, ColumnTable<?> columnTable,
             BinaryTableTileDescription description) throws FitsException {
         super(columnTable, description);

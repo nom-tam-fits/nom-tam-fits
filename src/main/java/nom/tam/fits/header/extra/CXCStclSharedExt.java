@@ -49,6 +49,7 @@ import nom.tam.fits.header.IFitsHeader;
  * 
  * @author     Attila Kovacs and Richard van Nieuwenhoven
  */
+@Deprecated
 public enum CXCStclSharedExt implements IFitsHeader {
 
     /**

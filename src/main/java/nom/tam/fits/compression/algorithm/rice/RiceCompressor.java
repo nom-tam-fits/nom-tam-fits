@@ -66,9 +66,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         /**
          * Rice compression of byte streams with the default block size of 32.
          * 
-         * @since  1.19.1
-         * 
-         * @author Attila Kovacs
+         * @since 1.19.1
          */
         public ByteRiceCompressor() {
             this(new RiceCompressOption());
@@ -123,9 +121,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         /**
          * Rice compression of 32-bit integer streams with the default block size of 32.
          * 
-         * @since  1.19.1
-         * 
-         * @author Attila Kovacs
+         * @since 1.19.1
          */
         public IntRiceCompressor() {
             this(new RiceCompressOption());
@@ -166,9 +162,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         /**
          * Rice compression of 16-bit integer streams with the default block size of 32.
          * 
-         * @since  1.19.1
-         * 
-         * @author Attila Kovacs
+         * @since 1.19.1
          */
         public ShortRiceCompressor() {
             this(new RiceCompressOption());

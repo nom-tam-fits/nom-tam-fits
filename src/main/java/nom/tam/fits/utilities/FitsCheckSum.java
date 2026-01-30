@@ -290,6 +290,7 @@ public final class FitsCheckSum {
      *
      * @since                    1.17
      */
+    @Deprecated
     public static long checksum(Data data) throws FitsException {
         return compute(data);
     }
@@ -310,6 +311,7 @@ public final class FitsCheckSum {
      *
      * @since                    1.17
      */
+    @Deprecated
     public static long checksum(Header header) throws FitsException {
         return compute(header);
     }
@@ -333,6 +335,7 @@ public final class FitsCheckSum {
      *
      * @since                    1.17
      */
+    @Deprecated
     public static long checksum(BasicHDU<?> hdu) throws FitsException {
         return sumOf(checksum(hdu.getHeader()), checksum(hdu.getData()));
     }
@@ -551,6 +554,7 @@ public final class FitsCheckSum {
      *
      * @since            1.17
      */
+    @Deprecated
     public static long differenceOf(long total, long part) {
         Checksum sum = new Checksum(total);
         sum.h -= part >>> SHIFT_2_BYTES;
@@ -609,8 +613,6 @@ public final class FitsCheckSum {
      * @see                  #setDatasum(Header, long)
      * @see                  #sumOf(long...)
      * @see                  #differenceOf(long, long)
-     *
-     * @author               R J Mather, Attila Kovacs
      */
     public static void setChecksum(BasicHDU<?> hdu) throws FitsException {
         try {
@@ -666,6 +668,7 @@ public final class FitsCheckSum {
      * @see                      #getStoredDatasum(Header)
      * @see                      #setChecksum(BasicHDU)
      */
+    @Deprecated
     public static long getStoredChecksum(Header header) throws FitsException {
         String encoded = header.getStringValue(CHECKSUM);
 

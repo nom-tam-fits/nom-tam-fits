@@ -78,6 +78,7 @@ public enum NonStandard implements IFitsHeader {
      * 
      * @deprecated Part of the FITS standard, use {@link Standard#INHERIT} instead.
      */
+    @Deprecated
     INHERIT(SOURCE.STScI, HDU.EXTENSION, VALUE.LOGICAL, "inherit header description of primary HDU");
 
     private final FitsKey key;

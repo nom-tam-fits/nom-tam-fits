@@ -64,6 +64,7 @@ public class BufferPointer {
      * 
      * @deprecated Rusty rail implementation only.
      */
+    @Deprecated
     public BufferPointer() {
     }
 
@@ -74,6 +75,7 @@ public class BufferPointer {
      * 
      * @deprecated        Rusty rail implementation only.
      */
+    @Deprecated
     public BufferPointer(byte[] buffer) {
         this();
         this.buffer = buffer;
@@ -88,6 +90,7 @@ public class BufferPointer {
      * 
      * @deprecated            Rusty rail implementation only.
      */
+    @Deprecated
     protected BufferPointer init(int bufferSize) {
         buffer = new byte[bufferSize];
         pos = 0;

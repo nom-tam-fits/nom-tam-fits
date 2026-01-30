@@ -280,8 +280,6 @@ public enum Stokes {
          * @see                              #getAvailableParameters()
          * 
          * @since                            1.19.1
-         * 
-         * @author                           Attila Kovacs
          */
         public Stokes getParameter(int idx) throws IndexOutOfBoundsException {
             if (idx < 0 || idx >= count) {
@@ -316,8 +314,6 @@ public enum Stokes {
          * @see      #getParameter(int)
          * 
          * @since    1.20
-         * 
-         * @author   Attila Kovacs
          */
         public int getArrayIndex(Stokes s) {
             return (s.getCoordinateValue() - offset) / step;
@@ -341,8 +337,6 @@ public enum Stokes {
          * @see                              Stokes#fromImageHeader(Header)
          * 
          * @since                            1.20
-         * 
-         * @author                           Attila Kovacs
          */
         public void fillImageHeader(Header header, int coordinateIndex) throws FitsException {
             int n = header.getIntValue(Standard.NAXIS);
@@ -381,8 +375,6 @@ public enum Stokes {
          * @see                              Stokes#fromTableHeader(Header, int)
          * 
          * @since                            1.20
-         * 
-         * @author                           Attila Kovacs
          */
         public void fillTableHeader(Header header, int column, int coordinateIndex)
                 throws IndexOutOfBoundsException, FitsException {
@@ -505,8 +497,6 @@ public enum Stokes {
      * @see                  Parameters#fillImageHeader(Header, int)
      * 
      * @since                1.20
-     * 
-     * @author               Attila Kovacs
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map.Entry<Integer, Parameters> fromImageHeader(Header header) throws FitsException {
@@ -554,8 +544,6 @@ public enum Stokes {
      * @see                              Parameters#fillTableHeader(Header, int, int)
      * 
      * @since                            1.20
-     * 
-     * @author                           Attila Kovacs
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map.Entry<Integer, Parameters> fromTableHeader(Header header, int column)

@@ -598,6 +598,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @see        #getElementClass(int)
      */
+    @Deprecated
     public Class<?>[] getBases() {
         Class<?>[] bases = new Class<?>[columns.size()];
         for (int i = 0; i < bases.length; i++) {
@@ -686,6 +687,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @deprecated (<i>for internal use</i>) No longer used, will be removed in the future.
      */
+    @Deprecated
     public T getExtraState() {
         return extraState;
     }
@@ -738,6 +740,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @since      1.18
      */
+    @Deprecated
     public int[] getSizes() {
         int[] sizes = new int[columns.size()];
         for (int i = 0; i < sizes.length; i++) {
@@ -768,6 +771,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @see        #getTypeChar(int)
      */
+    @Deprecated
     public char[] getTypes() {
         char[] types = new char[columns.size()];
         for (int i = 0; i < types.length; i++) {
@@ -898,6 +902,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      *                        from the enclosing object, it should be handled by passing the enclsing object, and not
      *                        this enclosed table.
      */
+    @Deprecated
     public void setExtraState(T opaque) {
         extraState = opaque;
     }

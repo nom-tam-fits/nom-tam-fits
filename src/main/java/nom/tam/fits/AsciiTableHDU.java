@@ -79,6 +79,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      * @param      h the template specifying the ASCII table.
      * @param      d the FITS data structure containing the table data.
      */
+    @Deprecated
     public AsciiTableHDU(Header h, AsciiTable d) {
         super(h, d);
     }

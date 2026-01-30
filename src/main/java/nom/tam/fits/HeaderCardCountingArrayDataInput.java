@@ -68,6 +68,7 @@ public class HeaderCardCountingArrayDataInput {
      * 
      * @param      input The input from which we read the header cards.
      */
+    @Deprecated
     protected HeaderCardCountingArrayDataInput(ArrayDataInput input) {
         this.input = input;
     }
@@ -78,6 +79,7 @@ public class HeaderCardCountingArrayDataInput {
      * 
      * @return     the number of cards realy read form the stream
      */
+    @Deprecated
     protected int getPhysicalCardsRead() {
         return physicalCardsRead;
     }
@@ -88,6 +90,7 @@ public class HeaderCardCountingArrayDataInput {
      * 
      * @return     the stream to read the cards from
      */
+    @Deprecated
     protected ArrayDataInput in() {
         return input;
     }
@@ -98,6 +101,7 @@ public class HeaderCardCountingArrayDataInput {
      * @deprecated (<i>for internal use</i>) Visibility will be reduced to the package level, or will be removed
      *                 entirely.
      */
+    @Deprecated
     public void cardRead() {
         physicalCardsRead++;
     }
@@ -110,6 +114,7 @@ public class HeaderCardCountingArrayDataInput {
      * 
      * @return     true iff mark/reset will work
      */
+    @Deprecated
     public boolean markSupported() {
         return input.markSupported();
     }
@@ -122,6 +127,7 @@ public class HeaderCardCountingArrayDataInput {
      *
      * @throws     IOException if the underlaying stream does not allow the mark.
      */
+    @Deprecated
     public void mark() throws IOException {
         input.mark(HeaderCard.FITS_HEADER_CARD_SIZE);
         markedPhysicalCardsRead = physicalCardsRead;
@@ -135,6 +141,7 @@ public class HeaderCardCountingArrayDataInput {
      * 
      * @throws     IOException if the underlaying stream does not allow the mark.
      */
+    @Deprecated
     public void reset() throws IOException {
         input.reset();
         physicalCardsRead = markedPhysicalCardsRead;

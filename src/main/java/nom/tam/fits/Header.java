@@ -143,6 +143,7 @@ public class Header implements FitsElement {
      *                 'fixed-format' header entries, and result in files that are unreadable by some other software.
      *                 This constant will be obsoleted and removed.
      */
+    @Deprecated
     public static final int MIN_COMMENT_ALIGN = 20;
 
     /**
@@ -152,6 +153,7 @@ public class Header implements FitsElement {
      *                 'fixed-format' header entries, and result in files that are unreadable by some other software.
      *                 This constant will be obsoleted and removed.
      */
+    @Deprecated
     public static final int MAX_COMMENT_ALIGN = 70;
 
     /**
@@ -921,8 +923,6 @@ public class Header implements FitsElement {
      * 
      * @return       The list of header cards that match the regular expression.
      * 
-     * @author       Richard J. Mathar
-     * 
      * @since        1.19.1
      */
     public HeaderCard[] findCards(final String regex) {
@@ -976,6 +976,7 @@ public class Header implements FitsElement {
      *
      * @return         The associated value or 0.0 if not found.
      */
+    @Deprecated
     public final BigDecimal getBigDecimalValue(IFitsHeader key) {
         return getBigDecimalValue(key.key());
     }
@@ -991,6 +992,7 @@ public class Header implements FitsElement {
      *
      * @return         the associated value.
      */
+    @Deprecated
     public final BigDecimal getBigDecimalValue(IFitsHeader key, BigDecimal dft) {
         return getBigDecimalValue(key.key(), dft);
     }
@@ -1005,6 +1007,7 @@ public class Header implements FitsElement {
      *
      * @return         The associated value or 0.0 if not found.
      */
+    @Deprecated
     public final BigDecimal getBigDecimalValue(String key) {
         return getBigDecimalValue(key, BigDecimal.ZERO);
     }
@@ -1020,6 +1023,7 @@ public class Header implements FitsElement {
      *
      * @return         the associated value.
      */
+    @Deprecated
     public BigDecimal getBigDecimalValue(String key, BigDecimal dft) {
         HeaderCard fcard = getCard(key);
         if (fcard == null) {
@@ -1038,6 +1042,7 @@ public class Header implements FitsElement {
      *
      * @return         the associated value or 0 if not found.
      */
+    @Deprecated
     public final BigInteger getBigIntegerValue(IFitsHeader key) {
         return getBigIntegerValue(key.key());
     }
@@ -1053,6 +1058,7 @@ public class Header implements FitsElement {
      *
      * @return         the associated value.
      */
+    @Deprecated
     public final BigInteger getBigIntegerValue(IFitsHeader key, BigInteger dft) {
         return getBigIntegerValue(key.key(), dft);
     }
@@ -1067,6 +1073,7 @@ public class Header implements FitsElement {
      *
      * @return         The associated value or 0 if not found.
      */
+    @Deprecated
     public final BigInteger getBigIntegerValue(String key) {
         return getBigIntegerValue(key, BigInteger.ZERO);
     }
@@ -1082,6 +1089,7 @@ public class Header implements FitsElement {
      *
      * @return         the associated value.
      */
+    @Deprecated
     public BigInteger getBigIntegerValue(String key, BigInteger dft) {
         HeaderCard fcard = getCard(key);
         if (fcard == null) {
@@ -1506,6 +1514,7 @@ public class Header implements FitsElement {
      * @see            HeaderCard#getHexValue()
      * @see            #addHexValue(String, long, String)
      */
+    @Deprecated
     public long getHexValue(String key, long dft) {
         HeaderCard fcard = getCard(key);
         if (fcard == null) {
@@ -3014,6 +3023,7 @@ public class Header implements FitsElement {
      * 
      * @since                               1.17
      */
+    @Deprecated
     public static void setCommentAlignPosition(int pos) throws IllegalArgumentException {
         if (pos < Header.MIN_COMMENT_ALIGN || pos > Header.MAX_COMMENT_ALIGN) {
             throw new IllegalArgumentException(

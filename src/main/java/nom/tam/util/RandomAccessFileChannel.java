@@ -69,8 +69,6 @@ public class RandomAccessFileChannel implements RandomAccessFileIO {
      * 
      * @throws IOException if the file is not accessible
      * 
-     * @author             Dustin Jenkins
-     * 
      * @since              1.21
      * 
      * @see                #RandomAccessFileChannel(Path, boolean)
@@ -87,8 +85,6 @@ public class RandomAccessFileChannel implements RandomAccessFileIO {
      * @param  readOnly    <code>true</code> if the file should only be used for reading, otherwise <code>false</code>.
      * 
      * @throws IOException if the file is not accessible
-     * 
-     * @author             Dustin Jenkins
      * 
      * @since              1.21
      * 

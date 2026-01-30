@@ -75,6 +75,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      * @param      hdr   the FITS header describing the data and any user-specific keywords
      * @param      datum the corresponding data object
      */
+    @Deprecated
     public BinaryTableHDU(Header hdr, BinaryTable datum) {
         super(hdr, datum);
     }

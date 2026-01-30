@@ -104,6 +104,7 @@ public enum STScIExt implements IFitsHeader {
      *                 keywords. If possible, avoid using it since it may result in FITS that is not readable by some
      *                 software.
      */
+    @Deprecated
     IPPS_B_P("IPPS-B/P", VALUE.INTEGER, HDU.ANY, "[bits/pixel] of IPPS raster."),
 
     /**
@@ -134,11 +135,13 @@ public enum STScIExt implements IFitsHeader {
     /**
      * @deprecated Use the standard {@link DateTime#MJD_OBS} instead.
      */
+    @Deprecated
     MJD_OBS(DateTime.MJD_OBS),
 
     /**
      * @deprecated Use the standard {@link DateTime#MJDREF} instead.
      */
+    @Deprecated
     MJDREF(DateTime.MJDREF),
 
     /**
@@ -214,22 +217,25 @@ public enum STScIExt implements IFitsHeader {
     /**
      * @deprecated Use the standard {@link WCS#TCDLTn} instead.
      */
+    @Deprecated
     TCDLTn(WCS.TCDLTn),
 
     /**
      * @deprecated Use the standard {@link WCS#TCRPXn} instead.
      */
+    @Deprecated
     TCRPXn(WCS.TCRPXn),
 
     /**
      * @deprecated Use the standard {@link WCS#TCRVLn} instead.
      */
-
+    @Deprecated
     TCRVLn(WCS.TCRVLn),
 
     /**
      * @deprecated Use the standard {@link WCS#TCTYPn} instead
      */
+    @Deprecated
     TCTYPn(WCS.TCTYPn),
 
     /**

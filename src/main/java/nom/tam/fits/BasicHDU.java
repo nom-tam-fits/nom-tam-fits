@@ -136,6 +136,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @param      myHeader the FITS header describing the data and any user-specific keywords
      * @param      myData   the corresponding data object
      */
+    @Deprecated
     protected BasicHDU(Header myHeader, DataClass myData) {
         setHeader(myHeader);
         this.myData = myData;
@@ -168,6 +169,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *
      * @return            <CODE>true</CODE> if this is a valid header.
      */
+    @Deprecated
     public static boolean isHeader(Header header) {
         return false;
     }
@@ -180,6 +182,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *
      * @param      o The Object being tested.
      */
+    @Deprecated
     public static boolean isData(Object o) {
         return false;
     }
@@ -411,6 +414,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * 
      * @see                      #getBitpix()
      */
+    @Deprecated
     public final int getBitPix() throws FitsException {
         return getBitpix().getHeaderValue();
     }
@@ -424,6 +428,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return     the standard name of the physical unit in which the image is expressed, e.g.
      *                 <code>"Jy beam^{-1}"</code>.
      */
+    @Deprecated
     public String getBUnit() {
         return myHeader.getStringValue(BUNIT);
     }
@@ -438,6 +443,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * 
      * @throws     FitsException if the header does not specify a blanking value.
      */
+    @Deprecated
     public long getBlankValue() throws FitsException {
         if (!myHeader.containsKey(BLANK.key())) {
             throw new FitsException("BLANK undefined");
@@ -538,6 +544,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * 
      * @see        #getParameterCount()
      */
+    @Deprecated
     public int getGroupCount() {
         return myHeader.getIntValue(GCOUNT, 1);
     }
@@ -563,6 +570,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *
      * @since                    1.17
      */
+    @Deprecated
     public long getStoredChecksum() throws FitsException {
         return FitsCheckSum.getStoredChecksum(myHeader);
     }
@@ -696,6 +704,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *
      * @since                    1.17
      */
+    @Deprecated
     public long calcChecksum() throws FitsException {
         return FitsCheckSum.checksum(this);
     }
@@ -816,6 +825,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * 
      * @see        #getGroupCount()
      */
+    @Deprecated
     public int getParameterCount() {
         return myHeader.getIntValue(PCOUNT, 0);
     }
@@ -864,6 +874,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *
      * @return             either <CODE>null</CODE> or a String with leading/trailing blanks stripped.
      */
+    @Deprecated
     public String getTrimmedString(String keyword) {
         String s = myHeader.getStringValue(keyword);
         if (s != null) {
@@ -885,6 +896,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *
      * @return             either <CODE>null</CODE> or a String with leading/trailing blanks stripped.
      */
+    @Deprecated
     public String getTrimmedString(IFitsHeader keyword) {
         return getTrimmedString(keyword.key());
     }

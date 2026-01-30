@@ -39,6 +39,8 @@ import java.io.IOException;
 public interface RandomAccess extends ReadWriteAccess, ArrayDataInput {
 
     /**
+     * Returns the current offset from the beginning of the input.
+     * 
      * @return the current position in the stream.
      */
     long getFilePointer();

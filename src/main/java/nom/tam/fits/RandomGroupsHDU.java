@@ -289,6 +289,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * @param      header header to use
      * @param      data   data to use
      */
+    @Deprecated
     public RandomGroupsHDU(Header header, RandomGroupsData data) {
         super(header, data);
 

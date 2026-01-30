@@ -94,8 +94,8 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      *
      * @return         <CODE>true</CODE> if this HDU has a valid header.
      */
-    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     @Deprecated
+    @SuppressFBWarnings(value = "HSM_HIDING_METHOD", justification = "deprecated existing method, kept for compatibility")
     public static boolean isHeader(Header hdr) {
         if (ImageHDU.isHeader(hdr)) {
             return false;
@@ -151,6 +151,7 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      * @param      h the header for this HDU
      * @param      d the data used to build the image.
      */
+    @Deprecated
     public UndefinedHDU(Header h, UndefinedData d) {
         super(h, d);
     }

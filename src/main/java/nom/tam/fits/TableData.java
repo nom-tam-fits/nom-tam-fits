@@ -320,6 +320,7 @@ public interface TableData {
      *                               tables in a new HDU after column deletions, and then edit the new header as
      *                               necessary to incorporate custom entries. May be removed from the API in the future.
      */
+    @Deprecated
     void updateAfterDelete(int oldNcol, Header hdr) throws FitsException;
 
 }

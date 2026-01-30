@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 /**
  * @deprecated Use <b>try-with-resources</b> constructs of Java 8+ instead.
  */
+@Deprecated
 public final class SafeClose {
 
     private static final Logger LOG = LoggerHelper.getLogger(SafeClose.class);
@@ -48,13 +49,12 @@ public final class SafeClose {
     }
 
     /**
-     * Attmpts to an IO resources catching any {@link IOException} that might
-     * result. If the resource cannot be closed, the class will log the
-     * exception, but return normally.
+     * Attmpts to an IO resources catching any {@link IOException} that might result. If the resource cannot be closed,
+     * the class will log the exception, but return normally.
      * 
-     * @param io
-     *            The IO resource to close.
+     * @param io The IO resource to close.
      */
+    @Deprecated
     public static void close(Closeable io) {
         if (io != null) {
             try {

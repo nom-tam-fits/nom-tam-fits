@@ -35,43 +35,41 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * (<i>for internal use</i>) Shorthand access to Apache <b>commons-compress</b>
- * stream decompressors. Forgive the awkward name.
+ * (<i>for internal use</i>) Shorthand access to Apache <b>commons-compress</b> stream decompressors. Forgive the
+ * awkward name.
  * 
- * @deprecated (<i>for internal use</i>) The visibility of this class may be
- *             reduced to package level in the future.
- * @author Richard van Nieuwenhoven
+ * @deprecated (<i>for internal use</i>) The visibility of this class may be reduced to package level in the future.
+ * 
+ * @author     Richard van Nieuwenhoven
  */
+@Deprecated
 public final class CompressionLibLoaderProtection {
 
     private CompressionLibLoaderProtection() {
     }
 
     /**
-     * Returns the Apache <code>commons-compress</code> decompressed input
-     * stream for <code>.bz2</code> compressed inputs
+     * Returns the Apache <code>commons-compress</code> decompressed input stream for <code>.bz2</code> compressed
+     * inputs
      * 
-     * @param in
-     *            the <code>.bz2</code> compressed input stream
-     * @return the decompressed input stream using Apache
-     *         <code>commons-compress</code>.
-     * @throws IOException
-     *             if there was an IO error processing the input.
+     * @param  in          the <code>.bz2</code> compressed input stream
+     * 
+     * @return             the decompressed input stream using Apache <code>commons-compress</code>.
+     * 
+     * @throws IOException if there was an IO error processing the input.
      */
     public static InputStream createBZip2Stream(InputStream in) throws IOException {
         return new org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream(in);
     }
 
     /**
-     * Returns the Apache <code>commons-compress</code> decompressed input
-     * stream for <code>.Z</code> compressed inputs
+     * Returns the Apache <code>commons-compress</code> decompressed input stream for <code>.Z</code> compressed inputs
      * 
-     * @param in
-     *            the <code>.Z</code> compressed input stream
-     * @return the decompressed input stream using Apache
-     *         <code>commons-compress</code>.
-     * @throws IOException
-     *             if there was an IO error processing the input.
+     * @param  in          the <code>.Z</code> compressed input stream
+     * 
+     * @return             the decompressed input stream using Apache <code>commons-compress</code>.
+     * 
+     * @throws IOException if there was an IO error processing the input.
      */
     public static InputStream createZStream(InputStream in) throws IOException {
         return new org.apache.commons.compress.compressors.z.ZCompressorInputStream(in);

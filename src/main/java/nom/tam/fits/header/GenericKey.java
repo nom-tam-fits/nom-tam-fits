@@ -38,23 +38,27 @@ import nom.tam.fits.header.IFitsHeader.VALUE;
 /**
  * generic key interface, create an IFitsHeader from a key.
  * 
- * @author ritchie
- * @deprecated This class duplicates functionality that is available in
- *             {@link FitsKey}, {@link Standard}, ans/or {@link IFitsHeader}.
+ * @author     ritchie
+ * 
+ * @deprecated This class duplicates functionality that is available in {@link FitsKey}, {@link Standard}, ans/or
+ *                 {@link IFitsHeader}.
  */
+@Deprecated
 public final class GenericKey {
 
     private static final int NUMBER_BASE = 10;
 
     /**
-     * Creates a generic FITS header key that may be used in any HDU, with any
-     * type of value, and does not have a standard comment.
+     * Creates a generic FITS header key that may be used in any HDU, with any type of value, and does not have a
+     * standard comment.
      * 
-     * @param key
-     *            the string to create the key for
-     * @return the IFitsHeader implementation for the key.
-     * @deprecated Use {@link FitsKey#FitsKey(String, VALUE, String)} instead.
+     * @param      key the string to create the key for
+     * 
+     * @return         the IFitsHeader implementation for the key.
+     * 
+     * @deprecated     Use {@link FitsKey#FitsKey(String, VALUE, String)} instead.
      */
+    @Deprecated
     public static IFitsHeader create(String key) {
         IFitsHeader result = lookup(key);
         if (result == null) {
@@ -64,15 +68,15 @@ public final class GenericKey {
     }
 
     /**
-     * @deprecated (<i>for internal use</i>) Creates a array of generic FITS
-     *             header keys. The resulting keys have no HDU assignment or
-     *             value type restrictions, not default comments. As such they
-     *             may be used for accessing existing keys by the specified
-     *             names, more so than for adding new values.
-     * @param keys
-     *            the array of string keys
-     * @return the equivalent array of super-generic standarddized keys.
+     * @deprecated      (<i>for internal use</i>) Creates a array of generic FITS header keys. The resulting keys have
+     *                      no HDU assignment or value type restrictions, not default comments. As such they may be used
+     *                      for accessing existing keys by the specified names, more so than for adding new values.
+     * 
+     * @param      keys the array of string keys
+     * 
+     * @return          the equivalent array of super-generic standarddized keys.
      */
+    @Deprecated
     public static IFitsHeader[] create(String[] keys) {
         IFitsHeader[] result = new IFitsHeader[keys.length];
         for (int index = 0; index < result.length; index++) {
@@ -82,18 +86,18 @@ public final class GenericKey {
     }
 
     /**
-     * Returns the number value that appear at the trailing end of a FITS
-     * keyword. For example for <code>NAXIS2</code> it will return 2, while for
-     * <code>TFORM17</code> it will return 17. If there keyword does not end
-     * with a number, 0 is returned (FITS keywords are always numbered from 1
-     * and up).
+     * Returns the number value that appear at the trailing end of a FITS keyword. For example for <code>NAXIS2</code>
+     * it will return 2, while for <code>TFORM17</code> it will return 17. If there keyword does not end with a number,
+     * 0 is returned (FITS keywords are always numbered from 1 and up).
      * 
-     * @param key
-     *            The FITS keyword from which to extract the trailing number.
-     * @return the number contained at the end of the keyword or else 0 if the
-     *         keyword does not end with a number.
-     * @deprecated Use {@link IFitsHeader#extractIndices(String)} instead.
+     * @param      key The FITS keyword from which to extract the trailing number.
+     * 
+     * @return         the number contained at the end of the keyword or else 0 if the keyword does not end with a
+     *                     number.
+     * 
+     * @deprecated     Use {@link IFitsHeader#extractIndices(String)} instead.
      */
+    @Deprecated
     public static int getN(String key) {
         int index = key.length() - 1;
         int n = 0;
@@ -113,15 +117,16 @@ public final class GenericKey {
     }
 
     /**
-     * Lookup a string key in the standard key sets, resolving indexes and
-     * coordinate alternatives as appropriate for the set of standard FITS
-     * keywords. Same as {@link Standard#match(String)}, which is preferred.
+     * Lookup a string key in the standard key sets, resolving indexes and coordinate alternatives as appropriate for
+     * the set of standard FITS keywords. Same as {@link Standard#match(String)}, which is preferred.
      * 
-     * @param key
-     *            the fits key to search.
-     * @return the found fits key or null
-     * @deprecated Use {@link Standard#match(String)} instead.
+     * @param      key the fits key to search.
+     * 
+     * @return         the found fits key or null
+     * 
+     * @deprecated     Use {@link Standard#match(String)} instead.
      */
+    @Deprecated
     public static IFitsHeader lookup(String key) {
         return Standard.match(key);
     }

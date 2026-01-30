@@ -64,7 +64,14 @@ import nom.tam.fits.header.FitsKey;
  *
  * @param <VALUE> value of the map
  */
+@SuppressWarnings("deprecate")
 public class HashedList<VALUE extends CursorValue<String>> implements Collection<VALUE> {
+
+    /**
+     * Instantiates a new ordered hash map
+     */
+    public HashedList() {
+    }
 
     private static final class EntryComparator<VALUE extends CursorValue<String>> implements Comparator<VALUE> {
 

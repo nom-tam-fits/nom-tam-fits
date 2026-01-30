@@ -69,6 +69,7 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
      * 
      * @deprecated                (<i>for internal use</i>) This constructor should have protected visibility.
      */
+    @Deprecated
     public AbstractTiledImageOperation(Class<OPERATION> operationClass) {
         this.operationClass = operationClass;
     }

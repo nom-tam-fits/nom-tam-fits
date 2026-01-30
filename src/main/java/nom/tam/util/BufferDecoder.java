@@ -48,6 +48,8 @@ public abstract class BufferDecoder extends FitsDecoder {
     private BufferPointer p;
 
     /**
+     * Instantiates a new decoder for FITS data types.
+     * 
      * @param p Unused, but the position and length fields are set/reset as to pretend that half of the buffer is
      *              perpetually available for reading. However, at no point will there be any data actually in the
      *              buffer of this object, and you should by all means avoid directly loading data from the stream into

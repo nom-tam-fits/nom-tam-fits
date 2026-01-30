@@ -103,6 +103,8 @@ public final class ArrayFuncs {
     }
 
     /**
+     * Returns a string description of the array type and (regular) dimensions.
+     * 
      * @return   a description of an array (presumed rectangular).
      *
      * @param  o The array to be described.
@@ -539,17 +541,22 @@ public final class ArrayFuncs {
     }
 
     /**
+     * Returns the total number of elements contained in an array of one or more dimensions.
+     * 
      * @return       Count the number of elements in an array.
      *
      * @param      o the array to count elements in
      *
      * @deprecated   Use the more aptly named {@link #countElements(Object)} instead.
      */
+    @Deprecated
     public static long nLElements(Object o) {
         return countElements(o);
     }
 
     /**
+     * Returns the total number of elements contained in an array of one or more dimensions.
+     * 
      * @return   Count the number of elements in an array.
      *
      * @param  o the array to count elements in
@@ -985,8 +992,6 @@ public final class ArrayFuncs {
      * 
      * @since                            1.20
      * 
-     * @author                           Attila Kovacs
-     * 
      * @see                              #sample(Object, int[])
      * @see                              #sample(Object, int[], int[], int[])
      */
@@ -1014,8 +1019,6 @@ public final class ArrayFuncs {
      * 
      * @since                            1.20
      * 
-     * @author                           Attila Kovacs
-     * 
      * @see                              #sample(Object, int)
      * @see                              #sample(Object, int[], int[], int[])
      */
@@ -1040,8 +1043,6 @@ public final class ArrayFuncs {
      *                                       slice. Or, if the from and size arguments have differing lengths.
      * 
      * @since                            1.20
-     * 
-     * @author                           Attila Kovacs
      * 
      * @see                              #slice(Object, int[], int[])
      * @see                              #sample(Object, int[], int[], int[])
@@ -1073,8 +1074,6 @@ public final class ArrayFuncs {
      *                                       slice. Or, if the from and size arguments have differing lengths.
      * 
      * @since                            1.20
-     * 
-     * @author                           Attila Kovacs
      * 
      * @see                              #slice(Object, int[])
      * @see                              #sample(Object, int[], int[], int[])
@@ -1120,8 +1119,6 @@ public final class ArrayFuncs {
      *                                       slice. Or, if the from and size arguments have differing lengths.
      * 
      * @since                            1.20
-     * 
-     * @author                           Attila Kovacs
      * 
      * @see                              #sample(Object, int)
      * @see                              #sample(Object, int[])
@@ -1187,13 +1184,13 @@ public final class ArrayFuncs {
      * <code>Boolean</code> values are somewhat special and are handled according to the second argument, either to
      * produce a <code>boolean[1]</code> or else a <code>Boolean[1]</code>.
      * 
-     * @param  o           The object
-     * @param  booleanAsObject Whether <code>Boolean</code> values should be converted <code>Boolean[1]</code> instead of
-     *                         <code>boolean[1]</code>.
+     * @param  o               The object
+     * @param  booleanAsObject Whether <code>Boolean</code> values should be converted <code>Boolean[1]</code> instead
+     *                             of <code>boolean[1]</code>.
      * 
-     * @return             The input object, wrapped into an array as appropriate.
+     * @return                 The input object, wrapped into an array as appropriate.
      * 
-     * @since              1.21
+     * @since                  1.21
      */
     public static Object objectToArray(Object o, boolean booleanAsObject) {
         if (o.getClass().isArray()) {

@@ -153,6 +153,7 @@ public class CompressedTableData extends BinaryTable {
      * 
      * @param      data The original (uncompressed) table data.
      */
+    @Deprecated
     @SuppressWarnings("javadoc")
     public void prepareUncompressedData(ColumnTable<?> data) throws FitsException {
         tiles = new ArrayList<>();

@@ -48,6 +48,7 @@ public final class RiceBytePixParameter extends CompressHeaderParameter<RiceComp
      * @deprecated (<i>for internal use</i>) the visibility of this constructor may be reduced to the package level in
      *                 future releases.
      */
+    @Deprecated
     @SuppressWarnings("javadoc")
     public RiceBytePixParameter(RiceCompressOption riceCompressOption) {
         super(Compression.BYTEPIX, riceCompressOption);

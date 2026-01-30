@@ -51,6 +51,7 @@ import static nom.tam.fits.header.Standard.XTENSION;
  * 
  * @deprecated (<i>for internal use</i>) Visibility should be reduced to package level in the future
  */
+@Deprecated
 public class HeaderOrder implements java.util.Comparator<String>, Serializable {
 
     /**

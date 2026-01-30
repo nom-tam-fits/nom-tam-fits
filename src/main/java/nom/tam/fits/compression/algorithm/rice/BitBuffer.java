@@ -40,6 +40,7 @@ import java.nio.ByteBuffer;
  * 
  * @author     Ritchie
  */
+@Deprecated
 @SuppressWarnings("javadoc")
 public class BitBuffer {
 

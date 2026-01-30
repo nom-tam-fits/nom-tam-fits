@@ -519,6 +519,7 @@ public final class FitsFactory {
      * @deprecated               Use {@link Fits#makeHDU(Object)} instead (this method may either be migrated to
      *                               {@link Fits} entirely or else have visibility reduced to the package level).
      */
+    @Deprecated
     public static BasicHDU<?> hduFactory(Object o) throws FitsException {
         Data d;
         Header h;

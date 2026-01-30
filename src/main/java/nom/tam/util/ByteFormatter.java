@@ -183,6 +183,12 @@ public final class ByteFormatter {
     private final byte[] tbuf2 = new byte[ByteFormatter.TEMP_BUFFER_SIZE];
 
     /**
+     * Intantiates a new number formatter for FITS ASCII representation.
+     */
+    public ByteFormatter() {
+    }
+
+    /**
      * This method formats a double given a decimal mantissa and exponent information.
      *
      * @param  val   The original number

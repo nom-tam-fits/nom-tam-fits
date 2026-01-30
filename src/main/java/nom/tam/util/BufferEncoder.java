@@ -47,6 +47,8 @@ public abstract class BufferEncoder extends FitsEncoder {
     private BufferPointer p;
 
     /**
+     * Instantiates a new encoder for FITS data types.
+     * 
      * @param p Unused, but the position and length fields are set/reset as to pretend that the buffer is perpetually
      *              half filled with data, and with position at 0. However, at no point will there be any data actually
      *              in the buffer of this object. You should by all means avoid directly writing data from this buffer

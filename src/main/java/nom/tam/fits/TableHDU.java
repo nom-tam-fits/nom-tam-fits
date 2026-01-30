@@ -56,8 +56,6 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * 
      * @since      1.20
      * 
-     * @author     Attila Kovacs
-     * 
      * @see        #setColumnName(int, String, String)
      */
     public static String getDefaultColumnName(int col) {
@@ -72,6 +70,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @param      hdr the header
      * @param      td  The data for the table.
      */
+    @Deprecated
     protected TableHDU(Header hdr, T td) {
         super(hdr, td);
     }
@@ -133,6 +132,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *                               HDU and editing the header as necessary to incorporate custom entries. May be
      *                               removed from the API in the future.
      */
+    @Deprecated
     public void deleteColumnsIndexOne(int column, int len) throws FitsException {
         deleteColumnsIndexZero(column - 1, len);
     }
@@ -151,6 +151,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *                               HDU and editing the header as necessary to incorporate custom entries. May be
      *                               removed from the API in the future.
      */
+    @Deprecated
     public void deleteColumnsIndexOne(int column, int len, String[] fields) throws FitsException {
         deleteColumnsIndexZero(column - 1, len, GenericKey.create(fields));
     }
@@ -168,6 +169,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *                               HDU and editing the header as necessary to incorporate custom entries. May be
      *                               removed from the API in the future.
      */
+    @Deprecated
     public void deleteColumnsIndexZero(int column, int len) throws FitsException {
         deleteColumnsIndexZero(column, len, columnKeyStems());
     }
@@ -186,6 +188,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *                               HDU and editing the header as necessary to incorporate custom entries. May be
      *                               removed from the API in the future.
      */
+    @Deprecated
     public void deleteColumnsIndexZero(int column, int len, IFitsHeader[] fields) throws FitsException {
 
         if (column < 0 || len < 0 || column + len > getNCols()) {
@@ -238,6 +241,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *                               HDU and editing the header as necessary to incorporate custom entries. May be
      *                               removed from the API in the future.
      */
+    @Deprecated
     public void deleteRows(final int row) throws FitsException {
         deleteRows(row, getNRows() - row);
     }
@@ -257,6 +261,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *                               HDU and editing the header as necessary to incorporate custom entries. May be
      *                               removed from the API in the future.
      */
+    @Deprecated
     public void deleteRows(final int firstRow, int nRow) throws FitsException {
 
         // Just ignore invalid requests.
@@ -663,6 +668,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * 
      * @deprecated     (<i>for internal use</i>) Will be removed int the future (no longer used).
      */
+    @Deprecated
     public void setCurrentColumn(int col) {
         setCurrentColumn(col, true);
     }
@@ -677,6 +683,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * 
      * @deprecated       (<i>for internal use</i>) Will have private access in the future.
      */
+    @Deprecated
     public void setCurrentColumn(int col, boolean after) {
         if (after) {
             myHeader.positionAfterIndex(TFORMn, col + 1);

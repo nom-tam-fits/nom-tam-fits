@@ -241,6 +241,7 @@ public class Fits implements Closeable {
      *
      * @see                      #Fits(File)
      */
+    @Deprecated
     public Fits(File myFile, boolean compressed) throws FitsException {
         fileInit(myFile, compressed);
     }
@@ -422,6 +423,7 @@ public class Fits implements Closeable {
      * @see                      #Fits(String)
      **/
     @SuppressWarnings("resource")
+    @Deprecated
     public Fits(String filename, boolean compressed) throws FitsException {
         if (filename == null) {
             throw new FitsException("Null FITS Identifier String");
@@ -608,6 +610,7 @@ public class Fits implements Closeable {
      *
      * @param      in the input stream to close.
      */
+    @Deprecated
     public static void saveClose(InputStream in) {
         SafeClose.close(in);
     }
@@ -1128,6 +1131,7 @@ public class Fits implements Closeable {
      * @deprecated               Use {@link #Fits(InputStream)} constructor instead. We will remove this method in the
      *                               future.
      */
+    @Deprecated
     public void read(InputStream is) throws FitsException {
         is = CompressionManager.decompress(is);
 
@@ -1250,8 +1254,6 @@ public class Fits implements Closeable {
      * @throws FitsException if there was an error during the checksumming operation
      * @throws IOException   if there was an I/O error while accessing the data from the input
      *
-     * @author               R J Mather, Attila Kovacs
-     *
      * @see                  #setChecksum(int)
      * @see                  BasicHDU#getStoredDatasum()
      * @see                  #rewrite()
@@ -1336,6 +1338,7 @@ public class Fits implements Closeable {
      *
      * @since                    1.17
      */
+    @Deprecated
     public long calcChecksum(int hduIndex) throws FitsException, IOException {
         return FitsCheckSum.sumOf(FitsCheckSum.checksum(getHDU(hduIndex).getHeader()), calcDatasum(hduIndex));
     }

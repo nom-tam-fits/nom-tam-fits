@@ -89,6 +89,8 @@ public class FitsSubString {
     }
 
     /**
+     * Returns the number of characters in the original string, counted from the start position of this substring.
+     * 
      * @return get the length of the orginal string from the current offset.
      */
     public int fullLength() {
@@ -116,6 +118,8 @@ public class FitsSubString {
     }
 
     /**
+     * Returns the length of this substring.
+     * 
      * @return the string length of this String.
      */
     public int length() {
@@ -142,6 +146,8 @@ public class FitsSubString {
     }
 
     /**
+     * Checks if this substring contains the specified sequence.
+     * 
      * @param  string the string to check
      *
      * @return        true if the current string starts with the specified string.

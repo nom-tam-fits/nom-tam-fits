@@ -261,6 +261,7 @@ public class QuantizeOption implements ICompressOption {
      * 
      * @see        #setBNull(Integer)
      */
+    @Deprecated
     public final Integer getNullValueIndicator() {
         return getBNull();
     }
@@ -480,6 +481,7 @@ public class QuantizeOption implements ICompressOption {
      * @see              #setBNull(Integer)
      * @see              #getNullValue()
      */
+    @Deprecated
     public QuantizeOption setCheckNull(boolean value) {
         checkNull = value;
         if (nullValueIndicator == null) {
@@ -506,6 +508,7 @@ public class QuantizeOption implements ICompressOption {
      * 
      * @see              #isCheckZero()
      */
+    @Deprecated
     public QuantizeOption setCheckZero(boolean value) {
         config.checkZero = value;
         return this;
@@ -617,6 +620,7 @@ public class QuantizeOption implements ICompressOption {
      * 
      * @see              #setNullValue(double)
      */
+    @Deprecated
     public QuantizeOption setNullValue(double value) {
         nullValue = value;
         return this;

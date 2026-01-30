@@ -45,6 +45,7 @@ public final class TileBufferFactory {
     /**
      * @deprecated for internal use only
      */
+    @Deprecated
     @SuppressWarnings("javadoc")
     public static TileBuffer createTileBuffer(ElementType<Buffer> baseType, int dataOffset, int imageWidth, int width,
             int height) {
