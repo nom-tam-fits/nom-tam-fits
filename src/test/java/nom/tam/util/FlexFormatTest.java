@@ -31,15 +31,14 @@ package nom.tam.util;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.math.BigInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.LongValueException;
 
+@SuppressWarnings("javadoc")
 public class FlexFormatTest {
 
     @Test
@@ -49,88 +48,68 @@ public class FlexFormatTest {
         int i = 1001;
         BigInteger bigi = new BigInteger("12345678901234567890");
 
-        assertEquals("", f.format(null));
+        Assertions.assertEquals("", f.format(null));
 
         f.setPrecision(FlexFormat.DOUBLE_DECIMALS);
-        assertEquals(FlexFormat.DOUBLE_DECIMALS, f.getPrecision());
+        Assertions.assertEquals(FlexFormat.DOUBLE_DECIMALS, f.getPrecision());
 
         f.setPrecision(FlexFormat.FLOAT_DECIMALS);
-        assertEquals(FlexFormat.FLOAT_DECIMALS, f.getPrecision());
+        Assertions.assertEquals(FlexFormat.FLOAT_DECIMALS, f.getPrecision());
 
         f.autoPrecision();
-        assertEquals(FlexFormat.AUTO_PRECISION, f.getPrecision());
+        Assertions.assertEquals(FlexFormat.AUTO_PRECISION, f.getPrecision());
 
         f.setPrecision(-11233);
-        assertEquals(FlexFormat.AUTO_PRECISION, f.getPrecision());
+        Assertions.assertEquals(FlexFormat.AUTO_PRECISION, f.getPrecision());
 
         f.setWidth(80);
-        assertEquals(80, f.getWidth());
+        Assertions.assertEquals(80, f.getWidth());
 
         String s = f.format(Math.PI);
-        assertEquals(Math.PI, Double.parseDouble(s), 1e-12);
+        Assertions.assertEquals(Math.PI, Double.parseDouble(s), 1e-12);
 
         s = f.format(1e12 * Math.PI);
-        assertEquals(1e12 * Math.PI, Double.parseDouble(s), 1.0);
+        Assertions.assertEquals(1e12 * Math.PI, Double.parseDouble(s), 1.0);
 
         s = f.format(1e-12 * Math.PI);
-        assertEquals(1e-12 * Math.PI, Double.parseDouble(s), 1e-24);
+        Assertions.assertEquals(1e-12 * Math.PI, Double.parseDouble(s), 1e-24);
 
         s = f.format(i);
-        assertEquals(i, Integer.parseInt(s));
+        Assertions.assertEquals(i, Integer.parseInt(s));
 
         s = f.format(bigi);
-        assertEquals(bigi, new BigInteger(s));
+        Assertions.assertEquals(bigi, new BigInteger(s));
 
         s = f.format(1e12 * Math.PI);
-        assertEquals(1e12 * Math.PI, Double.parseDouble(s), 1e8);
+        Assertions.assertEquals(1e12 * Math.PI, Double.parseDouble(s), 1e8);
 
         s = f.format(1e-12 * Math.PI);
-        assertEquals(1e-12 * Math.PI, Double.parseDouble(s), 1e-14);
+        Assertions.assertEquals(1e-12 * Math.PI, Double.parseDouble(s), 1e-14);
 
         s = f.format(i);
-        assertEquals(i, Integer.parseInt(s));
+        Assertions.assertEquals(i, Integer.parseInt(s));
 
         s = f.format(bigi);
-        assertEquals(bigi.doubleValue(), Double.parseDouble(s), 1e15);
+        Assertions.assertEquals(bigi.doubleValue(), Double.parseDouble(s), 1e15);
 
         f.setWidth(10);
-        assertEquals(10, f.getWidth());
-
-        boolean thrown = false;
-        try {
-            s = f.format(Math.PI);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        assertTrue(thrown);
+        Assertions.assertEquals(10, f.getWidth());
+        Assertions.assertThrows(LongValueException.class, () -> f.format(Math.PI));
 
         f.setWidth(-100);
-        assertEquals(0, f.getWidth());
-
-        thrown = false;
-        try {
-            s = f.format(Math.PI);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        assertTrue(thrown);
+        Assertions.assertEquals(0, f.getWidth());
+        Assertions.assertThrows(LongValueException.class, () -> f.format(Math.PI));
 
         f.setWidth(2);
         f.autoPrecision();
-        thrown = false;
-        try {
-            s = f.format(Math.PI);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        assertTrue(thrown);
+        Assertions.assertThrows(LongValueException.class, () -> f.format(Math.PI));
     }
 
-    @Test(expected = LongValueException.class)
+    @Test
     public void noSpaceForBigIntTest() throws Exception {
         FlexFormat f = new FlexFormat();
         f.setWidth(18);
         f.autoPrecision();
-        f.format(new BigInteger("123456789012345678901234567890"));
+        Assertions.assertThrows(LongValueException.class, () -> f.format(new BigInteger("123456789012345678901234567890")));
     }
 }

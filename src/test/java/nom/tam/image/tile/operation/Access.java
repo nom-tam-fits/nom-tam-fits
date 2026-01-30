@@ -33,6 +33,7 @@ package nom.tam.image.tile.operation;
 
 import nom.tam.image.tile.operation.buffer.TileBuffer;
 
+@SuppressWarnings("javadoc")
 public class Access {
 
     private Access() {

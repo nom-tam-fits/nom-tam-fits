@@ -47,6 +47,7 @@ public class BufferedDataInputStream extends FitsInputStream {
      * @param i         the underlying input stream
      * @param bufLength the size of the buffer in bytes
      */
+    @Deprecated
     public BufferedDataInputStream(InputStream i, int bufLength) {
         super(i, bufLength);
     }
@@ -56,6 +57,7 @@ public class BufferedDataInputStream extends FitsInputStream {
      * 
      * @param i the underlying input stream
      */
+    @Deprecated
     public BufferedDataInputStream(InputStream i) {
         super(i);
     }

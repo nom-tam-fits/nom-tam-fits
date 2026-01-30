@@ -34,125 +34,116 @@ package nom.tam.util;
 import java.io.EOFException;
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.FitsFactory;
 
+@SuppressWarnings("javadoc")
 public class BufferedFileTest {
 
-    @Before
-    @After
+    @BeforeEach
+    @AfterEach
     public void setDefaults() {
         FitsFactory.setDefaults();
     }
 
     @Test
     public void testCheckEof() throws IOException {
-        FitsFile file = new FitsFile("target/BufferedFileCheckEof", "rw");
-        file.write(new byte[2]);
-        file.close();
-        file = new FitsFile("target/BufferedFileCheckEof", "rw");
-        try {
-            // there are only 2 so ready them
-            Assert.assertEquals(2, file.read(new char[3]));
-            EOFException eofException = null;
-            try {
-                // nothing left now a eof should happen
-                file.read(new char[3]);
-            } catch (EOFException e) {
-                eofException = e;
-            }
-            Assert.assertNotNull(eofException);
-        } finally {
+        try (FitsFile file = new FitsFile("target/BufferedFileCheckEof", "rw")) {
+            file.write(new byte[2]);
             file.close();
+        }
+        try (FitsFile file = new FitsFile("target/BufferedFileCheckEof", "rw")) {
+
+            // there are only 2 so ready them
+            Assertions.assertEquals(2, file.read(new char[3]));
+            Assertions.assertThrows(EOFException.class, () -> file.read(new char[3]));
         }
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void testReadWriteAscii() throws IOException {
         FitsFactory.setUseUnicodeChars(false);
-        FitsFile file = new FitsFile("target/BufferedFileReadWriteAscii", "rw");
-        file.write(new byte[10]);
-        Assert.assertTrue(file.getChannel().isOpen());
-        file.close();
-        file = new FitsFile("target/BufferedFileReadWriteAscii", "rw");
-        try {
-            file.write(new char[2]);
-            Assert.assertEquals(3, file.read(new char[3]));
-        } finally {
+        try (FitsFile file = new FitsFile("target/BufferedFileReadWriteAscii", "rw")) {
+            file.write(new byte[10]);
+            Assertions.assertTrue(file.getChannel().isOpen());
             file.close();
+        }
+
+        try (FitsFile file = new FitsFile("target/BufferedFileReadWriteAscii", "rw")) {
+            file.write(new char[2]);
+            Assertions.assertEquals(3, file.read(new char[3]));
         }
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void testReadWriteUnicode() throws IOException {
         FitsFactory.setUseUnicodeChars(true);
-        FitsFile file = new FitsFile("target/BufferedFileReadWriteUnicode", "rw");
-        file.write(new byte[10]);
-        Assert.assertTrue(file.getChannel().isOpen());
-        file.close();
-        file = new FitsFile("target/BufferedFileReadWriteUnicode", "rw");
-        try {
-            file.write(new char[2]);
-            Assert.assertEquals(6, file.read(new char[3]));
-        } finally {
+        try (FitsFile file = new FitsFile("target/BufferedFileReadWriteUnicode", "rw")) {
+            file.write(new byte[10]);
+            Assertions.assertTrue(file.getChannel().isOpen());
             file.close();
+        }
+
+        try (FitsFile file = new FitsFile("target/BufferedFileReadWriteUnicode", "rw")) {
+            file.write(new char[2]);
+            Assertions.assertEquals(6, file.read(new char[3]));
         }
     }
 
     @Test
     public void testBigMark() throws IOException {
-        FitsFile file = new FitsFile("target/BufferedFileBigMark", "rw");
-        file.write(new byte[10]);
-        file.close();
-        file = new FitsFile("target/BufferedFileBigMark", "rw");
-        Assert.assertTrue(file.markSupported());
-        try {
+        try (FitsFile file = new FitsFile("target/BufferedFileBigMark", "rw")) {
+            file.write(new byte[10]);
+            file.close();
+        }
+
+        try (FitsFile file = new FitsFile("target/BufferedFileBigMark", "rw")) {
+            Assertions.assertTrue(file.markSupported());
+
             file.read();
             long expected = file.getFilePointer();
             file.mark(20);
             file.read();
             file.reset();
-            Assert.assertEquals(expected, file.getFilePointer());
-        } finally {
-            file.close();
+            Assertions.assertEquals(expected, file.getFilePointer());
         }
     }
 
     @Test
     public void testReadFully() throws IOException {
-        FitsFile file = new FitsFile("target/BufferedFileReadFully", "rw");
-        file.write(0xffffffff);
-        file.write(0xffffffff);
-        file.write(0xffffffff);
-        file.close();
-        file = new FitsFile("target/BufferedFileReadFully", "rw");
-        try {
+        try (FitsFile file = new FitsFile("target/BufferedFileReadFully", "rw")) {
+            file.write(0xffffffff);
+            file.write(0xffffffff);
+            file.write(0xffffffff);
+            file.close();
+        }
+
+        try (FitsFile file = new FitsFile("target/BufferedFileReadFully", "rw")) {
             byte[] fully = new byte[3];
             file.readFully(fully);
-            Assert.assertArrayEquals(new byte[] {-1, -1, -1}, fully);
-        } finally {
-            file.close();
+            Assertions.assertArrayEquals(new byte[] {-1, -1, -1}, fully);
         }
     }
 
     @Test
     public void testReadFully2() throws IOException {
-        FitsFile file = new FitsFile("target/BufferedFileReadFully2", "rw");
-        file.write(0xffffffff);
-        file.write(0xffffffff);
-        file.write(0xffffffff);
-        file.close();
-        file = new FitsFile("target/BufferedFileReadFully2", "rw");
-        try {
+        try (FitsFile file = new FitsFile("target/BufferedFileReadFully2", "rw")) {
+            file.write(0xffffffff);
+            file.write(0xffffffff);
+            file.write(0xffffffff);
+            file.close();
+        }
+
+        try (FitsFile file = new FitsFile("target/BufferedFileReadFully2", "rw")) {
             byte[] fully = new byte[3];
             file.readFully(fully, 0, fully.length);
-            Assert.assertArrayEquals(new byte[] {-1, -1, -1}, fully);
-        } finally {
-            file.close();
+            Assertions.assertArrayEquals(new byte[] {-1, -1, -1}, fully);
         }
     }
 }

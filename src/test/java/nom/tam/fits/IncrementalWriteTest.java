@@ -31,19 +31,18 @@ package nom.tam.fits;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.FileOutputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.util.FitsFile;
 import nom.tam.util.FitsOutputStream;
 
 import static nom.tam.fits.header.Standard.EXTEND;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class IncrementalWriteTest {
 
     private static String fileName = "target/incfile.fits";
@@ -60,9 +59,9 @@ public class IncrementalWriteTest {
             hdus = fits.read();
         }
 
-        assertEquals("Number of HDUs written", 2, hdus.length);
-        assertTrue("First has EXTEND", hdus[0].getHeader().containsKey(EXTEND));
-        assertTrue("First is primary", hdus[0].getHeader().getBooleanValue(EXTEND, false));
+        Assertions.assertEquals(2, hdus.length);
+        Assertions.assertTrue(hdus[0].getHeader().containsKey(EXTEND));
+        Assertions.assertTrue(hdus[0].getHeader().getBooleanValue(EXTEND, false));
     }
 
     @Test
@@ -85,13 +84,14 @@ public class IncrementalWriteTest {
 
     @Test
     public void incrementalWriteReverse() throws Exception {
-        Fits fits = new Fits();
-        fits.addHDU(createHDU());
-        fits.addHDU(createHDU());
+        try (Fits fits = new Fits()) {
+            fits.addHDU(createHDU());
+            fits.addHDU(createHDU());
 
-        try (FitsFile f = new FitsFile(fileName, "rw")) {
-            fits.getHDU(1).write(f);
-            fits.getHDU(0).write(f);
+            try (FitsFile f = new FitsFile(fileName, "rw")) {
+                fits.getHDU(1).write(f);
+                fits.getHDU(0).write(f);
+            }
         }
         checkFile();
     }

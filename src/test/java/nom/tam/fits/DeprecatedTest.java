@@ -1,5 +1,7 @@
 package nom.tam.fits;
 
+import org.junit.jupiter.api.Assertions;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -31,21 +33,21 @@ package nom.tam.fits;
  * #L%
  */
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.FitsHeaderImpl;
 import nom.tam.fits.header.IFitsHeader.HDU;
 import nom.tam.fits.header.IFitsHeader.SOURCE;
 import nom.tam.fits.header.IFitsHeader.VALUE;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"javadoc", "deprecation"})
 public class DeprecatedTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testHeaderSetInvalidBitpix() throws Exception {
         FitsFactory.setAllowHeaderRepairs(false);
         Header h = new Header();
-        h.setBitpix(20);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> h.setBitpix(20));
     }
 
     @Test

@@ -1,11 +1,9 @@
 package nom.tam.fits.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.concurrent.ExecutorService;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /*
  * #%L
@@ -40,59 +38,61 @@ import org.junit.Test;
 
 import nom.tam.fits.FitsFactory;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class FitsFactoryTest {
 
     @Test
     public void testFitsSettings() throws Exception {
 
         FitsFactory.setAllowHeaderRepairs(true);
-        assertEquals(true, FitsFactory.isAllowHeaderRepairs());
+        Assertions.assertTrue(FitsFactory.isAllowHeaderRepairs());
 
         FitsFactory.setAllowTerminalJunk(true);
-        assertEquals(true, FitsFactory.getAllowTerminalJunk());
+        Assertions.assertTrue(FitsFactory.getAllowTerminalJunk());
 
         FitsFactory.setCheckAsciiStrings(true);
-        assertEquals(true, FitsFactory.getCheckAsciiStrings());
+        Assertions.assertTrue(FitsFactory.getCheckAsciiStrings());
 
         FitsFactory.setLongStringsEnabled(true);
-        assertEquals(true, FitsFactory.isLongStringsEnabled());
+        Assertions.assertTrue(FitsFactory.isLongStringsEnabled());
 
         FitsFactory.setSkipBlankAfterAssign(true);
-        assertEquals(true, FitsFactory.isSkipBlankAfterAssign());
+        Assertions.assertTrue(FitsFactory.isSkipBlankAfterAssign());
 
         FitsFactory.setUseAsciiTables(true);
-        assertEquals(true, FitsFactory.getUseAsciiTables());
+        Assertions.assertTrue(FitsFactory.getUseAsciiTables());
 
         FitsFactory.setUseHierarch(true);
-        assertEquals(true, FitsFactory.getUseHierarch());
+        Assertions.assertTrue(FitsFactory.getUseHierarch());
 
         FitsFactory.setAllowHeaderRepairs(false);
-        assertEquals(false, FitsFactory.isAllowHeaderRepairs());
+        Assertions.assertFalse(FitsFactory.isAllowHeaderRepairs());
 
         FitsFactory.setAllowTerminalJunk(false);
-        assertEquals(false, FitsFactory.getAllowTerminalJunk());
+        Assertions.assertFalse(FitsFactory.getAllowTerminalJunk());
 
         FitsFactory.setCheckAsciiStrings(false);
-        assertEquals(false, FitsFactory.getCheckAsciiStrings());
+        Assertions.assertFalse(FitsFactory.getCheckAsciiStrings());
 
         FitsFactory.setLongStringsEnabled(false);
-        assertEquals(false, FitsFactory.isLongStringsEnabled());
+        Assertions.assertFalse(FitsFactory.isLongStringsEnabled());
 
         FitsFactory.setSkipBlankAfterAssign(false);
-        assertEquals(false, FitsFactory.isSkipBlankAfterAssign());
+        Assertions.assertFalse(FitsFactory.isSkipBlankAfterAssign());
 
         FitsFactory.setUseAsciiTables(false);
-        assertEquals(false, FitsFactory.getUseAsciiTables());
+        Assertions.assertFalse(FitsFactory.getUseAsciiTables());
 
         FitsFactory.setUseHierarch(false);
-        assertEquals(false, FitsFactory.getUseHierarch());
+        Assertions.assertFalse(FitsFactory.getUseHierarch());
 
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void testInitThreadPool() throws Exception {
         ExecutorService s = FitsFactory.threadPool();
-        assertNotNull(s);
-        assertEquals(s, FitsFactory.threadPool());
+        Assertions.assertNotNull(s);
+        Assertions.assertEquals(s, FitsFactory.threadPool());
     }
 }

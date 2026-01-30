@@ -34,11 +34,10 @@ package nom.tam.fits.test;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
@@ -47,6 +46,7 @@ import nom.tam.fits.header.Standard;
 import nom.tam.util.Cursor;
 import nom.tam.util.FitsOutputStream;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class LongCommentCardTest {
 
     private static int length = 200;
@@ -77,45 +77,42 @@ public class LongCommentCardTest {
             // Add a non-nullable COMMENT entry with the desired length...
             header.addLine(HeaderCard.createCommentCard(counts(HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH)));
 
-            boolean thrown = false;
-            try {
-                header.addLine(HeaderCard.createCommentCard(counts(HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH + 1)));
-            } catch (LongValueException e) {
-                thrown = true;
-            }
-            Assert.assertTrue(thrown);
+            Assertions.assertThrows(LongValueException.class, () -> header
+                    .addLine(HeaderCard.createCommentCard(counts(HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH + 1))));
 
             int n = 2;
 
             n += header.insertHistory(counts(length));
             n += header.insertComment(counts(length));
 
-            // Write the result to 'longcommenttest.fits' in the user's home...
-            Fits fits = new Fits();
-            fits.addHDU(Fits.makeHDU(header));
             File file = new File("target/longcommenttest.fits");
-            FitsOutputStream stream = new FitsOutputStream(new FileOutputStream(file));
 
-            try {
-                fits.write(stream);
-            } catch (FitsException e) {
-                throw e;
-            } finally {
-                stream.close();
-            }
-            Assert.assertEquals(2880L, file.length());
-            int commentLike = 0;
-            fits = new Fits(file);
-            Cursor<String, HeaderCard> iterator = fits.getHDU(0).getHeader().iterator();
-            while (iterator.hasNext()) {
-                HeaderCard headerCard = iterator.next();
-                if (headerCard.isCommentStyleCard() && !Standard.END.key().equals(headerCard.getKey())) {
-                    commentLike++;
-                    Assert.assertTrue(headerCard.getComment(),
-                            headerCard.getComment().length() <= HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH);
+            // Write the result to 'longcommenttest.fits' in the user's home...
+            try (Fits fits = new Fits()) {
+                fits.addHDU(Fits.makeHDU(header));
+
+                try (FitsOutputStream stream = new FitsOutputStream(new FileOutputStream(file))) {
+                    fits.write(stream);
                 }
+
+                Assertions.assertEquals(2880L, file.length());
             }
-            Assert.assertEquals(n, commentLike);
+
+            int commentLike = 0;
+
+            try (Fits fits = new Fits(file)) {
+                Cursor<String, HeaderCard> iterator = fits.getHDU(0).getHeader().iterator();
+                while (iterator.hasNext()) {
+                    HeaderCard headerCard = iterator.next();
+                    if (headerCard.isCommentStyleCard() && !Standard.END.key().equals(headerCard.getKey())) {
+                        commentLike++;
+                        Assertions.assertTrue(
+                                headerCard.getComment().length() <= HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH,
+                                headerCard.getComment());
+                    }
+                }
+                Assertions.assertEquals(n, commentLike);
+            }
 
         } finally {
             FitsFactory.setLongStringsEnabled(longEnabled);

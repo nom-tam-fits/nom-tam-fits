@@ -31,31 +31,31 @@ package nom.tam.util.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.FileInputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.util.FitsFile;
 import nom.tam.util.FitsInputStream;
 
+@SuppressWarnings("javadoc")
 public class BigFileTest {
 
     @Test
     public void test() throws Exception {
-        try {
-            // First create a 3 GB file.
-            String fname = System.getenv("BIGFILETEST");
-            if (fname == null) {
-                System.out.println("BIGFILETEST environment not set.  Returning without test");
-                return;
-            }
-            System.out.println("Big file test.  Takes quite a while.");
-            byte[] buf = new byte[100000000]; // 100 MB
-            FitsFile bf = new FitsFile(fname, "rw");
-            byte sample = 13;
+        // First create a 3 GB file.
+        String fname = System.getenv("BIGFILETEST");
+        if (fname == null) {
+            System.out.println("BIGFILETEST environment not set.  Returning without test");
+            return;
+        }
+        System.out.println("Big file test.  Takes quite a while.");
+        byte[] buf = new byte[100000000]; // 100 MB
 
+        byte sample = 13;
+
+        try (FitsFile bf = new FitsFile(fname, "rw")) {
             for (int i = 0; i < 30; i++) {
                 bf.write(buf); // 30 x 100 MB = 3 GB.
                 if (i == 24) {
@@ -63,30 +63,26 @@ public class BigFileTest {
                 } // Add a marker.
             }
             bf.close();
+        }
 
-            // Now try to skip within the file.
-            bf = new FitsFile(fname, "r");
-            long skip = 2500000000L; // 2.5 G
+        long skip = 2500000000L; // 2.5 G
 
-            long val1 = bf.getFilePointer();
+        // Now try to skip within the file.
+        try (FitsFile bf = new FitsFile(fname, "r")) {
+
+            Assertions.assertEquals(0L, bf.getFilePointer());
             bf.skipAllBytes(skip);
-            val1 = bf.getFilePointer() - val1;
-            long val2 = bf.getFilePointer();
-            int val = bf.read();
+
+            Assertions.assertEquals(skip, bf.getFilePointer());
+            Assertions.assertEquals(sample, bf.read());
+
             bf.close();
+        }
 
-            assertEquals("SkipResult", skip, val1);
-            assertEquals("SkipPos", skip, val2);
-            assertEquals("SkipVal", sample, val);
-
-            FitsInputStream bdis = new FitsInputStream(new FileInputStream(fname));
+        try (FitsInputStream bdis = new FitsInputStream(new FileInputStream(fname))) {
             bdis.skipAllBytes(skip);
-            val = bdis.read();
+            Assertions.assertEquals(sample, bdis.read());
             bdis.close();
-            assertEquals("SSkipVal", sample, val);
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-            throw e;
         }
     }
 }

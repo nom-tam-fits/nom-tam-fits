@@ -1457,7 +1457,6 @@ public class Fits implements Closeable {
      *
      * @throws FitsException if the initialization failed
      */
-    @SuppressWarnings("resource")
     protected void streamInit(InputStream inputStream) throws FitsException {
         dataStr = new FitsInputStream(CompressionManager.decompress(inputStream));
     }
@@ -1605,19 +1604,19 @@ public class Fits implements Closeable {
         if (os instanceof FitsFile) {
             try {
                 write((FitsFile) os);
+                return;
             } catch (IOException e) {
                 throw new FitsException("Error writing to FITS file: " + e, e);
             }
-            return;
         }
 
         if (os instanceof FitsOutputStream) {
             try {
                 write((FitsOutputStream) os);
+                return;
             } catch (IOException e) {
                 throw new FitsException("Error writing to FITS output stream: " + e, e);
             }
-            return;
         }
 
         if (!(os instanceof DataOutputStream)) {

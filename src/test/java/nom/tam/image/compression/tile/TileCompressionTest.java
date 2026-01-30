@@ -31,8 +31,8 @@ package nom.tam.image.compression.tile;
  * #L%
  */
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
@@ -43,6 +43,7 @@ import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.Standard;
 import nom.tam.image.compression.hdu.CompressedImageHDU;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class TileCompressionTest {
 
     public int[][] getRectangularImage(int nx, int ny) {
@@ -70,17 +71,19 @@ public class TileCompressionTest {
 
         cHDU.compress();
 
-        Fits f = new Fits();
-        f.addHDU(cHDU);
-        f.write(fileName);
+        try (Fits f = new Fits()) {
+            f.addHDU(cHDU);
+            f.write(fileName);
+        }
 
-        f = new Fits(fileName);
-        cHDU = (CompressedImageHDU) f.read()[1];
+        try (Fits f = new Fits(fileName)) {
+            cHDU = (CompressedImageHDU) f.read()[1];
 
-        hdu = cHDU.asImageHDU();
-        int[][] im2 = (int[][]) hdu.getKernel();
+            hdu = cHDU.asImageHDU();
+            int[][] im2 = (int[][]) hdu.getKernel();
 
-        Assert.assertArrayEquals(im, im2);
+            Assertions.assertArrayEquals(im, im2);
+        }
     }
 
     @Test
@@ -105,17 +108,19 @@ public class TileCompressionTest {
 
         cHDU.compress();
 
-        Fits f = new Fits();
-        f.addHDU(cHDU);
-        f.write(fileName);
+        try (Fits f = new Fits()) {
+            f.addHDU(cHDU);
+            f.write(fileName);
+        }
 
-        f = new Fits(fileName);
-        cHDU = (CompressedImageHDU) f.read()[1];
+        try (Fits f = new Fits(fileName)) {
+            cHDU = (CompressedImageHDU) f.read()[1];
 
-        hdu = cHDU.asImageHDU();
-        int[][][] im2 = (int[][][]) hdu.getKernel();
+            hdu = cHDU.asImageHDU();
+            int[][][] im2 = (int[][][]) hdu.getKernel();
 
-        Assert.assertArrayEquals(im, im2);
+            Assertions.assertArrayEquals(im, im2);
+        }
     }
 
     @Test
@@ -136,25 +141,27 @@ public class TileCompressionTest {
 
         cHDU.compress();
 
-        Fits f = new Fits();
-        f.addHDU(cHDU);
-        f.write(fileName);
+        try (Fits f = new Fits()) {
+            f.addHDU(cHDU);
+            f.write(fileName);
+        }
 
-        f = new Fits(fileName);
-        cHDU = (CompressedImageHDU) f.read()[1];
+        try (Fits f = new Fits(fileName)) {
+            cHDU = (CompressedImageHDU) f.read()[1];
 
-        hdu = cHDU.asImageHDU();
-        int[] im2 = (int[]) hdu.getKernel();
+            hdu = cHDU.asImageHDU();
+            int[] im2 = (int[]) hdu.getKernel();
 
-        Assert.assertArrayEquals(im, im2);
+            Assertions.assertArrayEquals(im, im2);
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testZBitPixException() throws Exception {
         Header h = new Header();
         h.addValue(Compression.ZBITPIX, 0);
         TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
-        op.readPrimaryHeaders(h);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> op.readPrimaryHeaders(h));
     }
 
     private int[][] makeTileCompressedImage(String fileName) throws Exception {
@@ -174,9 +181,10 @@ public class TileCompressionTest {
 
         cHDU.compress();
 
-        Fits f = new Fits();
-        f.addHDU(cHDU);
-        f.write(fileName);
+        try (Fits f = new Fits()) {
+            f.addHDU(cHDU);
+            f.write(fileName);
+        }
 
         return im;
     }
@@ -186,82 +194,87 @@ public class TileCompressionTest {
         String fileName = "target/tiletest.fz";
         int[][] im = makeTileCompressedImage(fileName);
 
-        Fits f = new Fits(fileName);
-        CompressedImageHDU cHDU = (CompressedImageHDU) f.getHDU(1);
-        cHDU.addValue(Standard.CRPIXn.n(1), 1);
-        cHDU.addValue("CRPIX1A", 2, "no comment");
+        try (Fits f = new Fits(fileName)) {
+            CompressedImageHDU cHDU = (CompressedImageHDU) f.getHDU(1);
+            cHDU.addValue(Standard.CRPIXn.n(1), 1);
+            cHDU.addValue("CRPIX1A", 2, "no comment");
 
-        int fromi = 1;
-        int fromj = 1;
-        int ni = 2;
-        int nj = 3;
+            int fromi = 1;
+            int fromj = 1;
+            int ni = 2;
+            int nj = 3;
 
-        ImageHDU hdu = cHDU.getTileHDU(new int[] {fromi, fromj}, new int[] {ni, nj});
-        int[][] tile = (int[][]) hdu.getKernel();
+            ImageHDU hdu = cHDU.getTileHDU(new int[] {fromi, fromj}, new int[] {ni, nj});
+            int[][] tile = (int[][]) hdu.getKernel();
 
-        Assert.assertEquals(1 - fromi, hdu.getHeader().getDoubleValue(Standard.CRPIXn.n(1), Double.NaN), 1e-12);
-	Assert.assertEquals(2 - fromi, hdu.getHeader().getDoubleValue("CRPIX1A", Double.NaN), 1e-12);
+            Assertions.assertEquals(1 - fromi, hdu.getHeader().getDoubleValue(Standard.CRPIXn.n(1), Double.NaN), 1e-12);
+            Assertions.assertEquals(2 - fromi, hdu.getHeader().getDoubleValue("CRPIX1A", Double.NaN), 1e-12);
 
-        for (int i = 0; i < ni; i++) {
-            for (int j = 0; j < nj; j++) {
-                Assert.assertEquals(i + "," + j, im[fromi + i][fromj + j], tile[i][j]);
+            for (int i = 0; i < ni; i++) {
+                for (int j = 0; j < nj; j++) {
+                    Assertions.assertEquals(im[fromi + i][fromj + j], tile[i][j], i + "," + j);
+                }
             }
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testMismatchedTileArgs() throws Exception {
         String fileName = "target/tiletest.fz";
-        int[][] im = makeTileCompressedImage(fileName);
+        makeTileCompressedImage(fileName);
 
-        Fits f = new Fits(fileName);
-        CompressedImageHDU cHDU = (CompressedImageHDU) f.getHDU(1);
-
-        ImageHDU hdu = cHDU.getTileHDU(new int[] {1, 1}, new int[] {2});
+        try (Fits f = new Fits(fileName)) {
+            CompressedImageHDU cHDU = (CompressedImageHDU) f.getHDU(1);
+            Assertions.assertThrows(IllegalArgumentException.class, () -> cHDU.getTileHDU(new int[] {1, 1}, new int[] {2}));
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testMismatchedDims() throws Exception {
         String fileName = "target/tiletest.fz";
-        int[][] im = makeTileCompressedImage(fileName);
+        makeTileCompressedImage(fileName);
 
-        Fits f = new Fits(fileName);
-        CompressedImageHDU cHDU = (CompressedImageHDU) f.getHDU(1);
-
-        ImageHDU hdu = cHDU.getTileHDU(new int[] {1, 1, 1}, new int[] {2, 3, 4});
+        try (Fits f = new Fits(fileName)) {
+            CompressedImageHDU cHDU = (CompressedImageHDU) f.getHDU(1);
+            Assertions.assertThrows(IllegalArgumentException.class,
+                    () -> cHDU.getTileHDU(new int[] {1, 1, 1}, new int[] {2, 3, 4}));
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNegativeTileSize() throws Exception {
         String fileName = "target/tiletest.fz";
-        int[][] im = makeTileCompressedImage(fileName);
+        makeTileCompressedImage(fileName);
 
-        Fits f = new Fits(fileName);
-        CompressedImageHDU cHDU = (CompressedImageHDU) f.getHDU(1);
-
-        ImageHDU hdu = cHDU.getTileHDU(new int[] {1, 1}, new int[] {-1, -1});
+        try (Fits f = new Fits(fileName)) {
+            CompressedImageHDU cHDU = (CompressedImageHDU) f.getHDU(1);
+            Assertions.assertThrows(IllegalArgumentException.class,
+                    () -> cHDU.getTileHDU(new int[] {1, 1}, new int[] {-1, -1}));
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNegativeTileCorner() throws Exception {
         String fileName = "target/tiletest.fz";
-        int[][] im = makeTileCompressedImage(fileName);
+        makeTileCompressedImage(fileName);
 
-        Fits f = new Fits(fileName);
-        CompressedImageHDU cHDU = (CompressedImageHDU) f.getHDU(1);
-
-        ImageHDU hdu = cHDU.getTileHDU(new int[] {-1, -1}, new int[] {2, 2});
+        try (Fits f = new Fits(fileName)) {
+            CompressedImageHDU cHDU = (CompressedImageHDU) f.getHDU(1);
+            Assertions.assertThrows(IllegalArgumentException.class,
+                    () -> cHDU.getTileHDU(new int[] {-1, -1}, new int[] {2, 2}));
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testOutOfBoundsTile() throws Exception {
         String fileName = "target/tiletest.fz";
         int[][] im = makeTileCompressedImage(fileName);
 
-        Fits f = new Fits(fileName);
-        CompressedImageHDU cHDU = (CompressedImageHDU) f.getHDU(1);
-
-        ImageHDU hdu = cHDU.getTileHDU(new int[] {1, 1}, new int[] {im.length, im[0].length});
+        try (Fits f = new Fits(fileName)) {
+            CompressedImageHDU cHDU = (CompressedImageHDU) f.getHDU(1);
+            Assertions.assertThrows(IllegalArgumentException.class,
+                    () -> cHDU.getTileHDU(new int[] {1, 1}, new int[] {im.length, im[0].length}));
+        }
     }
 
 }

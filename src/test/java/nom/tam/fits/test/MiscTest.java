@@ -31,8 +31,6 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -40,10 +38,12 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.Fits;
 
+@SuppressWarnings("javadoc")
 public class MiscTest {
 
     private String extractComment(String string, int end) {
@@ -87,11 +87,11 @@ public class MiscTest {
         props.put("version", "1.1.1-SNAPSHOT");
         File propFile = new File("target/test-classes/META-INF/maven/gov.nasa.gsfc.heasarc/nom-tam-fits/pom.properties");
         propFile.getParentFile().mkdirs();
-        OutputStream out = new FileOutputStream(propFile);
-        props.store(out, "test version");
-        out.close();
+        try (OutputStream out = new FileOutputStream(propFile)) {
+            props.store(out, "test version");
+        }
         String version = Fits.version();
-        assertEquals("1.1.1-SNAPSHOT", version);
+        Assertions.assertEquals("1.1.1-SNAPSHOT", version);
     }
 
     @Test

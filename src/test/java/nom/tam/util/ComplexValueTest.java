@@ -31,18 +31,12 @@ package nom.tam.util;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Random;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.HeaderCard;
@@ -50,14 +44,15 @@ import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.LongValueException;
 import nom.tam.fits.header.hierarch.Hierarch;
 
+@SuppressWarnings("javadoc")
 public class ComplexValueTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         FitsFactory.setDefaults();
     }
 
-    @After
+    @AfterEach
     public void after() {
         FitsFactory.setDefaults();
     }
@@ -74,108 +69,82 @@ public class ComplexValueTest {
             int decimals = random.nextInt(FlexFormat.DOUBLE_DECIMALS);
 
             z = new ComplexValue(re, im);
-            assertEquals("re", re, z.re(), 1e-12 * re);
-            assertEquals("im", im, z.im(), 1e-12 * im);
+            Assertions.assertEquals(re, z.re(), 1e-12 * re);
+            Assertions.assertEquals(im, z.im(), 1e-12 * im);
 
-            assertTrue("isFinite", z.isFinite());
+            Assertions.assertTrue(z.isFinite());
 
             String s = "(" + re + "," + im + ")";
-            assertEquals("toString", s, z.toString());
+            Assertions.assertEquals(s, z.toString());
 
             s = z.toBoundedString(25);
-            assertNotNull("toBoundedString1", s);
-            assertTrue(!s.isEmpty());
-            assertTrue(s.length() <= 25);
+            Assertions.assertNotNull(s);
+            Assertions.assertTrue(!s.isEmpty());
+            Assertions.assertTrue(s.length() <= 25);
 
             f.setPrecision(decimals);
             s = "(" + f.format(re) + "," + f.format(im) + ")";
-            assertEquals("toString(" + decimals + ")", s, z.toString(decimals));
+            Assertions.assertEquals(s, z.toString(decimals));
 
             ComplexValue z2 = new ComplexValue(z.re(), z.im());
-            assertEquals(z, z2);
-            assertEquals(z.hashCode(), z2.hashCode());
+            Assertions.assertEquals(z, z2);
+            Assertions.assertEquals(z.hashCode(), z2.hashCode());
 
             z2 = new ComplexValue(z.re() - 1.0, z.im());
-            assertNotEquals(z, z2);
+            Assertions.assertNotEquals(z, z2);
 
             z2 = new ComplexValue(z.re(), z.im() + 1.0);
-            assertNotEquals(z, z2);
+            Assertions.assertNotEquals(z, z2);
 
-            assertNotEquals(z, f);
+            Assertions.assertNotEquals(z, f);
         }
 
         z = new ComplexValue(Double.NaN, -1.0);
-        assertFalse("NaN1", z.isFinite());
+        Assertions.assertFalse(z.isFinite());
 
         z = new ComplexValue(Math.PI, Double.NaN);
-        assertFalse("NaN2", z.isFinite());
+        Assertions.assertFalse(z.isFinite());
 
         z = new ComplexValue(Double.POSITIVE_INFINITY, -1.0);
-        assertFalse("Inf1", z.isFinite());
+        Assertions.assertFalse(z.isFinite());
 
         z = new ComplexValue(Math.PI, Double.NEGATIVE_INFINITY);
-        assertFalse("Inf2", z.isFinite());
+        Assertions.assertFalse(z.isFinite());
 
         z = new ComplexValue(Double.NaN, Double.NEGATIVE_INFINITY);
-        assertFalse("NaN/Inf", z.isFinite());
+        Assertions.assertFalse(z.isFinite());
 
-        boolean thrown = false;
+        Assertions.assertThrows(LongValueException.class, () -> new ComplexValue(1.0, -2.0).toBoundedString(4));
 
-        try {
-            z = new ComplexValue(1.0, -2.0);
-            // No ComplexValue should be printable in 4 characters...
-            z.toBoundedString(4);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        assertTrue("toBoundedString1", thrown);
-
-        thrown = false;
-        try {
-            z = new ComplexValue(1.1, 2.1);
-            // Should be printable in 9 characters "(1.1,2.1)
-            z.toBoundedString(9);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        assertFalse("toBoundedString2", thrown);
-
-        thrown = false;
-        try {
-            z = new ComplexValue(1.1, -2.1);
-            // Should require at least 10 characters "(1.1,-2.1)
-            z.toBoundedString(9);
-            thrown = true;
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        assertTrue("toBoundedString3", thrown);
+        new ComplexValue(1.1, 2.1).toBoundedString(9);
+        Assertions.assertThrows(LongValueException.class, () -> new ComplexValue(1.1, -2.1).toBoundedString(9));
     }
 
     @Test
     public void testComplexFromString() throws Exception {
         ComplexValue z = new ComplexValue("(5566.2,-1123.1)");
-        assertEquals(5566.2, z.re(), 1e-10);
-        assertEquals(-1123.1, z.im(), 1e-10);
+        Assertions.assertEquals(5566.2, z.re(), 1e-10);
+        Assertions.assertEquals(-1123.1, z.im(), 1e-10);
 
         ComplexValue.Float zf = new ComplexValue.Float("(5566.2,-1123.1)");
-        assertEquals(5566.2, zf.re(), 1e-6);
-        assertEquals(-1123.1, zf.im(), 1e-6);
+        Assertions.assertEquals(5566.2, zf.re(), 1e-6);
+        Assertions.assertEquals(-1123.1, zf.im(), 1e-6);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testBadComplex1() throws Exception {
         // Missing brackets
-        new ComplexValue("5566.2,-1123.1");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ComplexValue("5566.2,-1123.1"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testBadComplex2() throws Exception {
         FitsFactory.setAllowHeaderRepairs(false);
         // Missing closing bracket
-        new ComplexValue("(5566.2,-1123.1");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ComplexValue("(5566.2,-1123.1"));
     }
 
+    @Test
     public void testBadComplex2A() throws Exception {
         FitsFactory.setAllowHeaderRepairs(true);
         // Missing closing bracket
@@ -183,19 +152,20 @@ public class ComplexValueTest {
         // no exception
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testBadComplex3() throws Exception {
         // Missing closing bracket
-        new ComplexValue("(5566.2,-112#.1)");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ComplexValue("(5566.2,-112#.1)"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testBadComplex4() throws Exception {
         FitsFactory.setAllowHeaderRepairs(false);
         // Missing closing bracket
-        new ComplexValue("(5566.2,,   ");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ComplexValue("(5566.2,,   "));
     }
 
+    @Test
     public void testBadComplex4A() throws Exception {
         FitsFactory.setAllowHeaderRepairs(true);
         // Missing closing bracket
@@ -203,13 +173,14 @@ public class ComplexValueTest {
         // no exception
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testBadComplex5() throws Exception {
         FitsFactory.setAllowHeaderRepairs(false);
         // Missing closing bracket
-        new ComplexValue("5566.2   )");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ComplexValue("5566.2   )"));
     }
 
+    @Test
     public void testBadComplex5A() throws Exception {
         FitsFactory.setAllowHeaderRepairs(true);
         // Missing closing bracket
@@ -217,13 +188,14 @@ public class ComplexValueTest {
         // no exception
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testBadComplex6() throws Exception {
         FitsFactory.setAllowHeaderRepairs(false);
         // Wrong number of components
-        new ComplexValue("(5566.2,1.0,-11.4)");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ComplexValue("(5566.2,1.0,-11.4)"));
     }
 
+    @Test
     public void testBadComplex6A() throws Exception {
         FitsFactory.setAllowHeaderRepairs(true);
         // Wrong number of components
@@ -236,8 +208,8 @@ public class ComplexValueTest {
         FitsFactory.setAllowHeaderRepairs(true);
         // Missing closing bracket
         ComplexValue z = new ComplexValue("(5566.2,-1123.1");
-        assertEquals(5566.2, z.re(), 1e-10);
-        assertEquals(-1123.1, z.im(), 1e-10);
+        Assertions.assertEquals(5566.2, z.re(), 1e-10);
+        Assertions.assertEquals(-1123.1, z.im(), 1e-10);
     }
 
     @Test
@@ -245,8 +217,8 @@ public class ComplexValueTest {
         FitsFactory.setAllowHeaderRepairs(true);
         // Missing closing bracket
         ComplexValue z = new ComplexValue("(5566.2");
-        assertEquals(5566.2, z.re(), 1e-10);
-        assertEquals(0.0, z.im(), 1e-10);
+        Assertions.assertEquals(5566.2, z.re(), 1e-10);
+        Assertions.assertEquals(0.0, z.im(), 1e-10);
     }
 
     @Test
@@ -254,8 +226,8 @@ public class ComplexValueTest {
         FitsFactory.setAllowHeaderRepairs(true);
         // Missing closing bracket
         ComplexValue z = new ComplexValue("5566.2,-1.01)");
-        assertEquals(5566.2, z.re(), 1e-10);
-        assertEquals(-1.01, z.im(), 1e-10);
+        Assertions.assertEquals(5566.2, z.re(), 1e-10);
+        Assertions.assertEquals(-1.01, z.im(), 1e-10);
     }
 
     @Test
@@ -263,136 +235,120 @@ public class ComplexValueTest {
         FitsFactory.setAllowHeaderRepairs(true);
         // Missing closing bracket
         ComplexValue z = new ComplexValue("(  ");
-        assertEquals(0.0, z.re(), 1e-10);
-        assertEquals(0.0, z.im(), 1e-10);
+        Assertions.assertEquals(0.0, z.re(), 1e-10);
+        Assertions.assertEquals(0.0, z.im(), 1e-10);
     }
 
     @Test
     public void testComplexCard() throws Exception {
         HeaderCard hc = new HeaderCard("COMPLEX", new ComplexValue(1.0, -2.0));
 
-        assertEquals(ComplexValue.class, hc.valueType());
+        Assertions.assertEquals(ComplexValue.class, hc.valueType());
 
         ComplexValue z = hc.getValue(ComplexValue.class, null);
-        assertNotNull(z);
+        Assertions.assertNotNull(z);
 
-        assertEquals(1.0, z.re(), 1e-12);
-        assertEquals(-2.0, z.im(), 1e-12);
+        Assertions.assertEquals(1.0, z.re(), 1e-12);
+        Assertions.assertEquals(-2.0, z.im(), 1e-12);
 
         hc = new HeaderCard("COMPLEX", new ComplexValue(1.0, -2.0), 12, "comment");
 
-        assertEquals(ComplexValue.class, hc.valueType());
+        Assertions.assertEquals(ComplexValue.class, hc.valueType());
 
         z = hc.getValue(ComplexValue.class, null);
-        assertNotNull(z);
+        Assertions.assertNotNull(z);
 
-        assertEquals(1.0, z.re(), 1e-12);
-        assertEquals(-2.0, z.im(), 1e-12);
+        Assertions.assertEquals(1.0, z.re(), 1e-12);
+        Assertions.assertEquals(-2.0, z.im(), 1e-12);
     }
 
     @Test
     public void testComplexCard2() throws Exception {
         HeaderCard hc = HeaderCard.create("COMPLEX=   (1.0, -2.0)");
 
-        assertEquals(ComplexValue.class, hc.valueType());
+        Assertions.assertEquals(ComplexValue.class, hc.valueType());
 
         ComplexValue z = hc.getValue(ComplexValue.class, null);
-        assertNotNull(z);
+        Assertions.assertNotNull(z);
 
-        assertEquals(1.0, z.re(), 1e-12);
-        assertEquals(-2.0, z.im(), 1e-12);
+        Assertions.assertEquals(1.0, z.re(), 1e-12);
+        Assertions.assertEquals(-2.0, z.im(), 1e-12);
     }
 
     @Test
     public void testComplexFromNumber() throws Exception {
         ComplexValue z = new ComplexValue("-1.51");
-        assertEquals(-1.51, z.re(), 1e-12);
-        assertEquals(0.0, z.im(), 1e-12);
+        Assertions.assertEquals(-1.51, z.re(), 1e-12);
+        Assertions.assertEquals(0.0, z.im(), 1e-12);
     }
 
     @Test
     public void testComplexIsZero() throws Exception {
         ComplexValue z = new ComplexValue(0.0, 0.0);
-        assertTrue(z.isZero());
+        Assertions.assertTrue(z.isZero());
         z = new ComplexValue(1.0, 0.0);
-        assertFalse(z.isZero());
+        Assertions.assertFalse(z.isZero());
         z = new ComplexValue(0.0, -1.0);
-        assertFalse(z.isZero());
+        Assertions.assertFalse(z.isZero());
         z = new ComplexValue(Double.NaN, 0.0);
-        assertFalse(z.isZero());
+        Assertions.assertFalse(z.isZero());
         z = new ComplexValue(0.0, Double.POSITIVE_INFINITY);
-        assertFalse(z.isZero());
+        Assertions.assertFalse(z.isZero());
     }
 
-    @Test(expected = HeaderCardException.class)
+    @Test
     public void testComplexNaNCard() throws Exception {
-        new HeaderCard("COMPLEX", new ComplexValue(Double.NaN, -2.0));
+        Assertions.assertThrows(HeaderCardException.class,
+                () -> new HeaderCard("COMPLEX", new ComplexValue(Double.NaN, -2.0)));
     }
 
-    @Test(expected = HeaderCardException.class)
+    @Test
     public void testComplexNaNCard2() throws Exception {
-        new HeaderCard("COMPLEX", new ComplexValue(Double.NaN, -2.0), 10, "comment");
+        Assertions.assertThrows(HeaderCardException.class,
+                () -> new HeaderCard("COMPLEX", new ComplexValue(Double.NaN, -2.0), 10, "comment"));
     }
 
-    @Test(expected = HeaderCardException.class)
+    @Test
     public void testComplexInfCard() throws Exception {
-        new HeaderCard("COMPLEX", new ComplexValue(Double.POSITIVE_INFINITY, -2.0));
+        Assertions.assertThrows(HeaderCardException.class,
+                () -> new HeaderCard("COMPLEX", new ComplexValue(Double.POSITIVE_INFINITY, -2.0)));
     }
 
-    @Test(expected = HeaderCardException.class)
+    @Test
     public void testComplexInfCard2() throws Exception {
-        new HeaderCard("COMPLEX", new ComplexValue(Double.NEGATIVE_INFINITY, -2.0), 10, "comment");
+        Assertions.assertThrows(HeaderCardException.class,
+                () -> new HeaderCard("COMPLEX", new ComplexValue(Double.NEGATIVE_INFINITY, -2.0), 10, "comment"));
     }
 
     @Test
     public void testComplexNaNSetCard() throws Exception {
         HeaderCard hc = new HeaderCard("COMPLEX", new ComplexValue(1.0, -2.0));
-
-        boolean thrown = false;
-        try {
-            hc.setValue(new ComplexValue(Double.NaN, -2.0));
-        } catch (NumberFormatException e) {
-            thrown = true;
-        }
-        assertTrue(thrown);
+        Assertions.assertThrows(NumberFormatException.class, () -> hc.setValue(new ComplexValue(Double.NaN, -2.0)));
     }
 
-    @Test(expected = HeaderCardException.class)
+    @Test
     public void testNoSpaceComplexCard() throws Exception {
         FitsFactory.setUseHierarch(true);
-        new HeaderCard(Hierarch.key("SOME.VERY.LONG.COMPLEX.KEYWORD.TAKING.UP.THE.SPACE"),
-                new ComplexValue(Math.PI, -Math.PI), 16, "comment");
+        Assertions.assertThrows(HeaderCardException.class,
+                () -> new HeaderCard(Hierarch.key("SOME.VERY.LONG.COMPLEX.KEYWORD.TAKING.UP.THE.SPACE"),
+                        new ComplexValue(Math.PI, -Math.PI), 16, "comment"));
     }
 
     @Test
     public void testNoSpaceComplexValue() throws Exception {
         FitsFactory.setUseHierarch(true);
-        HeaderCard hc = null;
+        HeaderCard hc = new HeaderCard(Hierarch.key("SOME.VERY.LONG.COMPLEX.KEYWORD.TAKING.UP.ALL.THE.SPACE"), true,
+                "comment");
 
-        try {
-            hc = new HeaderCard(Hierarch.key("SOME.VERY.LONG.COMPLEX.KEYWORD.TAKING.UP.ALL.THE.SPACE"), true, "comment");
-            hc.setValue(new ComplexValue(0.0, 0.0));
-        } catch (HeaderCardException e) {
-
-        }
-
-        assertNotNull(hc);
-
-        boolean thrown = false;
-
-        try {
-            // This should throw an expcetion as there is no space for the value...
-            hc.setValue(new ComplexValue(Math.PI, -Math.PI), 16);
-        } catch (LongValueException e) {
-            thrown = true;
-        }
-        assertTrue(thrown);
+        hc.setValue(new ComplexValue(0.0, 0.0));
+        Assertions.assertThrows(LongValueException.class, () -> hc.setValue(new ComplexValue(Math.PI, -Math.PI), 16));
     }
 
     @Test
     public void testToArray() throws Exception {
-        Assert.assertArrayEquals(new double[] {1.0, 2.0}, (double[]) new ComplexValue(1.0, 2.0).toArray(), 1e-12);
-        Assert.assertArrayEquals(new float[] {1.0F, 2.0F}, (float[]) new ComplexValue.Float(1.0F, 2.0F).toArray(), 1e-6F);
+        Assertions.assertArrayEquals(new double[] {1.0, 2.0}, (double[]) new ComplexValue(1.0, 2.0).toArray(), 1e-12);
+        Assertions.assertArrayEquals(new float[] {1.0F, 2.0F}, (float[]) new ComplexValue.Float(1.0F, 2.0F).toArray(),
+                1e-6F);
     }
 
 }

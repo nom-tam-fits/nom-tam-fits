@@ -31,11 +31,6 @@ package nom.tam.util;
  * OTHER DEALINGS IN THE SOFTWARE.
  * #L%
  */
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -45,14 +40,16 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.FitsFactory;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class FitsDecoderTest {
 
-    @After
+    @AfterEach
     public void setDefaults() {
         FitsFactory.setDefaults();
     }
@@ -62,7 +59,7 @@ public class FitsDecoderTest {
         byte[] data = new byte[100];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         byte[] need = new byte[101];
-        assertEquals(data.length, e.read(need, 0, need.length));
+        Assertions.assertEquals(data.length, e.read(need, 0, need.length));
     }
 
     @Test
@@ -70,7 +67,7 @@ public class FitsDecoderTest {
         byte[] data = new byte[100];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         Boolean[] b = new Boolean[data.length + 1];
-        assertEquals(data.length, e.readArray(b));
+        Assertions.assertEquals(data.length, e.readArray(b));
     }
 
     @Test
@@ -79,23 +76,23 @@ public class FitsDecoderTest {
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         Boolean[] b = new Boolean[1];
         Object[] array = new Object[] {data, b};
-        assertEquals(data.length, e.readArray(array));
+        Assertions.assertEquals(data.length, e.readArray(array));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testIncomleteReadFully() throws Exception {
         byte[] data = new byte[100];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         byte[] need = new byte[101];
-        e.readFully(need, 0, need.length);
+        Assertions.assertThrows(EOFException.class, () -> e.readFully(need, 0, need.length));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testIncomleteReadArrayFully() throws Exception {
         byte[] data = new byte[100];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         int[] need = new int[26];
-        e.readArrayFully(need);
+        Assertions.assertThrows(EOFException.class, () -> e.readArrayFully(need));
     }
 
     @Test
@@ -105,12 +102,12 @@ public class FitsDecoderTest {
         e.readArray(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testReadInvalidArray() throws Exception {
         byte[] data = new byte[100];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         Object[] array = new Object[] {new BigInteger("123235536566547747")};
-        e.readArray(array);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> e.readArray(array));
     }
 
     @Test
@@ -126,16 +123,16 @@ public class FitsDecoderTest {
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.readArray(d);
 
-        assertEquals("BE", Math.PI, d[0], 1e-12);
-        assertNotEquals("!BE", Math.PI, d[1], 1e-12);
+        Assertions.assertEquals(Math.PI, d[0], 1e-12);
+        Assertions.assertNotEquals(Math.PI, d[1], 1e-12);
 
         e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.getInputBuffer().setByteOrder(ByteOrder.LITTLE_ENDIAN);
         e.read(d, 0, d.length);
 
-        assertEquals("byteorder", ByteOrder.LITTLE_ENDIAN, e.getInputBuffer().byteOrder());
-        assertNotEquals("!LE", Math.PI, d[0], 1e-12);
-        assertEquals("LE", Math.PI, d[1], 1e-12);
+        Assertions.assertEquals(ByteOrder.LITTLE_ENDIAN, e.getInputBuffer().byteOrder());
+        Assertions.assertNotEquals(Math.PI, d[0], 1e-12);
+        Assertions.assertEquals(Math.PI, d[1], 1e-12);
     }
 
     @Test
@@ -145,140 +142,136 @@ public class FitsDecoderTest {
         Boolean[] b = new Boolean[data.length];
         e.read(b, 0, b.length);
 
-        assertTrue("T", b[0]);
-        assertFalse("F", b[1]);
-        assertNull("0", b[2]);
-        assertTrue("1", b[3]); // alternative non-standard 'true'
-        assertFalse("2", b[4]); // everything else 'false'
+        Assertions.assertTrue(b[0]);
+        Assertions.assertFalse(b[1]);
+        Assertions.assertNull(b[2]);
+        Assertions.assertTrue(b[3]); // alternative non-standard 'true'
+        Assertions.assertFalse(b[4]); // everything else 'false'
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testReadByteEOF() throws Exception {
         byte[] data = new byte[100];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         for (int i = 0; i < data.length; i++) {
-            assertEquals(0, e.readByte());
+            Assertions.assertEquals(0, e.readByte());
         }
-        e.readByte(); // should throw exception.
+        Assertions.assertThrows(EOFException.class, () -> e.readByte());
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testReadShortEOF() throws Exception {
         byte[] data = new byte[100];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         int n = data.length >>> 1;
         for (int i = 0; i < n; i++) {
-            assertEquals(0, e.readShort());
+            Assertions.assertEquals(0, e.readShort());
         }
-        e.readShort(); // should throw exception.
-
+        Assertions.assertThrows(EOFException.class, () -> e.readShort());
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testReadCharEOF() throws Exception {
         FitsFactory.setUseUnicodeChars(false);
         byte[] data = new byte[100];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         int n = data.length;
         for (int i = 0; i < n; i++) {
-            assertEquals(0, e.readChar());
+            Assertions.assertEquals(0, e.readChar());
         }
-        e.readChar(); // should throw exception.
+        Assertions.assertThrows(EOFException.class, () -> e.readChar());
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testBooleanArrayUnexpectedReadEOF1() throws Exception {
         FitsDecoder e = new FitsDecoder(new EOFExceptionInputReader());
-
-        e.read(new boolean[1], 0, 1);
+        Assertions.assertThrows(EOFException.class, () -> e.read(new boolean[1], 0, 1));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testBooleanArrayUnexpectedReadEOF2() throws Exception {
         FitsDecoder e = new FitsDecoder(new EOFExceptionInputReader());
-
-        e.read(new Boolean[1], 0, 1);
+        Assertions.assertThrows(EOFException.class, () -> e.read(new Boolean[1], 0, 1));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testShortArrayUnexpectedReadEOF() throws Exception {
         FitsDecoder e = new FitsDecoder(new EOFExceptionInputReader());
-
-        e.read(new short[1], 0, 1);
+        Assertions.assertThrows(EOFException.class, () -> e.read(new short[1], 0, 1));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testCharArrayUnexpectedReadEOF() throws Exception {
         FitsDecoder e = new FitsDecoder(new EOFExceptionInputReader());
-        e.read(new char[1], 0, 1);
+        Assertions.assertThrows(EOFException.class, () -> e.read(new char[1], 0, 1));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testBooleanArrayEOFAtStart() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
-        e.read(new boolean[10], 0, 10);
+        Assertions.assertThrows(EOFException.class, () -> e.read(new boolean[10], 0, 10));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testBooleanObjectsEOFAtStart() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
-        e.read(new Boolean[10], 0, 10);
+        Assertions.assertThrows(EOFException.class, () -> e.read(new Boolean[10], 0, 10));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testAsciiLineEOFAtStart() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
-        e.readAsciiLine();
+        Assertions.assertThrows(EOFException.class, () -> e.readAsciiLine());
     }
 
     @Test
     public void testAsciiLineReadToEOF() throws Exception {
         byte[] data = {(byte) 'a', (byte) 'b', (byte) 'c'};
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
-        assertEquals(data.length, e.readAsciiLine().length());
+        Assertions.assertEquals(data.length, e.readAsciiLine().length());
     }
 
     @Test
     public void testAsciiLineReadDelimited() throws Exception {
         byte[] data = "one\ntwo".getBytes();
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
-        assertEquals("one", e.readAsciiLine());
+        Assertions.assertEquals("one", e.readAsciiLine());
     }
 
     @Test
     public void testReadEmptyBoolean() throws Exception {
         byte[] data = new byte[10];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
-        assertEquals(0, e.read(new boolean[10], 5, 0));
+        Assertions.assertEquals(0, e.read(new boolean[10], 5, 0));
     }
 
     @Test
     public void testReadEmptyBooleanObject() throws Exception {
         byte[] data = new byte[10];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
-        assertEquals(0, e.read(new Boolean[10], 5, 0));
+        Assertions.assertEquals(0, e.read(new Boolean[10], 5, 0));
     }
 
     @Test
     public void testReadEmptyChars() throws Exception {
         byte[] data = new byte[10];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
-        assertEquals(0, e.read(new char[10], 5, 0));
+        Assertions.assertEquals(0, e.read(new char[10], 5, 0));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testCharsEOFAtStart() throws Exception {
         FitsFactory.setUseUnicodeChars(false);
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
-        e.read(new char[10], 0, 10);
+        Assertions.assertThrows(EOFException.class, () -> e.read(new char[10], 0, 10));
     }
 
     @Test
@@ -290,7 +283,7 @@ public class FitsDecoderTest {
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.getInputBuffer().loadBytes(data.length, 1);
         for (int i = 0; i < data.length; i++) {
-            assertEquals(i, e.getInputBuffer().get());
+            Assertions.assertEquals(i, e.getInputBuffer().get());
         }
     }
 
@@ -300,65 +293,65 @@ public class FitsDecoderTest {
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.getInputBuffer().loadBytes(data.length, 2);
         e.read();
-        assertEquals(-1, e.getInputBuffer().get());
+        Assertions.assertEquals(-1, e.getInputBuffer().get());
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testGetShortsEOF() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
-        e.read(new short[10], 5, 1);
+        Assertions.assertThrows(EOFException.class, () -> e.read(new short[10], 5, 1));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testGetIntsEOF() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
-        e.read(new int[10], 5, 1);
+        Assertions.assertThrows(EOFException.class, () -> e.read(new int[10], 5, 1));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testGetLongsEOF() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
-        e.read(new long[10], 5, 1);
+        Assertions.assertThrows(EOFException.class, () -> e.read(new long[10], 5, 1));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testGetFloatsEOF() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
-        e.read(new float[10], 5, 1);
+        Assertions.assertThrows(EOFException.class, () -> e.read(new float[10], 5, 1));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testGetDoublesEOF() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
-        e.read(new double[10], 5, 1);
+        Assertions.assertThrows(EOFException.class, () -> e.read(new double[10], 5, 1));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testGetSingleByteEOF() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.getInputBuffer().loadBytes(2, 1);
         e.read();
-        e.getInputBuffer().get(new byte[10], 5, 1);
+        Assertions.assertThrows(EOFException.class, () -> e.getInputBuffer().get(new byte[10], 5, 1));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testGetBytesEOF() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
         e.getInputBuffer().loadBytes(11, 1);
-        e.getInputBuffer().get(new byte[10], 0, 10);
+        Assertions.assertThrows(EOFException.class, () -> e.getInputBuffer().get(new byte[10], 0, 10));
     }
 
     @Test
@@ -366,7 +359,7 @@ public class FitsDecoderTest {
         byte[] data = new byte[9];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.getInputBuffer().loadBytes(10, 1);
-        assertEquals(9, e.getInputBuffer().get(new byte[10], 0, 10));
+        Assertions.assertEquals(9, e.getInputBuffer().get(new byte[10], 0, 10));
     }
 
     @Test
@@ -374,41 +367,41 @@ public class FitsDecoderTest {
         byte[] data = new byte[400];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.getInputBuffer().loadBytes(400, 1);
-        assertEquals(1, e.getInputBuffer().get(new byte[10], 5, 1));
+        Assertions.assertEquals(1, e.getInputBuffer().get(new byte[10], 5, 1));
 
         // no view / wrong view (single element)
-        assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
+        Assertions.assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
         // creates view (multiple elements)
-        assertEquals(2, e.getInputBuffer().get(new short[10], 5, 2));
+        Assertions.assertEquals(2, e.getInputBuffer().get(new short[10], 5, 2));
         // uses existing view (multiple elements)
-        assertEquals(2, e.getInputBuffer().get(new short[10], 5, 2));
+        Assertions.assertEquals(2, e.getInputBuffer().get(new short[10], 5, 2));
         // using view for single element
-        assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
+        Assertions.assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
 
-        assertEquals(1, e.getInputBuffer().get(new int[10], 5, 1));
-        assertEquals(2, e.getInputBuffer().get(new int[10], 5, 2));
-        assertEquals(2, e.getInputBuffer().get(new int[10], 5, 2));
-        assertEquals(1, e.getInputBuffer().get(new int[10], 5, 1));
+        Assertions.assertEquals(1, e.getInputBuffer().get(new int[10], 5, 1));
+        Assertions.assertEquals(2, e.getInputBuffer().get(new int[10], 5, 2));
+        Assertions.assertEquals(2, e.getInputBuffer().get(new int[10], 5, 2));
+        Assertions.assertEquals(1, e.getInputBuffer().get(new int[10], 5, 1));
 
-        assertEquals(1, e.getInputBuffer().get(new long[10], 5, 1));
-        assertEquals(2, e.getInputBuffer().get(new long[10], 5, 2));
-        assertEquals(2, e.getInputBuffer().get(new long[10], 5, 2));
-        assertEquals(1, e.getInputBuffer().get(new long[10], 5, 1));
+        Assertions.assertEquals(1, e.getInputBuffer().get(new long[10], 5, 1));
+        Assertions.assertEquals(2, e.getInputBuffer().get(new long[10], 5, 2));
+        Assertions.assertEquals(2, e.getInputBuffer().get(new long[10], 5, 2));
+        Assertions.assertEquals(1, e.getInputBuffer().get(new long[10], 5, 1));
 
-        assertEquals(1, e.getInputBuffer().get(new float[10], 5, 1));
-        assertEquals(2, e.getInputBuffer().get(new float[10], 5, 2));
-        assertEquals(2, e.getInputBuffer().get(new float[10], 5, 2));
-        assertEquals(1, e.getInputBuffer().get(new float[10], 5, 1));
+        Assertions.assertEquals(1, e.getInputBuffer().get(new float[10], 5, 1));
+        Assertions.assertEquals(2, e.getInputBuffer().get(new float[10], 5, 2));
+        Assertions.assertEquals(2, e.getInputBuffer().get(new float[10], 5, 2));
+        Assertions.assertEquals(1, e.getInputBuffer().get(new float[10], 5, 1));
 
-        assertEquals(1, e.getInputBuffer().get(new double[10], 5, 1));
-        assertEquals(2, e.getInputBuffer().get(new double[10], 5, 2));
-        assertEquals(2, e.getInputBuffer().get(new double[10], 5, 2));
-        assertEquals(1, e.getInputBuffer().get(new double[10], 5, 1));
+        Assertions.assertEquals(1, e.getInputBuffer().get(new double[10], 5, 1));
+        Assertions.assertEquals(2, e.getInputBuffer().get(new double[10], 5, 2));
+        Assertions.assertEquals(2, e.getInputBuffer().get(new double[10], 5, 2));
+        Assertions.assertEquals(1, e.getInputBuffer().get(new double[10], 5, 1));
 
-        assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
-        assertEquals(2, e.getInputBuffer().get(new short[10], 5, 2));
-        assertEquals(2, e.getInputBuffer().get(new short[10], 5, 2));
-        assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
+        Assertions.assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
+        Assertions.assertEquals(2, e.getInputBuffer().get(new short[10], 5, 2));
+        Assertions.assertEquals(2, e.getInputBuffer().get(new short[10], 5, 2));
+        Assertions.assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
     }
 
     @Test
@@ -427,18 +420,18 @@ public class FitsDecoderTest {
         // No exception.
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testReadImageNotArray() throws Exception {
         byte[] data = new byte[100];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
-        e.readImage(new File("blah"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> e.readImage(new File("blah")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testReadNonImage() throws Exception {
         byte[] data = new byte[100];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
-        e.readImage(new boolean[10]);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> e.readImage(new boolean[10]));
     }
 
     @Test

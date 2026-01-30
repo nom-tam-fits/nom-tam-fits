@@ -1,5 +1,11 @@
 package nom.tam.util;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 /*-
  * #%L
  * nom-tam-fits
@@ -31,26 +37,15 @@ package nom.tam.util;
  * #L%
  */
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-
+@SuppressWarnings("javadoc")
 public class RandomAccessFileChannelTest {
 
     @Test
     public void testConstructor() throws Exception {
-        try (final RandomAccessFileChannel _testSubject = new RandomAccessFileChannel(0, null)) {
-            Assert.fail("Expected NullPointerException");
-        } catch (NullPointerException e) {
-            Assert.assertEquals("FileChannel cannot be null.", e.getMessage());
-        }
+        Assertions.assertThrows(NullPointerException.class, () -> new RandomAccessFileChannel(0, null));
     }
 
     @Test
@@ -69,7 +64,7 @@ public class RandomAccessFileChannelTest {
             testSubject.read(buffer, "te".getBytes(StandardCharsets.UTF_8).length, readLength);
         }
 
-        Assert.assertEquals("Wrong bytes read", "st", new String(buffer));
+        Assertions.assertEquals("st", new String(buffer));
     }
 
     @Test
@@ -85,7 +80,7 @@ public class RandomAccessFileChannelTest {
         }
 
         final byte[] readBuffer = Files.readAllBytes(testPath);
-        Assert.assertArrayEquals("Wrong bytes written", buffer, readBuffer);
+        Assertions.assertArrayEquals(buffer, readBuffer);
     }
 
     @Test
@@ -100,7 +95,7 @@ public class RandomAccessFileChannelTest {
 
         final Path testPath = tempFile.toPath();
         try (final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath, false)) {
-            Assert.assertEquals("Wrong length", buffer.length, testSubject.length());
+            Assertions.assertEquals(buffer.length, testSubject.length());
         }
     }
 
@@ -117,20 +112,22 @@ public class RandomAccessFileChannelTest {
         final Path testPath = tempFile.toPath();
         try (final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath, false)) {
             testSubject.position(5);
-            Assert.assertEquals("Wrong position", 5, testSubject.position());
+            Assertions.assertEquals(5, testSubject.position());
         }
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void testClose() throws Exception {
         final File tempFile = File.createTempFile("test", "tmp");
         tempFile.deleteOnExit();
 
         final Path testPath = tempFile.toPath();
+
         final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath);
         testSubject.close();
 
-        Assert.assertFalse("File channel not closed", testSubject.getChannel().isOpen());
+        Assertions.assertFalse(testSubject.getChannel().isOpen());
     }
 
     @Test
@@ -141,10 +138,7 @@ public class RandomAccessFileChannelTest {
         final Path testPath = tempFile.toPath();
 
         try (final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath, false)) {
-            testSubject.write(0);
-            Assert.fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException e) {
-            Assert.assertEquals("write is not implemented for FileChannels.", e.getMessage());
+            Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.write(0));
         }
     }
 
@@ -156,10 +150,7 @@ public class RandomAccessFileChannelTest {
         final Path testPath = tempFile.toPath();
 
         try (final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath, false)) {
-            testSubject.readUTF();
-            Assert.fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException e) {
-            Assert.assertEquals("readUTF is not implemented for FileChannels.", e.getMessage());
+            Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.readUTF());
         }
     }
 
@@ -171,10 +162,7 @@ public class RandomAccessFileChannelTest {
         final Path testPath = tempFile.toPath();
 
         try (final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath, false)) {
-            testSubject.getFD();
-            Assert.fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException e) {
-            Assert.assertEquals("FileDescriptor is not implemented for FileChannels.", e.getMessage());
+            Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.getFD());
         }
     }
 
@@ -186,10 +174,7 @@ public class RandomAccessFileChannelTest {
         final Path testPath = tempFile.toPath();
 
         try (final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath, false)) {
-            testSubject.setLength(3);
-            Assert.fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException e) {
-            Assert.assertEquals("Setting file length is not implemented for FileChannels.", e.getMessage());
+            Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.setLength(3));
         }
     }
 
@@ -201,10 +186,7 @@ public class RandomAccessFileChannelTest {
         final Path testPath = tempFile.toPath();
 
         try (final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath, false)) {
-            testSubject.writeUTF("data");
-            Assert.fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException e) {
-            Assert.assertEquals("writeUTF operation is not implemented for FileChannels.", e.getMessage());
+            Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.writeUTF("data"));
         }
     }
 
@@ -216,10 +198,7 @@ public class RandomAccessFileChannelTest {
         final Path testPath = tempFile.toPath();
 
         try (final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath, false)) {
-            testSubject.read();
-            Assert.fail("Expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException e) {
-            Assert.assertEquals("read is not implemented for FileChannels.", e.getMessage());
+            Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.read());
         }
     }
 }

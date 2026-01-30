@@ -33,12 +33,13 @@ package nom.tam.fits;
 
 import java.io.File;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class UndefinedDataTest {
 
     @Test
@@ -55,20 +56,20 @@ public class UndefinedDataTest {
 
         UndefinedData d = new UndefinedData(h);
 
-        Assert.assertEquals("TEST", d.getXtension());
-        Assert.assertEquals(Bitpix.SHORT, d.getBitpix());
+        Assertions.assertEquals("TEST", d.getXtension());
+        Assertions.assertEquals(Bitpix.SHORT, d.getBitpix());
 
         int[] dim = d.getDimensions();
-        Assert.assertEquals(2, dim.length);
-        Assert.assertEquals(3, dim[1]);
-        Assert.assertEquals(5, dim[0]);
+        Assertions.assertEquals(2, dim.length);
+        Assertions.assertEquals(3, dim[1]);
+        Assertions.assertEquals(5, dim[0]);
 
-        Assert.assertEquals(7, d.getParameterCount());
-        Assert.assertEquals(11, d.getGroupCount());
+        Assertions.assertEquals(7, d.getParameterCount());
+        Assertions.assertEquals(11, d.getGroupCount());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testUknownSizeData() throws Exception {
-        new UndefinedData(new File("blah"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new UndefinedData(new File("blah")));
     }
 }

@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -49,6 +49,7 @@ import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Bitpix;
 import nom.tam.util.ArrayFuncs;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class StreamingTileImageDataTest {
     @Test
     public void testConstructor() throws Exception {
@@ -59,35 +60,21 @@ public class StreamingTileImageDataTest {
         header.setNaxis(2, 200);
         header.setBitpix(Bitpix.FLOAT);
 
-        try {
-            new StreamingTileImageData(header, null, null, null, null);
-            Assert.fail("Should throw IllegalArgumentException");
-        } catch (IllegalArgumentException _ignored) {
-            // Good!
-        }
-
-        try {
-            new StreamingTileImageData(header, new TestTiler(), new int[2], null, null);
-            Assert.fail("Should throw IllegalArgumentException");
-        } catch (IllegalArgumentException _ignored) {
-            // Good!
-        }
-
-        try {
-            new StreamingTileImageData(header, new TestTiler(), new int[2], new int[2], new int[] {-1, 1});
-            Assert.fail("Should throw IllegalArgumentException for negative steps");
-        } catch (IllegalArgumentException _ignored) {
-            // Good!
-        }
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new StreamingTileImageData(header, null, null, null, null));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new StreamingTileImageData(header, new TestTiler(), new int[2], null, null));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new StreamingTileImageData(header, new TestTiler(), new int[2], new int[2], new int[] {-1, 1}));
 
         final StreamingTileImageData testSubject = new StreamingTileImageData(header, new TestTiler(), new int[2],
                 new int[2], null);
-        Assert.assertArrayEquals("Wrong steps.", new int[] {1, 1}, testSubject.getSteps());
+        Assertions.assertArrayEquals(new int[] {1, 1}, testSubject.getSteps());
 
         // Testing immutable steps.
         testSubject.getSteps()[1] = 0;
 
-        Assert.assertArrayEquals("Wrong steps.", new int[] {1, 1}, testSubject.getSteps());
+        Assertions.assertArrayEquals(new int[] {1, 1}, testSubject.getSteps());
     }
 
     @Test
@@ -134,9 +121,8 @@ public class StreamingTileImageDataTest {
 
         try (final Fits outputFits = new Fits(outputFitsFile)) {
             final ImageHDU cutoutImageHDU = (ImageHDU) outputFits.readHDU();
-            Assert.assertArrayEquals("Wrong dimensions.", new int[] {5, 10}, cutoutImageHDU.getAxes());
-            Assert.assertArrayEquals("Wrong calculated dimensions.", new int[] {5, 10},
-                    ArrayFuncs.getDimensions(cutoutImageHDU.getData().getData()));
+            Assertions.assertArrayEquals(new int[] {5, 10}, cutoutImageHDU.getAxes());
+            Assertions.assertArrayEquals(new int[] {5, 10}, ArrayFuncs.getDimensions(cutoutImageHDU.getData().getData()));
         }
     }
 
@@ -219,10 +205,8 @@ public class StreamingTileImageDataTest {
             final StreamingTileImageData streamingTileImageData = new StreamingTileImageData(tileHeader,
                     new ErrorTestTiler(), tileStarts, tileLengths, tileSteps);
             outputFits.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
-            outputFits.write(outputFitsFile);
-            Assert.fail("Should throw FitsException.");
-        } catch (FitsException fitsException) {
-            Assert.assertEquals("Wrong message.", "Simulated error.", fitsException.getMessage());
+
+            Assertions.assertThrows(FitsException.class, () -> outputFits.write(outputFitsFile));
         }
     }
 

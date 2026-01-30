@@ -30,9 +30,6 @@ package nom.tam.util;
  * OTHER DEALINGS IN THE SOFTWARE.
  * #L%
  */
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,14 +37,16 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.FitsFactory;
 
+@SuppressWarnings("javadoc")
 public class FitsEncoderTest {
 
-    @Before
+    @BeforeEach
     public void reset() {
         FitsFactory.setDefaults();
     }
@@ -58,11 +57,11 @@ public class FitsEncoderTest {
         e.writeArray(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWriteInvalidArray() throws Exception {
         FitsEncoder e = new FitsEncoder(OutputWriter.from(new ByteArrayOutputStream(100)));
         Object[] array = new Object[] {new BigInteger("123235536566547747")};
-        e.writeArray(array);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> e.writeArray(array));
     }
 
     @Test
@@ -73,18 +72,18 @@ public class FitsEncoderTest {
 
         buf.putDouble(Math.PI);
         buf.setByteOrder(ByteOrder.LITTLE_ENDIAN);
-        assertEquals("byteorder", ByteOrder.LITTLE_ENDIAN, buf.byteOrder());
+        Assertions.assertEquals(ByteOrder.LITTLE_ENDIAN, buf.byteOrder());
         buf.putDouble(Math.PI);
         e.flush();
 
         ByteBuffer b = ByteBuffer.wrap(o.toByteArray());
-        assertEquals("BE", Math.PI, b.getDouble(), 1e-12);
-        assertNotEquals("!BE", Math.PI, b.getDouble(), 1e-12);
+        Assertions.assertEquals(Math.PI, b.getDouble(), 1e-12);
+        Assertions.assertNotEquals(Math.PI, b.getDouble(), 1e-12);
 
         b.position(0);
         b.order(ByteOrder.LITTLE_ENDIAN);
-        assertNotEquals("!LE", Math.PI, b.getDouble(), 1e-12);
-        assertEquals("LE", Math.PI, b.getDouble(), 1e-12);
+        Assertions.assertNotEquals(Math.PI, b.getDouble(), 1e-12);
+        Assertions.assertEquals(Math.PI, b.getDouble(), 1e-12);
     }
 
     @Test
@@ -95,9 +94,9 @@ public class FitsEncoderTest {
         e.writeArray(b);
 
         byte[] data = o.toByteArray();
-        assertEquals("true", 'T', data[0]);
-        assertEquals("false", 'F', data[1]);
-        assertEquals("null", 0, data[2]);
+        Assertions.assertEquals('T', data[0]);
+        Assertions.assertEquals('F', data[1]);
+        Assertions.assertEquals(0, data[2]);
     }
 
     @Test
@@ -108,7 +107,7 @@ public class FitsEncoderTest {
         e.write(1);
 
         FitsDecoder d = new FitsDecoder(InputReader.from(new ByteArrayInputStream(o.toByteArray())));
-        assertEquals(1, d.read());
+        Assertions.assertEquals(1, d.read());
     }
 
     @Test
@@ -123,7 +122,7 @@ public class FitsEncoderTest {
         FitsDecoder d = new FitsDecoder(InputReader.from(new ByteArrayInputStream(o.toByteArray())));
         // Read back second element to first
         d.read(data, 0, 1);
-        assertTrue(data[0]);
+        Assertions.assertTrue(data[0]);
     }
 
     @Test
@@ -138,7 +137,7 @@ public class FitsEncoderTest {
         FitsDecoder d = new FitsDecoder(InputReader.from(new ByteArrayInputStream(o.toByteArray())));
         // Read back second element to first
         d.read(data, 0, 1);
-        assertTrue(data[0]);
+        Assertions.assertTrue(data[0]);
     }
 
     @Test
@@ -154,7 +153,7 @@ public class FitsEncoderTest {
         FitsDecoder d = new FitsDecoder(InputReader.from(new ByteArrayInputStream(o.toByteArray())));
         // Read back second element to first
         d.read(data, 0, 1);
-        assertEquals('b', data[0]);
+        Assertions.assertEquals('b', data[0]);
     }
 
     @Test
@@ -170,7 +169,7 @@ public class FitsEncoderTest {
         FitsDecoder d = new FitsDecoder(InputReader.from(new ByteArrayInputStream(o.toByteArray())));
         // Read back second element to first
         d.read(data, 0, 1);
-        assertEquals('b', data[0]);
+        Assertions.assertEquals('b', data[0]);
     }
 
     @Test

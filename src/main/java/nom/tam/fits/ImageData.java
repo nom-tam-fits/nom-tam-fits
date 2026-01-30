@@ -207,6 +207,7 @@ public class ImageData extends Data {
     public void setBuffer(Buffer data) {
         ElementType<Buffer> elementType = ElementType.forClass(getType());
         dataArray = ArrayFuncs.newInstance(getType(), getDimensions());
+        @SuppressWarnings("deprecation")
         MultiArrayIterator<?> iterator = new MultiArrayIterator<>(dataArray);
         Object array = iterator.next();
         while (array != null) {

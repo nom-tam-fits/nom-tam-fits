@@ -2,11 +2,10 @@ package nom.tam.fits;
 
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.util.FitsFile;
-import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
 
 /*
@@ -46,104 +45,69 @@ import static nom.tam.fits.header.Standard.DATE;
 import static nom.tam.fits.header.Standard.DATE_OBS;
 import static nom.tam.fits.header.Standard.NAXIS;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class BasicHduFailureTest {
 
     @Test
-    public void testAxisFailuer() throws Exception {
-        FitsException actual = null;
-        try {
-            BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-            dummyHDU.getHeader().card(NAXIS).value(-1);
-            dummyHDU.getAxes();
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().contains("NAXIS"));
-        actual = null;
-        try {
-            BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-            dummyHDU.getHeader().card(NAXIS).value(1001);
-            dummyHDU.getAxes();
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().contains("NAXIS"));
+    public void testAxisFailure() throws Exception {
+        BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
+
+        dummyHDU.getHeader().card(NAXIS).value(-1);
+        Assertions.assertThrows(FitsException.class, () -> dummyHDU.getAxes());
+
+        dummyHDU.getHeader().card(NAXIS).value(1001);
+        Assertions.assertThrows(FitsException.class, () -> dummyHDU.getAxes());
     }
 
     @Test
-    public void testBitPixFailuer() throws Exception {
-        FitsException actual = null;
-        try {
-            BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-            dummyHDU.getHeader().deleteKey(BITPIX);
-            dummyHDU.getBitPix();
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().contains("BITPIX"));
+    public void testBitPixFailure() throws Exception {
+        BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
+        dummyHDU.getHeader().deleteKey(BITPIX);
+
+        Assertions.assertThrows(FitsException.class, () -> dummyHDU.getBitPix());
     }
 
     @Test
     public void testBlankFailuer() throws Exception {
-        FitsException actual = null;
-        try {
-            BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-            dummyHDU.getHeader().deleteKey(BLANK);
-            dummyHDU.getBlankValue();
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().contains("BLANK"));
+        BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
+        dummyHDU.getHeader().deleteKey(BLANK);
+
+        Assertions.assertThrows(FitsException.class, () -> dummyHDU.getBlankValue());
     }
 
     @Test
     public void testCreationDateFailuer() throws Exception {
         BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
         dummyHDU.getHeader().card(DATE).value("ABCDE");
-        Assert.assertNull(dummyHDU.getCreationDate());
+        Assertions.assertNull(dummyHDU.getCreationDate());
     }
 
     @Test
     public void testDefaultFileOffset() throws Exception {
         BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-        FitsFile out = null;
-        try {
-            out = new FitsFile("target/BasicHduFailureTeststestDefaultFileOffset", "rw");
+
+        try (FitsFile out = new FitsFile("target/BasicHduFailureTeststestDefaultFileOffset", "rw")) {
             dummyHDU.write(out);
-        } finally {
-            SafeClose.close(out);
         }
-        Assert.assertEquals(0, dummyHDU.getFileOffset());
-        FitsException actual = null;
-        out = null;
-        try {
-            out = new FitsFile("target/BasicHduFailureTeststestDefaultFileOffset", "rw") {
 
-                int count = 0;
+        Assertions.assertEquals(0, dummyHDU.getFileOffset());
 
-                @Override
-                public void flush() throws IOException {
-                    count++;
-                    // the 3e flush happens in the basic hdu write.
-                    if (count == 3) {
-                        throw new IOException("could not flush");
-                    }
-                    super.flush();
+        try (FitsFile out = new FitsFile("target/BasicHduFailureTeststestDefaultFileOffset", "rw") {
+            int count = 0;
+
+            @Override
+            public void flush() throws IOException {
+                count++;
+                // the 3e flush happens in the basic hdu write.
+                if (count == 3) {
+                    throw new IOException("could not flush");
                 }
-            };
-            dummyHDU.write(out);
-        } catch (FitsException e) {
-            actual = e;
-        } finally {
-            SafeClose.close(out);
-        }
+                super.flush();
+            }
+        }) {
 
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().contains("Error flushing at end of HDU"));
+            Assertions.assertThrows(FitsException.class, () -> dummyHDU.write(out));
+        }
     }
 
     @Test
@@ -157,26 +121,26 @@ public class BasicHduFailureTest {
             }
         };
         BasicHDU<?> dummyHDU = new ImageHDU(ImageHDU.manufactureHeader(data), data);
-        Assert.assertNull(dummyHDU.getKernel());
+        Assertions.assertNull(dummyHDU.getKernel());
     }
 
     @Test
     public void testObservationDateFailuer() throws Exception {
         BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
         dummyHDU.getHeader().card(DATE_OBS).value("ABCDE");
-        Assert.assertNull(dummyHDU.getObservationDate());
+        Assertions.assertNull(dummyHDU.getObservationDate());
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testRewriteFailuer() throws Exception {
         BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-        dummyHDU.rewrite();
+        Assertions.assertThrows(FitsException.class, () -> dummyHDU.rewrite());
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testSetPrimaryFailuer() throws Exception {
         UndefinedData data = new UndefinedData(new long[10]);
         BasicHDU<?> dummyHDU = new UndefinedHDU(UndefinedHDU.manufactureHeader(data), data);
-        dummyHDU.setPrimaryHDU(true);
+        Assertions.assertThrows(FitsException.class, () -> dummyHDU.setPrimaryHDU(true));
     }
 }

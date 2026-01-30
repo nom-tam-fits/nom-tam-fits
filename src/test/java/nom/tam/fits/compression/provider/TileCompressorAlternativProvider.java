@@ -40,6 +40,7 @@ import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
 import nom.tam.fits.compression.provider.api.ICompressorProvider;
 
+@SuppressWarnings("javadoc")
 public class TileCompressorAlternativProvider implements ICompressorProvider {
 
     public static ICompressorControl createControl(Class<?> clazz) {

@@ -1,3 +1,4 @@
+/* TODO: Manual conversion to JUnit5 required — file uses JUnit4 runner/Rules/parameterized features. */
 package nom.tam.util.test;
 
 /*
@@ -39,11 +40,11 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
@@ -53,6 +54,7 @@ import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.SafeClose;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class StreamTest {
 
     private static FitsOutputStream ou;
@@ -66,8 +68,8 @@ public class StreamTest {
     // }
     // };
 
-    @Before
-    @After
+    @BeforeEach
+    @AfterEach
     public void setDefaults() {
         FitsFactory.setDefaults();
 
@@ -81,7 +83,8 @@ public class StreamTest {
 
     }
 
-    @BeforeClass
+    @SuppressWarnings("resource")
+    @BeforeAll
     public static void setup() throws Exception {
         PipedInputStream pipeInput = new PipedInputStream(10240);
         ou = new FitsOutputStream(new PipedOutputStream(pipeInput));
@@ -103,16 +106,16 @@ public class StreamTest {
         ou.write(expectedBools);
         ou.flush();
         in.read(bools);
-        Assert.assertEquals(expectedBools.length, bools.length);
+        Assertions.assertEquals(expectedBools.length, bools.length);
         for (int index = 0; index < expectedBools.length; index++) {
-            Assert.assertEquals("boolean[" + index + "]", expectedBools[index], bools[index]);
+            Assertions.assertEquals(expectedBools[index], bools[index], "boolean[" + index + "]");
             bools[index] = false;
         }
         in.readPrimitiveArray(bools);
         for (int index = 0; index < expectedBools.length; index++) {
-            Assert.assertEquals("boolean[" + index + "]", expectedBools[index], bools[index]);
+            Assertions.assertEquals(expectedBools[index], bools[index], "boolean[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -128,16 +131,16 @@ public class StreamTest {
         ou.write(expectedChars);
         ou.flush();
         in.read(chars);
-        Assert.assertEquals(expectedChars.length, chars.length);
+        Assertions.assertEquals(expectedChars.length, chars.length);
         for (int index = 0; index < expectedChars.length; index++) {
-            Assert.assertEquals("char[" + index + "]", expectedChars[index], chars[index]);
+            Assertions.assertEquals(expectedChars[index], chars[index], "char[" + index + "]");
             chars[index] = ' ';
         }
         in.readPrimitiveArray(chars);
         for (int index = 0; index < expectedChars.length; index++) {
-            Assert.assertEquals("char[" + index + "]", expectedChars[index], chars[index]);
+            Assertions.assertEquals(expectedChars[index], chars[index], "char[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -153,21 +156,21 @@ public class StreamTest {
         ou.write(expectedChars);
         ou.flush();
         in.read(chars);
-        Assert.assertEquals(expectedChars.length, chars.length);
+        Assertions.assertEquals(expectedChars.length, chars.length);
         for (int index = 0; index < expectedChars.length; index++) {
-            Assert.assertEquals("char[" + index + "]", expectedChars[index], chars[index]);
+            Assertions.assertEquals(expectedChars[index], chars[index], "char[" + index + "]");
             chars[index] = ' ';
         }
         in.readPrimitiveArray(chars);
         for (int index = 0; index < expectedChars.length; index++) {
-            Assert.assertEquals("char[" + index + "]", expectedChars[index], chars[index]);
+            Assertions.assertEquals(expectedChars[index], chars[index], "char[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
     public void testDoubleArray() throws Exception {
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
         double[] doubles = new double[10];
         double[] expectedDoubles = new double[10];
         for (int index = 0; index < expectedDoubles.length; index++) {
@@ -177,16 +180,16 @@ public class StreamTest {
         ou.write(expectedDoubles);
         ou.flush();
         in.read(doubles);
-        Assert.assertEquals(expectedDoubles.length, doubles.length);
+        Assertions.assertEquals(expectedDoubles.length, doubles.length);
         for (int index = 0; index < expectedDoubles.length; index++) {
-            Assert.assertEquals("double[" + index + "]", expectedDoubles[index], doubles[index], 0);
+            Assertions.assertEquals(expectedDoubles[index], doubles[index], 0, "double[" + index + "]");
             doubles[index] = 0;
         }
         in.readPrimitiveArray(doubles);
         for (int index = 0; index < expectedDoubles.length; index++) {
-            Assert.assertEquals("double[" + index + "]", expectedDoubles[index], doubles[index], 0);
+            Assertions.assertEquals(expectedDoubles[index], doubles[index], 0, "double[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -200,16 +203,16 @@ public class StreamTest {
         ou.write(expectedValues);
         ou.flush();
         in.read(values);
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("float[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "float[" + index + "]");
             values[index] = 0;
         }
         in.readPrimitiveArray(values);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("float[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "float[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -223,16 +226,16 @@ public class StreamTest {
         ou.write(expectedValues);
         ou.flush();
         in.read(values);
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("int[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "int[" + index + "]");
             values[index] = 0;
         }
         in.readPrimitiveArray(values);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("int[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "int[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -246,16 +249,16 @@ public class StreamTest {
         ou.write(expectedValues);
         ou.flush();
         in.read(values);
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("long[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "long[" + index + "]");
             values[index] = 0;
         }
         in.readPrimitiveArray(values);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("long[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "long[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -269,16 +272,16 @@ public class StreamTest {
         ou.write(expectedValues);
         ou.flush();
         in.read(values);
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("short[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "short[" + index + "]");
             values[index] = 0;
         }
         in.readPrimitiveArray(values);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("short[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "short[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -296,11 +299,11 @@ public class StreamTest {
         ou.flush();
         byte[] bytes = new byte[size * 2];
         in.readFully(bytes);
-        Assert.assertEquals(expectedValues.length, values.length);
-        Assert.assertEquals("01234567890123456789", AsciiFuncs.asciiString(bytes));
-        Assert.assertEquals('*', in.readChar());
-        Assert.assertEquals('*', in.readChar());
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals("01234567890123456789", AsciiFuncs.asciiString(bytes));
+        Assertions.assertEquals('*', in.readChar());
+        Assertions.assertEquals('*', in.readChar());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -318,46 +321,35 @@ public class StreamTest {
             myIn = new FitsInputStream(input);
             myIn.skipAllBytes(10000L);
             myIn.readFully(new byte[total - 10000]);
-            Assert.assertEquals(0, myIn.available());
+            Assertions.assertEquals(0, myIn.available());
         } finally {
             SafeClose.close(myIn);
             SafeClose.close(input);
         }
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testSkipBytesWithException1() throws Exception {
         int total = 256;
-        FitsInputStream myIn = null;
-        InputStream input = null;
-        try {
-            input = new ByteArrayInputStream(new byte[total]);
-            myIn = new FitsInputStream(input);
-            myIn.skipAllBytes(1000L);
-        } finally {
-            SafeClose.close(input);
-            SafeClose.close(myIn);
-        }
+
+        InputStream input = new ByteArrayInputStream(new byte[total]);
+        FitsInputStream myIn = new FitsInputStream(input);
+
+        Assertions.assertThrows(EOFException.class, () -> myIn.skipAllBytes(1000L));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testSkipBytesWithException2() throws Exception {
         int total = 256;
-        FitsInputStream myIn = null;
-        InputStream input = null;
-        try {
-            input = new ByteArrayInputStream(new byte[total]) {
-                @Override
-                public synchronized long skip(long n) {
-                    throw new UnsupportedOperationException("skip not supported");
-                }
-            };
-            myIn = new FitsInputStream(input);
-            myIn.skipAllBytes(1000L);
-        } finally {
-            SafeClose.close(input);
-            SafeClose.close(myIn);
-        }
+
+        InputStream input = new ByteArrayInputStream(new byte[total]) {
+            @Override
+            public synchronized long skip(long n) {
+                throw new UnsupportedOperationException("skip not supported");
+            }
+        };
+        FitsInputStream myIn = new FitsInputStream(input);
+        Assertions.assertThrows(EOFException.class, () -> myIn.skipAllBytes(1000L));
     }
 
     @Test
@@ -376,11 +368,11 @@ public class StreamTest {
         for (int index = 0; index < expectedValue.length; index++) {
             value[index] = in.readBoolean();
         }
-        Assert.assertEquals(expectedValue.length, value.length);
+        Assertions.assertEquals(expectedValue.length, value.length);
         for (int index = 0; index < expectedValue.length; index++) {
-            Assert.assertEquals("boolean[" + index + "]", expectedValue[index], value[index]);
+            Assertions.assertEquals(expectedValue[index], value[index], "boolean[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -397,11 +389,11 @@ public class StreamTest {
         for (int index = 0; index < expectedValue.length; index++) {
             value[index] = in.readChar();
         }
-        Assert.assertEquals(expectedValue.length, value.length);
+        Assertions.assertEquals(expectedValue.length, value.length);
         for (int index = 0; index < expectedValue.length; index++) {
-            Assert.assertEquals("boolean[" + index + "]", expectedValue[index], value[index]);
+            Assertions.assertEquals(expectedValue[index], value[index], "boolean[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -418,11 +410,11 @@ public class StreamTest {
         for (int index = 0; index < expectedValue.length; index++) {
             value[index] = in.readChar();
         }
-        Assert.assertEquals(expectedValue.length, value.length);
+        Assertions.assertEquals(expectedValue.length, value.length);
         for (int index = 0; index < expectedValue.length; index++) {
-            Assert.assertEquals("boolean[" + index + "]", expectedValue[index], value[index]);
+            Assertions.assertEquals(expectedValue[index], value[index], "boolean[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -437,11 +429,11 @@ public class StreamTest {
         for (int index = 0; index < expectedDoubles.length; index++) {
             doubles[index] = in.readDouble();
         }
-        Assert.assertEquals(expectedDoubles.length, doubles.length);
+        Assertions.assertEquals(expectedDoubles.length, doubles.length);
         for (int index = 0; index < expectedDoubles.length; index++) {
-            Assert.assertEquals("double[" + index + "]", expectedDoubles[index], doubles[index], 0);
+            Assertions.assertEquals(expectedDoubles[index], doubles[index], 0, "double[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -456,11 +448,11 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             values[index] = in.readFloat();
         }
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("float[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "float[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -475,11 +467,11 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             values[index] = in.readInt();
         }
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("int[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "int[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -494,11 +486,11 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             values[index] = in.readLong();
         }
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("long[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "long[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
@@ -513,29 +505,34 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             values[index] = in.readShort();
         }
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
-            Assert.assertEquals("short[" + index + "]", expectedValues[index], values[index], 0);
+            Assertions.assertEquals(expectedValues[index], values[index], 0, "short[" + index + "]");
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
     public void testReadFully() throws Exception {
         PipedInputStream pipeInput = new PipedInputStream(1024);
-        FitsOutputStream out = new FitsOutputStream(new PipedOutputStream(pipeInput));
-        FitsInputStream in = new FitsInputStream(pipeInput);
-        for (int index = 0; index < 255; index++) {
-            out.writeByte(index);
-        }
-        out.close();
         byte[] readBytes = new byte[255];
-        in.readFully(readBytes);
-        in = new FitsInputStream(new ByteArrayInputStream(readBytes));
-        for (int index = 0; index < readBytes.length; index++) {
-            Assert.assertEquals(index, in.readUnsignedByte());
+
+        try (FitsOutputStream out = new FitsOutputStream(new PipedOutputStream(pipeInput));
+                FitsInputStream in = new FitsInputStream(pipeInput)) {
+            for (int index = 0; index < 255; index++) {
+                out.writeByte(index);
+            }
+            out.close();
+
+            in.readFully(readBytes);
         }
-        Assert.assertEquals(0, in.available());
+
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(readBytes))) {
+            for (int index = 0; index < readBytes.length; index++) {
+                Assertions.assertEquals(index, in.readUnsignedByte());
+            }
+            Assertions.assertEquals(0, in.available());
+        }
     }
 
     @Test
@@ -551,167 +548,169 @@ public class StreamTest {
         ou.writeArray(expectedValues);
         ou.flush();
         in.readArray(values);
-        Assert.assertEquals(expectedValues.length, values.length);
+        Assertions.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
             for (int index2 = 0; index2 < expectedValues[index].length; index2++) {
-                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2],
-                        values[index][index2]);
+                Assertions.assertEquals(expectedValues[index][index2], values[index][index2],
+                        "int[" + index + "][" + index2 + "]");
                 values[index][index2] = 0;
             }
         }
         in.readPrimitiveArray(values);
         for (int index = 0; index < expectedValues.length; index++) {
             for (int index2 = 0; index2 < expectedValues[index].length; index2++) {
-                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2],
-                        values[index][index2]);
+                Assertions.assertEquals(expectedValues[index][index2], values[index][index2],
+                        "int[" + index + "][" + index2 + "]");
             }
         }
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
     public void testString() throws Exception {
         ou.writeUTF("Ein test string");
         ou.flush();
-        Assert.assertEquals("Ein test string", in.readUTF());
-        Assert.assertTrue(in.toString().contains("pos=17"));
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals("Ein test string", in.readUTF());
+        Assertions.assertTrue(in.toString().contains("pos=17"));
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
     public void testIntEof() throws Exception {
-        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[3]));
-        EOFException expectedEof = null;
-        try {
-            in.readInt();
-        } catch (EOFException eof) {
-            expectedEof = eof;
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[3]))) {
+            Assertions.assertThrows(EOFException.class, () -> in.readInt());
+            Assertions.assertEquals(0, in.available());
         }
-        Assert.assertNotNull(expectedEof);
-        Assert.assertEquals(0, in.available());
     }
 
     @Test
     public void testReadLine() throws Exception {
-        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes("test line")));
-        Assert.assertTrue(in.toString(), in.toString().contains("pos=0"));
-        Assert.assertEquals("test line", in.readLine());
-        Assert.assertEquals(0, in.available());
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes("test line")))) {
+            Assertions.assertTrue(in.toString().contains("pos=0"), in.toString());
+            Assertions.assertEquals("test line", in.readLine());
+            Assertions.assertEquals(0, in.available());
+        }
     }
 
     @Test
     public void testWriteUnsignedShort() throws Exception {
         ou.writeShort(0xFFEE);
         ou.flush();
-        Assert.assertEquals(0xFFEE, in.readUnsignedShort());
-        Assert.assertEquals(0, in.available());
+        Assertions.assertEquals(0xFFEE, in.readUnsignedShort());
+        Assertions.assertEquals(0, in.available());
     }
 
     @Test
     public void testEofHandlingCharArray() throws Exception {
-        Assert.assertEquals(8, create8ByteInput().read(new char[10]));
-        Assert.assertEquals(8, create8ByteInput().readArray(new char[10]));
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.read(new char[10]));
+        }
+
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.readArray(new char[10]));
+        }
     }
 
     @Test
     public void testEofHandlingBooleanArray() throws Exception {
-        Assert.assertEquals(8, create8ByteInput().read(new boolean[10]));
-        Assert.assertEquals(8, create8ByteInput().readArray(new boolean[10]));
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.read(new boolean[10]));
+        }
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.readArray(new boolean[10]));
+        }
     }
 
     @Test
     public void testEofHandlingDoubleArray() throws Exception {
-        Assert.assertEquals(8, create8ByteInput().read(new double[10]));
-        Assert.assertEquals(8, create8ByteInput().readArray(new double[10]));
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.read(new double[10]));
+        }
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.readArray(new double[10]));
+        }
     }
 
     @Test
     public void testEofHandlingFloatArray() throws Exception {
-        Assert.assertEquals(8, create8ByteInput().read(new float[10]));
-        Assert.assertEquals(8, create8ByteInput().readArray(new float[10]));
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.read(new float[10]));
+        }
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.readArray(new float[10]));
+        }
     }
 
     @Test
     public void testEofHandlingIntArray() throws Exception {
-        Assert.assertEquals(8, create8ByteInput().read(new int[10]));
-        Assert.assertEquals(8, create8ByteInput().readArray(new int[10]));
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.read(new int[10]));
+        }
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.readArray(new int[10]));
+        }
     }
 
     @Test
     public void testEofHandlingLongArray() throws Exception {
-        Assert.assertEquals(8, create8ByteInput().read(new long[10]));
-        Assert.assertEquals(8, create8ByteInput().readArray(new long[10]));
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.read(new long[10]));
+        }
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.readArray(new long[10]));
+        }
     }
 
     @Test
     public void testEofHandlingShortArray() throws Exception {
-        Assert.assertEquals(8, create8ByteInput().read(new short[10]));
-        FitsInputStream create8ByteInput = create8ByteInput();
-        Assert.assertEquals(8, create8ByteInput.readArray(new short[10]));
-        EOFException expectedEof = null;
-        try {
-            create8ByteInput.readArray(new short[10]);
-        } catch (EOFException eof) {
-            expectedEof = eof;
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.read(new short[10]));
         }
-        Assert.assertNotNull(expectedEof);
+
+        try (FitsInputStream in = create8ByteInput()) {
+            Assertions.assertEquals(8, in.readArray(new short[10]));
+            Assertions.assertThrows(EOFException.class, () -> in.readArray(new short[10]));
+        }
     }
 
     @Test
     public void testEofHandlingByteArray() throws Exception {
-
-        FitsInputStream create8ByteInput = create8ByteInput();
-        EOFException expectedEof = null;
-        try {
-            create8ByteInput.read(new byte[0], 0, 0);
-        } catch (EOFException eof) {
-            expectedEof = eof;
+        try (FitsInputStream in = create8ByteInput()) {
+            in.read(new byte[0], 0, 0);
         }
-        Assert.assertNull(expectedEof);
     }
 
     @Test
     public void testReadWriteLine() throws Exception {
         ByteArrayOutputStream o = new ByteArrayOutputStream();
-        FitsOutputStream out = null;
-        try {
-            out = new FitsOutputStream(o);
+
+        try (FitsOutputStream out = new FitsOutputStream(o)) {
             out.writeBytes("bla bla\n");
-        } finally {
-            SafeClose.close(out);
         }
-        FitsInputStream input = null;
-        try {
-            input = new FitsInputStream(new ByteArrayInputStream(o.toByteArray()));
+
+        try (FitsInputStream input = new FitsInputStream(new ByteArrayInputStream(o.toByteArray()))) {
             String line = input.readLine();
-            Assert.assertEquals("bla bla", line);
-        } finally {
-            SafeClose.close(input);
+            Assertions.assertEquals("bla bla", line);
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testFailedWriteArray() throws Exception {
         ByteArrayOutputStream o = new ByteArrayOutputStream();
-        FitsOutputStream out = null;
-        try {
-            out = new FitsOutputStream(o);
-            out.writePrimitiveArray(3);
-            out.flush();
-        } finally {
-            SafeClose.close(out);
+
+        try (FitsOutputStream out = new FitsOutputStream(o)) {
+            Assertions.assertThrows(IOException.class, () -> out.writePrimitiveArray(3));
         }
     }
 
     private FitsInputStream create8ByteInput() {
         InputStream fileInput = new ByteArrayInputStream(new byte[1000]) {
-
-            int count = 0;
+            int n = 0;
 
             @Override
             public int read(byte[] obuf, int offset, int len) {
-                if (count == 0) {
-                    return count = 8;
+                if (n == 0) {
+                    return n = 8;
                 }
                 return -1;
             }
@@ -736,7 +735,9 @@ public class StreamTest {
 
     @Test
     public void testReadWithoutSource() throws FitsException, IOException {
-        Assert.assertNull(new Fits().readHDU());
+        try (Fits f = new Fits()) {
+            Assertions.assertNull(f.readHDU());
+        }
     }
 
 }

@@ -31,15 +31,11 @@ package nom.tam.util;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * This class tests and illustrates the use of the HashedList class. Tests are in four parts.
@@ -56,6 +52,7 @@ import org.junit.Test;
  * The fourth set consists of all other test methods that test special cases of the implementation of the various
  * methods of HashedList - to obtain 100% code coverage for HashedList.
  */
+@SuppressWarnings("javadoc")
 public class HashedListTest {
 
     static class TestCursorValue implements CursorValue<String> {
@@ -113,92 +110,92 @@ public class HashedListTest {
         h1.add(new TestCursorValue("Row 2"));
         h1.add(new TestCursorValue("Row 3"));
 
-        assertEquals("Adding unkeyed rows", 3, h1.size());
+        Assertions.assertEquals(3, h1.size());
 
-        assertEquals("Has row 1", true, h1.contains(new TestCursorValue("Row 1")));
-        assertEquals("Has row 2", true, h1.contains(new TestCursorValue("Row 2")));
+        Assertions.assertTrue(h1.contains(new TestCursorValue("Row 1")));
+        Assertions.assertTrue(h1.contains(new TestCursorValue("Row 2")));
         h1.remove(new TestCursorValue("Row 2"));
-        assertEquals("Has row 1", true, h1.contains(new TestCursorValue("Row 1")));
-        assertEquals("Has row 2", false, h1.contains(new TestCursorValue("Row 2")));
+        Assertions.assertTrue(h1.contains(new TestCursorValue("Row 1")));
+        Assertions.assertFalse(h1.contains(new TestCursorValue("Row 2")));
 
-        assertEquals("Delete unkeyed rows", 2, h1.size());
+        Assertions.assertEquals(2, h1.size());
 
         h1.clear();
-        assertEquals("Cleared unkeyed rows", 0, h1.size());
+        Assertions.assertEquals(0, h1.size());
 
         h1.add(new TestCursorValue("key 1", "Row 1"));
         h1.add(new TestCursorValue("key 2", "Row 2"));
         h1.add(new TestCursorValue("key 3", "Row 3"));
 
-        assertEquals("Adding keyed rows", 3, h1.size());
+        Assertions.assertEquals(3, h1.size());
 
-        assertEquals("Has Row 1", true, h1.contains(new TestCursorValue("Row 1")));
-        assertEquals("Has key 1", true, h1.containsKey("key 1"));
-        assertEquals("Has Row 2", true, h1.contains(new TestCursorValue("Row 2")));
-        assertEquals("Has key 2", true, h1.containsKey("key 2"));
-        assertEquals("Has Row 3", true, h1.contains(new TestCursorValue("Row 3")));
-        assertEquals("Has key 3", true, h1.containsKey("key 3"));
+        Assertions.assertTrue(h1.contains(new TestCursorValue("Row 1")));
+        Assertions.assertTrue(h1.containsKey("key 1"));
+        Assertions.assertTrue(h1.contains(new TestCursorValue("Row 2")));
+        Assertions.assertTrue(h1.containsKey("key 2"));
+        Assertions.assertTrue(h1.contains(new TestCursorValue("Row 3")));
+        Assertions.assertTrue(h1.containsKey("key 3"));
 
         h1.removeKey("key 2");
-        assertEquals("Delete keyed row", 2, h1.size());
-        assertEquals("Has Row 1", true, h1.contains(new TestCursorValue("Row 1")));
-        assertEquals("Has key 1", true, h1.containsKey("key 1"));
-        assertEquals("Has Row 2", false, h1.contains(new TestCursorValue("Row 2")));
-        assertEquals("Has key 2", false, h1.containsKey("key 2"));
-        assertEquals("Has Row 3", true, h1.contains(new TestCursorValue("Row 3")));
-        assertEquals("Has key 3", true, h1.containsKey("key 3"));
+        Assertions.assertEquals(2, h1.size());
+        Assertions.assertTrue(h1.contains(new TestCursorValue("Row 1")));
+        Assertions.assertTrue(h1.containsKey("key 1"));
+        Assertions.assertFalse(h1.contains(new TestCursorValue("Row 2")));
+        Assertions.assertFalse(h1.containsKey("key 2"));
+        Assertions.assertTrue(h1.contains(new TestCursorValue("Row 3")));
+        Assertions.assertTrue(h1.containsKey("key 3"));
 
         h1.clear();
-        assertEquals("Clear keyed rows", 0, h1.size());
+        Assertions.assertEquals(0, h1.size());
 
         h1.add(new TestCursorValue("key 1", "Row 1"));
         h1.add(new TestCursorValue("key 2", "Row 2"));
         h1.add(new TestCursorValue("key 3", "Row 3"));
-        assertEquals("Re-Adding keyed rows", 3, h1.size());
-        assertEquals("Has Row 2", true, h1.contains(new TestCursorValue("Row 2")));
-        assertEquals("Has key 2", true, h1.containsKey("key 2"));
+        Assertions.assertEquals(3, h1.size());
+        Assertions.assertTrue(h1.contains(new TestCursorValue("Row 2")));
+        Assertions.assertTrue(h1.containsKey("key 2"));
 
         h2.add(new TestCursorValue("key 4", "Row 4"));
         h2.add(new TestCursorValue("key 5", "Row 5"));
 
-        assertEquals("containsAll(beforeAdd)", false, h1.containsAll(h2));
+        Assertions.assertFalse(h1.containsAll(h2));
 
         h1.addAll(h2);
 
-        assertEquals("addAll()", 5, h1.size());
-        assertEquals("containsAll(afterAdd)", true, h1.containsAll(h2));
-        assertEquals("has row 4", true, h1.contains(new TestCursorValue("Row 4")));
+        Assertions.assertEquals(5, h1.size());
+        Assertions.assertTrue(h1.containsAll(h2));
+        Assertions.assertTrue(h1.contains(new TestCursorValue("Row 4")));
         h1.remove(new TestCursorValue("Row 4"));
-        assertEquals("dropped row 4", false, h1.contains(new TestCursorValue("Row 4")));
-        assertEquals("containsAll(afterDrop)", false, h1.containsAll(h2));
+        Assertions.assertFalse(h1.contains(new TestCursorValue("Row 4")));
+        Assertions.assertFalse(h1.containsAll(h2));
 
-        assertEquals("isEmpty(false)", false, h1.isEmpty());
+        Assertions.assertFalse(h1.isEmpty());
         h1.remove(new TestCursorValue("Row 1"));
         h1.remove(new TestCursorValue("Row 2"));
         h1.remove(new TestCursorValue("Row 3"));
         h1.remove(new TestCursorValue("Row 5"));
-        assertEquals("isEmpty(true)", true, h1.isEmpty());
+        Assertions.assertTrue(h1.isEmpty());
         h1.add(new TestCursorValue("Row 1"));
         h1.add(new TestCursorValue("Row 2"));
         h1.add(new TestCursorValue("Row 3"));
         h1.addAll(h2);
-        assertEquals("Adding back", 5, h1.size());
+        Assertions.assertEquals(5, h1.size());
         h1.removeAll(h2);
 
-        assertEquals("removeAll()", 3, h1.size());
+        Assertions.assertEquals(3, h1.size());
         h1.addAll(h2);
 
-        assertEquals("Adding back again", 5, h1.size());
+        Assertions.assertEquals(5, h1.size());
         h1.retainAll(h2);
-        assertEquals("retainAll()", 2, h1.size());
+        Assertions.assertEquals(2, h1.size());
 
         Object[] array1 = h1.toArray();
         TestCursorValue[] array2 = h1.toArray(new TestCursorValue[h1.size()]);
         for (int index = 0; index < Math.max(array2.length, array1.length); index++) {
-            Assert.assertSame(array1[index], array2[index]);
+            Assertions.assertSame(array1[index], array2[index]);
         }
 
-        Assert.assertTrue(h1.toString().contains(array1[0].toString()));
+        Assertions.assertTrue(h1.toString().contains(array1[0].toString()));
     }
 
     @Test
@@ -211,44 +208,45 @@ public class HashedListTest {
         h1.add(new TestCursorValue("Row 5"));
 
         Cursor<String, TestCursorValue> j = h1.iterator(0);
-        assertEquals("n1x", true, j.hasNext());
-        assertEquals("n1xv", "Row 1", j.next().value);
-        assertEquals("n1xv", "Row 3", j.next().value);
+        Assertions.assertTrue(j.hasNext());
+        Assertions.assertEquals("Row 1", j.next().value);
+        Assertions.assertEquals("Row 3", j.next().value);
 
-        assertEquals("No Row 2", false, h1.containsKey(new TestCursorValue("key 2")));
-        assertEquals("No Row 2", false, h1.contains(new TestCursorValue("Row 2")));
+        Assertions.assertFalse(h1.containsKey(new TestCursorValue("key 2")));
+        Assertions.assertFalse(h1.contains(new TestCursorValue("Row 2")));
         j.setKey("key 1");
-        assertEquals("setKey()", "Row 1", j.next().value);
+        Assertions.assertEquals("Row 1", j.next().value);
         j.add(new TestCursorValue("key 2", "Row 2"));
-        assertEquals("has Row 2", true, h1.contains(new TestCursorValue("Row 2")));
-        assertEquals("after add", "Row 3", j.next().value);
+        Assertions.assertTrue(h1.contains(new TestCursorValue("Row 2")));
+        Assertions.assertEquals("Row 3", j.next().value);
 
         j.setKey("key 4");
-        assertEquals("setKey(1)", "Row 4", j.next().value);
-        assertEquals("setKey(2)", "Row 5", j.next().value);
-        assertEquals("setKey(3)", false, j.hasNext());
+        Assertions.assertEquals("Row 4", j.next().value);
+        Assertions.assertEquals("Row 5", j.next().value);
+        Assertions.assertFalse(j.hasNext());
 
         j.setKey("key 2");
-        assertEquals("setKey(4)", "Row 2", j.next().value);
-        assertEquals("setKey(5)", "Row 3", j.next().value);
+        Assertions.assertEquals("Row 2", j.next().value);
+        Assertions.assertEquals("Row 3", j.next().value);
         j.add(new TestCursorValue("Row 3.5"));
         j.add(new TestCursorValue("Row 3.6"));
-        assertEquals("After add", 7, h1.size());
+        Assertions.assertEquals(7, h1.size());
 
         j = h1.iterator("key 2");
         j.add(new TestCursorValue("Row 1.5"));
         j.add(new TestCursorValue("key 1.7", "Row 1.7"));
         j.add(new TestCursorValue("Row 1.9"));
-        assertEquals("next() after adds", "Row 2", j.next().value);
+        Assertions.assertEquals("Row 2", j.next().value);
         j.setKey("key 1.7");
-        assertEquals("next() after adds", "Row 1.7", j.next().value);
-        assertEquals("prev(1)", "Row 1.7", j.prev().value);
-        assertEquals("prev(2)", "Row 1.5", j.prev().value);
-        assertEquals("prev(3)", true, j.hasPrev());
-        assertEquals("prev(4)", "Row 1", j.prev().value);
-        assertEquals("prev(5)", false, j.hasPrev());
+        Assertions.assertEquals("Row 1.7", j.next().value);
+        Assertions.assertEquals("Row 1.7", j.prev().value);
+        Assertions.assertEquals("Row 1.5", j.prev().value);
+        Assertions.assertTrue(j.hasPrev());
+        Assertions.assertEquals("Row 1", j.prev().value);
+        Assertions.assertFalse(j.hasPrev());
     }
 
+    @SuppressWarnings("unlikely-arg-type")
     @Test
     public void testIterator() {
 
@@ -258,11 +256,11 @@ public class HashedListTest {
         h1.add(new TestCursorValue("key 5", "Row 5"));
 
         Iterator<TestCursorValue> j = h1.iterator();
-        assertEquals("next1", true, j.hasNext());
-        assertEquals("TestIter1", "Row 4", j.next().value);
-        assertEquals("next2", true, j.hasNext());
-        assertEquals("TestIter2", "Row 5", j.next().value);
-        assertEquals("next3", false, j.hasNext());
+        Assertions.assertTrue(j.hasNext());
+        Assertions.assertEquals("Row 4", j.next().value);
+        Assertions.assertTrue(j.hasNext());
+        Assertions.assertEquals("Row 5", j.next().value);
+        Assertions.assertFalse(j.hasNext());
 
         h1.clear();
 
@@ -272,26 +270,26 @@ public class HashedListTest {
         h1.add(new TestCursorValue("key 4", "Row 4"));
         h1.add(new TestCursorValue("Row 5"));
 
-        assertEquals("Before remove", true, h1.contains(new TestCursorValue("Row 2")));
+        Assertions.assertTrue(h1.contains(new TestCursorValue("Row 2")));
         j = h1.iterator();
         j.next();
         j.next();
         j.remove(); // Should get rid of second row
-        assertEquals("After remove", false, h1.contains("Row 2"));
-        assertEquals("n3", true, j.hasNext());
-        assertEquals("n3v", "Row 3", j.next().value);
-        assertEquals("n4", true, j.hasNext());
-        assertEquals("n4v", "Row 4", j.next().value);
-        assertEquals("n5", true, j.hasNext());
-        assertEquals("n5v", "Row 5", j.next().value);
-        assertEquals("n6", false, j.hasNext());
+
+        Assertions.assertFalse(h1.contains("Row 2"));
+        Assertions.assertTrue(j.hasNext());
+        Assertions.assertEquals("Row 3", j.next().value);
+        Assertions.assertTrue(j.hasNext());
+        Assertions.assertEquals("Row 4", j.next().value);
+        Assertions.assertTrue(j.hasNext());
+        Assertions.assertEquals("Row 5", j.next().value);
+        Assertions.assertFalse(j.hasNext());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testIndexOfWhenNotInList() {
         HashedList<TestCursorValue> h = new HashedList<>();
-
-        h.indexOf(new TestCursorValue("K", "R"));
+        Assertions.assertThrows(NoSuchElementException.class, () -> h.indexOf(new TestCursorValue("K", "R")));
     }
 
     @Deprecated
@@ -300,30 +298,27 @@ public class HashedListTest {
         HashedList<TestCursorValue> h = new HashedList<>();
         h.iterator(0).add("OtherK", new TestCursorValue("K", "R"));
 
-        assertFalse(h.containsKey("OtherK"));
-        assertTrue(h.containsKey("K"));
+        Assertions.assertFalse(h.containsKey("OtherK"));
+        Assertions.assertTrue(h.containsKey("K"));
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testIteratorWithNegativeIndex() {
         HashedList<TestCursorValue> h = new HashedList<>();
-
-        h.iterator(-1);
+        Assertions.assertThrows(NoSuchElementException.class, () -> h.iterator(-1));
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testIteratorWithTooBigIndex() {
         HashedList<TestCursorValue> h = new HashedList<>();
-
-        h.iterator(h.size() + 1);
+        Assertions.assertThrows(NoSuchElementException.class, () -> h.iterator(h.size() + 1));
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testIteratorForNonPresentKey() {
         HashedList<TestCursorValue> h = new HashedList<>();
         h.add(new TestCursorValue("K", "R"));
-
-        h.iterator("K1");
+        Assertions.assertThrows(NoSuchElementException.class, () -> h.iterator("K1"));
     }
 
     @Test
@@ -334,21 +329,19 @@ public class HashedListTest {
         h.add(new TestCursorValue("K3", "R3"));
 
         TestCursorValue cursorValue = h.iterator(0).next(2);
-        assertEquals("K2", cursorValue.key);
+        Assertions.assertEquals("K2", cursorValue.key);
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testIteratorNextWhenNone() {
         HashedList<TestCursorValue> h = new HashedList<>();
-
-        h.iterator(0).next();
+        Assertions.assertThrows(NoSuchElementException.class, () -> h.iterator(0).next());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testIteratorPrevWhenNone() {
         HashedList<TestCursorValue> h = new HashedList<>();
-
-        h.iterator(0).prev();
+        Assertions.assertThrows(NoSuchElementException.class, () -> h.iterator(0).prev());
     }
 
     @Test
@@ -356,16 +349,17 @@ public class HashedListTest {
         HashedList<TestCursorValue> h = new HashedList<>();
         h.add(new TestCursorValue("K", "R"));
 
-        assertFalse(h.remove(-1));
-        assertFalse(h.remove(h.size()));
+        Assertions.assertFalse(h.remove(-1));
+        Assertions.assertFalse(h.remove(h.size()));
     }
 
+    @SuppressWarnings("unlikely-arg-type")
     @Test
     public void testRemoveWhenNotPresent() {
         HashedList<TestCursorValue> h = new HashedList<>();
         h.add(new TestCursorValue("K", "R"));
 
-        assertFalse(h.remove("R1"));
+        Assertions.assertFalse(h.remove("R1"));
     }
 
     @Test
@@ -373,7 +367,7 @@ public class HashedListTest {
         HashedList<TestCursorValue> h = new HashedList<>();
         h.add(new TestCursorValue("K", "R"));
 
-        assertFalse(h.removeKey("K1"));
+        Assertions.assertFalse(h.removeKey("K1"));
     }
 
     @Test
@@ -381,7 +375,7 @@ public class HashedListTest {
         HashedList<TestCursorValue> h = new HashedList<>();
         h.add(new TestCursorValue("K", "R"));
 
-        assertFalse(h.replaceKey("K1", "K2"));
-        assertFalse(h.replaceKey("K", "K"));
+        Assertions.assertFalse(h.replaceKey("K1", "K2"));
+        Assertions.assertFalse(h.replaceKey("K", "K"));
     }
 }

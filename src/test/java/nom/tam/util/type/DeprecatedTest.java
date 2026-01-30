@@ -31,36 +31,35 @@ package nom.tam.util.type;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import java.nio.IntBuffer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.Bitpix;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"javadoc", "deprecation"})
 public class DeprecatedTest {
 
     @Test
     public void testPrimitiveTypeBaseConstructor() throws Exception {
+        @SuppressWarnings("unused")
         PrimitiveTypeBase<?> i = new PrimitiveTypeBase<IntBuffer>(4, false, int.class, Integer.class, IntBuffer.class, 'I',
                 Bitpix.VALUE_FOR_INT) {
 
         };
-        assertEquals("size", 4, i.size());
-        assertFalse("isVariableSize", i.individualSize());
-        assertEquals("primitive", int.class, i.primitiveClass());
-        assertEquals("wrapped", Integer.class, i.wrapperClass());
-        assertEquals("bufclass", IntBuffer.class, i.bufferClass());
-        assertEquals("ID", 'I', i.type());
-        assertEquals("BITPIX", Bitpix.INTEGER.getHeaderValue(), i.bitPix());
+        Assertions.assertEquals(4, i.size());
+        Assertions.assertFalse(i.individualSize());
+        Assertions.assertEquals(int.class, i.primitiveClass());
+        Assertions.assertEquals(Integer.class, i.wrapperClass());
+        Assertions.assertEquals(IntBuffer.class, i.bufferClass());
+        Assertions.assertEquals('I', i.type());
+        Assertions.assertEquals(Bitpix.INTEGER.getHeaderValue(), i.bitPix());
     }
 
     @Test
     public void testElementTypeForID() throws Exception {
-        assertEquals(ElementType.forDataID('J'), PrimitiveTypeHandler.valueOf('J'));
+        Assertions.assertEquals(ElementType.forDataID('J'), PrimitiveTypeHandler.valueOf('J'));
     }
 
 }

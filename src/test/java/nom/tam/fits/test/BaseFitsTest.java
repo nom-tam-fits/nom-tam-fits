@@ -1,11 +1,5 @@
 package nom.tam.fits.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutput;
@@ -28,10 +22,10 @@ import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.AsciiTableHDU;
 import nom.tam.fits.BadData;
@@ -100,6 +94,7 @@ import nom.tam.util.test.ThrowAnyException;
 
 import static nom.tam.fits.header.Standard.NAXISn;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class BaseFitsTest {
 
     private static final class TestUndefinedData extends UndefinedData {
@@ -121,14 +116,7 @@ public class BaseFitsTest {
 
     private static final String TMP_FITS_NAME = "tmp.fits";
 
-    // @Rule
-    // public TestRule watcher = new TestWatcher() {
-    // protected void starting(Description description) {
-    // System.out.println("Starting test: " + description.getMethodName());
-    // }
-    // };
-
-    @Before
+    @BeforeEach
     public void setup() {
         FitsFactory.setUseAsciiTables(true);
         try {
@@ -139,107 +127,104 @@ public class BaseFitsTest {
         new File(TMP_FITS_NAME).delete();
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         new File(TMP_FITS_NAME).delete();
     }
 
     @Test
     public void testFitsSkipHdu() throws Exception {
-        Fits fits1 = makeAsciiTable();
+        try (Fits fits1 = makeAsciiTable()) {
 
-        BasicHDU<?> image = fits1.readHDU();
-        Assert.assertEquals(0L, image.getHeader().getFileOffset());
+            BasicHDU<?> image = fits1.readHDU();
+            Assertions.assertEquals(0L, image.getHeader().getFileOffset());
 
-        AsciiTableHDU hdu2 = (AsciiTableHDU) fits1.readHDU();
-        fits1.skipHDU(2);
-        AsciiTableHDU hdu3 = (AsciiTableHDU) fits1.readHDU();
-        Assert.assertEquals(28800L, hdu3.getHeader().getFileOffset());
+            AsciiTableHDU hdu2 = (AsciiTableHDU) fits1.readHDU();
+            fits1.skipHDU(2);
+            AsciiTableHDU hdu3 = (AsciiTableHDU) fits1.readHDU();
+            Assertions.assertEquals(28800L, hdu3.getHeader().getFileOffset());
 
-        hdu2.info(System.out);
-        hdu3.info(System.out);
-        Assert.assertArrayEquals(new int[] {11}, (int[]) hdu2.getData().getElement(1, 1));
-        Assert.assertArrayEquals(new int[] {41}, (int[]) hdu3.getData().getElement(1, 1));
-        hdu3.getData();
-
+            hdu2.info(System.out);
+            hdu3.info(System.out);
+            Assertions.assertArrayEquals(new int[] {11}, (int[]) hdu2.getData().getElement(1, 1));
+            Assertions.assertArrayEquals(new int[] {41}, (int[]) hdu3.getData().getElement(1, 1));
+            hdu3.getData();
+        }
     }
 
     @Test
     public void testFitsDeleteHdu() throws Exception {
-        Fits fits1 = null;
-        try {
-            fits1 = makeAsciiTable();
+        try (Fits fits1 = makeAsciiTable()) {
             fits1.read();
-            Exception actual = null;
-            try {
-                fits1.deleteHDU(-2);
-            } catch (FitsException ex) {
-                actual = ex;
-            }
-            Assert.assertNotNull(actual);
 
-            Assert.assertNull(fits1.getHDU(99));
+            Assertions.assertThrows(FitsException.class, () -> fits1.deleteHDU(-2));
+
+            Assertions.assertNull(fits1.getHDU(99));
             // will be ignored
             fits1.insertHDU(null, 99);
             fits1.deleteHDU(2);
             fits1.deleteHDU(2);
             writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
-        } finally {
-            SafeClose.close(fits1);
         }
 
-        fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
-        fits1.readHDU();
-        AsciiTableHDU hdu2 = (AsciiTableHDU) fits1.readHDU();
-        AsciiTableHDU hdu3 = (AsciiTableHDU) fits1.readHDU();
-        Assert.assertArrayEquals(new int[] {11}, (int[]) hdu2.getData().getElement(1, 1));
-        Assert.assertArrayEquals(new int[] {41}, (int[]) hdu3.getData().getElement(1, 1));
-        hdu3.getData();
-
+        try (Fits fits = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS))) {
+            fits.readHDU();
+            AsciiTableHDU hdu2 = (AsciiTableHDU) fits.readHDU();
+            AsciiTableHDU hdu3 = (AsciiTableHDU) fits.readHDU();
+            Assertions.assertArrayEquals(new int[] {11}, (int[]) hdu2.getData().getElement(1, 1));
+            Assertions.assertArrayEquals(new int[] {41}, (int[]) hdu3.getData().getElement(1, 1));
+            hdu3.getData();
+        }
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testFitsDeleteHduOutOfBounds() throws Exception {
-        new Fits().deleteHDU(0);
+        try (Fits f = new Fits()) {
+            Assertions.assertThrows(FitsException.class, () -> f.deleteHDU(0));
+        }
     }
 
     @Test
     public void testFitsDeleteHduNewPrimary() throws Exception {
-        Fits fits1 = makeAsciiTable();
-        fits1.read();
-        fits1.deleteHDU(0);
-        for (int index = 0; index < 4; index++) {
-            fits1.deleteHDU(1);
+        try (Fits fits1 = makeAsciiTable()) {
+            fits1.read();
+            fits1.deleteHDU(0);
+            for (int index = 0; index < 4; index++) {
+                fits1.deleteHDU(1);
+            }
+            BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
+            dummyHDU.addValue("TEST", "XYZ", null);
+            fits1.addHDU(dummyHDU);
+            fits1.deleteHDU(0);
+            writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
         }
-        BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-        dummyHDU.addValue("TEST", "XYZ", null);
-        fits1.addHDU(dummyHDU);
-        fits1.deleteHDU(0);
-        writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
 
-        fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
-        Assert.assertEquals(1, fits1.read().length);
-        Assert.assertEquals("XYZ", fits1.getHDU(0).getTrimmedString("TEST"));
+        try (Fits fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS))) {
+            Assertions.assertEquals(1, fits1.read().length);
+            Assertions.assertEquals("XYZ", fits1.getHDU(0).getTrimmedString("TEST"));
+        }
     }
 
     private Fits makeAsciiTable() throws Exception {
         // Create the new ASCII table.
-        Fits f = new Fits();
-        f.addHDU(Fits.makeHDU(getSampleCols(10f)));
-        f.addHDU(Fits.makeHDU(getSampleCols(20f)));
-        f.addHDU(Fits.makeHDU(getSampleCols(30f)));
-        f.addHDU(Fits.makeHDU(getSampleCols(40f)));
+        try (Fits f = new Fits()) {
+            f.addHDU(Fits.makeHDU(getSampleCols(10f)));
+            f.addHDU(Fits.makeHDU(getSampleCols(20f)));
+            f.addHDU(Fits.makeHDU(getSampleCols(30f)));
+            f.addHDU(Fits.makeHDU(getSampleCols(40f)));
 
-        writeFile(f, TARGET_BASIC_FITS_TEST_FITS);
+            writeFile(f, TARGET_BASIC_FITS_TEST_FITS);
 
-        return new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
+            return new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
+        }
     }
 
     private void writeFile(Fits f, String name) throws Exception {
-        FitsFile bf = new FitsFile(name, "rw");
-        f.write(bf);
-        bf.flush();
-        bf.close();
+        try (FitsFile bf = new FitsFile(name, "rw")) {
+            f.write(bf);
+            bf.flush();
+            bf.close();
+        }
     }
 
     private Object[] getSampleCols(float base) {
@@ -266,130 +251,146 @@ public class BaseFitsTest {
     public void convertAsciiToBinaryTable() throws Exception {
         FitsFactory.setUseAsciiTables(false);
 
-        Fits fits1 = makeAsciiTable();
+        try (Fits fits1 = makeAsciiTable()) {
+            fits1.readHDU();
+            BinaryTableHDU hdu2 = (BinaryTableHDU) fits1.readHDU();
+            fits1.skipHDU(2);
+            BinaryTableHDU hdu3 = (BinaryTableHDU) fits1.readHDU();
 
-        fits1.readHDU();
-        BinaryTableHDU hdu2 = (BinaryTableHDU) fits1.readHDU();
-        fits1.skipHDU(2);
-        BinaryTableHDU hdu3 = (BinaryTableHDU) fits1.readHDU();
-
-        hdu2.info(System.out);
-        hdu3.info(System.out);
-        Assert.assertArrayEquals(new int[] {11}, (int[]) hdu2.getData().getElement(1, 1));
-        Assert.assertArrayEquals(new int[] {41}, (int[]) hdu3.getData().getElement(1, 1));
-        hdu3.getData();
+            hdu2.info(System.out);
+            hdu3.info(System.out);
+            Assertions.assertArrayEquals(new int[] {11}, (int[]) hdu2.getData().getElement(1, 1));
+            Assertions.assertArrayEquals(new int[] {41}, (int[]) hdu3.getData().getElement(1, 1));
+            hdu3.getData();
+        }
     }
 
     @Test
     public void testFitsUndefinedHdu() throws Exception {
-        Fits fits1 = makeAsciiTable();
-        fits1.read();
         byte[] undefinedData = new byte[1000];
-        for (int index = 0; index < undefinedData.length; index++) {
-            undefinedData[index] = (byte) index;
+
+        try (Fits fits1 = makeAsciiTable()) {
+            fits1.read();
+            for (int index = 0; index < undefinedData.length; index++) {
+                undefinedData[index] = (byte) index;
+            }
+            fits1.addHDU(Fits.makeHDU(new UndefinedData(undefinedData)));
+            try (FitsOutputStream os = new FitsOutputStream(new FileOutputStream("target/UndefindedHDU.fits"))) {
+                fits1.write(os);
+            }
         }
-        fits1.addHDU(Fits.makeHDU(new UndefinedData(undefinedData)));
-        FitsOutputStream os = new FitsOutputStream(new FileOutputStream("target/UndefindedHDU.fits"));
-        fits1.write(os);
-        os.close();
 
-        Fits fits2 = new Fits("target/UndefindedHDU.fits");
-        BasicHDU<?>[] hdus = fits2.read();
+        try (Fits fits2 = new Fits("target/UndefindedHDU.fits")) {
+            BasicHDU<?>[] hdus = fits2.read();
 
-        byte[] rereadUndefinedData = ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
-        Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
+            byte[] rereadUndefinedData = ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
+            Assertions.assertArrayEquals(undefinedData, rereadUndefinedData);
+        }
     }
 
     @Test
     public void testFitsUndefinedHdu2() throws Exception {
-        Fits fits1 = makeAsciiTable();
-        fits1.read();
         byte[] undefinedData = new byte[1000];
-        for (int index = 0; index < undefinedData.length; index++) {
-            undefinedData[index] = (byte) index;
+
+        try (Fits fits1 = makeAsciiTable()) {
+            fits1.read();
+
+            for (int index = 0; index < undefinedData.length; index++) {
+                undefinedData[index] = (byte) index;
+            }
+            Data data = UndefinedHDU.encapsulate(undefinedData);
+            Header header = UndefinedHDU.manufactureHeader(data);
+
+            fits1.addHDU(FitsFactory.HDUFactory(header, data));
+            try (FitsOutputStream os = new FitsOutputStream(new FileOutputStream("target/UndefindedHDU2.fits"))) {
+                fits1.write(os);
+            }
         }
-        Data data = UndefinedHDU.encapsulate(undefinedData);
-        Header header = UndefinedHDU.manufactureHeader(data);
 
-        fits1.addHDU(FitsFactory.HDUFactory(header, data));
-        FitsOutputStream os = new FitsOutputStream(new FileOutputStream("target/UndefindedHDU2.fits"));
-        fits1.write(os);
-        os.close();
+        try (Fits fits2 = new Fits("target/UndefindedHDU2.fits")) {
+            BasicHDU<?>[] hdus = fits2.read();
 
-        Fits fits2 = new Fits("target/UndefindedHDU2.fits");
-        BasicHDU<?>[] hdus = fits2.read();
-
-        byte[] rereadUndefinedData = ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
-        Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
+            byte[] rereadUndefinedData = ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
+            Assertions.assertArrayEquals(undefinedData, rereadUndefinedData);
+        }
     }
 
     @Test
     public void testFitsUndefinedHdu3() throws Exception {
-        Fits fits1 = makeAsciiTable();
-        fits1.read();
         byte[] undefinedData = new byte[1000];
-        for (int index = 0; index < undefinedData.length; index++) {
-            undefinedData[index] = (byte) index;
+        String[] headers = null;
+        Header header = null;
+
+        try (Fits fits1 = makeAsciiTable()) {
+            fits1.read();
+
+            for (int index = 0; index < undefinedData.length; index++) {
+                undefinedData[index] = (byte) index;
+            }
+            Data data = UndefinedHDU.encapsulate(undefinedData);
+            header = new Header(data);
+
+            Cursor<String, HeaderCard> iter = header.iterator();
+
+            headers = new String[header.getNumberOfCards()];
+            int index = 0;
+            while (iter.hasNext()) {
+                HeaderCard headerCard = iter.next();
+                headers[index++] = headerCard.toString();
+            }
+            Header newHeader = new Header(headers);
+            for (index = 0; index < headers.length; index++) {
+                Assertions.assertEquals(header.getCard(index), newHeader.getCard(index));
+            }
+
+            fits1.addHDU(FitsFactory.hduFactory(newHeader, data));
+            try (FitsOutputStream os = new FitsOutputStream(new FileOutputStream("target/UndefindedHDU3.fits"))) {
+                fits1.write(os);
+            }
         }
-        Data data = UndefinedHDU.encapsulate(undefinedData);
-        Header header = new Header(data);
 
-        Cursor<String, HeaderCard> iter = header.iterator();
+        try (Fits fits2 = new Fits("target/UndefindedHDU3.fits")) {
+            BasicHDU<?>[] hdus = fits2.read();
 
-        String[] headers = new String[header.getNumberOfCards()];
-        int index = 0;
-        while (iter.hasNext()) {
-            HeaderCard headerCard = iter.next();
-            headers[index++] = headerCard.toString();
-        }
-        Header newHeader = new Header(headers);
-        for (index = 0; index < headers.length; index++) {
-            Assert.assertEquals(header.getCard(index), newHeader.getCard(index));
-        }
-
-        fits1.addHDU(FitsFactory.hduFactory(newHeader, data));
-        FitsOutputStream os = new FitsOutputStream(new FileOutputStream("target/UndefindedHDU3.fits"));
-        fits1.write(os);
-        os.close();
-
-        Fits fits2 = new Fits("target/UndefindedHDU3.fits");
-        BasicHDU[] hdus = fits2.read();
-
-        for (index = 0; index < headers.length; index++) {
-            Assert.assertEquals(header.getCard(index), hdus[5].getHeader().getCard(index));
+            for (int index = 0; index < headers.length; index++) {
+                Assertions.assertEquals(header.getCard(index), hdus[5].getHeader().getCard(index));
+            }
         }
 
     }
 
     @Test
     public void testFitsUndefinedHdu4() throws Exception {
-        Fits fits1 = makeAsciiTable();
-        fits1.read();
         byte[] undefinedData = new byte[1000];
-        for (int index = 0; index < undefinedData.length; index++) {
-            undefinedData[index] = (byte) index;
+
+        try (Fits fits1 = makeAsciiTable()) {
+            fits1.read();
+
+            for (int index = 0; index < undefinedData.length; index++) {
+                undefinedData[index] = (byte) index;
+            }
+            Data data = UndefinedHDU.encapsulate(undefinedData);
+            Header header = new Header();
+            header.pointToData(data);
+
+            fits1.addHDU(FitsFactory.hduFactory(header, data));
+            try (FitsOutputStream os = new FitsOutputStream(new FileOutputStream("target/UndefindedHDU4.fits"))) {
+                fits1.write(os);
+            }
         }
-        Data data = UndefinedHDU.encapsulate(undefinedData);
-        Header header = new Header();
-        header.pointToData(data);
 
-        fits1.addHDU(FitsFactory.hduFactory(header, data));
-        FitsOutputStream os = new FitsOutputStream(new FileOutputStream("target/UndefindedHDU4.fits"));
-        fits1.write(os);
-        os.close();
+        try (Fits fits2 = new Fits("target/UndefindedHDU4.fits")) {
+            BasicHDU<?>[] hdus = fits2.read();
 
-        Fits fits2 = new Fits("target/UndefindedHDU4.fits");
-        BasicHDU<?>[] hdus = fits2.read();
+            byte[] rereadUndefinedData = ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
+            Assertions.assertArrayEquals(undefinedData, rereadUndefinedData);
 
-        byte[] rereadUndefinedData = ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
-        Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            hdus[hdus.length - 1].info(new PrintStream(out));
+            String undefinedInfo = new String(out.toByteArray());
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        hdus[hdus.length - 1].info(new PrintStream(out));
-        String undefinedInfo = new String(out.toByteArray());
-
-        Assert.assertTrue(undefinedInfo.indexOf("Apparent size:1000") >= 0);
-
+            Assertions.assertTrue(undefinedInfo.indexOf("Apparent size:1000") >= 0);
+        }
     }
 
     @Test
@@ -403,19 +404,21 @@ public class BaseFitsTest {
         head.addValue("GCOUNT", 2, null);
         UndefinedHDU hdu = (UndefinedHDU) FitsFactory.hduFactory(head);
         byte[] data = hdu.getData().getData();
-        Assert.assertEquals(2000, data.length);
+        Assertions.assertEquals(2000, data.length);
         Arrays.fill(data, (byte) 1);
-        FitsFile buf = new FitsFile("target/testFitsUndefinedHdu5", "rw");
-        hdu.write(buf);
-        buf.close();
+
+        try (FitsFile buf = new FitsFile("target/testFitsUndefinedHdu5", "rw")) {
+            hdu.write(buf);
+        }
+
         Arrays.fill(data, (byte) 2);
 
-        buf = new FitsFile("target/testFitsUndefinedHdu5", "rw");
-        hdu.read(buf);
-        data = hdu.getData().getData();
-        buf.close();
-        Assert.assertEquals((byte) 1, data[0]);
+        try (FitsFile buf = new FitsFile("target/testFitsUndefinedHdu5", "rw")) {
+            hdu.read(buf);
+            data = hdu.getData().getData();
+        }
 
+        Assertions.assertEquals((byte) 1, data[0]);
     }
 
     @Test
@@ -428,94 +431,59 @@ public class BaseFitsTest {
         head.addValue("PCOUNT", 0, null);
         head.addValue("GCOUNT", 2, null);
         final UndefinedHDU hdu = (UndefinedHDU) FitsFactory.hduFactory(head);
-        FitsOutputStream os = null;
-        Exception e = null;
-        try {
-            os = new FitsOutputStream(new ByteArrayOutputStream()) {
 
-                @Override
-                public void write(byte[] b) throws IOException {
-                    ThrowAnyException.throwIOException("could not write");
-                }
-            };
-            hdu.getData().write(os);
-        } catch (FitsException io) {
-            e = io;
-        } finally {
-            SafeClose.close(os);
+        try (FitsOutputStream os = new FitsOutputStream(new ByteArrayOutputStream()) {
+
+            @Override
+            public void write(byte[] b) throws IOException {
+                ThrowAnyException.throwIOException("could not write");
+            }
+        }) {
+            Assertions.assertThrows(FitsException.class, () -> hdu.getData().write(os));
         }
-        Assert.assertNotNull(e);
 
-        FitsInputStream is = null;
-        e = null;
-        try {
-            is = new FitsInputStream(new ByteArrayInputStream(new byte[1000]) {
+        try (FitsInputStream is = new FitsInputStream(new ByteArrayInputStream(new byte[1000]) {
 
-                @Override
-                public synchronized int read(byte[] b, int off, int len) {
-                    ThrowAnyException.throwIOException("could not write");
-                    return -1;
-                }
-            });
-            hdu.getData().read(is);
-        } catch (FitsException io) {
-            e = io;
-        } finally {
-            SafeClose.close(os);
+            @Override
+            public synchronized int read(byte[] b, int off, int len) {
+                ThrowAnyException.throwIOException("could not write");
+                return -1;
+            }
+        })) {
+            Assertions.assertThrows(FitsException.class, () -> hdu.getData().read(is));
         }
-        Assert.assertNotNull(e);
 
-        is = null;
-        e = null;
-        try {
-            is = new FitsInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
+        try (FitsInputStream is = new FitsInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
 
-                @Override
-                public void skipAllBytes(long toSkip) throws IOException {
-                    ThrowAnyException.throwIOException("could not write");
-                    super.skipAllBytes(toSkip);
-                }
-            };
-            hdu.getData().read(is);
-        } catch (FitsException io) {
-            e = io;
-        } finally {
-            SafeClose.close(os);
+            @Override
+            public void skipAllBytes(long toSkip) throws IOException {
+                ThrowAnyException.throwIOException("could not write");
+                super.skipAllBytes(toSkip);
+            }
+        }) {
+
+            Exception e = Assertions.assertThrows(FitsException.class, () -> hdu.getData().read(is));
+            Assertions.assertTrue(e.getCause() instanceof IOException);
         }
-        Assert.assertNotNull(e);
-        Assert.assertTrue(e.getCause() instanceof IOException);
 
-        is = null;
-        e = null;
-        try {
-            is = new FitsInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
+        try (FitsInputStream is = new FitsInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
 
-                @Override
-                public void skipAllBytes(long toSkip) throws IOException {
-                    ThrowAnyException.throwAnyAsRuntime(new EOFException("could not write"));
-                    super.skipAllBytes(toSkip);
-                }
-            };
-            hdu.getData().read(is);
-        } catch (FitsException io) {
-            e = io;
-        } finally {
-            SafeClose.close(os);
+            @Override
+            public void skipAllBytes(long toSkip) throws IOException {
+                ThrowAnyException.throwAnyAsRuntime(new EOFException("could not write"));
+                super.skipAllBytes(toSkip);
+            }
+        }) {
+            Exception e = Assertions.assertThrows(FitsException.class, () -> hdu.getData().read(is));
+            Assertions.assertTrue(e.getCause() instanceof EOFException);
         }
-        Assert.assertNotNull(e);
-        Assert.assertTrue(e.getCause() instanceof EOFException);
     }
 
     @Test
     public void testFitsRandomGroupHDUProblem1() throws Exception {
-        FitsException actual = null;
-        try {
-            RandomGroupsHDU.encapsulate(new Object());
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().contains("invalid"));
+
+        Assertions.assertThrows(FitsException.class, () -> RandomGroupsHDU.encapsulate(new Object()));
+
         Header header = new Header()//
                 .card(Standard.GROUPS).value(true)//
                 .card(Standard.GCOUNT).value(2)//
@@ -523,37 +491,20 @@ public class BaseFitsTest {
                 .card(NAXISn.n(1)).value(0)//
                 .card(Standard.NAXIS).value(1)//
                 .header();
-        actual = null;
-        try {
-            RandomGroupsHDU.manufactureData(header);
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("invalid"));
+
+        Assertions.assertThrows(FitsException.class, () -> RandomGroupsHDU.manufactureData(header));
+
         FitsFactory.setAllowHeaderRepairs(false);
         header.card(Standard.NAXIS).value(2)//
                 .card(NAXISn.n(2)).value(2)//
                 .card(Standard.BITPIX).value(22);
-        actual = null;
-        try {
-            RandomGroupsHDU.manufactureData(header);
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().contains("BITPIX"));
+
+        Assertions.assertThrows(FitsException.class, () -> RandomGroupsHDU.manufactureData(header));
+
         header.card(NAXISn.n(2)).value(-2)//
                 .card(Standard.BITPIX).value(32);
-        actual = null;
-        try {
-            RandomGroupsHDU.manufactureData(header);
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().contains("dimension"));
 
+        Assertions.assertThrows(FitsException.class, () -> RandomGroupsHDU.manufactureData(header));
     }
 
     @Test
@@ -568,13 +519,13 @@ public class BaseFitsTest {
                 .card(Standard.BITPIX).value(32)//
                 .header();
         RandomGroupsData data = RandomGroupsHDU.manufactureData(header);
-        Assert.assertEquals(0, data.getData().length);
+        Assertions.assertEquals(0, data.getData().length);
 
         RandomGroupsHDU randomGroupsHDU = new RandomGroupsHDU(header, data);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         randomGroupsHDU.info(new PrintStream(out));
         String groupInfo = out.toString("UTF-8");
-        Assert.assertTrue(groupInfo.contains("unreadable data"));
+        Assertions.assertTrue(groupInfo.contains("unreadable data"));
     }
 
     @Test
@@ -587,63 +538,42 @@ public class BaseFitsTest {
                 throw new IOException();
             }
         };
-        FitsException actual = null;
-        try {
-            data.write(out);
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("error writing"));
 
+        Assertions.assertThrows(FitsException.class, () -> data.write(out));
     }
 
     @Test
     public void testFitsRandomGroupDataRead() throws Exception {
         ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
-        FitsOutputStream out = new FitsOutputStream(outBytes);
+
         Object[][] dataArray = new Object[][] {new Object[] {new int[10], new int[10]}};
-        out.writeArray(dataArray);
-        out.close();
+
+        try (FitsOutputStream out = new FitsOutputStream(outBytes);) {
+            out.writeArray(dataArray);
+            out.close();
+        }
 
         RandomGroupsData data = new RandomGroupsData(dataArray);
-        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[0]));
-        FitsException actual = null;
-        try {
-            data.read(in);
-        } catch (FitsException e) {
-            actual = e;
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[0]))) {
+            Assertions.assertThrows(FitsException.class, () -> data.read(in));
         }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("error reading"));
 
-        in = new FitsInputStream(new ByteArrayInputStream(outBytes.toByteArray()));
-        actual = null;
-        try {
-            data.read(in);
-        } catch (FitsException e) {
-            actual = e;
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(outBytes.toByteArray()))) {
+            Exception e = Assertions.assertThrows(FitsException.class, () -> data.read(in));
+            Assertions.assertEquals(EOFException.class, e.getCause().getClass());
         }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("eof"));
 
         outBytes.write(new byte[2880]);
-        in = new FitsInputStream(new ByteArrayInputStream(outBytes.toByteArray())) {
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(outBytes.toByteArray())) {
 
             @Override
             public void skipAllBytes(long toSkip) throws IOException {
                 throw new IOException();
             }
-        };
-        actual = null;
-        try {
-            data.read(in);
-        } catch (FitsException e) {
-            actual = e;
+        }) {
+            Exception e = Assertions.assertThrows(FitsException.class, () -> data.read(in));
+            Assertions.assertEquals(IOException.class, e.getCause().getClass());
         }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("io error"));
-
     }
 
     @Test
@@ -655,14 +585,15 @@ public class BaseFitsTest {
         head.addValue("NAXIS1", 1000, null);
         head.addValue("PCOUNT", 0, null);
         head.addValue("GCOUNT", 2, null);
-        final UndefinedHDU hdu = (UndefinedHDU) FitsFactory.hduFactory(head);
-        // test is that the exception will not be noticed.
-        new Header(hdu.getData()) {
 
+        FitsFactory.hduFactory(head);
+        // test is that the exception will not be noticed.
+
+        Assertions.assertThrows(HeaderCardException.class, () -> new Header() {
             public void addValue(IFitsHeader key, int val) throws HeaderCardException {
                 throw new HeaderCardException("something wrong");
             }
-        };
+        }.addValue(Standard.NAXIS1, 1));
     }
 
     @Test
@@ -671,8 +602,8 @@ public class BaseFitsTest {
         for (int index = 0; index < undefinedData.length; index++) {
             undefinedData[index] = (byte) index;
         }
-        Assert.assertFalse(UndefinedHDU.isHeader(new Header()));
-        Assert.assertTrue(UndefinedHDU.isData(undefinedData));
+        Assertions.assertFalse(UndefinedHDU.isHeader(new Header()));
+        Assertions.assertTrue(UndefinedHDU.isData(undefinedData));
 
         UndefinedData data = UndefinedHDU.encapsulate(undefinedData);
         Header header = new Header();
@@ -681,66 +612,50 @@ public class BaseFitsTest {
 
         hdu.getHeader().deleteKey("EXTEND");
 
-        FitsFile stream = new FitsFile("target/rewriteHduTest.bin", "rw");
-        hdu.write(stream);
-        stream.close();
+        try (FitsFile stream = new FitsFile("target/rewriteHduTest.bin", "rw")) {
+            hdu.write(stream);
+        }
 
-        stream = new FitsFile("target/rewriteHduTest.bin", "rw");
-        data = UndefinedHDU.encapsulate(new byte[0]);
-        hdu = new UndefinedHDU(new Header(data), data);
-        hdu.read(stream);
-        hdu.addValue("TESTER", "WRITE", null);
-        hdu.rewrite();
-        hdu.reset();
-        hdu.read(stream);
-        hdu.getHeader().getStringValue("TESTER");
+        try (FitsFile stream = new FitsFile("target/rewriteHduTest.bin", "rw")) {
+            data = UndefinedHDU.encapsulate(new byte[0]);
+            hdu = new UndefinedHDU(new Header(data), data);
+            hdu.read(stream);
+            hdu.addValue("TESTER", "WRITE", null);
+            hdu.rewrite();
+            hdu.reset();
+            hdu.read(stream);
+            hdu.getHeader().getStringValue("TESTER");
 
-        byte[] rereadUndefinedData = hdu.getData().getData();
-        Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
+            byte[] rereadUndefinedData = hdu.getData().getData();
+            Assertions.assertArrayEquals(undefinedData, rereadUndefinedData);
+        }
     }
 
     @Test
     public void testDifferentTypes() throws Exception {
-        FitsException actual = null;
-        try {
-            new Fits((String) null, false);
-        } catch (FitsException ex) {
-            actual = ex;
+        Assertions.assertThrows(FitsException.class, () -> new Fits((String) null, false));
+
+        try (Fits fits = new Fits("nom/tam/fits/test/test.fits", false)) {
+            Assertions.assertNotNull(fits.readHDU());
+            Assertions.assertEquals(1, fits.getNumberOfHDUs());
         }
-        Assert.assertNotNull(actual);
-        Fits fits = null;
-        try {
-            fits = new Fits("nom/tam/fits/test/test.fits", false);
-            Assert.assertNotNull(fits.readHDU());
-            Assert.assertEquals(1, fits.getNumberOfHDUs());
-        } finally {
-            SafeClose.close(fits);
+
+        try (Fits fits = new Fits(FILE + new File("src/test/resources/nom/tam/fits/test/test.fits").getAbsolutePath(),
+                false)) {
+            Assertions.assertNotNull(fits.readHDU());
         }
-        try {
-            fits = new Fits(FILE + new File("src/test/resources/nom/tam/fits/test/test.fits").getAbsolutePath(), false);
-            Assert.assertNotNull(fits.readHDU());
-        } finally {
-            SafeClose.close(fits);
-        }
-        actual = null;
-        try {
-            new Fits(FILE + new File("src/test/resources/nom/tam/fits/test/test.fitsX").getAbsolutePath(), false);
-        } catch (FitsException ex) {
-            actual = ex;
-        }
-        Assert.assertNotNull(actual);
-        actual = null;
-        try {
-            new Fits(new URL(FILE + new File("src/test/resources/nom/tam/fits/test/test.fitsX").getAbsolutePath()), false);
-        } catch (FitsException ex) {
-            actual = ex;
-        }
-        Assert.assertNotNull(actual);
-        try {
-            fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits", false);
-            Assert.assertNotNull(fits.readHDU());
-        } finally {
-            SafeClose.close(fits);
+
+        Assertions.assertThrows(FitsException.class,
+                () -> new Fits(FILE + new File("src/test/resources/nom/tam/fits/test/test.fitsX").getAbsolutePath(),
+                        false));
+
+        Assertions.assertThrows(FitsException.class,
+                () -> new Fits(
+                        new URL(FILE + new File("src/test/resources/nom/tam/fits/test/test.fitsX").getAbsolutePath()),
+                        false));
+
+        try (Fits fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits", false)) {
+            Assertions.assertNotNull(fits.readHDU());
         }
     }
 
@@ -753,14 +668,14 @@ public class BaseFitsTest {
         header.addValue("NAXIS1", 4, "");
         header.addValue("NAXIS3", 4, "");
         ImageHDU hdu = (ImageHDU) Fits.makeHDU(header);
-        Assert.assertNotNull(hdu);
+        Assertions.assertNotNull(hdu);
     }
 
     @Test
     public void testFitsUtilPrivate() throws Exception {
         Constructor<?>[] constrs = FitsUtil.class.getDeclaredConstructors();
-        assertEquals(constrs.length, 1);
-        assertFalse(constrs[0].isAccessible());
+        Assertions.assertEquals(constrs.length, 1);
+        Assertions.assertFalse(constrs[0].isAccessible());
         constrs[0].setAccessible(true);
         constrs[0].newInstance();
     }
@@ -768,8 +683,8 @@ public class BaseFitsTest {
     @Test
     public void testLoggerHelperPrivate() throws Exception {
         Constructor<?>[] constrs = LoggerHelper.class.getDeclaredConstructors();
-        assertEquals(constrs.length, 1);
-        assertFalse(constrs[0].isAccessible());
+        Assertions.assertEquals(constrs.length, 1);
+        Assertions.assertFalse(constrs[0].isAccessible());
         constrs[0].setAccessible(true);
         constrs[0].newInstance();
     }
@@ -777,8 +692,8 @@ public class BaseFitsTest {
     @Test
     public void testSaveClosePrivate() throws Exception {
         Constructor<?>[] constrs = SafeClose.class.getDeclaredConstructors();
-        assertEquals(constrs.length, 1);
-        assertFalse(constrs[0].isAccessible());
+        Assertions.assertEquals(constrs.length, 1);
+        Assertions.assertFalse(constrs[0].isAccessible());
         constrs[0].setAccessible(true);
         constrs[0].newInstance();
     }
@@ -786,8 +701,8 @@ public class BaseFitsTest {
     @Test
     public void testFitsCheckSumPrivate() throws Exception {
         Constructor<?>[] constrs = FitsCheckSum.class.getDeclaredConstructors();
-        assertEquals(constrs.length, 1);
-        assertFalse(constrs[0].isAccessible());
+        Assertions.assertEquals(constrs.length, 1);
+        Assertions.assertFalse(constrs[0].isAccessible());
         constrs[0].setAccessible(true);
         constrs[0].newInstance();
     }
@@ -795,8 +710,8 @@ public class BaseFitsTest {
     @Test
     public void testHeaderCommentsMapPrivate() throws Exception {
         Constructor<?>[] constrs = HeaderCommentsMap.class.getDeclaredConstructors();
-        assertEquals(constrs.length, 1);
-        assertFalse(constrs[0].isAccessible());
+        Assertions.assertEquals(constrs.length, 1);
+        Assertions.assertFalse(constrs[0].isAccessible());
         constrs[0].setAccessible(true);
         constrs[0].newInstance();
     }
@@ -827,20 +742,20 @@ public class BaseFitsTest {
             }).start();
             testFitsSettingsVlaue[1] = false;
             waitForThread(testFitsSettingsVlaue, 0);
-            Assert.assertEquals(Boolean.valueOf(true), testFitsSettingsVlaue[0]);
-            Assert.assertEquals(Boolean.valueOf(false), testFitsSettingsVlaue[1]);
-            Assert.assertEquals(true, FitsFactory.isLongStringsEnabled());
+            Assertions.assertEquals(Boolean.valueOf(true), testFitsSettingsVlaue[0]);
+            Assertions.assertEquals(Boolean.valueOf(false), testFitsSettingsVlaue[1]);
+            Assertions.assertTrue(FitsFactory.isLongStringsEnabled());
             testFitsSettingsVlaue[3] = true;
             waitForThread(testFitsSettingsVlaue, 0);
-            Assert.assertEquals(Boolean.valueOf(false), testFitsSettingsVlaue[2]);
-            Assert.assertEquals(Boolean.valueOf(true), testFitsSettingsVlaue[3]);
-            Assert.assertEquals(true, FitsFactory.isLongStringsEnabled());
+            Assertions.assertEquals(Boolean.valueOf(false), testFitsSettingsVlaue[2]);
+            Assertions.assertEquals(Boolean.valueOf(true), testFitsSettingsVlaue[3]);
+            Assertions.assertTrue(FitsFactory.isLongStringsEnabled());
             FitsFactory.setLongStringsEnabled(false);
             testFitsSettingsVlaue[5] = true;
             waitForThread(testFitsSettingsVlaue, 0);
-            Assert.assertEquals(Boolean.valueOf(false), testFitsSettingsVlaue[2]);
-            Assert.assertEquals(Boolean.valueOf(true), testFitsSettingsVlaue[3]);
-            Assert.assertEquals(false, FitsFactory.isLongStringsEnabled());
+            Assertions.assertEquals(Boolean.valueOf(false), testFitsSettingsVlaue[2]);
+            Assertions.assertEquals(Boolean.valueOf(true), testFitsSettingsVlaue[3]);
+            Assertions.assertFalse(FitsFactory.isLongStringsEnabled());
         } finally {
             FitsFactory.setLongStringsEnabled(longstring);
         }
@@ -865,8 +780,8 @@ public class BaseFitsTest {
 
         long value = manufactureHeader.getDataSize();
         int intValue = (int) manufactureHeader.getDataSize();
-        assertEquals(2500001280L, value);
-        Assert.assertTrue(intValue != value);
+        Assertions.assertEquals(2500001280L, value);
+        Assertions.assertNotEquals(intValue, value);
 
     }
 
@@ -874,15 +789,10 @@ public class BaseFitsTest {
     public void testDataRepositionErrors() throws Exception {
         final int[] fail = {100};
         TestUndefinedData data = new TestUndefinedData(new byte[10]);
-        FitsException expected = null;
-        try {
-            data.rewrite();
-        } catch (FitsException e) {
-            expected = e;
-        }
-        Assert.assertNotNull(expected);
-        FitsFile file = new FitsFile("target/TestUndefinedRewrite.data", "rw") {
 
+        Assertions.assertThrows(FitsException.class, () -> data.rewrite());
+
+        try (FitsFile file = new FitsFile("target/TestUndefinedRewrite.data", "rw") {
             @Override
             public void flush() throws IOException {
                 fail[0]--;
@@ -891,43 +801,37 @@ public class BaseFitsTest {
                 }
                 super.flush();
             }
-        };
-        data.setFileOffset(file);
-        data.rewrite();
-        Assert.assertTrue(data.reset());
-        fail[0] = 0;
-        expected = null;
-        try {
+        }) {
+            data.setFileOffset(file);
             data.rewrite();
-        } catch (FitsException e) {
-            expected = e;
+
+            Assertions.assertTrue(data.reset());
+            fail[0] = 0;
+
+            Assertions.assertThrows(FitsException.class, () -> data.rewrite());
+
+            // AK: There is no good reason why reset should fail, as the contract of
+            // seek() allows
+            // going beyond the end of file...
+            // Assertions.assertFalse(data.reset());
+        } catch (IOException e) {
+            Assertions.assertEquals("fail", e.getMessage());
         }
-        Assert.assertNotNull(expected);
-        // AK: There is no good reason why reset should fail, as the contract of
-        // seek() allows
-        // going beyond the end of file...
-        // Assert.assertFalse(data.reset());
     }
 
     @Test
     public void testFitsFactory() throws Exception {
-        String message = "";
-        try {
-            FitsFactory.dataFactory(new Header());
-        } catch (FitsException e) {
-            message = e.getMessage();
-        }
-        Assert.assertTrue(message.contains("Unrecognizable"));
+        Assertions.assertThrows(FitsException.class, () -> FitsFactory.dataFactory(new Header()));
     }
 
     @Test
     public void testFitsFactoryData() throws Exception {
-        Assert.assertNull(FitsFactory.HDUFactory(new Header(), new BadData()));
+        Assertions.assertNull(FitsFactory.HDUFactory(new Header(), new BadData()));
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testFitsFactoryUnknown() throws Exception {
-        Assert.assertNull(FitsFactory.HDUFactory(this));
+        Assertions.assertThrows(FitsException.class, () -> FitsFactory.HDUFactory(this));
     }
 
     @Test
@@ -951,10 +855,10 @@ public class BaseFitsTest {
         } finally {
             FitsFactory.setUseHierarch(oldValue);
         }
-        Assert.assertTrue(success[0]);
+        Assertions.assertTrue(success[0]);
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testFitsUtilPad() throws Exception {
         FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
 
@@ -963,10 +867,11 @@ public class BaseFitsTest {
                 throw new IOException();
             }
         };
-        FitsUtil.pad(out, 1L, (byte) 0);
+
+        Assertions.assertThrows(FitsException.class, () -> FitsUtil.pad(out, 1L, (byte) 0));
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testFitsWriteException1() throws Exception {
         DataOutput out = (DataOutput) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] {DataOutput.class},
                 new InvocationHandler() {
@@ -977,10 +882,12 @@ public class BaseFitsTest {
                     }
                 });
 
-        new Fits().write(out);
+        try (Fits f = new Fits()) {
+            Assertions.assertThrows(FitsException.class, () -> f.write(out));
+        }
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testFitsWriteException2() throws Exception {
         DataOutput out = new DataOutputStream(new ByteArrayOutputStream()) {
 
@@ -990,28 +897,33 @@ public class BaseFitsTest {
             }
         };
 
-        new Fits().write(out);
+        try (Fits f = new Fits()) {
+            Assertions.assertThrows(FitsException.class, () -> f.write(out));
+        }
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testFitsWriteException3() throws Exception {
-        DataOutput out = new FitsFile("target/testFitsWriteException3", "rw") {
+        try (FitsFile out = new FitsFile("target/testFitsWriteException3", "rw") {
 
             @Override
             public void setLength(long newLength) throws IOException {
                 throw new IOException("failed trimm");
             }
-        };
+        }) {
 
-        new Fits().write(out);
+            try (Fits f = new Fits()) {
+                Assertions.assertThrows(IOException.class, () -> f.write(out));
+            }
+        }
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testFitsWriteException4() throws Exception {
-        new Fits(new File("target/doesNotExistAtAll"));
+        Assertions.assertThrows(FitsException.class, () -> new Fits(new File("target/doesNotExistAtAll")));
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testFitsWriteException5() throws Exception {
         File writeOnlyTestFile = new File("target/writeOnlyTestFile") {
             @Override
@@ -1019,54 +931,37 @@ public class BaseFitsTest {
                 return true;
             }
         };
-        try {
-            writeOnlyTestFile.createNewFile();
-            writeOnlyTestFile.setReadable(false);
-            writeOnlyTestFile.setWritable(false);
 
-            new Fits(writeOnlyTestFile);
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("Unable"));
-            throw e;
-        } finally {
-            writeOnlyTestFile.setReadable(true);
-            writeOnlyTestFile.setWritable(true);
+        writeOnlyTestFile.createNewFile();
+        writeOnlyTestFile.setReadable(false);
+        writeOnlyTestFile.setWritable(false);
+
+        Assertions.assertThrows(FitsException.class, () -> new Fits(writeOnlyTestFile));
+    }
+
+    @SuppressWarnings("resource")
+    @Test
+    public void testFitsWithArrayDataInput() throws Exception {
+
+        try (FitsInputStream in = new FitsInputStream(
+                new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits")); Fits f = new Fits(in)) {
+            Assertions.assertNotNull(f.getStream());
+            Assertions.assertEquals(1, f.size());
+            f.skipHDU(); // should do nothing at all -)
         }
     }
 
     @Test
-    public void testFitsWithArrayDataInput() throws Exception {
-        FitsInputStream in = null;
-        Fits f = null;
-        try {
-            in = new FitsInputStream(new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits"));
-            f = new Fits(in);
-            Assert.assertNotNull(f.getStream());
-            Assert.assertEquals(1, f.size());
-            f.skipHDU(); // should do nothing at all -)
-        } finally {
-            SafeClose.close(f);
-            SafeClose.close(in);
-        }
-    }
-
-    @Test(expected = FitsException.class)
     public void testFitsCompressedWithFileInput() throws Exception {
-        Fits f = null;
-        try {
-            f = new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits.gz"), true) {
+        Assertions.assertThrows(FitsException.class,
+                () -> new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits.gz"), true) {
 
-                @Override
-                protected void streamInit(InputStream inputStream) throws FitsException {
-                    ThrowAnyException.throwIOException("could not open stream");
-                }
-            };
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("Unable"));
-            throw e;
-        } finally {
-            SafeClose.close(f);
-        }
+                    @Override
+                    protected void streamInit(InputStream inputStream) throws FitsException {
+                        ThrowAnyException.throwIOException("could not open stream");
+                    }
+                });
+
     }
 
     @Test
@@ -1077,7 +972,7 @@ public class BaseFitsTest {
             in = new FitsInputStream(new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits"));
             f = new Fits();
             f.read(in);
-            Assert.assertEquals(1, f.size());
+            Assertions.assertEquals(1, f.size());
             f.skipHDU(); // should do nothing at all -)
         } finally {
             SafeClose.close(f);
@@ -1085,111 +980,118 @@ public class BaseFitsTest {
         }
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testFitsFileInputFailed() throws Exception {
-        Fits f = null;
-        try {
-            f = new Fits("src/test/resources/nom/tam/fits/test/test.fits.gz", true) {
+        Assertions.assertThrows(FitsException.class,
+                () -> new Fits("src/test/resources/nom/tam/fits/test/test.fits.gz", true) {
 
-                @Override
-                protected void fileInit(File myFile, boolean compressed) throws FitsException {
-                    ThrowAnyException.throwIOException("could not open stream");
-                }
-            };
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("detect"));
-            throw e;
-        } finally {
-            SafeClose.close(f);
-        }
+                    @Override
+                    protected void fileInit(File myFile, boolean compressed) throws FitsException {
+                        ThrowAnyException.throwIOException("could not open stream");
+                    }
+                });
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testFitsFileInputFailed2() throws Exception {
-        Fits f = null;
-        try {
-            f = new Fits("nom/tam/fits/test/test.fits.gz", true) {
+        Assertions.assertThrows(FitsException.class, () -> new Fits("nom/tam/fits/test/test.fits.gz", true) {
 
-                @Override
-                protected void streamInit(InputStream inputStream) throws FitsException {
-                    ThrowAnyException.throwIOException("could not open stream");
-                }
-            };
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("detect"));
-            throw e;
-        } finally {
-            SafeClose.close(f);
-        }
+            @Override
+            protected void streamInit(InputStream inputStream) throws FitsException {
+                ThrowAnyException.throwIOException("could not open stream");
+            }
+        });
     }
 
     @Test()
     public void testFitsReadEmpty() throws Exception {
-        Assert.assertArrayEquals(new BasicHDU<?>[0], new Fits().read());
+        try (Fits f = new Fits()) {
+            Assertions.assertArrayEquals(new BasicHDU<?>[0], f.read());
+        }
     }
 
     @Test()
     public void testFitsSaveClose() throws Exception {
         byte[] b = new byte[80];
-        Exception ex = null;
 
-        FileInputStream in = new FileInputStream(new File("src/test/resources/nom/tam/fits/test/test.fits.gz"));
+        try (FileInputStream in = new FileInputStream(new File("src/test/resources/nom/tam/fits/test/test.fits.gz"))) {
+            Assertions.assertEquals(b.length, in.read(b));
+            Fits.saveClose(in);
 
-        assertEquals(b.length, in.read(b));
+            Assertions.assertThrows(IOException.class, () -> in.read(b));
 
-        Fits.saveClose(in);
-
-        try {
-            in.read(b);
-        } catch (IOException e) {
-            ex = e;
+            Fits.saveClose(in);
+            Assertions.assertThrows(IOException.class, () -> in.read(b));
         }
-
-        Assert.assertNotNull(ex);
-
-        Fits.saveClose(in);
-
-        try {
-            in.read(b);
-        } catch (IOException e) {
-            ex = e;
-        }
-
-        Assert.assertNotNull(ex);
     }
 
     @Test
     public void testWriteToFileName() throws Exception {
-        new Fits().write(TMP_FITS_NAME);
-        assertTrue(new File(TMP_FITS_NAME).exists());
+        try (Fits f = new Fits()) {
+            f.write(TMP_FITS_NAME);
+        }
+        Assertions.assertTrue(new File(TMP_FITS_NAME).exists());
     }
 
     @Test
     public void testWriteToFitsFile() throws Exception {
-        FitsFile f = new FitsFile(TMP_FITS_NAME, "rw");
-        new Fits().write(f);
-        f.close();
-        assertTrue(new File(TMP_FITS_NAME).exists());
+        try (FitsFile f = new FitsFile(TMP_FITS_NAME, "rw"); Fits fits = new Fits()) {
+            fits.write(f);
+        }
+        Assertions.assertTrue(new File(TMP_FITS_NAME).exists());
     }
 
     @Test
     public void testWriteToFitsFileAsDataOutput() throws Exception {
-        FitsFile f = new FitsFile(TMP_FITS_NAME, "rw");
-        new Fits().write((DataOutput) f);
-        f.close();
-        assertTrue(new File(TMP_FITS_NAME).exists());
+        try (FitsFile f = new FitsFile(TMP_FITS_NAME, "rw"); Fits fits = new Fits()) {
+            fits.write((DataOutput) f);
+        }
+        Assertions.assertTrue(new File(TMP_FITS_NAME).exists());
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testWriteToFitsStreamAsDataOutputException() throws Exception {
-        FitsOutputStream o = new FitsOutputStream(new FileOutputStream(new File(TMP_FITS_NAME))) {
+        try (FitsOutputStream o = new FitsOutputStream(new FileOutputStream(new File(TMP_FITS_NAME))) {
             @Override
             public void flush() throws IOException {
                 throw new IOException("flush disabled.");
             }
-        };
-        new Fits().write((DataOutput) o);
-        o.close();
+        }; Fits f = new Fits()) {
+            Assertions.assertThrows(FitsException.class, () -> f.write((DataOutput) o));
+            Exception e = Assertions.assertThrows(IOException.class, () -> o.close());
+            Assertions.assertEquals("flush disabled.", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testWriteStreamIOException() throws Exception {
+        try (FitsOutputStream o = new FitsOutputStream(new FileOutputStream(new File(TMP_FITS_NAME))) {
+            @Override
+            public void write(byte[] b) throws IOException {
+                throw new IOException("write disabled");
+            }
+        }; Fits f = new Fits()) {
+            f.addHDU(new NullDataHDU());
+            Exception e = Assertions.assertThrows(FitsException.class, () -> f.write((DataOutput) o));
+            Assertions.assertEquals(IOException.class, e.getCause().getClass());
+            Assertions.assertEquals("write disabled", e.getCause().getMessage());
+        }
+    }
+
+    @Test
+    public void testWriteFileIOException() throws Exception {
+        try (FitsFile o = new FitsFile(TMP_FITS_NAME, "rw") {
+            @Override
+            public void setLength(long l) throws IOException {
+                throw new IOException("resize disabled");
+            }
+        }; Fits f = new Fits()) {
+            f.addHDU(new NullDataHDU());
+            Exception e = Assertions.assertThrows(Exception.class, () -> f.write((DataOutput) o));
+            Assertions.assertEquals(FitsException.class, e.getClass());
+            Assertions.assertEquals(IOException.class, e.getCause().getClass());
+            Assertions.assertEquals("resize disabled", e.getCause().getMessage());
+        }
     }
 
     @Test
@@ -1197,24 +1099,26 @@ public class BaseFitsTest {
         Header h = new Header();
         h.setNaxes(0);
         BasicHDU<?> hdu = new ImageHDU(h, null);
-        assertNull(hdu.getAxes());
+        Assertions.assertNull(hdu.getAxes());
     }
 
     @Test
     public void writeEmptyHDUTest() throws Exception {
-        byte[] preamble = new byte[100];
         File f = new File(TMP_FITS_NAME);
-        FitsOutputStream o = new FitsOutputStream(new FileOutputStream(f));
-        BasicHDU<?> hdu = new ImageHDU(null, null);
-        hdu.write(o);
-        o.flush();
-        assertEquals(hdu.getHeader().getSize(), f.length());
+
+        try (FitsOutputStream o = new FitsOutputStream(new FileOutputStream(f))) {
+            BasicHDU<?> hdu = new ImageHDU(null, null);
+            hdu.write(o);
+            o.flush();
+
+            Assertions.assertEquals(hdu.getHeader().getSize(), f.length());
+        }
     }
 
     @Test
     public void emptyHDUTest() throws Exception {
         BasicHDU<?> hdu = new ImageHDU(null, null);
-        assertEquals(0, hdu.getSize());
+        Assertions.assertEquals(0, hdu.getSize());
     }
 
     @Test
@@ -1222,15 +1126,15 @@ public class BaseFitsTest {
         Header h = new Header();
         h.addValue(Standard.OBJECT, " blah ");
         BasicHDU<?> hdu = new ImageHDU(h, null);
-        assertEquals(" blah", h.getStringValue(Standard.OBJECT));
-        assertEquals("blah", hdu.getTrimmedString(Standard.OBJECT));
+        Assertions.assertEquals(" blah", h.getStringValue(Standard.OBJECT));
+        Assertions.assertEquals("blah", hdu.getTrimmedString(Standard.OBJECT));
     }
 
     @Test
     public void trimmedStringTestNull() throws Exception {
         Header h = new Header();
         BasicHDU<?> hdu = new ImageHDU(h, null);
-        assertNull(hdu.getTrimmedString(Standard.OBJECT));
+        Assertions.assertNull(hdu.getTrimmedString(Standard.OBJECT));
     }
 
     @Test
@@ -1238,14 +1142,15 @@ public class BaseFitsTest {
         Header h = new Header();
         h.insertComment("comment");
         BasicHDU<?> hdu = new ImageHDU(h, null);
-        assertNull(hdu.getTrimmedString(Standard.COMMENT));
+        Assertions.assertNull(hdu.getTrimmedString(Standard.COMMENT));
     }
 
     @Test
     public void rewriteTest() throws Exception {
-        Fits fits = new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits"));
-        fits.read();
-        fits.rewrite();
+        try (Fits fits = new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits"))) {
+            fits.read();
+            fits.rewrite();
+        }
     }
 
     @Test
@@ -1255,128 +1160,131 @@ public class BaseFitsTest {
             fits.rewrite();
         }
 
-        try {
-            new Fits(new TestRandomAccessFileIO() {
-                @Override
-                public void position(long n) throws IOException {
-                    throw new IOException("Simulated error.");
-                }
-            });
-        } catch (FitsException fitsException) {
-            // Good.
-            Assert.assertEquals("Wrong message.", "Unable to open data src/test/resources/nom/tam/fits/test/test.fits",
-                    fitsException.getMessage());
-        }
+        Assertions.assertThrows(FitsException.class, () -> new Fits(new TestRandomAccessFileIO() {
+            @Override
+            public void position(long n) throws IOException {
+                throw new IOException("Simulated error.");
+            }
+        }));
     }
 
     @Test
     public void testRandomAccessSkipHDU() throws Exception {
-        makeAsciiTable();
-        try (final Fits fits = new Fits(new TestRandomAccessFileIO(TARGET_BASIC_FITS_TEST_FITS, "rw"))) {
+
+        try (Fits ft = makeAsciiTable();
+                final Fits fits = new Fits(new TestRandomAccessFileIO(TARGET_BASIC_FITS_TEST_FITS, "rw"))) {
             BasicHDU<?> image = fits.readHDU();
-            Assert.assertEquals(0L, image.getHeader().getFileOffset());
+            Assertions.assertEquals(0L, image.getHeader().getFileOffset());
 
             fits.readHDU();
             fits.skipHDU(2);
             AsciiTableHDU hdu3 = (AsciiTableHDU) fits.readHDU();
-            Assert.assertEquals(28800L, hdu3.getHeader().getFileOffset());
+            Assertions.assertEquals(28800L, hdu3.getHeader().getFileOffset());
         }
     }
 
     @Test
     public void testDeprecatedCurrentSize() throws Exception {
-        final Fits fits = makeAsciiTable();
-        Assert.assertEquals("Wrong size.", fits.getNumberOfHDUs(), fits.currentSize());
+        try (final Fits fits = makeAsciiTable()) {
+            Assertions.assertEquals(fits.getNumberOfHDUs(), fits.currentSize());
+        }
     }
 
     @Test
     public void testDefaultMethods() throws Exception {
-        makeAsciiTable();
-        final byte[] buffer = new byte[24];
-        try (final RandomAccessFileIO randomAccessFileIO = new EmptyRandomAccessFileIO()) {
-            final int bytesRead = randomAccessFileIO.read(buffer);
-            Assert.assertEquals("Wrong read bytes.", bytesRead, 24);
-        }
+        try (Fits ft = makeAsciiTable()) {
+            final byte[] buffer = new byte[24];
+            try (final RandomAccessFileIO randomAccessFileIO = new EmptyRandomAccessFileIO()) {
+                final int bytesRead = randomAccessFileIO.read(buffer);
+                Assertions.assertEquals(bytesRead, 24);
+            }
 
-        try (final RandomAccessFileIO randomAccessFileIO = new EmptyRandomAccessFileIO()) {
-            randomAccessFileIO.write(buffer);
+            try (final RandomAccessFileIO randomAccessFileIO = new EmptyRandomAccessFileIO()) {
+                randomAccessFileIO.write(buffer);
+            }
         }
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void rewriteTestException() throws Exception {
-        Fits fits = new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits"));
-        Header h = fits.readHDU().getHeader();
-        for (int i = 0; i < 36; i++) {
-            h.addValue("TEST" + (i + 1), "blah", "blah");
+        try (Fits fits = new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits"))) {
+            Header h = fits.readHDU().getHeader();
+            for (int i = 0; i < 36; i++) {
+                h.addValue("TEST" + (i + 1), "blah", "blah");
+            }
+            Assertions.assertThrows(FitsException.class, () -> fits.rewrite());
         }
-        fits.rewrite();
     }
 
     @Test
     public void resetNonRandomAccess() throws Exception {
-        Fits fits = new Fits(new FitsInputStream(new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits")));
-        fits.read();
-        assertFalse(fits.getHDU(0).getData().reset());
+        try (Fits fits = new Fits(
+                new FitsInputStream(new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits")))) {
+            fits.read();
+            Assertions.assertFalse(fits.getHDU(0).getData().reset());
+        }
     }
 
     @Test
     public void autoExtensionTest() throws Exception {
-        Fits fits = new Fits();
+        try (Fits fits = new Fits()) {
 
-        fits.addHDU(BasicHDU.getDummyHDU());
-        fits.addHDU(FitsFactory.hduFactory(new int[10][10]));
-        fits.write("target/auto_ext_test.fits");
+            fits.addHDU(BasicHDU.getDummyHDU());
+            fits.addHDU(FitsFactory.hduFactory(new int[10][10]));
+            fits.write("target/auto_ext_test.fits");
+        }
 
-        fits = new Fits("target/auto_ext_test.fits");
-        BasicHDU<?>[] hdus = fits.read();
+        try (Fits fits = new Fits("target/auto_ext_test.fits")) {
+            BasicHDU<?>[] hdus = fits.read();
 
-        assertNotNull(hdus);
-        assertEquals(2, hdus.length);
+            Assertions.assertNotNull(hdus);
+            Assertions.assertEquals(2, hdus.length);
 
-        assertTrue(hdus[0].getHeader().containsKey(Standard.SIMPLE));
-        assertFalse(hdus[0].getHeader().containsKey(Standard.XTENSION));
+            Assertions.assertTrue(hdus[0].getHeader().containsKey(Standard.SIMPLE));
+            Assertions.assertFalse(hdus[0].getHeader().containsKey(Standard.XTENSION));
 
-        assertFalse(hdus[1].getHeader().containsKey(Standard.SIMPLE));
-        assertTrue(hdus[1].getHeader().containsKey(Standard.XTENSION));
+            Assertions.assertFalse(hdus[1].getHeader().containsKey(Standard.SIMPLE));
+            Assertions.assertTrue(hdus[1].getHeader().containsKey(Standard.XTENSION));
+        }
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void repositionFailTest() throws Exception {
-        FitsUtil.reposition(new FitsFile("src/test/resources/nom/tam/fits/test/test.fits", "rw"), -1);
+        Assertions.assertThrows(FitsException.class,
+                () -> FitsUtil.reposition(new FitsFile("src/test/resources/nom/tam/fits/test/test.fits", "rw"), -1));
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void createFitsFileExceptionTest() throws Exception {
-        new Fits((FitsFile) null);
+        Assertions.assertThrows(FitsException.class, () -> new Fits((FitsFile) null));
     }
 
     @Test
     public void testIsUndefinedData() throws Exception {
-        assertTrue(UndefinedHDU.isData(new byte[10]));
-        assertFalse(UndefinedHDU.isData(null));
-        assertFalse(UndefinedHDU.isData(new int[10]));
-        assertFalse(UndefinedHDU.isData(new byte[10][10]));
-        assertFalse(UndefinedHDU.isData(new File("blah")));
+        Assertions.assertTrue(UndefinedHDU.isData(new byte[10]));
+        Assertions.assertFalse(UndefinedHDU.isData(null));
+        Assertions.assertFalse(UndefinedHDU.isData(new int[10]));
+        Assertions.assertFalse(UndefinedHDU.isData(new byte[10][10]));
+        Assertions.assertFalse(UndefinedHDU.isData(new File("blah")));
     }
 
     @Test
     public void testIsUndefinedHeader() throws Exception {
         Header h = new Header();
         h.addValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
-        assertFalse(UndefinedHDU.isHeader(h));
+        Assertions.assertFalse(UndefinedHDU.isHeader(h));
         h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
-        assertFalse(UndefinedHDU.isHeader(h));
+        Assertions.assertFalse(UndefinedHDU.isHeader(h));
         h.addValue(Standard.XTENSION, Standard.XTENSION_ASCIITABLE);
-        assertFalse(UndefinedHDU.isHeader(h));
+        Assertions.assertFalse(UndefinedHDU.isHeader(h));
         h.addValue(Standard.XTENSION, "BLAH");
-        assertTrue(UndefinedHDU.isHeader(h));
+        Assertions.assertTrue(UndefinedHDU.isHeader(h));
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testImageBlankException() throws Exception {
         ImageHDU hdu = (ImageHDU) Fits.makeHDU(new float[10][10]);
-        hdu.getBlankValue(); // throws FitsException
+        Assertions.assertThrows(FitsException.class, () -> hdu.getBlankValue()); // throws FitsException
     }
 
     @Test
@@ -1389,139 +1297,146 @@ public class BaseFitsTest {
         }
 
         // Create a trivial FITS file.
-        FitsFile fitsFile = null;
-        try {
-            fitsFile = new FitsFile(fileName, "rw");
-        } finally {
-            SafeClose.close(fitsFile);
+        try (FitsFile fitsFile = new FitsFile(fileName, "rw")) {
         }
 
         // Make the test file read-only.
-        Assert.assertTrue(file.exists());
-        Assert.assertTrue(file.setReadOnly());
+        Assertions.assertTrue(file.exists());
+        Assertions.assertTrue(file.setReadOnly());
         // Create a Fits object from the read-only file.
-        Fits fits = new Fits(fileName);
+
+        try (Fits fits = new Fits(fileName)) {
+        }
     }
 
     @Test
     public void testGetPrimaryHDU() throws Exception {
-        Fits fits = new Fits();
-        BasicHDU<?> primary = new NullDataHDU();
+        try (Fits fits = new Fits()) {
+            BasicHDU<?> primary = new NullDataHDU();
 
-        fits.addHDU(primary);
-        fits.addHDU(ImageData.from(new int[10][10]).toHDU());
+            fits.addHDU(primary);
+            fits.addHDU(ImageData.from(new int[10][10]).toHDU());
 
-        Assert.assertEquals(primary.getHeader(), fits.getPrimaryHeader());
-        Assert.assertTrue(fits.getPrimaryHeader().containsKey(Standard.SIMPLE));
+            Assertions.assertEquals(primary.getHeader(), fits.getPrimaryHeader());
+            Assertions.assertTrue(fits.getPrimaryHeader().containsKey(Standard.SIMPLE));
+        }
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testGetPrimaryHeaderEmpty() throws Exception {
-        Fits fits = new Fits();
-        fits.getPrimaryHeader();
+        try (Fits fits = new Fits()) {
+            Assertions.assertThrows(FitsException.class, () -> fits.getPrimaryHeader());
+        }
     }
 
     @Test
     public void testGetCompleteHeaderInherit() throws Exception {
-        Fits fits = new Fits();
-        BasicHDU<?> primary = new NullDataHDU();
-        primary.addValue("TEST", "blah", "no comment");
+        try (Fits fits = new Fits()) {
+            BasicHDU<?> primary = new NullDataHDU();
+            primary.addValue("TEST", "blah", "no comment");
 
-        BasicHDU<?> im = ImageData.from(new int[10][10]).toHDU();
-        im.addValue(Standard.INHERIT, true);
+            BasicHDU<?> im = ImageData.from(new int[10][10]).toHDU();
+            im.addValue(Standard.INHERIT, true);
 
-        fits.addHDU(primary);
-        fits.addHDU(im);
+            fits.addHDU(primary);
+            fits.addHDU(im);
 
-        Assert.assertEquals(primary.getHeader(), fits.getCompleteHeader(0));
-        Assert.assertTrue(fits.getCompleteHeader(0).containsKey("TEST"));
+            Assertions.assertEquals(primary.getHeader(), fits.getCompleteHeader(0));
+            Assertions.assertTrue(fits.getCompleteHeader(0).containsKey("TEST"));
 
-        Assert.assertNotEquals(im.getHeader(), fits.getCompleteHeader(1));
-        Assert.assertTrue(fits.getCompleteHeader(1).containsKey("TEST"));
-        Assert.assertFalse(fits.getCompleteHeader(1).containsKey(Standard.SIMPLE));
+            Assertions.assertNotEquals(im.getHeader(), fits.getCompleteHeader(1));
+            Assertions.assertTrue(fits.getCompleteHeader(1).containsKey("TEST"));
+            Assertions.assertFalse(fits.getCompleteHeader(1).containsKey(Standard.SIMPLE));
+        }
     }
 
     @Test
     public void testGetCompleteHeaderNoInherit() throws Exception {
-        Fits fits = new Fits();
-        BasicHDU<?> primary = new NullDataHDU();
-        BasicHDU<?> im = ImageData.from(new int[10][10]).toHDU();
+        try (Fits fits = new Fits()) {
+            BasicHDU<?> primary = new NullDataHDU();
+            BasicHDU<?> im = ImageData.from(new int[10][10]).toHDU();
 
-        fits.addHDU(primary);
-        fits.addHDU(im);
+            fits.addHDU(primary);
+            fits.addHDU(im);
 
-        Assert.assertEquals(primary.getHeader(), fits.getCompleteHeader(0));
-        Assert.assertTrue(fits.getCompleteHeader(0).containsKey(Standard.SIMPLE));
+            Assertions.assertEquals(primary.getHeader(), fits.getCompleteHeader(0));
+            Assertions.assertTrue(fits.getCompleteHeader(0).containsKey(Standard.SIMPLE));
 
-        Assert.assertEquals(im.getHeader(), fits.getCompleteHeader(1));
-        Assert.assertTrue(fits.getCompleteHeader(1).containsKey(Standard.XTENSION));
+            Assertions.assertEquals(im.getHeader(), fits.getCompleteHeader(1));
+            Assertions.assertTrue(fits.getCompleteHeader(1).containsKey(Standard.XTENSION));
+        }
     }
 
     @Test
     public void testGetCompleteHeaderByName() throws Exception {
-        Fits fits = new Fits();
-        BasicHDU<?> primary = new NullDataHDU();
-        primary.addValue("TEST", "blah", "no comment");
+        try (Fits fits = new Fits()) {
+            BasicHDU<?> primary = new NullDataHDU();
+            primary.addValue("TEST", "blah", "no comment");
 
-        BasicHDU<?> im = ImageData.from(new int[10][10]).toHDU();
-        im.addValue(Standard.EXTNAME, "TEST");
+            BasicHDU<?> im = ImageData.from(new int[10][10]).toHDU();
+            im.addValue(Standard.EXTNAME, "TEST");
 
-        fits.addHDU(new NullDataHDU());
-        fits.addHDU(im);
+            fits.addHDU(new NullDataHDU());
+            fits.addHDU(im);
 
-        Assert.assertEquals(im.getHeader(), fits.getCompleteHeader("TEST"));
+            Assertions.assertEquals(im.getHeader(), fits.getCompleteHeader("TEST"));
+        }
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testGetCompleteHeaderByNameException() throws Exception {
-        Fits fits = new Fits();
-        fits.getCompleteHeader("TEST");
+        try (Fits fits = new Fits()) {
+            Assertions.assertThrows(NoSuchElementException.class, () -> fits.getCompleteHeader("TEST"));
+        }
     }
 
     @Test
     public void testGetCompleteHeaderByNameVersion() throws Exception {
-        Fits fits = new Fits();
-        BasicHDU<?> primary = new NullDataHDU();
-        primary.addValue("TEST", "blah", "no comment");
+        try (Fits fits = new Fits()) {
+            BasicHDU<?> primary = new NullDataHDU();
+            primary.addValue("TEST", "blah", "no comment");
 
-        BasicHDU<?> im1 = ImageData.from(new int[10][10]).toHDU();
-        im1.addValue(Standard.EXTNAME, "TEST");
+            BasicHDU<?> im1 = ImageData.from(new int[10][10]).toHDU();
+            im1.addValue(Standard.EXTNAME, "TEST");
 
-        BasicHDU<?> im2 = ImageData.from(new int[10][10]).toHDU();
-        im2.addValue(Standard.EXTNAME, "TEST");
-        im2.addValue(Standard.EXTVER, "2");
+            BasicHDU<?> im2 = ImageData.from(new int[10][10]).toHDU();
+            im2.addValue(Standard.EXTNAME, "TEST");
+            im2.addValue(Standard.EXTVER, "2");
 
-        fits.addHDU(new NullDataHDU());
-        fits.addHDU(im1);
-        fits.addHDU(im2);
+            fits.addHDU(new NullDataHDU());
+            fits.addHDU(im1);
+            fits.addHDU(im2);
 
-        Assert.assertEquals(im2.getHeader(), fits.getCompleteHeader("TEST", 2));
+            Assertions.assertEquals(im2.getHeader(), fits.getCompleteHeader("TEST", 2));
+        }
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testGetCompleteHeaderByNameVersionException() throws Exception {
-        Fits fits = new Fits();
-        BasicHDU<?> primary = new NullDataHDU();
-        primary.addValue("TEST", "blah", "no comment");
+        try (Fits fits = new Fits()) {
+            BasicHDU<?> primary = new NullDataHDU();
+            primary.addValue("TEST", "blah", "no comment");
 
-        BasicHDU<?> im1 = ImageData.from(new int[10][10]).toHDU();
-        im1.addValue(Standard.EXTNAME, "TEST");
+            BasicHDU<?> im1 = ImageData.from(new int[10][10]).toHDU();
+            im1.addValue(Standard.EXTNAME, "TEST");
 
-        BasicHDU<?> im2 = ImageData.from(new int[10][10]).toHDU();
-        im2.addValue(Standard.EXTNAME, "TEST");
-        im2.addValue(Standard.EXTVER, "2");
+            BasicHDU<?> im2 = ImageData.from(new int[10][10]).toHDU();
+            im2.addValue(Standard.EXTNAME, "TEST");
+            im2.addValue(Standard.EXTVER, "2");
 
-        fits.addHDU(new NullDataHDU());
-        fits.addHDU(im1);
-        fits.addHDU(im2);
+            fits.addHDU(new NullDataHDU());
+            fits.addHDU(im1);
+            fits.addHDU(im2);
 
-        fits.getCompleteHeader("TEST", 3);
+            Assertions.assertThrows(NoSuchElementException.class, () -> fits.getCompleteHeader("TEST", 3));
+        }
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void testGetCompleteHeaderIndexOutOfBounds() throws Exception {
-        Fits fits = new Fits();
-        fits.getCompleteHeader(0);
+        try (Fits fits = new Fits()) {
+            Assertions.assertThrows(IndexOutOfBoundsException.class, () -> fits.getCompleteHeader(0));
+        }
     }
 
     private static class TestRandomAccessFileIO extends java.io.RandomAccessFile implements RandomAccessFileIO {

@@ -31,10 +31,6 @@ package nom.tam.util.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -49,10 +45,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.compress.CloseIS;
@@ -74,6 +70,7 @@ import nom.tam.util.TestArrayFuncs;
  * methods, the BufferedDataXPUT classes using the methods of DataXput, the traditional I/O classes, or any combination
  * thereof.
  */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class BufferedFileTest {
 
     private static final class InputStreamControl extends ByteArrayInputStream {
@@ -125,9 +122,6 @@ public class BufferedFileTest {
     }
 
     private static final class OutputStreamControl extends ByteArrayOutputStream {
-
-        boolean started = false;
-
         boolean closed = false;
 
         boolean block = true;
@@ -152,7 +146,6 @@ public class BufferedFileTest {
         }
 
         private void waitAndThrow() {
-            started = true;
             while (block) {
                 sleep();
             }
@@ -204,7 +197,7 @@ public class BufferedFileTest {
         try {
             Thread.sleep(10L);
         } catch (InterruptedException e) {
-            Assert.fail("thread interupted");
+            Assertions.fail("thread interupted");
         }
     }
 
@@ -238,103 +231,104 @@ public class BufferedFileTest {
         System.out.println("New libraries: nom.tam.util.BufferedFile");
         System.out.println("               Using tiledImageOperation I/O methods.");
 
-        BufferedFile f = new BufferedFile(filename, "rw");
+        try (BufferedFile f = new BufferedFile(filename, "rw")) {
 
-        resetTime();
-        for (int i = 0; i < iter; i++) {
-            f.writeArray(db);
-        }
-        System.out.println("  BF  Dbl write: " + (1e-6 * Double.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i++) {
-            f.writeArray(fl);
-        }
-        System.out.println("  BF  Flt write: " + (1e-6 * Float.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i++) {
-            f.writeArray(in);
-        }
-        System.out.println("  BF  Int write: " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i++) {
-            f.writeArray(ln);
-        }
-        System.out.println("  BF  Lng write: " + (1e-6 * Long.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i++) {
-            f.writeArray(sh);
-        }
-        System.out.println("  BF  Sht write: " + (1e-6 * Short.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i++) {
-            f.writeArray(ch);
-        }
-        System.out.println("  BF  Chr write: " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i++) {
-            f.writeArray(by);
-        }
-        System.out.println("  BF  Byt write: " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i++) {
-            f.writeArray(bl);
-        }
-        System.out.println("  BF  Boo write: " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
+            resetTime();
+            for (int i = 0; i < iter; i++) {
+                f.writeArray(db);
+            }
+            System.out.println("  BF  Dbl write: " + (1e-6 * Double.BYTES * dim * iter / deltaTime()) + " MB/s");
+            for (int i = 0; i < iter; i++) {
+                f.writeArray(fl);
+            }
+            System.out.println("  BF  Flt write: " + (1e-6 * Float.BYTES * dim * iter / deltaTime()) + " MB/s");
+            for (int i = 0; i < iter; i++) {
+                f.writeArray(in);
+            }
+            System.out.println("  BF  Int write: " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
+            for (int i = 0; i < iter; i++) {
+                f.writeArray(ln);
+            }
+            System.out.println("  BF  Lng write: " + (1e-6 * Long.BYTES * dim * iter / deltaTime()) + " MB/s");
+            for (int i = 0; i < iter; i++) {
+                f.writeArray(sh);
+            }
+            System.out.println("  BF  Sht write: " + (1e-6 * Short.BYTES * dim * iter / deltaTime()) + " MB/s");
+            for (int i = 0; i < iter; i++) {
+                f.writeArray(ch);
+            }
+            System.out.println("  BF  Chr write: " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
+            for (int i = 0; i < iter; i++) {
+                f.writeArray(by);
+            }
+            System.out.println("  BF  Byt write: " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
+            for (int i = 0; i < iter; i++) {
+                f.writeArray(bl);
+            }
+            System.out.println("  BF  Boo write: " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
 
-        f.writeByte(bs);
-        f.writeChar(cs);
-        f.writeShort(ss);
-        f.writeInt(is);
-        f.writeLong(ls);
-        f.writeFloat(fs);
-        f.writeDouble(ds);
-        f.writeBoolean(bls);
+            f.writeByte(bs);
+            f.writeChar(cs);
+            f.writeShort(ss);
+            f.writeInt(is);
+            f.writeLong(ls);
+            f.writeFloat(fs);
+            f.writeDouble(ds);
+            f.writeBoolean(bls);
 
-        f.writeArray(multi);
-        f.seek(0);
+            f.writeArray(multi);
+            f.seek(0);
 
-        resetTime();
-        for (int i = 0; i < iter; i++) {
-            f.readLArray(db2);
-        }
-        System.out.println("  BF  Dbl read:  " + (1e-6 * Double.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i++) {
-            f.readLArray(fl2);
-        }
-        System.out.println("  BF  Flt read:  " + (1e-6 * Float.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i++) {
-            f.readLArray(in2);
-        }
-        System.out.println("  BF  Int read:  " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i++) {
-            f.readLArray(ln2);
-        }
-        System.out.println("  BF  Lng read:  " + (1e-6 * Long.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i++) {
-            f.readLArray(sh2);
-        }
-        System.out.println("  BF  Sht read:  " + (1e-6 * Short.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i++) {
-            f.readLArray(ch2);
-        }
-        System.out.println("  BF  Chr read:  " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i++) {
-            f.readLArray(by2);
-        }
-        System.out.println("  BF  Byt read:  " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i++) {
-            f.readLArray(bl2);
-        }
-        System.out.println("  BF  Boo read:  " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
+            resetTime();
+            for (int i = 0; i < iter; i++) {
+                f.readLArray(db2);
+            }
+            System.out.println("  BF  Dbl read:  " + (1e-6 * Double.BYTES * dim * iter / deltaTime()) + " MB/s");
+            for (int i = 0; i < iter; i++) {
+                f.readLArray(fl2);
+            }
+            System.out.println("  BF  Flt read:  " + (1e-6 * Float.BYTES * dim * iter / deltaTime()) + " MB/s");
+            for (int i = 0; i < iter; i++) {
+                f.readLArray(in2);
+            }
+            System.out.println("  BF  Int read:  " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
+            for (int i = 0; i < iter; i++) {
+                f.readLArray(ln2);
+            }
+            System.out.println("  BF  Lng read:  " + (1e-6 * Long.BYTES * dim * iter / deltaTime()) + " MB/s");
+            for (int i = 0; i < iter; i++) {
+                f.readLArray(sh2);
+            }
+            System.out.println("  BF  Sht read:  " + (1e-6 * Short.BYTES * dim * iter / deltaTime()) + " MB/s");
+            for (int i = 0; i < iter; i++) {
+                f.readLArray(ch2);
+            }
+            System.out.println("  BF  Chr read:  " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
+            for (int i = 0; i < iter; i++) {
+                f.readLArray(by2);
+            }
+            System.out.println("  BF  Byt read:  " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
+            for (int i = 0; i < iter; i++) {
+                f.readLArray(bl2);
+            }
+            System.out.println("  BF  Boo read:  " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
 
-        bs2 = f.readByte();
-        cs2 = f.readChar();
-        ss2 = f.readShort();
-        is2 = f.readInt();
-        ls2 = f.readLong();
-        fs2 = f.readFloat();
-        ds2 = f.readDouble();
-        bls2 = f.readBoolean();
+            bs2 = f.readByte();
+            cs2 = f.readChar();
+            ss2 = f.readShort();
+            is2 = f.readInt();
+            ls2 = f.readLong();
+            fs2 = f.readFloat();
+            ds2 = f.readDouble();
+            bls2 = f.readBoolean();
 
-        // Now read only pieces of the multidimensional tiledImageOperation.
-        for (int i = 0; i < 5; i++) {
-            // Skip the odd initial indices and
-            // read the evens.
-            f.skipBytes(4000);
-            f.readLArray(multi2[2 * i + 1]);
+            // Now read only pieces of the multidimensional tiledImageOperation.
+            for (int i = 0; i < 5; i++) {
+                // Skip the odd initial indices and
+                // read the evens.
+                f.skipBytes(4000);
+                f.readLArray(multi2[2 * i + 1]);
+            }
         }
 
         System.out.println("BufferedFile Verification:");
@@ -342,40 +336,39 @@ public class BufferedFileTest {
 
         for (int i = 0; i < dim; i++) {
             if (!Double.isNaN(db[i])) {
-                assertFalse("Double error at " + i, db[i] != db2[i]);
+                Assertions.assertFalse(db[i] != db2[i], "Double error at " + i);
             }
             if (!Float.isNaN(fl[i])) {
-                assertFalse("Float error at " + i, fl[i] != fl2[i]);
+                Assertions.assertFalse(fl[i] != fl2[i], "Float error at " + i);
             }
-            assertFalse("Int error at " + i, in[i] != in2[i]);
-            assertFalse("Long error at " + i, ln[i] != ln2[i]);
-            assertFalse("Short error at " + i, sh[i] != sh2[i]);
-            assertFalse("Char error at " + i + ":" + (short) ch[i] + "|" + (short) ch2[i], ch[i] != ch2[i]);
-            assertFalse("Byte error at " + i, by[i] != by2[i]);
-            assertFalse("Bool error at " + i, bl[i] != bl2[i]);
+            Assertions.assertFalse(in[i] != in2[i], "Int error at " + i);
+            Assertions.assertFalse(ln[i] != ln2[i], "Long error at " + i);
+            Assertions.assertFalse(sh[i] != sh2[i], "Short error at " + i);
+            Assertions.assertFalse(ch[i] != ch2[i], "Char error at " + i + ":" + (short) ch[i] + "|" + (short) ch2[i]);
+            Assertions.assertFalse(by[i] != by2[i], "Byte error at " + i);
+            Assertions.assertFalse(bl[i] != bl2[i], "Bool error at " + i);
         }
 
         System.out.println("  Scalars:");
         // Check the scalars.
 
-        assertTrue("mismatch", bls == bls2);
-        assertTrue("mismatch", bs == bs2);
-        assertTrue("mismatch", cs == cs2);
-        assertTrue("mismatch", ss == ss2);
-        assertTrue("mismatch", is == is2);
-        assertTrue("mismatch", ls == ls2);
-        assertTrue("mismatch", fs == fs2);
-        assertTrue("mismatch", ds == ds2);
+        Assertions.assertEquals(bls, bls2);
+        Assertions.assertEquals(bs, bs2);
+        Assertions.assertEquals(cs, cs2);
+        Assertions.assertEquals(ss, ss2);
+        Assertions.assertEquals(is, is2);
+        Assertions.assertEquals(ls, ls2);
+        Assertions.assertEquals(fs, fs2);
+        Assertions.assertEquals(ds, ds2);
 
         System.out.println("  Multi: odd rows should match");
         for (int i = 0; i < 10; i++) {
             System.out.println("      " + i + " " + multi[i][i][i][i] + " " + multi2[i][i][i][i]);
             if (i % 2 == 1) {
-                assertEquals(i, multi[i][i][i][i]);
-                assertEquals(i, multi2[i][i][i][i]);
+                Assertions.assertEquals(i, multi[i][i][i][i]);
+                Assertions.assertEquals(i, multi2[i][i][i][i]);
             }
         }
-        System.out.println("Done BufferedFile Tests");
     }
 
     public void bufferedStreamTest(String filename, int iter, double[] db, double[] db2, float[] fl, float[] fl2, long[] ln,
@@ -405,8 +398,7 @@ public class BufferedFileTest {
         System.out.println("New libraries: nom.tam.util.BufferedDataXXputStream");
         System.out.println("               Using tiledImageOperation I/O methods");
 
-        {
-            BufferedDataOutputStream f = new BufferedDataOutputStream(new FileOutputStream(filename));
+        try (BufferedDataOutputStream f = new BufferedDataOutputStream(new FileOutputStream(filename))) {
 
             resetTime();
             for (int i = 0; i < iter; i++) {
@@ -456,8 +448,7 @@ public class BufferedFileTest {
             f.close();
         }
 
-        {
-            BufferedDataInputStream f = new BufferedDataInputStream(new FileInputStream(filename));
+        try (BufferedDataInputStream f = new BufferedDataInputStream(new FileInputStream(filename))) {
 
             resetTime();
             for (int i = 0; i < iter; i++) {
@@ -467,7 +458,8 @@ public class BufferedFileTest {
             for (int i = 0; i < iter; i++) {
                 f.readLArray(fl2);
             }
-            System.out.println("  BDS Flt read:  " + (1e-6 * Float.BYTES * dim * iter / deltaTime()) + " MB/s");
+            System.out.println(
+                    "  BDS\"Bool error at \" + i Flt read:  " + (1e-6 * Float.BYTES * dim * iter / deltaTime()) + " MB/s");
             for (int i = 0; i < iter; i++) {
                 f.readLArray(in2);
             }
@@ -523,31 +515,31 @@ public class BufferedFileTest {
         for (int i = 0; i < dim; i++) {
 
             if (!Double.isNaN(db[i])) {
-                assertFalse("Double error at " + i, db[i] != db2[i]);
+                Assertions.assertFalse(db[i] != db2[i], "Double error at " + i);
             }
             if (!Float.isNaN(fl[i])) {
-                assertFalse("Float error at " + i, fl[i] != fl2[i]);
+                Assertions.assertFalse(fl[i] != fl2[i], "Float error at " + i);
             }
-            assertFalse("Int error at " + i, in[i] != in2[i]);
-            assertFalse("Long error at " + i, ln[i] != ln2[i]);
-            assertFalse("Short error at " + i, sh[i] != sh2[i]);
-            assertFalse("Char error at " + i, ch[i] != ch2[i]);
-            assertFalse("Byte error at " + i, by[i] != by2[i]);
-            assertFalse("Bool error at " + i, bl[i] != bl2[i]);
+            Assertions.assertFalse(in[i] != in2[i], "Int error at " + i);
+            Assertions.assertFalse(ln[i] != ln2[i], "Long error at " + i);
+            Assertions.assertFalse(sh[i] != sh2[i], "Short error at " + i);
+            Assertions.assertFalse(ch[i] != ch2[i], "Char error at " + i);
+            Assertions.assertFalse(by[i] != by2[i], "Byte error at " + i);
+            Assertions.assertFalse(bl[i] != bl2[i], "Bool error at " + i);
 
         }
 
         System.out.println("  Scalars:");
         // Check the scalars.
 
-        assertTrue("mismatch", bls == bls2);
-        assertTrue("mismatch", bs == bs2);
-        assertTrue("mismatch", cs == cs2);
-        assertTrue("mismatch", ss == ss2);
-        assertTrue("mismatch", is == is2);
-        assertTrue("mismatch", ls == ls2);
-        assertTrue("mismatch", fs == fs2);
-        assertTrue("mismatch", ds == ds2);
+        Assertions.assertEquals(bls, bls2);
+        Assertions.assertEquals(bs, bs2);
+        Assertions.assertEquals(cs, cs2);
+        Assertions.assertEquals(ss, ss2);
+        Assertions.assertEquals(is, is2);
+        Assertions.assertEquals(ls, ls2);
+        Assertions.assertEquals(fs, fs2);
+        Assertions.assertEquals(ds, ds2);
 
         System.out.println("  Multi: odd rows should match");
         for (int i = 0; i < 10; i++) {
@@ -560,24 +552,28 @@ public class BufferedFileTest {
 
         System.out.println("New libraries:  nom.tam.BufferedDataXXputStream");
         System.out.println("                Using non-tiledImageOperation I/O");
-        BufferedDataOutputStream f = new BufferedDataOutputStream(new FileOutputStream(filename), 32768);
-        resetTime();
+
         int dim = in.length;
-        for (int j = 0; j < iter; j++) {
-            for (int i = 0; i < dim; i++) {
-                f.writeInt(in[i]);
+
+        try (BufferedDataOutputStream f = new BufferedDataOutputStream(new FileOutputStream(filename), 32768)) {
+            resetTime();
+            for (int j = 0; j < iter; j++) {
+                for (int i = 0; i < dim; i++) {
+                    f.writeInt(in[i]);
+                }
             }
+            f.flush();
+            f.close();
         }
-        f.flush();
-        f.close();
         System.out.println("  BDS Int write: " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
 
-        BufferedDataInputStream is = new BufferedDataInputStream(
-                new BufferedInputStream(new FileInputStream(filename), 32768));
-        resetTime();
-        for (int j = 0; j < iter; j++) {
-            for (int i = 0; i < dim; i++) {
-                in2[i] = is.readInt();
+        try (BufferedDataInputStream is = new BufferedDataInputStream(
+                new BufferedInputStream(new FileInputStream(filename), 32768))) {
+            resetTime();
+            for (int j = 0; j < iter; j++) {
+                for (int i = 0; i < dim; i++) {
+                    in2[i] = is.readInt();
+                }
             }
         }
         System.out.println("  BDS Int read:  " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
@@ -589,8 +585,8 @@ public class BufferedFileTest {
         return (lastTime - time) / 1000.;
     }
 
-    @Before
-    @After
+    @BeforeEach
+    @AfterEach
     public void setDefaults() {
         FitsFactory.setDefaults();
     }
@@ -752,12 +748,12 @@ public class BufferedFileTest {
     public void standardStreamTest(String filename, int iter, int[] in, int[] in2) throws Exception {
         System.out.println("Standard I/O library: java.io.DataXXputStream");
         System.out.println("                      layered atop a BufferedXXputStream");
-        DataOutputStream f = null;
-        DataInputStream is = null;
-        try {
-            f = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename), 32768));
+
+        int dim = in.length;
+
+        try (DataOutputStream f = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename), 32768))) {
             resetTime();
-            int dim = in.length;
+
             for (int j = 0; j < iter; j++) {
                 for (int i = 0; i < dim; i++) {
                     f.writeInt(in[i]);
@@ -765,9 +761,10 @@ public class BufferedFileTest {
             }
             f.flush();
             f.close();
-            System.out.println("  DIS Int write: " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
+        }
+        System.out.println("  DIS Int write: " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
 
-            is = new DataInputStream(new BufferedInputStream(new FileInputStream(filename), 32768));
+        try (DataInputStream is = new DataInputStream(new BufferedInputStream(new FileInputStream(filename), 32768))) {
             resetTime();
             for (int j = 0; j < iter; j++) {
                 for (int i = 0; i < dim; i++) {
@@ -775,9 +772,10 @@ public class BufferedFileTest {
                 }
             }
             is.close();
-            System.out.println("  DIS Int read:  " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
+        }
+        System.out.println("  DIS Int read:  " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
 
-            f = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename), 32768));
+        try (DataOutputStream f = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename), 32768))) {
             resetTime();
             dim = in.length;
             synchronized (f) {
@@ -788,29 +786,27 @@ public class BufferedFileTest {
                 }
                 f.flush();
                 f.close();
-                System.out.println("  DIS Int write: " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
-
-                is = new DataInputStream(new BufferedInputStream(new FileInputStream(filename), 32768));
-                resetTime();
-                for (int j = 0; j < iter; j++) {
-                    for (int i = 0; i < dim; i++) {
-                        in2[i] = is.readInt();
-                    }
-                }
-                is.close();
             }
-            System.out.println("  DIS Int read:  " + (1e-6 * Integer.BYTES * dim * iter / deltaTime() + " MB/s"));
-        } finally {
-            SafeClose.close(f);
-            SafeClose.close(is);
         }
+        System.out.println("  DIS Int write: " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
+
+        try (DataInputStream is = new DataInputStream(new BufferedInputStream(new FileInputStream(filename), 32768))) {
+            resetTime();
+            for (int j = 0; j < iter; j++) {
+                for (int i = 0; i < dim; i++) {
+                    in2[i] = is.readInt();
+                }
+            }
+            is.close();
+        }
+        System.out.println("  DIS Int read:  " + (1e-6 * Integer.BYTES * dim * iter / deltaTime() + " MB/s"));
     }
 
     void testArray(ArrayDataInput bf, String label, Object array) throws Exception {
         Object newArray = ArrayFuncs.mimicArray(array, ArrayFuncs.getBaseClass(array));
         bf.readLArray(newArray);
         boolean state = TestArrayFuncs.arrayEquals(array, newArray);
-        assertEquals(label, true, state);
+        Assertions.assertTrue(state, label);
     }
 
     @Test
@@ -858,50 +854,40 @@ public class BufferedFileTest {
         long[][][] tl0 = new long[1][1][1];
         long[][][] tl1 = new long[1][1][0];
 
-        BufferedFile bf = new BufferedFile("jtest.fil", "rw", 64);
+        try (BufferedFile bf = new BufferedFile("jtest.fil", "rw", 64)) {
 
-        bf.writeArray(td);
-        bf.writeArray(tf);
-        bf.writeArray(ti);
-        bf.writeArray(ts);
-        bf.writeArray(tb);
-        bf.writeArray(tbyte);
-        bf.writeArray(tc);
-        bf.writeArray(tl0);
-        bf.writeArray(tl1);
-        bf.writeArray(ts);
-
-        bf.close();
-        // extra small buffer to get into special cases
-        bf = new BufferedFile("jtest.fil", "r", 64);
-
-        boolean thrown = false;
-
-        try {
             bf.writeArray(td);
-        } catch (Exception e) {
-            thrown = true;
-        }
+            bf.writeArray(tf);
+            bf.writeArray(ti);
+            bf.writeArray(ts);
+            bf.writeArray(tb);
+            bf.writeArray(tbyte);
+            bf.writeArray(tc);
+            bf.writeArray(tl0);
+            bf.writeArray(tl1);
+            bf.writeArray(ts);
 
-        assertEquals("BufferedFile protections", true, thrown);
-        try {
             bf.close();
-        } catch (Exception e) {
         }
 
         // extra small buffer to get into special cases
-        bf = new BufferedFile("jtest.fil", "r", 64);
+        try (BufferedFile bf = new BufferedFile("jtest.fil", "r", 64)) {
+            Assertions.assertThrows(IOException.class, () -> bf.writeArray(td));
+        }
 
-        testArray(bf, "double", td);
-        testArray(bf, "float", tf);
-        testArray(bf, "int", ti);
-        testArray(bf, "short", ts);
-        testArray(bf, "bool", tb);
-        testArray(bf, "byte", tbyte);
-        testArray(bf, "char", tc);
-        testArray(bf, "long1", tl0);
-        testArray(bf, "longnull", tl1);
-        testArray(bf, "short2", ts);
+        // extra small buffer to get into special cases
+        try (BufferedFile bf = new BufferedFile("jtest.fil", "r", 64)) {
+            testArray(bf, "double", td);
+            testArray(bf, "float", tf);
+            testArray(bf, "int", ti);
+            testArray(bf, "short", ts);
+            testArray(bf, "bool", tb);
+            testArray(bf, "byte", tbyte);
+            testArray(bf, "char", tc);
+            testArray(bf, "long1", tl0);
+            testArray(bf, "longnull", tl1);
+            testArray(bf, "short2", ts);
+        }
     }
 
     @Test
@@ -949,134 +935,131 @@ public class BufferedFileTest {
         long[][][] tl0 = new long[1][1][1];
         long[][][] tl1 = new long[1][1][0];
 
-        BufferedDataOutputStream bf = new BufferedDataOutputStream(new FileOutputStream("jtest.fil"));
+        try (BufferedDataOutputStream bf = new BufferedDataOutputStream(new FileOutputStream("jtest.fil"))) {
 
-        bf.writeArray(td);
-        bf.writeArray(tf);
-        bf.writeArray(ti);
-        bf.writeArray(ts);
-        bf.writeArray(tb);
-        bf.writeArray(tbyte);
-        bf.writeArray(tc);
-        bf.writeArray(tl0);
-        bf.writeArray(tl1);
-        bf.writeArray(ts);
+            bf.writeArray(td);
+            bf.writeArray(tf);
+            bf.writeArray(ti);
+            bf.writeArray(ts);
+            bf.writeArray(tb);
+            bf.writeArray(tbyte);
+            bf.writeArray(tc);
+            bf.writeArray(tl0);
+            bf.writeArray(tl1);
+            bf.writeArray(ts);
 
-        for (int index = 0; index < 10000; index++) {
-            bf.write('X');
+            for (int index = 0; index < 10000; index++) {
+                bf.write('X');
+            }
+            bf.write('Y');
+
+            bf.close();
         }
-        bf.write('Y');
-
-        bf.close();
 
         // do not allow the use of the skip method to simulate streams that do
         // not support it.
-        FileInputStream fileInput = new FileInputStream("jtest.fil") {
-
+        try (FileInputStream fileInput = new FileInputStream("jtest.fil") {
             @Override
             public long skip(long n) throws IOException {
                 throw new IOException("not supported");
             }
-        };
-        BufferedDataInputStream bi = new BufferedDataInputStream(fileInput);
+        }; BufferedDataInputStream bi = new BufferedDataInputStream(fileInput);) {
 
-        testArray(bi, "sdouble", td);
-        testArray(bi, "sfloat", tf);
-        testArray(bi, "sint", ti);
-        testArray(bi, "sshort", ts);
-        testArray(bi, "sbool", tb);
-        testArray(bi, "sbyte", tbyte);
-        testArray(bi, "schar", tc);
-        testArray(bi, "slong1", tl0);
-        testArray(bi, "slongnull", tl1);
-        testArray(bi, "sshort2", ts);
-        bi.skipAllBytes(10000);
-        assertEquals('Y', bi.read());
+            testArray(bi, "sdouble", td);
+            testArray(bi, "sfloat", tf);
+            testArray(bi, "sint", ti);
+            testArray(bi, "sshort", ts);
+            testArray(bi, "sbool", tb);
+            testArray(bi, "sbyte", tbyte);
+            testArray(bi, "schar", tc);
+            testArray(bi, "slong1", tl0);
+            testArray(bi, "slongnull", tl1);
+            testArray(bi, "sshort2", ts);
+            bi.skipAllBytes(10000);
+
+            Assertions.assertEquals('Y', bi.read());
+        }
     }
 
     @Test
     public void testSomePrimitives() throws Exception {
-        BufferedFile bf = new BufferedFile("target/bufferedFilePrim.test", "rw");
-        bf.writeByte(120);
-        bf.writeByte(255);
-        String[] testStrings = {"string 1", "string 2", "string 3", "string 4", "string 5",};
-        bf.write(testStrings);
-        bf.write(testStrings, 1, 3);
-        FitsFactory.setUseUnicodeChars(true);
-        bf.writeChars("abc");
-        FitsFactory.setUseUnicodeChars(false);
-        bf.writeChars("def");
-        bf.writeBytes("test\n");
-        assertEquals(80, bf.length());
+        try (BufferedFile bf = new BufferedFile("target/bufferedFilePrim.test", "rw")) {
+            bf.writeByte(120);
+            bf.writeByte(255);
+            String[] testStrings = {"string 1", "string 2", "string 3", "string 4", "string 5",};
+            bf.write(testStrings);
+            bf.write(testStrings, 1, 3);
+            FitsFactory.setUseUnicodeChars(true);
+            bf.writeChars("abc");
+            FitsFactory.setUseUnicodeChars(false);
+            bf.writeChars("def");
+            bf.writeBytes("test\n");
+            Assertions.assertEquals(80, bf.length());
 
-        bf.close();
+            bf.close();
+        }
 
-        bf = new BufferedFile("target/bufferedFilePrim.test");
-        assertEquals(120, bf.read());
-        assertEquals(255, bf.readUnsignedByte());
+        try (BufferedFile bf = new BufferedFile("target/bufferedFilePrim.test")) {
+            Assertions.assertEquals(120, bf.read());
+            Assertions.assertEquals(255, bf.readUnsignedByte());
 
-        byte[] bytes = new byte[8 * 5];
-        bf.readFully(bytes);
-        assertEquals("string 1string 2string 3string 4string 5", AsciiFuncs.asciiString(bytes));
+            byte[] bytes = new byte[8 * 5];
+            bf.readFully(bytes);
+            Assertions.assertEquals("string 1string 2string 3string 4string 5", AsciiFuncs.asciiString(bytes));
 
-        byte[] bytes2 = new byte[8 * 3];
-        bf.read(bytes2);
-        assertEquals("string 2string 3string 4", AsciiFuncs.asciiString(bytes2));
+            byte[] bytes2 = new byte[8 * 3];
+            bf.read(bytes2);
+            Assertions.assertEquals("string 2string 3string 4", AsciiFuncs.asciiString(bytes2));
 
-        FitsFactory.setUseUnicodeChars(true);
-        assertEquals('a', bf.readChar());
-        assertEquals('b', bf.readChar());
-        assertEquals('c', bf.readChar());
+            FitsFactory.setUseUnicodeChars(true);
+            Assertions.assertEquals('a', bf.readChar());
+            Assertions.assertEquals('b', bf.readChar());
+            Assertions.assertEquals('c', bf.readChar());
 
-        FitsFactory.setUseUnicodeChars(false);
-        assertEquals('d', bf.readChar());
-        assertEquals('e', bf.readChar());
-        assertEquals('f', bf.readChar());
+            FitsFactory.setUseUnicodeChars(false);
+            Assertions.assertEquals('d', bf.readChar());
+            Assertions.assertEquals('e', bf.readChar());
+            Assertions.assertEquals('f', bf.readChar());
 
-        assertEquals("test", bf.readLine());
+            Assertions.assertEquals("test", bf.readLine());
 
-        bf.close();
-
+            bf.close();
+        }
     }
 
     @Test
     public void testCloseIS() throws Exception {
         final ProcessSimulator proc = new ProcessSimulator();
 
-        InputStreamControl compressed = new InputStreamControl();
-        CloseIS closeIs = new CloseIS(proc, compressed);
-        long start = System.currentTimeMillis();
-        while (!proc.err.started || !compressed.started) {
-            Thread.sleep(10L);
-            if (System.currentTimeMillis() - start > 2000) {
-                Assert.fail("not all streams started");
+        try (InputStreamControl compressed = new InputStreamControl(); CloseIS closeIs = new CloseIS(proc, compressed)) {
+            long start = System.currentTimeMillis();
+            while (!proc.err.started || !compressed.started) {
+                Thread.sleep(10L);
+                if (System.currentTimeMillis() - start > 2000) {
+                    Assertions.fail("not all streams started");
+                }
             }
-        }
-        compressed.exception = true;
-        proc.in.exception = true;
-        compressed.block = proc.err.block = proc.in.block = proc.out.block = false;
-        start = System.currentTimeMillis();
-        while (!compressed.closed) {
-            Thread.sleep(10L);
-            if (System.currentTimeMillis() - start > 2000) {
-                Assert.fail("not all streams closed");
+            compressed.exception = true;
+            proc.in.exception = true;
+            compressed.block = proc.err.block = proc.in.block = proc.out.block = false;
+            start = System.currentTimeMillis();
+            while (!compressed.closed) {
+                Thread.sleep(10L);
+                if (System.currentTimeMillis() - start > 2000) {
+                    Assertions.fail("not all streams closed");
+                }
             }
-        }
-        IOException expected = null;
-        try {
-            closeIs.read();
-        } catch (IOException e) {
-            expected = e;
-        }
-        Assert.assertNotNull(expected);
-        // check if this was the original exception of the compressed stream.
-        Assert.assertEquals("" + compressed.hashCode(), expected.getMessage());
-        closeIs.close();
-        start = System.currentTimeMillis();
-        while (!proc.in.closed || !proc.err.closed || !proc.out.closed || !compressed.closed) {
-            Thread.sleep(10L);
-            if (System.currentTimeMillis() - start > 2000) {
-                Assert.fail("not all streams closed");
+
+            Assertions.assertThrows(IOException.class, () -> closeIs.read());
+
+            closeIs.close();
+
+            start = System.currentTimeMillis();
+            while (!proc.in.closed || !proc.err.closed || !proc.out.closed || !compressed.closed) {
+                Thread.sleep(10L);
+                if (System.currentTimeMillis() - start > 2000) {
+                    Assertions.fail("not all streams closed");
+                }
             }
         }
     }
@@ -1084,33 +1067,33 @@ public class BufferedFileTest {
     @Test
     public void testNullArray() throws IOException {
         BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        assertEquals(bf.readLArray(null), 0L);
+        Assertions.assertEquals(bf.readLArray(null), 0L);
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testNoArray() throws IOException {
         BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        assertEquals(bf.readLArray(Integer.valueOf(0)), 0L);
+        Assertions.assertThrows(IOException.class, () -> Assertions.assertEquals(bf.readLArray(Integer.valueOf(0)), 0L));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testSmallArray() throws IOException {
         BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        assertEquals(bf.readLArray(new byte[11]), 0L);
+        Assertions.assertThrows(EOFException.class, () -> Assertions.assertEquals(bf.readLArray(new byte[11]), 0L));
     }
 
     // AK: Was throwing IOException, but there is no IO involved at all. It's a classic case
     // for IndexOutOfBoundsException, which is exavctly what the underlying read throws
     // in such a case.
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void testFullyOutside() throws IOException {
         BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        bf.readFully(new byte[5], 10, 5);
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> bf.readFully(new byte[5], 10, 5));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testFullyEOF() throws IOException {
         BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        bf.readFully(new byte[12], 0, 12);
+        Assertions.assertThrows(EOFException.class, () -> bf.readFully(new byte[12], 0, 12));
     }
 }

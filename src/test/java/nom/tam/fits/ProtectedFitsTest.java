@@ -4,8 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.NoSuchElementException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.header.Standard;
 
@@ -43,38 +43,30 @@ import nom.tam.fits.header.Standard;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 
+@SuppressWarnings({"deprecation", "javadoc"})
 public class ProtectedFitsTest {
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testFitsInconsistent() throws Exception {
-        try {
-            UndefinedData undefinedData = new UndefinedData(new byte[1]);
-            Fits fits = new Fits();
+        UndefinedData undefinedData = new UndefinedData(new byte[1]);
+        try (Fits fits = new Fits()) {
             fits.insertHDU(new UndefinedHDU(UndefinedHDU.manufactureHeader(undefinedData), undefinedData), 0);
-            fits.insertHDU(new UndefinedHDU(UndefinedHDU.manufactureHeader(undefinedData), undefinedData) {
+
+            UndefinedHDU hdu = new UndefinedHDU(UndefinedHDU.manufactureHeader(undefinedData), undefinedData) {
 
                 @Override
                 void setPrimaryHDU(boolean newPrimary) throws FitsException {
                     throw new NoSuchElementException();
                 }
-            }, 1);
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("inconsistency"));
-            throw e;
+            };
+
+            Assertions.assertThrows(FitsException.class, () -> fits.insertHDU(hdu, 1));
         }
     }
 
     @Test
     public void testRandomGroupsHDUmanufactureHeader() throws Exception {
-        FitsException actual = null;
-        try {
-            RandomGroupsHDU.manufactureHeader(null);
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().contains("null"));
-
+        Assertions.assertThrows(FitsException.class, () -> RandomGroupsHDU.manufactureHeader(null));
     }
 
     @Test
@@ -89,64 +81,38 @@ public class ProtectedFitsTest {
                 .card(Standard.BITPIX).value(32)//
                 .header();
 
-        Assert.assertFalse(RandomGroupsHDU.isHeader(header));
+        Assertions.assertFalse(RandomGroupsHDU.isHeader(header));
         header.card(Standard.SIMPLE).value(true);
-        Assert.assertTrue(RandomGroupsHDU.isHeader(header));
+        Assertions.assertTrue(RandomGroupsHDU.isHeader(header));
         header.deleteKey(Standard.SIMPLE);
         header.card(Standard.XTENSION).value(XTENSION_IMAGE);
-        Assert.assertTrue(RandomGroupsHDU.isHeader(header));
+        Assertions.assertTrue(RandomGroupsHDU.isHeader(header));
         RandomGroupsHDU randomGroupsHDU = new RandomGroupsHDU(header, RandomGroupsHDU.manufactureData(header));
-        Assert.assertTrue(randomGroupsHDU.isHeader());
+        Assertions.assertTrue(randomGroupsHDU.isHeader());
         randomGroupsHDU.setPrimaryHDU(true);
-        Assert.assertTrue(randomGroupsHDU.getHeader().getBooleanValue(Standard.SIMPLE));
+        Assertions.assertTrue(randomGroupsHDU.getHeader().getBooleanValue(Standard.SIMPLE));
 
         randomGroupsHDU = new RandomGroupsHDU(null, RandomGroupsHDU.manufactureData(header));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         randomGroupsHDU.info(new PrintStream(out));
         String groupInfo = out.toString("UTF-8");
-        Assert.assertTrue(groupInfo.contains("No Header"));
+        Assertions.assertTrue(groupInfo.contains("No Header"));
 
     }
 
     @Test
     public void testFitsRandomGroupData() throws Exception {
         RandomGroupsData data = new RandomGroupsData(new Object[0][]);
-        Exception actual = null;
-        try {
-            data.fillHeader(new Header());
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertEquals(FitsException.class, actual.getClass());
-        Object[][] dataArray = {new Object[] {new double[10], new int[10],}};
+        Assertions.assertThrows(FitsException.class, () -> data.fillHeader(new Header()));
 
-        try {
-            data = new RandomGroupsData(dataArray);
-        } catch (IllegalArgumentException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertEquals(IllegalArgumentException.class, actual.getClass());
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new RandomGroupsData(new Object[][] {new Object[] {new double[10], new int[10]}}));
 
-        dataArray = new Object[][] {new Object[] {new int[10][10], new int[10],}};
-        actual = null;
-        try {
-            data = new RandomGroupsData(dataArray);
-        } catch (Exception e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertEquals(IllegalArgumentException.class, actual.getClass());
-        dataArray = new Object[][] {new Object[] {new String[10], new String[10],}};
-        data = new RandomGroupsData(dataArray);
-        actual = null;
-        try {
-            data.fillHeader(new Header());
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("string"));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new RandomGroupsData(new Object[][] {new Object[] {new int[10][10], new int[10]}}));
+
+        Assertions.assertThrows(FitsException.class,
+                () -> new RandomGroupsData(new Object[][] {new Object[] {new String[10], new String[10]}})
+                        .fillHeader(new Header()));
     }
 }

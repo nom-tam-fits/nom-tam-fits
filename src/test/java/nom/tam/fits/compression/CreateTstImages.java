@@ -50,6 +50,7 @@ import nom.tam.util.FitsFile;
  * #L%
  */
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class CreateTstImages {
 
     private static final String FPACK = "/home/nir/ws/cfitsio/fpack";
@@ -100,52 +101,57 @@ public class CreateTstImages {
                 System.out.println("ignoring " + fitsFile.getName());
                 continue;
             }
-            Fits fits = new Fits(fitsFile);
-            fits.readHDU();
 
-            BinaryTableHDU hdu2 = (BinaryTableHDU) fits.readHDU();
-            Object element = hdu2.getData().getElement(0, 0);
+            try (Fits fits = new Fits(fitsFile)) {
+                fits.readHDU();
 
-            byte[] data;
-            if (element instanceof byte[]) {
-                data = (byte[]) element;
-            } else {
-                short[] shorts = (short[]) element;
-                data = new byte[shorts.length * 2];
-                ByteBuffer.wrap(data).asShortBuffer().put(shorts);
+                BinaryTableHDU hdu2 = (BinaryTableHDU) fits.readHDU();
+                Object element = hdu2.getData().getElement(0, 0);
+
+                byte[] data;
+                if (element instanceof byte[]) {
+                    data = (byte[]) element;
+                } else {
+                    short[] shorts = (short[]) element;
+                    data = new byte[shorts.length * 2];
+                    ByteBuffer.wrap(data).asShortBuffer().put(shorts);
+                }
+                File compressedDataFile = new File("target/compress/test" + edge + "Data" + nr + "." + type);
+                compressedDataFile.delete();
+
+                try (RandomAccessFile file = new RandomAccessFile(compressedDataFile, "rw")) {
+                    file.write(data, 0, data.length);
+                }
             }
-            File compressedDataFile = new File("target/compress/test" + edge + "Data" + nr + "." + type);
-            compressedDataFile.delete();
-            RandomAccessFile file = new RandomAccessFile(compressedDataFile, "rw");
-            file.write(data, 0, data.length);
-            file.close();
 
-            fits = new Fits(new File("target/compress/test" + edge + "Data" + nr + ".fits"));
-            ImageHDU hdu = (ImageHDU) fits.readHDU();
-            Object dataOrg = hdu.getData().getData();
+            try (Fits fits = new Fits(new File("target/compress/test" + edge + "Data" + nr + ".fits"))) {
+                ImageHDU hdu = (ImageHDU) fits.readHDU();
+                Object dataOrg = hdu.getData().getData();
 
-            ByteBuffer dataBuffer = getByteData(dataOrg);
-            writeBinData(edge, nr, dataBuffer);
-            {// check uncompressed differes
+                ByteBuffer dataBuffer = getByteData(dataOrg);
+                writeBinData(edge, nr, dataBuffer);
+
+                // check uncompressed differes
                 BasicHDU<?> hdu1;
                 File uncompressed = new File("target/compress/test" + edge + "Data" + type + nr + ".fits.uncompressed");
                 if (uncompressed.exists()) {
-                    fits = new Fits(uncompressed);
-                    hdu1 = fits.readHDU();
-                    Object data2Org = hdu1.getData().getData();
-                    ByteBuffer data2Buffer = getByteData(data2Org);
-                    if (notEqual(dataBuffer.array(), data2Buffer.array())) {
-                        file = new RandomAccessFile("target/compress/test" + edge + "Data" + type + nr + ".uncompressed",
-                                "rw");
-                        file.write(data2Buffer.array(), 0, dataBuffer.position());
-                        file.close();
+                    try (Fits fits2 = new Fits(uncompressed)) {
+                        hdu1 = fits2.readHDU();
+                        Object data2Org = hdu1.getData().getData();
+                        ByteBuffer data2Buffer = getByteData(data2Org);
+                        if (notEqual(dataBuffer.array(), data2Buffer.array())) {
+                            try (RandomAccessFile file = new RandomAccessFile(
+                                    "target/compress/test" + edge + "Data" + type + nr + ".uncompressed", "rw")) {
+                                file.write(data2Buffer.array(), 0, dataBuffer.position());
+                            }
+                        }
                     }
-                    fits.close();
                     uncompressed.deleteOnExit();
                 } else {
                     System.out.println("****************missing uncompress " + uncompressed);
                 }
             }
+
             fitsFile.deleteOnExit();
         }
     }
@@ -257,12 +263,11 @@ public class CreateTstImages {
             }
         }
         BasicHDU<?> hdu = FitsFactory.hduFactory(image);
-        Fits fits = new Fits();
-        fits.addHDU(hdu);
-        FitsFile bf = new FitsFile("target/compress/test" + edge + "Data8.fits", "rw");
-        fits.write(bf);
-        bf.flush();
-        bf.close();
+
+        try (Fits fits = new Fits(); FitsFile bf = new FitsFile("target/compress/test" + edge + "Data8.fits", "rw")) {
+            fits.addHDU(hdu);
+            fits.write(bf);
+        }
     }
 
     private static void testDataDouble(int edge, double offset) throws FitsException, IOException {
@@ -278,12 +283,11 @@ public class CreateTstImages {
             }
         }
         BasicHDU<?> hdu = FitsFactory.hduFactory(image);
-        Fits fits = new Fits();
-        fits.addHDU(hdu);
-        FitsFile bf = new FitsFile("target/compress/test" + edge + "Data-64.fits", "rw");
-        fits.write(bf);
-        bf.flush();
-        bf.close();
+
+        try (Fits fits = new Fits(); FitsFile bf = new FitsFile("target/compress/test" + edge + "Data-64.fits", "rw")) {
+            fits.addHDU(hdu);
+            fits.write(bf);
+        }
     }
 
     private static void testDataFloat(int edge, float offset) throws FitsException, IOException {
@@ -299,12 +303,11 @@ public class CreateTstImages {
             }
         }
         BasicHDU<?> hdu = FitsFactory.hduFactory(image);
-        Fits fits = new Fits();
-        fits.addHDU(hdu);
-        FitsFile bf = new FitsFile("target/compress/test" + edge + "Data-32.fits", "rw");
-        fits.write(bf);
-        bf.flush();
-        bf.close();
+
+        try (Fits fits = new Fits(); FitsFile bf = new FitsFile("target/compress/test" + edge + "Data-32.fits", "rw")) {
+            fits.addHDU(hdu);
+            fits.write(bf);
+        }
     }
 
     private static void testDataInt(int edge, int offset) throws FitsException, IOException {
@@ -320,12 +323,11 @@ public class CreateTstImages {
             }
         }
         BasicHDU<?> hdu = FitsFactory.hduFactory(image);
-        Fits fits = new Fits();
-        fits.addHDU(hdu);
-        FitsFile bf = new FitsFile("target/compress/test" + edge + "Data32.fits", "rw");
-        fits.write(bf);
-        bf.flush();
-        bf.close();
+
+        try (Fits fits = new Fits(); FitsFile bf = new FitsFile("target/compress/test" + edge + "Data32.fits", "rw")) {
+            fits.addHDU(hdu);
+            fits.write(bf);
+        }
     }
 
     private static void testDataLong(int edge, long offset) throws FitsException, IOException {
@@ -341,12 +343,11 @@ public class CreateTstImages {
             }
         }
         BasicHDU<?> hdu = FitsFactory.hduFactory(image);
-        Fits fits = new Fits();
-        fits.addHDU(hdu);
-        FitsFile bf = new FitsFile("target/compress/test" + edge + "Data64.fits", "rw");
-        fits.write(bf);
-        bf.flush();
-        bf.close();
+
+        try (Fits fits = new Fits(); FitsFile bf = new FitsFile("target/compress/test" + edge + "Data64.fits", "rw")) {
+            fits.addHDU(hdu);
+            fits.write(bf);
+        }
     }
 
     private static void testDataShort(int edge, short offset) throws FitsException, IOException {
@@ -362,25 +363,29 @@ public class CreateTstImages {
             }
         }
         BasicHDU<?> hdu = FitsFactory.hduFactory(image);
-        Fits fits = new Fits();
-        fits.addHDU(hdu);
-        FitsFile bf = new FitsFile("target/compress/test" + edge + "Data16.fits", "rw");
-        fits.write(bf);
-        bf.flush();
-        bf.close();
+
+        try (Fits fits = new Fits(); FitsFile bf = new FitsFile("target/compress/test" + edge + "Data16.fits", "rw")) {
+            fits.addHDU(hdu);
+            fits.write(bf);
+        }
     }
 
     private static void wait(Process exec) throws Exception {
         InputStream in = exec.getErrorStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            System.out.println("ERR:" + line);
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println("ERR:" + line);
+            }
         }
         in = exec.getInputStream();
-        reader = new BufferedReader(new InputStreamReader(in));
-        while ((line = reader.readLine()) != null) {
-            System.out.println("OUT:" + line);
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println("OUT:" + line);
+            }
         }
         exec.waitFor();
     }
@@ -388,9 +393,9 @@ public class CreateTstImages {
     private static void writeBinData(int edge, String nr, ByteBuffer dataBuffer) throws FileNotFoundException, IOException {
         File binFileName = new File("target/compress/test" + edge + "Data" + nr + ".bin");
         if (!binFileName.exists()) {
-            RandomAccessFile binfile = new RandomAccessFile(binFileName, "rw");
-            binfile.write(dataBuffer.array(), 0, dataBuffer.position());
-            binfile.close();
+            try (RandomAccessFile binfile = new RandomAccessFile(binFileName, "rw")) {
+                binfile.write(dataBuffer.array(), 0, dataBuffer.position());
+            }
         }
     }
 }

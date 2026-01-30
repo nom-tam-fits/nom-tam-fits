@@ -31,60 +31,60 @@ package nom.tam.util;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.Header;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"javadoc", "deprecation"})
 public class DeprecatedTest {
 
     @Test
     public void testBufferedFileConstructors() throws Exception {
         File f = new File("bftest.bin");
 
-        BufferedFile bf = new BufferedFile(f, "rw", 1024);
-        bf.close();
+        try (BufferedFile bf = new BufferedFile(f, "rw", 1024)) {
+        }
 
-        bf = new BufferedFile(f, "rw");
-        bf.write(new byte[100]);
-        bf.close();
-        assertEquals("size", 100, f.length());
+        try (BufferedFile bf = new BufferedFile(f, "rw")) {
+            bf.write(new byte[100]);
+        }
+        Assertions.assertEquals(100, f.length());
 
-        bf = new BufferedFile(f);
-        assertEquals("size2", 100, bf.length());
-        bf.close();
+        try (BufferedFile bf = new BufferedFile(f)) {
+            Assertions.assertEquals(100, bf.length());
+        }
 
         f.delete();
     }
 
     @Test
     public void testBufferedDataInputStreamConstructors() throws Exception {
-        ByteArrayInputStream bi = new ByteArrayInputStream(new byte[100]);
-        BufferedDataInputStream i = new BufferedDataInputStream(bi);
-        i = new BufferedDataInputStream(bi, 16);
+        try (ByteArrayInputStream bi = new ByteArrayInputStream(new byte[100])) {
+            try (BufferedDataInputStream i = new BufferedDataInputStream(bi)) {
+            }
+            try (BufferedDataInputStream i = new BufferedDataInputStream(bi, 16)) {
+            }
+        }
     }
 
     @Test
     public void testBufferPointer() throws Exception {
         BufferPointer p = new BufferPointer();
         p.init(100);
-        assertEquals("length", 0, p.length);
+        Assertions.assertEquals(0, p.length);
 
         p.length = 10;
         p.pos = 3;
         p.invalidate();
-        assertEquals("invalidpos", 0, p.pos);
-        assertEquals("invalidlen", 0, p.length);
+        Assertions.assertEquals(0, p.pos);
+        Assertions.assertEquals(0, p.length);
     }
 
     @Test
@@ -119,26 +119,26 @@ public class DeprecatedTest {
 
         d.checkBuffer(bo.size()); // unused, but cover anyway
 
-        assertEquals("byte", 1, d.read());
-        assertEquals("standalone", 2, d.readInt());
+        Assertions.assertEquals(1, d.read());
+        Assertions.assertEquals(2, d.readInt());
 
         int[] in = new int[data.length];
         d.readLArray(in);
 
         for (int i = 0; i < data.length; i++) {
-            assertEquals("[" + i + "]", data[i], in[i]);
+            Assertions.assertEquals(data[i], in[i], "[" + i + "]");
         }
 
-        assertEquals(12, d.eofCheck(new EOFException(), 2, 5, 4));
+        Assertions.assertEquals(12, d.eofCheck(new EOFException(), 2, 5, 4));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testBufferDecoderEOFException() throws Exception {
         byte[] b = new byte[100];
         BufferPointer p = new BufferPointer(b);
         BufferDecoder d = new BufferDecoder(p) {
         };
-        d.eofCheck(new EOFException(), 2, 2, 4);
+        Assertions.assertThrows(EOFException.class, () -> d.eofCheck(new EOFException(), 2, 2, 4));
     }
 
     @Test
@@ -147,21 +147,21 @@ public class DeprecatedTest {
         bos.checkBuf(8);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testBENoOverride() throws Exception {
         BufferEncoder be = new BufferEncoder(new BufferPointer()) {
         };
-        be.write(1);
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> be.write(1));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testBDNoOverride() throws Exception {
         BufferDecoder bd = new BufferDecoder(new BufferPointer()) {
         };
-        bd.read();
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> bd.read());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testBEUncheckedWriteException() throws Exception {
         BufferEncoder be = new BufferEncoder(new BufferPointer()) {
             @Override
@@ -169,7 +169,7 @@ public class DeprecatedTest {
                 throw new EOFException();
             }
         };
-        be.writeUncheckedByte((byte) 1);
+        Assertions.assertThrows(IllegalStateException.class, () -> be.writeUncheckedByte((byte) 1));
     }
 
     @Test
@@ -180,7 +180,7 @@ public class DeprecatedTest {
                 return -1;
             }
         };
-        assertEquals(-1, bd.read());
+        Assertions.assertEquals(-1, bd.read());
     }
 
     @Test
@@ -194,45 +194,45 @@ public class DeprecatedTest {
             }
         };
         be.write(1);
-        assertEquals(1, B[0]);
+        Assertions.assertEquals(1, B[0]);
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testReadInvalidArray() throws Exception {
         BufferDecoder bd = new BufferDecoder(new BufferPointer()) {
         };
-        bd.readLArray(new Header());
+        Assertions.assertThrows(IOException.class, () -> bd.readLArray(new Header()));
     }
 
     @Test
     public void testWhiteSpace() throws Exception {
-        assertTrue("' '", AsciiFuncs.isWhitespace(' '));
-        assertTrue("'\\t'", AsciiFuncs.isWhitespace('\t'));
-        assertTrue("'\\n'", AsciiFuncs.isWhitespace('\n'));
-        assertFalse("'A'", AsciiFuncs.isWhitespace('A'));
-        assertFalse("'Z'", AsciiFuncs.isWhitespace('Z'));
-        assertFalse("'0'", AsciiFuncs.isWhitespace('0'));
-        assertFalse("'9'", AsciiFuncs.isWhitespace('9'));
-        assertFalse("'+'", AsciiFuncs.isWhitespace('+'));
-        assertFalse("'-'", AsciiFuncs.isWhitespace('-'));
-        assertFalse("'.'", AsciiFuncs.isWhitespace('.'));
-        assertFalse("';'", AsciiFuncs.isWhitespace(';'));
-        assertFalse("'#'", AsciiFuncs.isWhitespace('#'));
-        assertFalse("'$'", AsciiFuncs.isWhitespace('$'));
+        Assertions.assertTrue(AsciiFuncs.isWhitespace(' '));
+        Assertions.assertTrue(AsciiFuncs.isWhitespace('\t'));
+        Assertions.assertTrue(AsciiFuncs.isWhitespace('\n'));
+        Assertions.assertFalse(AsciiFuncs.isWhitespace('A'));
+        Assertions.assertFalse(AsciiFuncs.isWhitespace('Z'));
+        Assertions.assertFalse(AsciiFuncs.isWhitespace('0'));
+        Assertions.assertFalse(AsciiFuncs.isWhitespace('9'));
+        Assertions.assertFalse(AsciiFuncs.isWhitespace('+'));
+        Assertions.assertFalse(AsciiFuncs.isWhitespace('-'));
+        Assertions.assertFalse(AsciiFuncs.isWhitespace('.'));
+        Assertions.assertFalse(AsciiFuncs.isWhitespace(';'));
+        Assertions.assertFalse(AsciiFuncs.isWhitespace('#'));
+        Assertions.assertFalse(AsciiFuncs.isWhitespace('$'));
     }
 
     @Test
     public void testBPPosition() throws Exception {
         BufferPointer bp = new BufferPointer();
         bp.pos = 11;
-        assertEquals(11, bp.position());
+        Assertions.assertEquals(11, bp.position());
     }
 
     @Test
     public void testBPLimit() throws Exception {
         BufferPointer bp = new BufferPointer();
         bp.length = 11;
-        assertEquals(11, bp.limit());
+        Assertions.assertEquals(11, bp.limit());
     }
 
 }

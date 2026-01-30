@@ -33,17 +33,18 @@ package nom.tam.util;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.FitsFactory;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class ArrayDataOutputTest {
 
     @Test
     public void testHDUWriteNonFitsStream() throws Exception {
         int[][] data = new int[2][2];
 
-        ArrayDataOutput o = new ArrayDataOutput() {
+        try (ArrayDataOutput o = new ArrayDataOutput() {
 
             @Override
             public void write(int b) throws IOException {
@@ -145,10 +146,10 @@ public class ArrayDataOutputTest {
             public void writeArray(Object o) throws IOException, IllegalArgumentException {
             }
 
-        };
+        }) {
 
-        FitsFactory.hduFactory(data).write(o);
-
+            FitsFactory.hduFactory(data).write(o);
+        }
         // All is good if wse got this far without an exception.
     }
 }

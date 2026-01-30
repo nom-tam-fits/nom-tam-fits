@@ -6,9 +6,9 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
@@ -72,6 +72,7 @@ import static nom.tam.fits.header.Compression.ZNAXIS;
 import static nom.tam.fits.header.Compression.ZNAXISn;
 import static nom.tam.fits.header.Compression.ZTILEn;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class TileCompressorProviderTest {
 
     private final class TileImageCompressionOperationWithPublicMethods extends TiledImageCompressionOperation {
@@ -153,7 +154,7 @@ public class TileCompressorProviderTest {
 
     private static boolean exceptionInMethod;
 
-    @Before
+    @BeforeEach
     public void setup() {
         exceptionInConstructor = false;
         exceptionInMethod = false;
@@ -162,26 +163,26 @@ public class TileCompressorProviderTest {
     @Test
     public void testAlternativeTileProcessor() throws Exception {
         ICompressorControl compressor = CompressorProvider.findCompressorControl(null, "X", long.class);
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 compressor.getClass().getName().indexOf(TileCompressorAlternativProvider.class.getSimpleName()) > 0);
 
-        Assert.assertNotNull(CompressorProvider.findCompressorControl(null, "X", long.class));
+        Assertions.assertNotNull(CompressorProvider.findCompressorControl(null, "X", long.class));
 
-        Assert.assertNull(CompressorProvider.findCompressorControl("AA", Compression.ZCMPTYPE_RICE_1, int.class));
-        Assert.assertNull(
+        Assertions.assertNull(CompressorProvider.findCompressorControl("AA", Compression.ZCMPTYPE_RICE_1, int.class));
+        Assertions.assertNull(
                 CompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2, "BB", int.class));
-        Assert.assertNull(CompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2,
+        Assertions.assertNull(CompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2,
                 Compression.ZCMPTYPE_RICE_1, String.class));
 
-        Assert.assertNotNull(CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_GZIP_2, int.class));
+        Assertions.assertNotNull(CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_GZIP_2, int.class));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testBadProviderCasesBadCompressConstruct() {
         ICompressorControl provider = new BrokenClass(null).getProvider();
         ICompressOption options = provider.option();
         exceptionInConstructor = true;
-        provider.decompress(null, null, options);
+        Assertions.assertThrows(IllegalStateException.class, () -> provider.decompress(null, null, options));
     }
 
     @Test
@@ -189,22 +190,22 @@ public class TileCompressorProviderTest {
         ICompressorControl provider = new BrokenClass(null).getProvider();
         ICompressOption options = provider.option();
         exceptionInMethod = true;
-        Assert.assertFalse(provider.compress(null, null, options));
+        Assertions.assertFalse(provider.compress(null, null, options));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testBadProviderCasesBadDeCompressMethod() {
         ICompressorControl provider = new BrokenClass(null).getProvider();
         ICompressOption options = provider.option();
         exceptionInMethod = true;
-        provider.decompress(null, null, options);
+        Assertions.assertThrows(IllegalStateException.class, () -> provider.decompress(null, null, options));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testBadProviderCasesBadOption() {
         ICompressorControl provider = new BrokenClass(null).getProvider();
         exceptionInConstructor = true;
-        provider.option();
+        Assertions.assertThrows(IllegalStateException.class, () -> provider.option());
     }
 
     @Test
@@ -222,21 +223,22 @@ public class TileCompressorProviderTest {
         provider.compress(null, null, options);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @SuppressWarnings("resource")
+    @Test
     public void testTileCompressionError() throws Exception {
         TileCompressionOperation tileOperation = new Access2().getTile();
         tileOperation.execute(FitsFactory.threadPool());
-        Thread.sleep(20);
-        tileOperation.waitForResult();
+        // Thread.sleep(20);
+        Assertions.assertThrows(IllegalStateException.class, () -> tileOperation.waitForResult());
     }
 
     @Test
     public void testTileToString() throws Exception {
         String toString = new Access2().getTile().toString();
-        Assert.assertEquals("TileDecompressor(0,null,0)", toString);
+        Assertions.assertEquals("TileDecompressor(0,null,0)", toString);
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testTileWrongHeader1() throws Exception {
         TiledImageCompressionOperation operationsOfImage = new TiledImageCompressionOperation(null);
         Header header = new Header();
@@ -245,7 +247,8 @@ public class TileCompressorProviderTest {
         header.addValue(ZNAXISn.n(1), 100);
         header.addValue(ZTILEn.n(1), 15);
         header.addValue(ZTILEn.n(2), 15);
-        operationsOfImage.readPrimaryHeaders(header);
+
+        Assertions.assertThrows(FitsException.class, () -> operationsOfImage.readPrimaryHeaders(header));
     }
 
     @Test
@@ -278,7 +281,8 @@ public class TileCompressorProviderTest {
         }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Test
     public void testFailedDecompression() throws Exception {
         final ICompressorControl control = CompressorProvider.findCompressorControl(null, "GZIP_1", byte.class);
         TiledImageCompressionOperation image = new TiledImageCompressionOperation(null) {
@@ -288,6 +292,7 @@ public class TileCompressorProviderTest {
                 return control.option();
             }
         };
+
         final TileBuffer tileBuffer = TileBufferFactory.createTileBuffer((ElementType) PrimitiveTypes.BYTE, 0, 10, 10, 10);
         TileDecompressor tileDecompressor = new TileDecompressor(image, 1, new TileArea()) {
 
@@ -297,22 +302,23 @@ public class TileCompressorProviderTest {
             }
         };
         tileDecompressor.setCompressed(new byte[10], null);
-        tileDecompressor.run();
+
+        Assertions.assertThrows(IllegalStateException.class, () -> tileDecompressor.run());
     }
 
     @Test
     public void headerCardAccessStringTest() {
         HeaderCardAccess cardAccess = new HeaderCardAccess(ZCMPTYPE, "XXX");
         cardAccess.addValue(ZCMPTYPE, "YYY");
-        Assert.assertEquals("YYY", cardAccess.findCard(ZCMPTYPE).getValue());
+        Assertions.assertEquals("YYY", cardAccess.findCard(ZCMPTYPE).getValue());
         cardAccess = new HeaderCardAccess(ZCMPTYPE, "XXX");
         cardAccess.addValue(ZCMPTYPE, 1);
-        Assert.assertEquals("1", cardAccess.findCard(ZCMPTYPE).getValue());
+        Assertions.assertEquals("1", cardAccess.findCard(ZCMPTYPE).getValue());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void headerCardAccessStringExceptionTest() {
-        new HeaderCardAccess(new IFitsHeader() {
+        IFitsHeader key = new IFitsHeader() {
 
             @Override
             public VALUE valueType() {
@@ -349,14 +355,16 @@ public class TileCompressorProviderTest {
                 ThrowAnyException.throwHeaderCardException("");
                 return null;
             }
-        }, "XXX");
+        };
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new HeaderCardAccess(key, "XXX"));
     }
 
     @Test
     public void compressionTypeTest() {
-        Assert.assertEquals(3, TileCompressionType.values().length);
+        Assertions.assertEquals(3, TileCompressionType.values().length);
         for (TileCompressionType type : TileCompressionType.values()) {
-            Assert.assertSame(type, TileCompressionType.valueOf(type.name()));
+            Assertions.assertSame(type, TileCompressionType.valueOf(type.name()));
         }
     }
 
@@ -386,12 +394,12 @@ public class TileCompressorProviderTest {
             }
             pixels += Access.getTileBuffer(tileOperation).getHeight() * Access.getTileBuffer(tileOperation).getWidth();
         }
-        Assert.assertEquals(imageSize * imageSize, pixels);
+        Assertions.assertEquals(imageSize * imageSize, pixels);
         if (heigth != 0) {
-            Assert.assertEquals(imageSize, heigth);
+            Assertions.assertEquals(imageSize, heigth);
         }
         if (width != 0) {
-            Assert.assertEquals(imageSize, width);
+            Assertions.assertEquals(imageSize, width);
         }
     }
 

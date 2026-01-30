@@ -33,8 +33,8 @@ package nom.tam.manual.intergration;
 
 import java.util.Arrays;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
@@ -43,8 +43,8 @@ import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsFile;
-import nom.tam.util.SafeClose;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class VeryBigFileTest {
 
     /**
@@ -53,25 +53,21 @@ public class VeryBigFileTest {
      * @throws Exception
      */
     @Test
-    @Ignore
+    @Disabled
     public void testVeryBigDataFiles() throws Exception {
-        Fits f = null;
-        try {
-            f = new Fits();
+
+        try (Fits f = new Fits()) {
             ImageData data = new ImageData(new float[50000][50000]);
             Header manufactureHeader = ImageHDU.manufactureHeader(data);
             f.addHDU(FitsFactory.hduFactory(manufactureHeader, data));
-            FitsFile bf = new FitsFile("target/big.fits", "rw");
-            f.write(bf);
+            try (FitsFile bf = new FitsFile("target/big.fits", "rw")) {
+                f.write(bf);
+            }
             System.out.println(Arrays.toString(ArrayFuncs.getDimensions(f.getHDU(0).getData().getData())));
-        } finally {
-            SafeClose.close(f);
         }
-        try {
-            f = new Fits("target/big.fits");
+
+        try (Fits f = new Fits("target/big.fits")) {
             System.out.println(Arrays.toString(ArrayFuncs.getDimensions(f.getHDU(0).getData().getData())));
-        } finally {
-            SafeClose.close(f);
         }
     }
 }

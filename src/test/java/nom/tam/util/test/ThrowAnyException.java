@@ -36,11 +36,13 @@ import java.io.IOException;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.HeaderCardException;
 
+@SuppressWarnings("javadoc")
 public class ThrowAnyException {
 
     private ThrowAnyException() {
     }
 
+    @SuppressWarnings("unchecked")
     public static <E extends Throwable> void throwAny(Throwable e) throws E {
         throw (E) e;
     }

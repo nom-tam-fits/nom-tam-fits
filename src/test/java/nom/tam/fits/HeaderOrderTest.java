@@ -1,11 +1,9 @@
 package nom.tam.fits;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayOutputStream;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.FitsOutputStream;
@@ -47,25 +45,26 @@ import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.THEAP;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class HeaderOrderTest {
 
     private HeaderOrder headerOrder = new HeaderOrder();
 
     @Test
     public void compareNaxis() {
-        assertEquals(0, headerOrder.compare("NAXIS", "NAXIS"));
+        Assertions.assertEquals(0, headerOrder.compare("NAXIS", "NAXIS"));
     }
 
     @Test
     public void compareNaxisn() {
-        assertEquals(0, headerOrder.compare("NAXIS1", "NAXIS1"));
-        assertEquals(-1, headerOrder.compare("NAXIS1", "NAXIS2"));
-        assertEquals(1, headerOrder.compare("NAXIS2", "NAXIS1"));
+        Assertions.assertEquals(0, headerOrder.compare("NAXIS1", "NAXIS1"));
+        Assertions.assertEquals(-1, headerOrder.compare("NAXIS1", "NAXIS2"));
+        Assertions.assertEquals(1, headerOrder.compare("NAXIS2", "NAXIS1"));
     }
 
     @Test
     public void compareWrongNaxisn() {
-        assertEquals(-1, headerOrder.compare("NAXIS1", "NAXISn"));
+        Assertions.assertEquals(-1, headerOrder.compare("NAXIS1", "NAXISn"));
     }
 
     /**
@@ -73,65 +72,66 @@ public class HeaderOrderTest {
      */
     @Test
     public void headerOrder() throws Exception {
-        ArrayDataOutput dos = new FitsOutputStream(new ByteArrayOutputStream(), 80);
-        Header header = new Header();
+        try (ArrayDataOutput dos = new FitsOutputStream(new ByteArrayOutputStream(), 80)) {
+            Header header = new Header();
 
-        header.addValue(BLOCKED, true);
-        header.addValue(SIMPLE, true);
-        header.addValue(BITPIX, 8);
-        header.addValue(THEAP, 1);
-        header.addValue(NAXIS, 0);
-        header.insertCommentStyle(END.key(), null);
+            header.addValue(BLOCKED, true);
+            header.addValue(SIMPLE, true);
+            header.addValue(BITPIX, 8);
+            header.addValue(THEAP, 1);
+            header.addValue(NAXIS, 0);
+            header.insertCommentStyle(END.key(), null);
 
-        // Check that the order is what we expect...
-        Assert.assertEquals(SIMPLE.key(), header.iterator(1).next().getKey());
-        Assert.assertEquals(BITPIX.key(), header.iterator(2).next().getKey());
-        Assert.assertEquals(THEAP.key(), header.iterator(3).next().getKey());
-        Assert.assertEquals(NAXIS.key(), header.iterator(4).next().getKey());
-        Assert.assertEquals(END.key(), header.iterator(5).next().getKey());
+            // Check that the order is what we expect...
+            Assertions.assertEquals(SIMPLE.key(), header.iterator(1).next().getKey());
+            Assertions.assertEquals(BITPIX.key(), header.iterator(2).next().getKey());
+            Assertions.assertEquals(THEAP.key(), header.iterator(3).next().getKey());
+            Assertions.assertEquals(NAXIS.key(), header.iterator(4).next().getKey());
+            Assertions.assertEquals(END.key(), header.iterator(5).next().getKey());
 
-        header.write(dos);
-        Assert.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
-        Assert.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
-        header = new Header();
-        header.addValue(SIMPLE, true);
-        header.addValue(BITPIX, 8);
-        header.addValue(NAXIS, 0);
-        header.insertCommentStyle(END.key(), null);
-        header.addValue(THEAP, 1);
-        header.addValue(BLOCKED, true);
-        Assert.assertEquals(END.key(), header.iterator(3).next().getKey());
-        header.write(dos);
-        Assert.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
-        Assert.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
+            header.write(dos);
+            Assertions.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
+            Assertions.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
+            header = new Header();
+            header.addValue(SIMPLE, true);
+            header.addValue(BITPIX, 8);
+            header.addValue(NAXIS, 0);
+            header.insertCommentStyle(END.key(), null);
+            header.addValue(THEAP, 1);
+            header.addValue(BLOCKED, true);
+            Assertions.assertEquals(END.key(), header.iterator(3).next().getKey());
+            header.write(dos);
+            Assertions.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
+            Assertions.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
+        }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testSaveNewCard() {
-        HeaderCard.saveNewHeaderCard(
+        Assertions.assertThrows(IllegalStateException.class, () -> HeaderCard.saveNewHeaderCard(
                 "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-                "", false);
+                "", false));
     }
 
     @Test
     public void testBadNaxis1() {
-        assertEquals(1, new HeaderOrder().compare("NAXIS-1", "THEAP"));
+        Assertions.assertEquals(1, new HeaderOrder().compare("NAXIS-1", "THEAP"));
     }
 
     @Test
     public void testBadNaxis2() {
-        assertEquals(1, new HeaderOrder().compare("NAXIS1000", "THEAP"));
+        Assertions.assertEquals(1, new HeaderOrder().compare("NAXIS1000", "THEAP"));
     }
 
     @Test
     public void testBadNaxis3() {
-        assertEquals(1, new HeaderOrder().compare("NAXISA", "THEAP"));
+        Assertions.assertEquals(1, new HeaderOrder().compare("NAXISA", "THEAP"));
     }
 
     @Test
     public void testNullOrder() {
-        assertEquals(1, new HeaderOrder().compare(null, "THEAP"));
-        assertEquals(0, new HeaderOrder().compare(null, "WHATEVER"));
-        assertEquals(-1, new HeaderOrder().compare(null, "END"));
+        Assertions.assertEquals(1, new HeaderOrder().compare(null, "THEAP"));
+        Assertions.assertEquals(0, new HeaderOrder().compare(null, "WHATEVER"));
+        Assertions.assertEquals(-1, new HeaderOrder().compare(null, "END"));
     }
 }

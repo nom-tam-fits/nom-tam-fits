@@ -33,21 +33,23 @@ package nom.tam.fits;
 
 import java.io.ByteArrayOutputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.util.FitsOutputStream;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class RepositionTest {
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testFitsUtilRepositionNull() throws Exception {
-        FitsUtil.reposition(null, 1);
+        Assertions.assertThrows(FitsException.class, () -> FitsUtil.reposition(null, 1));
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testFitsUtilReposition() throws Exception {
-        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
-        FitsUtil.reposition(out, -1);
+        try (FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream())) {
+            Assertions.assertThrows(FitsException.class, () -> FitsUtil.reposition(out, -1));
+        }
     }
-
 }

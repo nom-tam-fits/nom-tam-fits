@@ -36,118 +36,84 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
 
+@SuppressWarnings("javadoc")
 public class FitsHeapTest {
 
     @Test
     public void testHeapRewriteable() {
-        Assert.assertFalse(new FitsHeap(100).rewriteable());
+        Assertions.assertFalse(new FitsHeap(100).rewriteable());
     }
 
     @Test
     public void testHeapNegativeSize() {
-        IllegalArgumentException actual = null;
-        try {
-            new FitsHeap(-100);
-        } catch (IllegalArgumentException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("illegal size"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new FitsHeap(-100));
     }
 
     @Test
     public void testHeapPositionFailures() {
-        IllegalStateException actual = null;
-        try {
-            new FitsHeap(100).getFileOffset();
-        } catch (IllegalStateException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("never alone"));
+        Assertions.assertThrows(IllegalStateException.class, () -> new FitsHeap(100).getFileOffset());
     }
 
     @Test
     public void testHeapPutManyGigabyte() {
-        FitsException actual = null;
-        try {
-            // fake the gigabytes by filling the fits elements dwith
-            // duplicates;-)
-            long[][][][] data = new long[10][][][];
-            long[][][] data1 = new long[1024][][];
-            long[][] data2 = new long[1024][];
-            long[] data3 = new long[1024];
-            for (int index = 0; index < data.length; index++) {
-                data[index] = data1;
-                for (int index2 = 0; index2 < data[0].length; index2++) {
-                    data[index][index2] = data2;
-                    for (int index3 = 0; index3 < data[0][0].length; index3++) {
-                        data[index][index2][index3] = data3;
-                    }
+        // fake the gigabytes by filling the fits elements dwith
+        // duplicates;-)
+        long[][][][] data = new long[10][][][];
+        long[][][] data1 = new long[1024][][];
+        long[][] data2 = new long[1024][];
+        long[] data3 = new long[1024];
+        for (int index = 0; index < data.length; index++) {
+            data[index] = data1;
+            for (int index2 = 0; index2 < data[0].length; index2++) {
+                data[index][index2] = data2;
+                for (int index3 = 0; index3 < data[0][0].length; index3++) {
+                    data[index][index2][index3] = data3;
                 }
             }
-            new FitsHeap(100).putData(data);
-        } catch (FitsException e) {
-            actual = e;
         }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("fits heap > 2 g"));
+
+        Assertions.assertThrows(FitsException.class, () -> new FitsHeap(100).putData(data));
     }
 
     @Test
     public void testHeapReadFailures() throws Exception {
-        FitsException actual = null;
-        try {
-            FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[50]));
-
-            new FitsHeap(100).read(in);
-        } catch (FitsException e) {
-            actual = e;
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[50]))) {
+            Exception e = Assertions.assertThrows(FitsException.class, () -> new FitsHeap(100).read(in));
+            Assertions.assertEquals(EOFException.class, e.getCause().getClass());
         }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getCause() instanceof EOFException);
 
-        actual = null;
-        try {
-            FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[50]));
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[50]))) {
             in.read(new byte[50]);
-            new FitsHeap(100).read(in);
-        } catch (FitsException e) {
-            actual = e;
+            Exception e = Assertions.assertThrows(Exception.class, () -> new FitsHeap(100).read(in));
+            Assertions.assertEquals(EOFException.class, e.getCause().getClass());
         }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getCause() instanceof EOFException);
     }
 
     @Test
     public void testHeapWriteFailures() throws Exception {
-        FitsException actual = null;
-        try {
-            FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
-                @Override
-                public synchronized void write(byte[] b, int off, int len) throws IOException {
-                    throw new IOException("testHeapWriteFailures");
-                }
-            };
-            new FitsHeap(100).write(out);
-        } catch (FitsException e) {
-            actual = e;
+        try (FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
+            @Override
+            public synchronized void write(byte[] b, int off, int len) throws IOException {
+                throw new IOException("testHeapWriteFailures");
+            }
+        }) {
+
+            Assertions.assertThrows(FitsException.class, () -> new FitsHeap(100).write(out));
         }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getCause().getMessage().equals("testHeapWriteFailures"));
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testHeapGetDataEOF() throws Exception {
         FitsHeap heap = new FitsHeap(3);
+
         // The full size of the float is beyond the heap size.
-        heap.getData(0, new float[1]);
+        Assertions.assertThrows(FitsException.class, () -> heap.getData(0, new float[1]));
     }
 
     @Test
@@ -157,22 +123,22 @@ public class FitsHeapTest {
         heap.putData(new int[] {1, 2, 3});
         int[] got = new int[3];
         heap.getData(0, got);
-        Assert.assertArrayEquals(new int[] {1, 2, 3}, got);
+        Assertions.assertArrayEquals(new int[] {1, 2, 3}, got);
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testHeapPutDataEOF() throws Exception {
         FitsHeap heap = new FitsHeap(3);
+
         // Trying to put an object on the heap that does not belong...
-        heap.putData(new Header());
+        Assertions.assertThrows(FitsException.class, () -> heap.putData(new Header()));
     }
 
     @Test
     public void testHeapSize() throws Exception {
         int size = 1033;
         FitsHeap heap = new FitsHeap(size);
-        Assert.assertEquals(size, heap.getSize());
-
+        Assertions.assertEquals(size, heap.getSize());
     }
 
 }

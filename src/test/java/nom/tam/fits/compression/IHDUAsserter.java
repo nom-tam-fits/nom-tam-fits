@@ -31,6 +31,7 @@ package nom.tam.fits.compression;
  * #L%
  */
 
+@SuppressWarnings("javadoc")
 public interface IHDUAsserter<T> {
 
     void assertData(T orgData, T compressedData);

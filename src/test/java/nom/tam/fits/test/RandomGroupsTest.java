@@ -31,14 +31,12 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -52,11 +50,11 @@ import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsFile;
-import nom.tam.util.SafeClose;
 
 /**
  * Test random groups formats in FITS data. Write and read random groups data
  */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class RandomGroupsTest {
 
     @Test
@@ -66,9 +64,8 @@ public class RandomGroupsTest {
         float[] pa = new float[3];
 
         Object[][] data = new Object[1][2];
-        FitsFile bf = null;
-        try {
-            bf = new FitsFile("target/rg1.fits", "rw");
+
+        try (FitsFile bf = new FitsFile("target/rg1.fits", "rw")) {
 
             data[0][0] = pa;
             data[0][1] = fa;
@@ -96,14 +93,11 @@ public class RandomGroupsTest {
             bf.write(padding);
 
             bf.flush();
-        } finally {
-            SafeClose.close(bf);
         }
 
         // Read back the data.
-        Fits f = null;
-        try {
-            f = new Fits("target/rg1.fits");
+
+        try (Fits f = new Fits("target/rg1.fits")) {
             BasicHDU<?>[] hdus = f.read();
 
             data = (Object[][]) hdus[0].getKernel();
@@ -113,33 +107,25 @@ public class RandomGroupsTest {
                 pa = (float[]) data[i][0];
                 fa = (float[][]) data[i][1];
                 for (int j = 0; j < pa.length; j++) {
-                    assertEquals("paramTest:" + i + " " + j, i + j, pa[j], 0);
+                    Assertions.assertEquals(i + j, pa[j], 0, "paramTest:" + i + " " + j);
                 }
                 for (int j = 0; j < fa.length; j++) {
-                    assertEquals("dataTest:" + i + " " + j, i * j, fa[j][j], 0);
+                    Assertions.assertEquals(i * j, fa[j][j], 0, "dataTest:" + i + " " + j);
                 }
             }
-        } finally {
-            SafeClose.close(f);
         }
 
         // Now do it in one fell swoop -- but we have to have
         // all the data in place first.
-        try {
-            f = new Fits();
-            bf = new FitsFile("target/rg2.fits", "rw");
+        try (Fits f = new Fits(); FitsFile bf = new FitsFile("target/rg2.fits", "rw")) {
             // Generate a FITS HDU from the kernel.
             f.addHDU(RandomGroupsHDU.createFrom(data));
             f.write(bf);
 
             bf.flush();
-        } finally {
-            SafeClose.close(bf);
-            SafeClose.close(f);
         }
 
-        try {
-            f = new Fits("target/rg2.fits");
+        try (Fits f = new Fits("target/rg2.fits")) {
             BasicHDU<?> groupHDU = f.read()[0];
             data = (Object[][]) groupHDU.getKernel();
             for (int i = 0; i < data.length; i++) {
@@ -147,23 +133,21 @@ public class RandomGroupsTest {
                 pa = (float[]) data[i][0];
                 fa = (float[][]) data[i][1];
                 for (int j = 0; j < pa.length; j++) {
-                    assertEquals("paramTest:" + i + " " + j, i + j, pa[j], 0);
+                    Assertions.assertEquals(i + j, pa[j], 0, "paramTest:" + i + " " + j);
                 }
                 for (int j = 0; j < fa.length; j++) {
-                    assertEquals("dataTest:" + i + " " + j, i * j, fa[j][j], 0);
+                    Assertions.assertEquals(i * j, fa[j][j], 0, "dataTest:" + i + " " + j);
                 }
             }
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             groupHDU.info(new PrintStream(out));
             String groupInfo = new String(out.toByteArray());
-            Assert.assertEquals(20, groupHDU.getGroupCount());
-            Assert.assertEquals(3, groupHDU.getParameterCount());
+            Assertions.assertEquals(20, groupHDU.getGroupCount());
+            Assertions.assertEquals(3, groupHDU.getParameterCount());
 
-            Assert.assertTrue(groupInfo.indexOf("Number of groups:20") >= 0);
-            Assert.assertTrue(groupInfo.indexOf("Parameters: float[3]") >= 0);
-            Assert.assertTrue(groupInfo.indexOf("Data:float[20, 20]") >= 0);
-        } finally {
-            SafeClose.close(f);
+            Assertions.assertTrue(groupInfo.indexOf("Number of groups:20") >= 0);
+            Assertions.assertTrue(groupInfo.indexOf("Parameters: float[3]") >= 0);
+            Assertions.assertTrue(groupInfo.indexOf("Data:float[20, 20]") >= 0);
         }
     }
 
@@ -177,9 +161,10 @@ public class RandomGroupsTest {
         testGroupCreationAndRecreationByType(new double[20][20], new double[3], -64, "double");
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void illegalTypedRandomGroup() throws Exception {
-        testGroupCreationAndRecreationByType(new Double[20][20], new Double[3], -64, "Double");
+        Assertions.assertThrows(FitsException.class,
+                () -> testGroupCreationAndRecreationByType(new Double[20][20], new Double[3], -64, "Double"));
     }
 
     @Test
@@ -187,32 +172,26 @@ public class RandomGroupsTest {
         float[][] fa = new float[20][20];
         float[] pa = new float[3];
         RandomGroupsData groups;
-        FitsFile bf = null;
-        try {
-            bf = new FitsFile("target/testResetData", "rw");
+
+        try (FitsFile bf = new FitsFile("target/testResetData", "rw")) {
             Object[][] data = new Object[1][2];
             data[0][0] = pa;
             data[0][1] = fa;
             groups = RandomGroupsHDU.createFrom(data).getData();
             bf.writeLong(1);
             groups.write(bf);
-        } finally {
-            SafeClose.close(bf);
         }
 
         // ok now test it
-        try {
-            bf = new FitsFile("target/testResetData", "rw");
+        try (FitsFile bf = new FitsFile("target/testResetData", "rw")) {
             bf.readLong();
             groups = new RandomGroupsData();
             groups.read(bf);
-            Assert.assertEquals(8, groups.getFileOffset());
+            Assertions.assertEquals(8, groups.getFileOffset());
             bf.reset();
-            Assert.assertEquals(0, bf.getFilePointer());
+            Assertions.assertEquals(0, bf.getFilePointer());
             groups.reset();
-            Assert.assertEquals(8, bf.getFilePointer());
-        } finally {
-            SafeClose.close(bf);
+            Assertions.assertEquals(8, bf.getFilePointer());
         }
     }
 
@@ -223,36 +202,36 @@ public class RandomGroupsTest {
 
         BasicHDU<?> hdu = RandomGroupsHDU.createFrom(data);
         Header hdr = hdu.getHeader();
-        Assert.assertEquals(0, hdr.getIntValue("NAXIS1"));
-        Assert.assertEquals(20, hdr.getIntValue("NAXIS2"));
-        Assert.assertEquals(20, hdr.getIntValue("NAXIS3"));
-        Assert.assertEquals(0, hdr.getIntValue("NAXIS4"));
-        Assert.assertEquals(true, hdr.getBooleanValue("GROUPS"));
-        Assert.assertEquals(1, hdr.getIntValue("GCOUNT"));
-        Assert.assertEquals(3, hdr.getIntValue("PCOUNT"));
-        Assert.assertEquals(true, hdr.getBooleanValue("SIMPLE"));
-        Assert.assertEquals(bipix, hdr.getIntValue("BITPIX"));
+        Assertions.assertEquals(0, hdr.getIntValue("NAXIS1"));
+        Assertions.assertEquals(20, hdr.getIntValue("NAXIS2"));
+        Assertions.assertEquals(20, hdr.getIntValue("NAXIS3"));
+        Assertions.assertEquals(0, hdr.getIntValue("NAXIS4"));
+        Assertions.assertTrue(hdr.getBooleanValue("GROUPS"));
+        Assertions.assertEquals(1, hdr.getIntValue("GCOUNT"));
+        Assertions.assertEquals(3, hdr.getIntValue("PCOUNT"));
+        Assertions.assertTrue(hdr.getBooleanValue("SIMPLE"));
+        Assertions.assertEquals(bipix, hdr.getIntValue("BITPIX"));
 
         RandomGroupsHDU newHdu = (RandomGroupsHDU) Fits.makeHDU(hdr);
         RandomGroupsData recreatedData = newHdu.getData();
-        Assert.assertEquals(Bitpix.forValue(bipix).getPrimitiveType(), recreatedData.getElementType());
-        Assert.assertEquals(3, recreatedData.getParameterCount());
-        Assert.assertArrayEquals(new int[] {20, 20}, recreatedData.getDataDims());
+        Assertions.assertEquals(Bitpix.forValue(bipix).getPrimitiveType(), recreatedData.getElementType());
+        Assertions.assertEquals(3, recreatedData.getParameterCount());
+        Assertions.assertArrayEquals(new int[] {20, 20}, recreatedData.getDataDims());
     }
 
     @Test
     public void testCreateNullData() throws Exception {
         RandomGroupsData g = new RandomGroupsData(null);
         Object[][] data = g.getData();
-        Assert.assertNotNull(data);
-        Assert.assertEquals(0, data.length);
-        Assert.assertTrue(g.isEmpty());
-        Assert.assertNull(g.getElementType());
-        Assert.assertEquals(-1, g.getParameterCount());
-        Assert.assertNull(g.getDataDims());
+        Assertions.assertNotNull(data);
+        Assertions.assertEquals(0, data.length);
+        Assertions.assertTrue(g.isEmpty());
+        Assertions.assertNull(g.getElementType());
+        Assertions.assertEquals(-1, g.getParameterCount());
+        Assertions.assertNull(g.getDataDims());
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testMismatchedDataFillHeader() throws Exception {
         class RGData extends RandomGroupsData {
             public RGData() {
@@ -265,32 +244,34 @@ public class RandomGroupsTest {
             }
         }
 
-        new RGData().fillHeader(new Header());
+        Assertions.assertThrows(FitsException.class, () -> new RGData().fillHeader(new Header()));
     }
 
     @Test
     public void testCreateParmOnly() throws Exception {
-        RandomGroupsData g = new RandomGroupsData(new Object[][] {{new int[4], null}});
+        new RandomGroupsData(new Object[][] {{new int[4], null}});
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testCreateWrongParDim() throws Exception {
-        RandomGroupsData g = new RandomGroupsData(new Object[][] {{new int[4][4], new int[10]}});
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new RandomGroupsData(new Object[][] {{new int[4][4], new int[10]}}));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testCreateWrongDim1() throws Exception {
-        RandomGroupsData g = new RandomGroupsData(new Object[5][3]);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new RandomGroupsData(new Object[5][3]));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testCreateMismatchedType() throws Exception {
-        RandomGroupsData g = new RandomGroupsData(new Object[5][1]);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new RandomGroupsData(new Object[5][1]));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testCreateWrongDim2() throws Exception {
-        RandomGroupsData g = new RandomGroupsData(new Object[][] {{new int[] {1, 2}, new double[] {3.0, 4.0, 5.0}}});
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new RandomGroupsData(new Object[][] {{new int[] {1, 2}, new double[] {3.0, 4.0, 5.0}}}));
     }
 
     @Test
@@ -305,14 +286,16 @@ public class RandomGroupsTest {
         // No exception
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testCreateWrongDataType1() throws Exception {
-        RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new float[10][10], new float[3]}});
+        Assertions.assertThrows(FitsException.class,
+                () -> RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new float[10][10], new float[3]}}));
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testCreateWrongDataType2() throws Exception {
-        RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new int[10][10]}});
+        Assertions.assertThrows(FitsException.class,
+                () -> RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new int[10][10]}}));
     }
 
     @Test
@@ -321,32 +304,32 @@ public class RandomGroupsTest {
         Header h = hdu.getHeader();
 
         h.addValue(Standard.BZERO, 1.0);
-        Assert.assertEquals(1.0, hdu.getBZero(), 1e-6);
+        Assertions.assertEquals(1.0, hdu.getBZero(), 1e-6);
 
         h.addValue(Standard.BSCALE, -10.0);
-        Assert.assertEquals(-10.0, hdu.getBScale(), 1e-6);
+        Assertions.assertEquals(-10.0, hdu.getBScale(), 1e-6);
 
         h.addValue(Standard.BLANK, -999);
-        Assert.assertEquals(-999L, hdu.getBlankValue());
+        Assertions.assertEquals(-999L, hdu.getBlankValue());
     }
 
     @Test
     public void testQuantHeaderDefault() throws Exception {
         RandomGroupsHDU hdu = RandomGroupsHDU.createFrom(new Object[][] {{new int[5], new int[10][10]}});
-        Assert.assertEquals(0.0, hdu.getBZero(), 1e-6);
-        Assert.assertEquals(1.0, hdu.getBScale(), 1e-6);
+        Assertions.assertEquals(0.0, hdu.getBZero(), 1e-6);
+        Assertions.assertEquals(1.0, hdu.getBScale(), 1e-6);
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testNoHeaderBlank() throws Exception {
         RandomGroupsHDU hdu = RandomGroupsHDU.createFrom(new Object[][] {{new int[5], new int[10][10]}});
-        hdu.getBlankValue(); // throws FitsException
+        Assertions.assertThrows(FitsException.class, () -> hdu.getBlankValue());
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testBlankException() throws Exception {
         RandomGroupsHDU hdu = RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new float[10][10]}});
-        hdu.getBlankValue(); // throws FitsException
+        Assertions.assertThrows(FitsException.class, () -> hdu.getBlankValue());
     }
 
     @Test
@@ -354,7 +337,7 @@ public class RandomGroupsTest {
         RandomGroupsHDU hdu = RandomGroupsHDU.createFrom(new Object[][] {{new int[5], new int[10][10]}});
         Header h = hdu.getHeader();
         h.addValue(Standard.BUNIT, "m/s");
-        Assert.assertEquals("m/s", hdu.getBUnit());
+        Assertions.assertEquals("m/s", hdu.getBUnit());
     }
 
     @Test
@@ -393,23 +376,23 @@ public class RandomGroupsTest {
             hdu = (RandomGroupsHDU) f.readHDU();
 
             Set<String> names = hdu.getParameterNames();
-            Assert.assertTrue("contains A", names.contains("Param A"));
-            Assert.assertTrue("contains B", names.contains("Param B"));
-            Assert.assertTrue("contains B1", names.contains("Param B1"));
-            Assert.assertEquals(3, names.size());
+            Assertions.assertTrue(names.contains("Param A"));
+            Assertions.assertTrue(names.contains("Param B"));
+            Assertions.assertTrue(names.contains("Param B1"));
+            Assertions.assertEquals(3, names.size());
 
-            Assert.assertEquals(4.0, hdu.getParameter("Param A", 0), 1e-12);
-            Assert.assertEquals(5.0, hdu.getParameter("Param B", 0), 1e-12);
-            Assert.assertEquals(6.0, hdu.getParameter("Param B1", 0), 1e-12);
-            Assert.assertTrue("no such parameter", Double.isNaN(hdu.getParameter("blah", 0)));
+            Assertions.assertEquals(4.0, hdu.getParameter("Param A", 0), 1e-12);
+            Assertions.assertEquals(5.0, hdu.getParameter("Param B", 0), 1e-12);
+            Assertions.assertEquals(6.0, hdu.getParameter("Param B1", 0), 1e-12);
+            Assertions.assertTrue(Double.isNaN(hdu.getParameter("blah", 0)));
 
             short[][] im = (short[][]) hdu.getData().getImage(0);
-            Assert.assertArrayEquals(img, im);
+            Assertions.assertArrayEquals(img, im);
             f.close();
         }
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testRandomGroupsInExtensionException() throws Exception {
         short[][] img = new short[7][11];
         short[] parms = new short[] {1, 2, 3, 4, 5, 6};
@@ -419,11 +402,11 @@ public class RandomGroupsTest {
 
         try (FitsFile out = new FitsFile("target/random-extension.fits", "rw")) {
             new NullDataHDU().write(out);
-            hdu.write(out);
+            Assertions.assertThrows(FitsException.class, () -> hdu.write(out));
         }
     }
 
-    @Test(expected = FitsException.class)
+    @Test
     public void testAddRandomGroupsAsExtensionException() throws Exception {
         short[][] img = new short[7][11];
         short[] parms = new short[] {1, 2, 3, 4, 5, 6};
@@ -431,25 +414,27 @@ public class RandomGroupsTest {
         RandomGroupsData data = new RandomGroupsData(new Object[][] {{parms, img}});
         RandomGroupsHDU hdu = data.toHDU();
 
-        Fits fits = new Fits();
-        fits.addHDU(new NullDataHDU());
-        fits.addHDU(hdu); // throws exception
+        try (Fits fits = new Fits()) {
+            fits.addHDU(new NullDataHDU());
+            Assertions.assertThrows(FitsException.class, () -> fits.addHDU(hdu));
+        }
     }
 
     @Test
     public void toHDUTest() throws Exception {
         RandomGroupsData rg = new RandomGroupsData(new Object[][] {{new int[2], new int[10][10]}});
         RandomGroupsHDU hdu = rg.toHDU();
-        Assert.assertEquals(rg, hdu.getData());
+        Assertions.assertEquals(rg, hdu.getData());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void toHDUEmptyTest() throws Exception {
         RandomGroupsData rg = new RandomGroupsData();
-        rg.toHDU(); // Throws exception because of empry group
+        // Throws exception because of empty group
+        Assertions.assertThrows(IllegalStateException.class, () -> rg.toHDU());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void toHDUExceptionTest() throws Exception {
         RandomGroupsData rg = new RandomGroupsData() {
             @Override
@@ -457,6 +442,7 @@ public class RandomGroupsTest {
                 throw new FitsException("Test exception");
             }
         };
-        rg.toHDU(); // throws exception
+
+        Assertions.assertThrows(IllegalStateException.class, () -> rg.toHDU());
     }
 }

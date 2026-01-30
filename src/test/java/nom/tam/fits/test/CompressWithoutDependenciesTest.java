@@ -31,59 +31,41 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.compress.CompressionManager;
-import nom.tam.util.SafeClose;
 
 /**
  * Test reading .Z and .gz compressed files.
  */
+@SuppressWarnings("javadoc")
 public class CompressWithoutDependenciesTest {
 
     @Test
-    public void testWthoutApacheCompression() throws Exception {
-        final List<Object> assertions = new ArrayList<>();
-        Class<?> clazz;
-        Method method;
-        FileInputStream in1 = null;
-        FileInputStream in2 = null;
-        try {
-            try {
-                clazz = Thread.currentThread().getContextClassLoader().loadClass(CompressionManager.class.getName());
-                method = clazz.getMethod("decompress", InputStream.class);
-                in1 = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits");
-                in2 = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits.bz2");
-            } catch (Exception e) {
-                assertions.add(e);
-                return;
-            }
-            try {
-                // first do a normal fits file without compression
-                method.invoke(clazz, in1);
-                assertions.add("ok");
-                // now use the not available compression lib
-                method.invoke(clazz, in2);
-            } catch (Exception e) {
-                assertions.add(e);
-            }
-        } finally {
-            SafeClose.close(in1);
-            SafeClose.close(in2);
+    public void testWithoutApacheCompression() throws Exception {
+
+        Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(CompressionManager.class.getName());
+        Method method = clazz.getMethod("decompress", InputStream.class);
+
+        try (FileInputStream in1 = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits")) {
+            // first do a normal fits file without compression
+            method.invoke(clazz, in1);
         }
-        assertEquals(assertions.get(0), "ok");
-        assertTrue(assertions.get(1) instanceof InvocationTargetException);
-        assertTrue(((InvocationTargetException) assertions.get(1)).getCause() instanceof NoClassDefFoundError);
+
+        try (FileInputStream in2 = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits.bz2")) {
+            // now use the not available compression lib
+            try {
+                method.invoke(clazz, in2);
+            } catch (InvocationTargetException e) {
+                Assertions.assertTrue(e.getCause() instanceof NoClassDefFoundError);
+            }
+        }
     }
 
 }

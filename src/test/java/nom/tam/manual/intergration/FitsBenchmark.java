@@ -40,11 +40,8 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.runner.RunnerException;
 
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
-import nom.tam.fits.util.BlackBoxImages;
-
 @State(Scope.Benchmark)
+@SuppressWarnings("javadoc")
 public class FitsBenchmark {
 
     String blankKey = "      ";
@@ -55,27 +52,6 @@ public class FitsBenchmark {
 
     public static void main(String[] args) throws RunnerException, IOException {
         Main.main(args);
-    }
-
-    private void helloWorld() {
-        try {
-            long count = 0;
-            Fits f = null;
-            try {
-                f = new Fits(BlackBoxImages.getBlackBoxImage("OEP.fits"));
-                BasicHDU<?> hdu;
-                while ((hdu = f.readHDU()) != null) {
-                    count = count + hdu.getHeader().getSize();
-                    if (count > 10) {
-                        return;
-                    }
-                }
-            } finally {
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Benchmark()

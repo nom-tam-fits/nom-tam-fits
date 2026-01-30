@@ -31,8 +31,8 @@ package nom.tam.util;
  * #L%
  */
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("javadoc")
 public class ComplexConversionTest {
@@ -42,15 +42,15 @@ public class ComplexConversionTest {
         float[] f = {1.0F, 2.0F};
 
         ComplexValue z = (ComplexValue) ArrayFuncs.decimalsToComplex(f);
-        Assert.assertEquals(f[0], z.re(), 1e-6);
-        Assert.assertEquals(f[1], z.im(), 1e-6);
+        Assertions.assertEquals(f[0], z.re(), 1e-6);
+        Assertions.assertEquals(f[1], z.im(), 1e-6);
 
         float[] f2 = (float[]) ArrayFuncs.complexToDecimals(z, float.class);
-        Assert.assertArrayEquals(f, f2, 1e-6F);
+        Assertions.assertArrayEquals(f, f2, 1e-6F);
 
         double[] d2 = (double[]) ArrayFuncs.complexToDecimals(z, double.class);
-        Assert.assertEquals(f[0], d2[0], 1e-6);
-        Assert.assertEquals(f[1], d2[1], 1e-6);
+        Assertions.assertEquals(f[0], d2[0], 1e-6);
+        Assertions.assertEquals(f[1], d2[1], 1e-6);
     }
 
     @Test
@@ -58,16 +58,16 @@ public class ComplexConversionTest {
         float[][] f = {{1.0F, 2.0F}, {3.0F, 4.0F}};
 
         ComplexValue[] z = (ComplexValue[]) ArrayFuncs.decimalsToComplex(f);
-        Assert.assertEquals(2, z.length);
+        Assertions.assertEquals(2, z.length);
 
-        Assert.assertEquals(f[0][0], z[0].re(), 1e-6);
-        Assert.assertEquals(f[0][1], z[0].im(), 1e-6);
-        Assert.assertEquals(f[1][0], z[1].re(), 1e-6);
-        Assert.assertEquals(f[1][1], z[1].im(), 1e-6);
+        Assertions.assertEquals(f[0][0], z[0].re(), 1e-6);
+        Assertions.assertEquals(f[0][1], z[0].im(), 1e-6);
+        Assertions.assertEquals(f[1][0], z[1].re(), 1e-6);
+        Assertions.assertEquals(f[1][1], z[1].im(), 1e-6);
 
         float[][] f2 = (float[][]) ArrayFuncs.complexToDecimals(z, float.class);
-        Assert.assertArrayEquals(f[0], f2[0], 1e-6F);
-        Assert.assertArrayEquals(f[1], f2[1], 1e-6F);
+        Assertions.assertArrayEquals(f[0], f2[0], 1e-6F);
+        Assertions.assertArrayEquals(f[1], f2[1], 1e-6F);
     }
 
     @Test
@@ -75,16 +75,16 @@ public class ComplexConversionTest {
         float[] f = {1.0F, 2.0F, 3.0F, 4.0F};
 
         ComplexValue z[] = (ComplexValue[]) ArrayFuncs.decimalsToComplex(f);
-        Assert.assertEquals(f[0], z[0].re(), 1e-6);
-        Assert.assertEquals(f[1], z[0].im(), 1e-6);
-        Assert.assertEquals(f[2], z[1].re(), 1e-6);
-        Assert.assertEquals(f[3], z[1].im(), 1e-6);
+        Assertions.assertEquals(f[0], z[0].re(), 1e-6);
+        Assertions.assertEquals(f[1], z[0].im(), 1e-6);
+        Assertions.assertEquals(f[2], z[1].re(), 1e-6);
+        Assertions.assertEquals(f[3], z[1].im(), 1e-6);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testFloatFlatConvertOddElements() throws Exception {
         float[] f = {1.0F, 2.0F, 3.0F};
-        ArrayFuncs.decimalsToComplex(f);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> ArrayFuncs.decimalsToComplex(f));
     }
 
     @Test
@@ -92,15 +92,15 @@ public class ComplexConversionTest {
         double[] d = {1.0, 2.0};
 
         ComplexValue z = (ComplexValue) ArrayFuncs.decimalsToComplex(d);
-        Assert.assertEquals(d[0], z.re(), 1e-12);
-        Assert.assertEquals(d[1], z.im(), 1e-12);
+        Assertions.assertEquals(d[0], z.re(), 1e-12);
+        Assertions.assertEquals(d[1], z.im(), 1e-12);
 
         double[] d2 = (double[]) ArrayFuncs.complexToDecimals(z, double.class);
-        Assert.assertArrayEquals(d, d2, 1e-12);
+        Assertions.assertArrayEquals(d, d2, 1e-12);
 
         float[] f2 = (float[]) ArrayFuncs.complexToDecimals(z, float.class);
-        Assert.assertEquals(d[0], f2[0], 1e-6);
-        Assert.assertEquals(d[1], f2[1], 1e-6);
+        Assertions.assertEquals(d[0], f2[0], 1e-6);
+        Assertions.assertEquals(d[1], f2[1], 1e-6);
     }
 
     @Test
@@ -108,16 +108,16 @@ public class ComplexConversionTest {
         double[][] d = {{1.0, 2.0}, {3.0, 4.0}};
 
         ComplexValue[] z = (ComplexValue[]) ArrayFuncs.decimalsToComplex(d);
-        Assert.assertEquals(2, z.length);
+        Assertions.assertEquals(2, z.length);
 
-        Assert.assertEquals(d[0][0], z[0].re(), 1e-12);
-        Assert.assertEquals(d[0][1], z[0].im(), 1e-12);
-        Assert.assertEquals(d[1][0], z[1].re(), 1e-12);
-        Assert.assertEquals(d[1][1], z[1].im(), 1e-12);
+        Assertions.assertEquals(d[0][0], z[0].re(), 1e-12);
+        Assertions.assertEquals(d[0][1], z[0].im(), 1e-12);
+        Assertions.assertEquals(d[1][0], z[1].re(), 1e-12);
+        Assertions.assertEquals(d[1][1], z[1].im(), 1e-12);
 
         double[][] d2 = (double[][]) ArrayFuncs.complexToDecimals(z, double.class);
-        Assert.assertArrayEquals(d[0], d2[0], 1e-12);
-        Assert.assertArrayEquals(d[1], d2[1], 1e-12);
+        Assertions.assertArrayEquals(d[0], d2[0], 1e-12);
+        Assertions.assertArrayEquals(d[1], d2[1], 1e-12);
     }
 
     @Test
@@ -125,16 +125,16 @@ public class ComplexConversionTest {
         double[] d = {1.0, 2.0, 3.0, 4.0};
 
         ComplexValue z[] = (ComplexValue[]) ArrayFuncs.decimalsToComplex(d);
-        Assert.assertEquals(d[0], z[0].re(), 1e-12);
-        Assert.assertEquals(d[1], z[0].im(), 1e-12);
-        Assert.assertEquals(d[2], z[1].re(), 1e-12);
-        Assert.assertEquals(d[3], z[1].im(), 1e-12);
+        Assertions.assertEquals(d[0], z[0].re(), 1e-12);
+        Assertions.assertEquals(d[1], z[0].im(), 1e-12);
+        Assertions.assertEquals(d[2], z[1].re(), 1e-12);
+        Assertions.assertEquals(d[3], z[1].im(), 1e-12);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testDoubleFlatConvertOddElements() throws Exception {
         double[] d = {1.0, 2.0, 3.0};
-        ArrayFuncs.decimalsToComplex(d);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> ArrayFuncs.decimalsToComplex(d));
     }
 
     @Test
@@ -142,26 +142,26 @@ public class ComplexConversionTest {
         double[][][] d = {{{1.0, 2.0}}, {{3.0, 4.0}}};
 
         ComplexValue[][] z = (ComplexValue[][]) ArrayFuncs.decimalsToComplex(d);
-        Assert.assertEquals(d[0][0][0], z[0][0].re(), 1e-12);
-        Assert.assertEquals(d[0][0][1], z[0][0].im(), 1e-12);
-        Assert.assertEquals(d[1][0][0], z[1][0].re(), 1e-12);
-        Assert.assertEquals(d[1][0][1], z[1][0].im(), 1e-12);
+        Assertions.assertEquals(d[0][0][0], z[0][0].re(), 1e-12);
+        Assertions.assertEquals(d[0][0][1], z[0][0].im(), 1e-12);
+        Assertions.assertEquals(d[1][0][0], z[1][0].re(), 1e-12);
+        Assertions.assertEquals(d[1][0][1], z[1][0].im(), 1e-12);
 
         double[][][] d2 = (double[][][]) ArrayFuncs.complexToDecimals(z, double.class);
-        Assert.assertArrayEquals(d[0][0], d2[0][0], 1e-12);
-        Assert.assertArrayEquals(d[1][0], d2[1][0], 1e-12);
+        Assertions.assertArrayEquals(d[0][0], d2[0][0], 1e-12);
+        Assertions.assertArrayEquals(d[1][0], d2[1][0], 1e-12);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testToComplexWrongType() throws Exception {
         int[] i = {1, 2};
-        ArrayFuncs.decimalsToComplex(i);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> ArrayFuncs.decimalsToComplex(i));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testFromComplexWrongType() throws Exception {
         float[] f = {1.0F, 2.0F};
-        ArrayFuncs.complexToDecimals(f, float.class);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> ArrayFuncs.complexToDecimals(f, float.class));
     }
 
 }

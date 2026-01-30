@@ -40,8 +40,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsFactory;
@@ -64,6 +64,7 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
 
+@SuppressWarnings({"javadoc", "deprecation"})
 public class QuantizeTest {
 
     static class QuantizeTestParameters extends QuantizeParameters {
@@ -96,7 +97,7 @@ public class QuantizeTest {
         if (check) {
             double[] expected = new double[output.length];
             System.arraycopy(doubles, 0, expected, 0, expected.length);
-            Assert.assertArrayEquals(expected, output, option.getBScale() * 1.5);
+            Assertions.assertArrayEquals(expected, output, option.getBScale() * 1.5);
         }
     }
 
@@ -172,13 +173,13 @@ public class QuantizeTest {
 
             checkRequantedValues(quantProcessor, quants, matrix, option, false);
 
-            // Assert.assertTrue(quantize.quantize(matrix, xsize, ysize));
-            Assert.assertArrayEquals(expectedData[expectedIndex], quants.array());
+            // Assertions.assertions.assertTrue(quantize.quantize(matrix, xsize, ysize));
+            Assertions.assertArrayEquals(expectedData[expectedIndex], quants.array());
 
-            Assert.assertEquals(1.19911703788955035348e-06, option.getBScale(), 1e-20);
-            Assert.assertEquals(2.57508421771571829595e+03, option.getBZero(), 1e-20);
-            Assert.assertEquals(-2147483637, option.getIntMinValue());
-            Assert.assertEquals(-1957362476, option.getIntMaxValue());
+            Assertions.assertEquals(1.19911703788955035348e-06, option.getBScale(), 1e-20);
+            Assertions.assertEquals(2.57508421771571829595e+03, option.getBZero(), 1e-20);
+            Assertions.assertEquals(-2147483637, option.getIntMinValue());
+            Assertions.assertEquals(-1957362476, option.getIntMaxValue());
             // checkRequantedValues(quantize, matrix);
 
             expectedIndex++;
@@ -197,7 +198,7 @@ public class QuantizeTest {
                 .setNullValue(NULL_VALUE)//
                 .setTileWidth(3)//
                 .setTileHeight(2));
-        Assert.assertFalse(quantProcessor.quantize(matrix, null));
+        Assertions.assertFalse(quantProcessor.quantize(matrix, null));
 
         // test very small image
         matrix = initMatrix();
@@ -209,7 +210,7 @@ public class QuantizeTest {
                 .setNullValue(NULL_VALUE)//
                 .setTileWidth(1)//
                 .setTileHeight(1));
-        Assert.assertFalse(quantProcessor.quantize(matrix, null));
+        Assertions.assertFalse(quantProcessor.quantize(matrix, null));
     }
 
     @Test
@@ -225,7 +226,7 @@ public class QuantizeTest {
                 .setNullValue(NULL_VALUE)//
                 .setTileWidth(3)//
                 .setTileHeight(2));
-        Assert.assertFalse(quantProcessor.quantize(matrix, null));
+        Assertions.assertFalse(quantProcessor.quantize(matrix, null));
     }
 
     @Test
@@ -262,16 +263,16 @@ public class QuantizeTest {
 
         checkRequantedValues(quantProcessor, quants, matrix, option, false);
 
-        Assert.assertArrayEquals(new int[] {-2147483646, -2147483634, -2147483632, -2147483629, -2147483627, -2147483625,
-                -2147483622, -2147483619, -2147483617, -2147483615, -2147483612, -2147483609, -2147483607, -2147483604,
-                -2147483602, -2147483599, -2147483597, -2147483595, -2147483593, -2147483590, -2147483587, -2147483585,
-                -2147483582, -2147483580
+        Assertions.assertArrayEquals(new int[] {-2147483646, -2147483634, -2147483632, -2147483629, -2147483627,
+                -2147483625, -2147483622, -2147483619, -2147483617, -2147483615, -2147483612, -2147483609, -2147483607,
+                -2147483604, -2147483602, -2147483599, -2147483597, -2147483595, -2147483593, -2147483590, -2147483587,
+                -2147483585, -2147483582, -2147483580
 
         }, quants.array());
-        Assert.assertEquals(4.000000e+00, option.getBScale(), 1e-20);
-        Assert.assertEquals(8.589934548e+09, option.getBZero(), 1e-20);
-        Assert.assertEquals(-2147483637, option.getIntMinValue());
-        Assert.assertEquals(-2147483580, option.getIntMaxValue());
+        Assertions.assertEquals(4.000000e+00, option.getBScale(), 1e-20);
+        Assertions.assertEquals(8.589934548e+09, option.getBZero(), 1e-20);
+        Assertions.assertEquals(-2147483637, option.getIntMinValue());
+        Assertions.assertEquals(-2147483580, option.getIntMaxValue());
     }
 
     @Test
@@ -296,10 +297,10 @@ public class QuantizeTest {
 
         checkRequantedValues(quantProcessor, quants, matrix, option, false);
 
-        Assert.assertEquals(6.01121812296506193330e-07, option.getBScale(), 1e-20);
-        Assert.assertEquals(1.29089925575053234752e+03, option.getBZero(), 1e-20);
-        Assert.assertEquals(-2147483637, option.getIntMinValue());
-        Assert.assertEquals(-1866039268, option.getIntMaxValue());
+        Assertions.assertEquals(6.01121812296506193330e-07, option.getBScale(), 1e-20);
+        Assertions.assertEquals(1.29089925575053234752e+03, option.getBZero(), 1e-20);
+        Assertions.assertEquals(-2147483637, option.getIntMinValue());
+        Assertions.assertEquals(-1866039268, option.getIntMaxValue());
     }
 
     @Test
@@ -326,12 +327,12 @@ public class QuantizeTest {
 
         checkRequantedValues(quantProcessor, quants, matrix, option, false);
 
-        Assert.assertEquals(xsize * ysize, quants.limit());
+        Assertions.assertEquals(xsize * ysize, quants.limit());
 
-        Assert.assertEquals(8.11574856349585578526e-07, option.getBScale(), 1e-20);
-        Assert.assertEquals(1.74284372421136049525e+03, option.getBZero(), 1e-20);
-        Assert.assertEquals(-2147483637, option.getIntMinValue());
-        Assert.assertEquals(-1866576064, option.getIntMaxValue());
+        Assertions.assertEquals(8.11574856349585578526e-07, option.getBScale(), 1e-20);
+        Assertions.assertEquals(1.74284372421136049525e+03, option.getBZero(), 1e-20);
+        Assertions.assertEquals(-2147483637, option.getIntMinValue());
+        Assertions.assertEquals(-1866576064, option.getIntMaxValue());
     }
 
     @Test
@@ -357,10 +358,10 @@ public class QuantizeTest {
 
         checkRequantedValues(quantProcessor, quants, matrix, option, false);
 
-        Assert.assertEquals(8.11574856349585578526e-07, option.getBScale(), 1e-20);
-        Assert.assertEquals(1.74284372421136049525e+03, option.getBZero(), 1e-20);
-        Assert.assertEquals(-2147483637, option.getIntMinValue());
-        Assert.assertEquals(-1866576064, option.getIntMaxValue());
+        Assertions.assertEquals(8.11574856349585578526e-07, option.getBScale(), 1e-20);
+        Assertions.assertEquals(1.74284372421136049525e+03, option.getBZero(), 1e-20);
+        Assertions.assertEquals(-2147483637, option.getIntMinValue());
+        Assertions.assertEquals(-1866576064, option.getIntMaxValue());
     }
 
     @Test
@@ -386,22 +387,22 @@ public class QuantizeTest {
 
         checkRequantedValues(quantProcessor, quants, matrix, option, true);
 
-        Assert.assertArrayEquals(new int[] {-2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
+        Assertions.assertArrayEquals(new int[] {-2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
                 -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
                 -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
-                -2147483647, -2147483647
+                -2147483647, -2147483647, -2147483647
 
         }, quants.array());
-        Assert.assertEquals(2.50000000000000000000e-01, option.getBScale(), 1e-20);
-        Assert.assertEquals(5.36870909250000000000e+08, option.getBZero(), 1e-20);
-        Assert.assertEquals(-2147483637, option.getIntMinValue());
-        Assert.assertEquals(-2147483633, option.getIntMaxValue());
+        Assertions.assertEquals(2.50000000000000000000e-01, option.getBScale(), 1e-20);
+        Assertions.assertEquals(5.36870909250000000000e+08, option.getBZero(), 1e-20);
+        Assertions.assertEquals(-2147483637, option.getIntMinValue());
+        Assertions.assertEquals(-2147483633, option.getIntMaxValue());
 
     }
 
     @Test
     public void testOption() throws HeaderCardException {
-        QuantizeOption option = new QuantizeOption() {
+        final QuantizeOption option = new QuantizeOption() {
 
             @Override
             protected Object clone() throws CloneNotSupportedException {
@@ -409,32 +410,26 @@ public class QuantizeTest {
             }
         };
         option.setParameters(new QuantizeTestParameters(option));
-        IllegalStateException expected = null;
-        try {
-            option.copy();
-        } catch (IllegalStateException e) {
-            expected = e;
-        }
-        Assert.assertNotNull(expected);
+        Assertions.assertThrows(IllegalStateException.class, () -> option.copy());
 
         Header header = new Header();
         header.addValue(Compression.ZQUANTIZ, Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2);
         option.getCompressionParameters().getValuesFromHeader(new HeaderAccess(header));
-        Assert.assertTrue(option.isDither2());
-        Assert.assertTrue(option.isDither());
-        option = new QuantizeOption();
+        Assertions.assertTrue(option.isDither2());
+        Assertions.assertTrue(option.isDither());
+        QuantizeOption option2 = new QuantizeOption();
 
-        Assert.assertFalse(option.isDither2());
-        Assert.assertFalse(option.isDither());
+        Assertions.assertFalse(option2.isDither2());
+        Assertions.assertFalse(option2.isDither());
 
-        option = new QuantizeOption();
-        option.setParameters(new QuantizeTestParameters(option));
+        option2 = new QuantizeOption();
+        option2.setParameters(new QuantizeTestParameters(option2));
         header = new Header();
         header.addValue(Compression.ZQUANTIZ, Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1);
-        option.getCompressionParameters().getValuesFromHeader(new HeaderAccess(header));
+        option2.getCompressionParameters().getValuesFromHeader(new HeaderAccess(header));
 
-        Assert.assertFalse(option.isDither2());
-        Assert.assertTrue(option.isDither());
+        Assertions.assertFalse(option2.isDither2());
+        Assertions.assertTrue(option2.isDither());
     }
 
     @Test
@@ -463,14 +458,14 @@ public class QuantizeTest {
             checkRequantedValues(quantProcessor, quants, doubles, option, true);
 
             // values extracted from cfitsio debugging
-            Assert.assertEquals(1.2435136069284944e+17, quantProcessor.getQuantize().getNoise2(), 1e-19);
-            Assert.assertEquals(4511571366641730d, quantProcessor.getQuantize().getNoise3(), 1e-19);
-            Assert.assertEquals(9651138576018.3047d, quantProcessor.getQuantize().getNoise5(), 1e-19);
+            Assertions.assertEquals(1.2435136069284944e+17, quantProcessor.getQuantize().getNoise2(), 1e-19);
+            Assertions.assertEquals(4511571366641730d, quantProcessor.getQuantize().getNoise3(), 1e-19);
+            Assertions.assertEquals(9651138576018.3047d, quantProcessor.getQuantize().getNoise5(), 1e-19);
 
-            Assert.assertEquals(2412784644004.5762, option.getBScale(), 1e-19);
-            Assert.assertEquals(0d, option.getBZero(), 1e-19);
-            Assert.assertEquals(0, option.getIntMinValue());
-            Assert.assertEquals(1911354, option.getIntMaxValue());
+            Assertions.assertEquals(2412784644004.5762, option.getBScale(), 1e-19);
+            Assertions.assertEquals(0d, option.getBZero(), 1e-19);
+            Assertions.assertEquals(0, option.getIntMinValue());
+            Assertions.assertEquals(1911354, option.getIntMaxValue());
         } finally {
             SafeClose.close(file);
         }
@@ -506,14 +501,14 @@ public class QuantizeTest {
             // values extracted from cfitsio debugging (but adapted a little
             // because we convert the float back to doubles) and assume they are
             // correct because the are so close.
-            Assert.assertEquals(28952793.664512001, quantProcessor.getQuantize().getNoise2(), 1e-19);
-            Assert.assertEquals(1050418.9324832, quantProcessor.getQuantize().getNoise3(), 1e-19);
-            Assert.assertEquals(2251.2097792, quantProcessor.getQuantize().getNoise5(), 1e-19);
+            Assertions.assertEquals(28952793.664512001, quantProcessor.getQuantize().getNoise2(), 1e-19);
+            Assertions.assertEquals(1050418.9324832, quantProcessor.getQuantize().getNoise3(), 1e-19);
+            Assertions.assertEquals(2251.2097792, quantProcessor.getQuantize().getNoise5(), 1e-19);
 
-            Assert.assertEquals(562.8024448, option.getBScale(), 1e-19);
-            Assert.assertEquals(0d, option.getBZero(), 1e-19);
-            Assert.assertEquals(0, option.getIntMinValue());
-            Assert.assertEquals(1907849, option.getIntMaxValue());
+            Assertions.assertEquals(562.8024448, option.getBScale(), 1e-19);
+            Assertions.assertEquals(0d, option.getBZero(), 1e-19);
+            Assertions.assertEquals(0, option.getIntMinValue());
+            Assertions.assertEquals(1907849, option.getIntMaxValue());
 
         } finally {
             SafeClose.close(file);
@@ -524,7 +519,8 @@ public class QuantizeTest {
     public void testQuant1FloatFail() throws Exception {
         QuantizeOption quantizeOption = new QuantizeOption();
         FloatQuantCompressor floatQuantCompressor = new FloatQuantCompressor(quantizeOption, null);
-        Assert.assertFalse(floatQuantCompressor.compress(FloatBuffer.wrap(new float[4]), ByteBuffer.wrap(new byte[100])));
+        Assertions
+                .assertFalse(floatQuantCompressor.compress(FloatBuffer.wrap(new float[4]), ByteBuffer.wrap(new byte[100])));
     }
 
     @Test
@@ -532,16 +528,16 @@ public class QuantizeTest {
         QuantizeOption baseOption = new QuantizeOption();
         QuantizeTestParameters base = new QuantizeTestParameters(baseOption);
         baseOption.setParameters(base);
-        Assert.assertEquals(3, base.headerParameters().length);
+        Assertions.assertEquals(3, base.headerParameters().length);
 
         base.initializeColumns(2);
 
         QuantizeOption optionCopy = baseOption.copy();
         QuantizeTestParameters parameters = (QuantizeTestParameters) optionCopy.getCompressionParameters();
-        Assert.assertEquals(3, parameters.headerParameters().length);
+        Assertions.assertEquals(3, parameters.headerParameters().length);
 
         optionCopy.setBNull(-999);
-        Assert.assertEquals(3, parameters.headerParameters().length);
+        Assertions.assertEquals(3, parameters.headerParameters().length);
         optionCopy.setBNull(99);
 
         parameters.initializeTestColumn();
@@ -553,16 +549,16 @@ public class QuantizeTest {
         BinaryTableHDU hdu = (BinaryTableHDU) FitsFactory.hduFactory(new Object[] {new int[2], new int[2][2]});
         base.addColumnsToTable(hdu);
         int[] column = (int[]) hdu.getColumn(Compression.ZBLANK_COLUMN);
-        Assert.assertArrayEquals(new int[] {99, 0}, column);
+        Assertions.assertArrayEquals(new int[] {99, 0}, column);
 
         baseOption.setDither(false);
         base.setValuesInHeader(new HeaderAccess(hdu.getHeader()));
-        Assert.assertEquals(Compression.ZQUANTIZ_NO_DITHER, hdu.getHeader().getStringValue(Compression.ZQUANTIZ));
+        Assertions.assertEquals(Compression.ZQUANTIZ_NO_DITHER, hdu.getHeader().getStringValue(Compression.ZQUANTIZ));
 
         baseOption.setDither(true);
         baseOption.setDither2(false);
         base.setValuesInHeader(new HeaderAccess(hdu.getHeader()));
-        Assert.assertEquals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1,
+        Assertions.assertEquals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1,
                 hdu.getHeader().getStringValue(Compression.ZQUANTIZ));
     }
 
@@ -590,11 +586,11 @@ public class QuantizeTest {
 
         declaredField = filter.getClass().getDeclaredField("iseed");
         declaredField.setAccessible(true);
-        Assert.assertEquals(Integer.valueOf(0), declaredField.get(filter));
+        Assertions.assertEquals(Integer.valueOf(0), declaredField.get(filter));
 
         declaredField = filter.getClass().getDeclaredField("nextRandom");
         declaredField.setAccessible(true);
-        Assert.assertEquals(Integer.valueOf(0), declaredField.get(filter));
+        Assertions.assertEquals(Integer.valueOf(0), declaredField.get(filter));
 
     }
 
@@ -609,13 +605,13 @@ public class QuantizeTest {
 
         ICompressParameters p = o.getCompressionParameters();
 
-        Assert.assertEquals(BundledParameters.class, p.getClass());
+        Assertions.assertEquals(BundledParameters.class, p.getClass());
 
         BundledParameters b = (BundledParameters) p;
-        Assert.assertEquals(2, b.size());
+        Assertions.assertEquals(2, b.size());
 
-        Assert.assertEquals(QuantizeParameters.class, b.get(0).getClass());
-        Assert.assertEquals(HCompressParameters.class, b.get(1).getClass());
+        Assertions.assertEquals(QuantizeParameters.class, b.get(0).getClass());
+        Assertions.assertEquals(HCompressParameters.class, b.get(1).getClass());
     }
 
     @Test
@@ -627,19 +623,19 @@ public class QuantizeTest {
 
         o.setParameters(new BundledParameters(q, c));
 
-        Assert.assertEquals(QuantizeParameters.class, o.getCompressionParameters().getClass());
+        Assertions.assertEquals(QuantizeParameters.class, o.getCompressionParameters().getClass());
     }
 
     @Test
     public void testUwrapOptionNull() throws Exception {
         QuantizeOption o = new QuantizeOption(new HCompressorOption());
-        Assert.assertNull(o.unwrap(RiceCompressOption.class));
+        Assertions.assertNull(o.unwrap(RiceCompressOption.class));
     }
 
     @Test
     public void testUwrapOptionNullNoCompressOption() throws Exception {
         QuantizeOption o = new QuantizeOption(null);
-        Assert.assertNull(o.unwrap(RiceCompressOption.class));
+        Assertions.assertNull(o.unwrap(RiceCompressOption.class));
     }
 
     @Test
@@ -655,8 +651,8 @@ public class QuantizeTest {
         Header h2 = new Header();
         q.setValuesInHeader(new HeaderAccess(h2));
 
-        Assert.assertEquals(Compression.ZQUANTIZ_NO_DITHER, h2.getStringValue(Compression.ZQUANTIZ));
-        Assert.assertEquals(-999, h2.getIntValue(Compression.ZBLANK));
+        Assertions.assertEquals(Compression.ZQUANTIZ_NO_DITHER, h2.getStringValue(Compression.ZQUANTIZ));
+        Assertions.assertEquals(-999, h2.getIntValue(Compression.ZBLANK));
     }
 
     @Test
@@ -669,8 +665,8 @@ public class QuantizeTest {
         Header h2 = new Header();
         q.setValuesInHeader(new HeaderAccess(h2));
 
-        Assert.assertEquals(Compression.ZQUANTIZ_NO_DITHER, h2.getStringValue(Compression.ZQUANTIZ));
-        Assert.assertEquals(0, h2.getIntValue(Compression.ZBLANK));
+        Assertions.assertEquals(Compression.ZQUANTIZ_NO_DITHER, h2.getStringValue(Compression.ZQUANTIZ));
+        Assertions.assertEquals(0, h2.getIntValue(Compression.ZBLANK));
     }
 
     @Test
@@ -686,8 +682,8 @@ public class QuantizeTest {
         Header h2 = new Header();
         q.setValuesInHeader(new HeaderAccess(h2));
 
-        Assert.assertEquals(null, h2.getStringValue(Compression.ZQUANTIZ));
-        Assert.assertEquals(0, h2.getIntValue(Compression.ZBLANK));
+        Assertions.assertEquals(null, h2.getStringValue(Compression.ZQUANTIZ));
+        Assertions.assertEquals(0, h2.getIntValue(Compression.ZBLANK));
     }
 
     @Test
@@ -696,16 +692,16 @@ public class QuantizeTest {
         ZBlankColumnParameter p = new ZBlankColumnParameter(o);
 
         p.setColumnData(null, 10);
-        Assert.assertEquals(10, p.getColumnData().length);
+        Assertions.assertEquals(10, p.getColumnData().length);
 
         p.setColumnData(null, 0);
-        Assert.assertNull(p.getColumnData());
+        Assertions.assertNull(p.getColumnData());
 
         p.setColumnData(null, 10);
-        Assert.assertEquals(10, p.getColumnData().length);
+        Assertions.assertEquals(10, p.getColumnData().length);
 
         p.setColumnData(null, -1);
-        Assert.assertNull(p.getColumnData());
+        Assertions.assertNull(p.getColumnData());
     }
 
     @Test
@@ -714,9 +710,9 @@ public class QuantizeTest {
         QuantizeParameters p = new QuantizeParameters(o);
 
         p.getValuesFromColumn(0);
-        Assert.assertNull(o.getBNull());
-        Assert.assertEquals(1.0, o.getBScale(), 1e-6);
-        Assert.assertEquals(0.0, o.getBZero(), 1e-6);
+        Assertions.assertNull(o.getBNull());
+        Assertions.assertEquals(1.0, o.getBScale(), 1e-6);
+        Assertions.assertEquals(0.0, o.getBZero(), 1e-6);
 
         p.setValuesInColumn(0);
         p.setValueInColumn(0); // deprecated old form...
@@ -725,7 +721,7 @@ public class QuantizeTest {
     @Test
     public void testCopyWrongOption() throws Exception {
         QuantizeParameters p = new QuantizeParameters(null);
-        Assert.assertNull(p.copy(new RiceCompressOption()));
+        Assertions.assertNull(p.copy(new RiceCompressOption()));
     }
 
     @Test
@@ -734,12 +730,12 @@ public class QuantizeTest {
         ZBlankColumnParameter p = new ZBlankColumnParameter(o);
 
         p.column(null, 10);
-        Assert.assertEquals(10, ((int[]) p.column()).length);
-        Assert.assertEquals(10, ((int[]) p.initializedColumn()).length);
+        Assertions.assertEquals(10, ((int[]) p.column()).length);
+        Assertions.assertEquals(10, ((int[]) p.initializedColumn()).length);
 
         o.setBNull(-999);
         p.setValueFromColumn(0);
-        Assert.assertEquals(-999, ((int[]) p.column())[0]);
+        Assertions.assertEquals(-999, ((int[]) p.column())[0]);
     }
 
     @Test
@@ -761,12 +757,12 @@ public class QuantizeTest {
         HeaderAccess a2 = new HeaderAccess(h2);
         p.setValuesInHeader(a2);
 
-        Assert.assertEquals(h1.getNumberOfCards(), h2.getNumberOfCards());
+        Assertions.assertEquals(h1.getNumberOfCards(), h2.getNumberOfCards());
 
         Cursor<String, HeaderCard> i = h1.iterator();
         while (i.hasNext()) {
             HeaderCard card = i.next();
-            Assert.assertEquals(card.getKey(), card.getValue(), h2.findCard(card.getKey()).getValue());
+            Assertions.assertEquals(card.getValue(), h2.findCard(card.getKey()).getValue(), card.getKey());
         }
     }
 
@@ -775,16 +771,16 @@ public class QuantizeTest {
         QuantizeParameters q = new QuantizeParameters(null);
         HCompressParameters c = new HCompressParameters(null);
         BundledParameters p = new BundledParameters(q, null, c);
-        Assert.assertEquals(2, p.size());
+        Assertions.assertEquals(2, p.size());
 
-        Assert.assertEquals(q, p.get(0));
-        Assert.assertEquals(c, p.get(1));
+        Assertions.assertEquals(q, p.get(0));
+        Assertions.assertEquals(c, p.get(1));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testBundledParametersCopyException() throws Exception {
         BundledParameters p = new BundledParameters();
-        p.copy(new QuantizeOption());
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> p.copy(new QuantizeOption()));
     }
 
     @Test
@@ -796,6 +792,6 @@ public class QuantizeTest {
          */
         final double LAST_RANDOM_VALUE = 1043618065.0 / Integer.MAX_VALUE;
 
-        Assert.assertEquals(RandomSequence.get(RandomSequence.length() - 1), LAST_RANDOM_VALUE, 0.1);
+        Assertions.assertEquals(RandomSequence.get(RandomSequence.length() - 1), LAST_RANDOM_VALUE, 0.1);
     }
 }

@@ -39,8 +39,8 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.util.Random;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.ByteNoCompressCompressor;
 import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.DoubleNoCompressCompressor;
@@ -49,6 +49,7 @@ import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.IntN
 import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.LongNoCompressCompressor;
 import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.ShortNoCompressCompressor;
 
+@SuppressWarnings("javadoc")
 public class UnCompressedCompressTest {
 
     @Test
@@ -65,13 +66,13 @@ public class UnCompressedCompressTest {
         new FloatNoCompressCompressor().compress(floatArray, compressed);
 
         byte[] compressedArray = new byte[compressed.position()];
-        Assert.assertTrue(compressedArray.length == compressed.capacity());
+        Assertions.assertTrue(compressedArray.length == compressed.capacity());
         compressed.position(0);
         compressed.get(compressedArray, 0, compressedArray.length);
 
         FloatBuffer decompressedArray = FloatBuffer.wrap(new float[floats.length]);
         new FloatNoCompressCompressor().decompress(ByteBuffer.wrap(compressedArray), decompressedArray);
-        Assert.assertArrayEquals(floats, decompressedArray.array(), 0.000001f);
+        Assertions.assertArrayEquals(floats, decompressedArray.array(), 0.000001f);
     }
 
     @Test
@@ -88,13 +89,13 @@ public class UnCompressedCompressTest {
         new DoubleNoCompressCompressor().compress(doubleArray, compressed);
 
         byte[] compressedArray = new byte[compressed.position()];
-        Assert.assertTrue(compressedArray.length == compressed.capacity());
+        Assertions.assertTrue(compressedArray.length == compressed.capacity());
         compressed.position(0);
         compressed.get(compressedArray, 0, compressedArray.length);
 
         DoubleBuffer decompressedArray = DoubleBuffer.wrap(new double[doubles.length]);
         new DoubleNoCompressCompressor().decompress(ByteBuffer.wrap(compressedArray), decompressedArray);
-        Assert.assertArrayEquals(doubles, decompressedArray.array(), 0.000001d);
+        Assertions.assertArrayEquals(doubles, decompressedArray.array(), 0.000001d);
     }
 
     @Test
@@ -111,13 +112,13 @@ public class UnCompressedCompressTest {
         new IntNoCompressCompressor().compress(intArray, compressed);
 
         byte[] compressedArray = new byte[compressed.position()];
-        Assert.assertTrue(compressedArray.length == compressed.capacity());
+        Assertions.assertTrue(compressedArray.length == compressed.capacity());
         compressed.position(0);
         compressed.get(compressedArray, 0, compressedArray.length);
 
         IntBuffer decompressedArray = IntBuffer.wrap(new int[ints.length]);
         new IntNoCompressCompressor().decompress(ByteBuffer.wrap(compressedArray), decompressedArray);
-        Assert.assertArrayEquals(ints, decompressedArray.array());
+        Assertions.assertArrayEquals(ints, decompressedArray.array());
     }
 
     @Test
@@ -134,13 +135,13 @@ public class UnCompressedCompressTest {
         new ByteNoCompressCompressor().compress(byteArray, compressed);
 
         byte[] compressedArray = new byte[compressed.position()];
-        Assert.assertTrue(compressedArray.length == compressed.capacity());
+        Assertions.assertTrue(compressedArray.length == compressed.capacity());
         compressed.position(0);
         compressed.get(compressedArray, 0, compressedArray.length);
 
         ByteBuffer decompressedArray = ByteBuffer.wrap(new byte[bytes.length]);
         new ByteNoCompressCompressor().decompress(ByteBuffer.wrap(compressedArray), decompressedArray);
-        Assert.assertArrayEquals(bytes, decompressedArray.array());
+        Assertions.assertArrayEquals(bytes, decompressedArray.array());
     }
 
     @Test
@@ -157,13 +158,13 @@ public class UnCompressedCompressTest {
         new ShortNoCompressCompressor().compress(shortArray, compressed);
 
         byte[] compressedArray = new byte[compressed.position()];
-        Assert.assertTrue(compressedArray.length == compressed.capacity());
+        Assertions.assertTrue(compressedArray.length == compressed.capacity());
         compressed.position(0);
         compressed.get(compressedArray, 0, compressedArray.length);
 
         ShortBuffer decompressedArray = ShortBuffer.wrap(new short[shorts.length]);
         new ShortNoCompressCompressor().decompress(ByteBuffer.wrap(compressedArray), decompressedArray);
-        Assert.assertArrayEquals(shorts, decompressedArray.array());
+        Assertions.assertArrayEquals(shorts, decompressedArray.array());
     }
 
     @Test
@@ -180,13 +181,13 @@ public class UnCompressedCompressTest {
         new LongNoCompressCompressor().compress(longArray, compressed);
 
         byte[] compressedArray = new byte[compressed.position()];
-        Assert.assertTrue(compressedArray.length == compressed.capacity());
+        Assertions.assertTrue(compressedArray.length == compressed.capacity());
         compressed.position(0);
         compressed.get(compressedArray, 0, compressedArray.length);
 
         LongBuffer decompressedArray = LongBuffer.wrap(new long[longs.length]);
         new LongNoCompressCompressor().decompress(ByteBuffer.wrap(compressedArray), decompressedArray);
-        Assert.assertArrayEquals(longs, decompressedArray.array());
+        Assertions.assertArrayEquals(longs, decompressedArray.array());
     }
 
 }
