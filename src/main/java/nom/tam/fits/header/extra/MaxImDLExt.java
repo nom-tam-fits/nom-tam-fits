@@ -431,6 +431,7 @@ public enum MaxImDLExt implements IFitsHeader {
      * 
      * @deprecated Not part of the current MaxIm DL specification
      */
+    @Deprecated
     DAVAMBT(VALUE.REAL, "[C] ambient temperature"),
 
     /**
@@ -438,6 +439,7 @@ public enum MaxImDLExt implements IFitsHeader {
      * 
      * @deprecated Not part of the current MaxIm DL specification
      */
+    @Deprecated
     DAVBAROM(VALUE.REAL, "[hPa] barometric pressure"),
 
     /**
@@ -445,6 +447,7 @@ public enum MaxImDLExt implements IFitsHeader {
      * 
      * @deprecated Not part of the current MaxIm DL specification
      */
+    @Deprecated
     DAVDEW(VALUE.REAL, "[C] dew point"),
 
     /**
@@ -452,6 +455,7 @@ public enum MaxImDLExt implements IFitsHeader {
      * 
      * @deprecated Not part of the current MaxIm DL specification
      */
+    @Deprecated
     DAVHUM(VALUE.REAL, "[%] humidity"),
 
     /**
@@ -459,6 +463,7 @@ public enum MaxImDLExt implements IFitsHeader {
      * 
      * @deprecated Not part of the current MaxIm DL specification
      */
+    @Deprecated
     DAVRAD(VALUE.REAL, "[W/m**2] solar radiation"),
 
     /**
@@ -466,6 +471,7 @@ public enum MaxImDLExt implements IFitsHeader {
      * 
      * @deprecated Not part of the current MaxIm DL specification
      */
+    @Deprecated
     DAVRAIN(VALUE.REAL, "[mm/day] accumulated rainfall"),
 
     /**
@@ -473,6 +479,7 @@ public enum MaxImDLExt implements IFitsHeader {
      * 
      * @deprecated Not part of the current MaxIm DL specification
      */
+    @Deprecated
     DAVWIND(VALUE.REAL, "[km/h] wind speed"),
 
     /**
@@ -480,6 +487,7 @@ public enum MaxImDLExt implements IFitsHeader {
      * 
      * @deprecated Not part of the current MaxIm DL specification
      */
+    @Deprecated
     DAVWINDD(VALUE.REAL, "[deg] wind direction"),
 
     /**

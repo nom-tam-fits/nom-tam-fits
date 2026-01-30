@@ -56,6 +56,7 @@ public enum ObservationDurationDescription implements IFitsHeader {
      * 
      * @deprecated Part of the FITS standard, use {@link DateTime#DATE_END} instead
      */
+    @Deprecated
     DATE_END("DATE-END", SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "date of the end of observation"),
     /**
      * The value field shall contain a floating point number giving the difference between the stop and start times of
@@ -102,6 +103,7 @@ public enum ObservationDurationDescription implements IFitsHeader {
      * 
      * @deprecated Part of the FITS standard, use {@link DateTime#TELAPSE} instead.
      */
+    @Deprecated
     TELAPSE(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "[s] elapsed time of the observation"),
     /**
      * The value field shall contain a character string that gives the time at which the observation ended. This keyword

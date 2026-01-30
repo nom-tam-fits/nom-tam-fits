@@ -64,6 +64,7 @@ public abstract class ElementType<B extends Buffer> {
      * 
      * @deprecated (<i>for internal use</i>) It's visibility may be reduced to the package level in the future.
      */
+    @Deprecated
     public static final int COPY_BLOCK_SIZE = 1024;
 
     /** The BITPIX integer value associated with this type of element */

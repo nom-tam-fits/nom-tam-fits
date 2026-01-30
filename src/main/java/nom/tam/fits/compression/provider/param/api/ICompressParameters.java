@@ -92,6 +92,7 @@ public interface ICompressParameters {
      * 
      * @deprecated        Use {@link #getValuesFromHeader(Header)} instead.
      */
+    @Deprecated
     default void getValuesFromHeader(IHeaderAccess header) {
         getValuesFromHeader(header.getHeader());
     }
@@ -107,6 +108,7 @@ public interface ICompressParameters {
      * 
      * @deprecated               Use {@link #initializeColumns(Header, BinaryTable, int)} instead
      */
+    @Deprecated
     default void initializeColumns(IHeaderAccess header, BinaryTable binaryTable, int size) throws FitsException {
         initializeColumns(header.getHeader(), binaryTable, size);
     }
@@ -166,6 +168,7 @@ public interface ICompressParameters {
      * 
      * @deprecated                     Use {@link #setValuesInHeader(Header)} instead
      */
+    @Deprecated
     default void setValuesInHeader(IHeaderAccess header) throws HeaderCardException {
         setValuesInHeader(header == null ? null : header.getHeader());
     }

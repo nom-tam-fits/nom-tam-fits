@@ -56,9 +56,7 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
         /**
          * HCompress of byte streams with the default scale parameter of 0 and no smoothing (lossless compression).
          * 
-         * @since  1.19.1
-         * 
-         * @author Attila Kovacs
+         * @since 1.19.1
          */
         public ByteHCompressor() {
             this(new HCompressorOption());
@@ -113,9 +111,7 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
          * HCompress of 32-bit integer streams with the default scale parameter of 0 and no smoothing for lossless
          * compression.
          * 
-         * @since  1.19.1
-         * 
-         * @author Attila Kovacs
+         * @since 1.19.1
          */
         public IntHCompressor() {
             this(new HCompressorOption());
@@ -151,9 +147,7 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
         /**
          * HCompress of 16-bit integer streams with the default scale parameter of 0 (lossless compression).
          * 
-         * @since  1.19.1
-         * 
-         * @author Attila Kovacs
+         * @since 1.19.1
          */
         public ShortHCompressor() {
             this(new HCompressorOption());

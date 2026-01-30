@@ -64,7 +64,7 @@ public enum Standard implements IFitsHeader {
      * @see Bitpix
      */
     BITPIX(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "bits per data element", //
-            replaceable("header:bitpix", Object.class) //
+            replaceable("header:bitpix", Object.class)//
     ),
 
     /**
@@ -225,6 +225,7 @@ public enum Standard implements IFitsHeader {
      *
      * @deprecated Deprecated by the FITS standard in favor of {@link #EQUINOX}.
      */
+    @Deprecated
     EPOCH(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[yr] equinox of celestial coordinate system"),
 
     /**
@@ -277,7 +278,7 @@ public enum Standard implements IFitsHeader {
     GCOUNT(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "group count",
             replaceable("randomgroupsdata:groups", RandomGroupsData.class), //
             replaceable("undefineddata:groups", UndefinedData.class), //
-            replaceable("header:groups", RandomGroupsData.class) //
+            replaceable("header:groups", RandomGroupsData.class)//
     ),
 
     /**
@@ -285,7 +286,7 @@ public enum Standard implements IFitsHeader {
      * random groups records are present.
      */
     GROUPS(SOURCE.MANDATORY, HDU.GROUPS, VALUE.LOGICAL, "random groups data", //
-            replaceable("randomgroupsdata:groups", RandomGroupsData.class) //
+            replaceable("randomgroupsdata:groups", RandomGroupsData.class)//
     ),
 
     /**
@@ -388,6 +389,7 @@ public enum Standard implements IFitsHeader {
      *
      * @deprecated Deprecated in the current FITS satndard, use {@link #RADESYS} instead.
      */
+    @Deprecated
     RADECSYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "celestial coordinate reference frame"),
 
     /**
@@ -404,6 +406,7 @@ public enum Standard implements IFitsHeader {
      *
      * @deprecated Deprecated in the current FITS standard, use {@link #RESTFRQ} instead.
      */
+    @Deprecated
     RESTFREQ(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[Hz] observed line rest frequency"),
 
     /**
@@ -419,7 +422,7 @@ public enum Standard implements IFitsHeader {
      * conform to this standard.
      */
     SIMPLE(SOURCE.MANDATORY, HDU.PRIMARY, VALUE.LOGICAL, "primary HDU", //
-            replaceable("header:simple", Object.class, "Java FITS: " + new java.util.Date()) //
+            replaceable("header:simple", Object.class, "Java FITS: " + new java.util.Date())//
     ),
 
     /**
@@ -427,7 +430,7 @@ public enum Standard implements IFitsHeader {
      * an ASCII TABLE extension. The first column of a row is numbered 1.RANGE: [1:]
      */
     TBCOLn(SOURCE.MANDATORY, HDU.ASCII_TABLE, VALUE.INTEGER, "column byte offset", //
-            replaceable("asciitable:tbcolN", AsciiTable.class) //
+            replaceable("asciitable:tbcolN", AsciiTable.class)//
     ),
 
     /**
@@ -438,7 +441,7 @@ public enum Standard implements IFitsHeader {
      * the array.
      */
     TDIMn(SOURCE.RESERVED, HDU.BINTABLE, VALUE.STRING, "dimensionality of column array elements", //
-            replaceable("binarytable:tdimN", BinaryTable.class) //
+            replaceable("binarytable:tdimN", BinaryTable.class)//
     ),
 
     /**
@@ -472,7 +475,7 @@ public enum Standard implements IFitsHeader {
      */
     TFORMn(SOURCE.MANDATORY, HDU.TABLE, VALUE.STRING, "column data format", //
             replaceable("asciitable:tformN", AsciiTable.class), //
-            replaceable("binarytable:tformN", BinaryTable.class) //
+            replaceable("binarytable:tformN", BinaryTable.class)//
     ),
 
     /**
@@ -482,7 +485,7 @@ public enum Standard implements IFitsHeader {
      * proposed application of this keyword is presented in Appendix B.1 of the FITS Standard.
      */
     THEAP(SOURCE.INTEGRAL, HDU.BINTABLE, VALUE.INTEGER, "heap byte offset", //
-            replaceable("binarytable:theap", BinaryTable.class) //
+            replaceable("binarytable:theap", BinaryTable.class)//
     ),
 
     /**
@@ -580,7 +583,7 @@ public enum Standard implements IFitsHeader {
             replaceable("binarytable:xtension", BinaryTable.class, "binary table HDU"), //
             replaceable("asciitable:xtension", AsciiTable.class, "ASCII table HDU"), //
             replaceable("undefineddata:xtension", UndefinedData.class), //
-            replaceable("header:xtension", Object.class) //
+            replaceable("header:xtension", Object.class)//
     ),
 
     /**
@@ -666,6 +669,7 @@ public enum Standard implements IFitsHeader {
      * 
      * @see              nom.tam.fits.HeaderCard#setComment(String)
      */
+    @Deprecated
     public static void context(Class<?> clazz) {
         COMMENT_CONTEXT.set(clazz);
     }
@@ -679,6 +683,7 @@ public enum Standard implements IFitsHeader {
      * 
      * @deprecated            (<i>)for internal use</i>)
      */
+    @Deprecated
     public String getCommentByKey(String commentKey) {
         for (StandardCommentReplacement commentReplacement : commentReplacements) {
             if (commentReplacement.getRef().equals(commentKey)) {
@@ -700,6 +705,7 @@ public enum Standard implements IFitsHeader {
      * 
      * @deprecated            (<i>)for internal use</i>)
      */
+    @Deprecated
     public void setCommentByKey(String commentKey, String value) {
         for (StandardCommentReplacement commentReplacement : commentReplacements) {
             if (commentReplacement.getRef().equals(commentKey)) {

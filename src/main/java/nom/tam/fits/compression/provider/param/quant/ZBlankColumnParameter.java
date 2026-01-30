@@ -44,6 +44,7 @@ public final class ZBlankColumnParameter extends CompressColumnParameter<int[], 
      * @deprecated (<i>for internal use</i>) the visibility of this constructor may be reduced to the package level in
      *                 future releases.
      */
+    @Deprecated
     @SuppressWarnings("javadoc")
     public ZBlankColumnParameter(QuantizeOption quantizeOption) {
         super(Compression.ZBLANK_COLUMN, quantizeOption, int[].class);

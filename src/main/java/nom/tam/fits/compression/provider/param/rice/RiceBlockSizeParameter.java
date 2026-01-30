@@ -48,6 +48,7 @@ public final class RiceBlockSizeParameter extends CompressHeaderParameter<RiceCo
      * @deprecated (<i>for internal use</i>) the visibility of this constructor may be reduced to the package level in
      *                 future releases.
      */
+    @Deprecated
     @SuppressWarnings("javadoc")
     public RiceBlockSizeParameter(RiceCompressOption riceCompressOption) {
         super(Compression.BLOCKSIZE, riceCompressOption);

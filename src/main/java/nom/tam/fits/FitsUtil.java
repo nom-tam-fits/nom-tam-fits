@@ -92,6 +92,7 @@ public final class FitsUtil {
      *
      * @param      size the current size.
      */
+    @Deprecated
     public static int addPadding(int size) {
         return size + padding(size);
     }
@@ -370,6 +371,7 @@ public final class FitsUtil {
      * 
      * @deprecated        (<i>for internal use</i>) No longer used internally, will be removed in the future.
      */
+    @Deprecated
     public static String[] byteArrayToStrings(byte[] bytes, int maxLen) {
         // Note that if a String in a binary table contains an internal 0,
         // the FITS standard says that it is to be considered as terminating
@@ -458,6 +460,7 @@ public final class FitsUtil {
      * 
      * @deprecated   (<i>for internal use</i>) Visibility may be reduced to the package level in the future.
      */
+    @Deprecated
     public static long findOffset(Closeable o) {
         if (o instanceof RandomAccess) {
             return ((RandomAccess) o).getFilePointer();
@@ -501,6 +504,7 @@ public final class FitsUtil {
      * 
      * @deprecated         (<i>for internal use</i>) No longer used internally, may be removed in the future.
      */
+    @Deprecated
     public static int maxLength(String[] strings) {
         int max = 0;
         for (String element : strings) {
@@ -588,6 +592,7 @@ public final class FitsUtil {
      * 
      * @deprecated               (<i>for internal use</i>) Visibility may be reduced to package level in the future
      */
+    @Deprecated
     public static void pad(ArrayDataOutput stream, long size) throws FitsException {
         pad(stream, size, (byte) 0);
     }
@@ -607,6 +612,7 @@ public final class FitsUtil {
      * 
      * @deprecated               (<i>for internal use</i>) Visibility may be reduced to private in the future
      */
+    @Deprecated
     public static void pad(ArrayDataOutput stream, long size, byte fill) throws FitsException {
         int len = padding(size);
         if (len > 0) {
@@ -628,6 +634,7 @@ public final class FitsUtil {
      *
      * @param      size the size without padding
      */
+    @Deprecated
     public static int padding(int size) {
         return padding((long) size);
     }
@@ -745,6 +752,7 @@ public final class FitsUtil {
      * 
      * @deprecated             (<i>for internal use</i>) Visibility may be reduced to package level in the future.
      */
+    @Deprecated
     public static byte[] stringsToByteArray(String[] stringArray, int len) {
         return stringsToByteArray(stringArray, len, BLANK_SPACE);
     }

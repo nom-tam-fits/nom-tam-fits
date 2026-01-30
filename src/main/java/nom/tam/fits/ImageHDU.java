@@ -175,6 +175,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
      * @param      h the header for the image.
      * @param      d the data used in the image.
      */
+    @Deprecated
     public ImageHDU(Header h, ImageData d) {
         super(h, d);
     }

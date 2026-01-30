@@ -52,6 +52,8 @@ public final class LoggerHelper {
     }
 
     /**
+     * Returns the logger for a given class.
+     * 
      * @param  aClass the class to get the logger for.
      *
      * @return        a Java {@code Logger} for the specified class.

@@ -39,6 +39,7 @@ import java.util.Arrays;
  * 
  * @deprecated (<i>for internal use</i>) This class sohuld have visibility reduced to the package level
  */
+@Deprecated
 @SuppressWarnings("javadoc")
 public class Quantize {
 

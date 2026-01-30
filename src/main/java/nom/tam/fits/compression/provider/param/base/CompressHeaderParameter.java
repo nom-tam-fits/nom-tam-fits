@@ -56,6 +56,7 @@ public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<
     /**
      * @deprecated Use {@link #findZVal(Header)} instead.
      */
+    @Deprecated
     public HeaderCard findZVal(IHeaderAccess header) {
         return findZVal(header.getHeader());
     }
@@ -63,6 +64,7 @@ public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<
     /**
      * @deprecated Use {@link #nextFreeZVal(Header)} instead.
      */
+    @Deprecated
     public int nextFreeZVal(IHeaderAccess header) {
         return nextFreeZVal(header.getHeader());
     }

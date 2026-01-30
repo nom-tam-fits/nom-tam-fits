@@ -42,6 +42,7 @@ import static nom.tam.fits.header.NonStandard.HIERARCH;
  *                 spaces. Otherwise, it is similar to {@link StandardIHierarchKeyFormatter}. Its use over the more
  *                 standard formatter is discouraged.
  */
+@Deprecated
 public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
 
     private final String blanks;

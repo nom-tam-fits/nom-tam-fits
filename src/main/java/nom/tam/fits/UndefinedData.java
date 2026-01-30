@@ -72,6 +72,7 @@ public class UndefinedData extends Data {
      * @deprecated               (<i>for internal use</i>). Visibility will be reduced to the package level in the
      *                               future.
      */
+    @Deprecated
     public UndefinedData(Header h) throws FitsException {
         extensionType = h.getStringValue(Standard.XTENSION, XTENSION_UNKNOWN);
 
@@ -108,6 +109,7 @@ public class UndefinedData extends Data {
      * @throws     IllegalArgumentException If the object is not an array or contains elements that do not have a known
      *                                          binary size.
      */
+    @Deprecated
     public UndefinedData(Object x) throws IllegalArgumentException {
         byteSize = (int) FitsEncoder.computeSize(x);
         dims = ArrayFuncs.getDimensions(x);

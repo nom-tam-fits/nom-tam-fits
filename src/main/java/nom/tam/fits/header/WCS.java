@@ -70,6 +70,7 @@ public enum WCS implements IFitsHeader {
      *
      * @deprecated Deprecated in the current FITS standard, use {@link #RADESYSa} instead.
      */
+    @Deprecated
     RADECSYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "celestial coordinate reference frame."),
 
     /**
@@ -185,6 +186,7 @@ public enum WCS implements IFitsHeader {
      *
      * @deprecated Deprecated in the current FITS standard, use {@link #RESTFRQa} instead.
      */
+    @Deprecated
     RESTFREQ(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[Hz] observed line rest frequency"),
 
     /**
@@ -528,6 +530,7 @@ public enum WCS implements IFitsHeader {
      * 
      * @since      1.19
      */
+    @Deprecated
     nCROTn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "[deg] column coordinate axis rotation"),
 
     /**
@@ -787,6 +790,7 @@ public enum WCS implements IFitsHeader {
      * 
      * @since      1.19
      */
+    @Deprecated
     TCROTn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "[deg] column pixel axis rotation"),
 
     /**

@@ -46,6 +46,7 @@ public interface ICompressHeaderParameter extends ICompressParameter {
      * 
      * @deprecated        Use {@link #getValueFromHeader(Header)} instead.
      */
+    @Deprecated
     default void getValueFromHeader(IHeaderAccess header) {
         getValueFromHeader(header.getHeader());
     }
@@ -57,6 +58,7 @@ public interface ICompressHeaderParameter extends ICompressParameter {
      * 
      * @deprecated        Use {@link #setValueInHeader(Header)} instead
      */
+    @Deprecated
     default void setValueInHeader(IHeaderAccess header) {
         setValueInHeader(header.getHeader());
     }

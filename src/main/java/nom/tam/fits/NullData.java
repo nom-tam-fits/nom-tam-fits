@@ -52,6 +52,12 @@ import static nom.tam.fits.header.Standard.PCOUNT;
  */
 public final class NullData extends ImageData {
 
+    /**
+     * Instantiates an empty data object for a header-only HDU.
+     */
+    public NullData() {
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     protected void fillHeader(Header head) {

@@ -45,6 +45,7 @@ import nom.tam.util.ArrayFuncs;
  *                             the type of the array itself, making it typically useless, and leaving one to use the
  *                             class with raw types only. This is fine for internal use.
  */
+@Deprecated
 public class MultiArrayIterator<BaseArray> {
 
     private final BaseArray baseArray;

@@ -38,6 +38,7 @@ package nom.tam.fits.header;
  * 
  * @deprecated (<i>for internal use</i>) Visibility may be reduced to package level in the future.
  */
+@Deprecated
 class StandardCommentReplacement {
 
     private String comment;

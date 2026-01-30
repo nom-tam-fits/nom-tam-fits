@@ -124,19 +124,16 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * are widely used we want to support files created or consumed by these tools. As such we allow to deviate from the
      * FITS standard, and swap the order of the stored VLA indices inside compressed tables.
      * 
-     * @param  value <code>true</code> if we should use VLA indices in compressed tables that follow the format
-     *                   described in the original Pence et al. 2013 convention, and also the FITS 4.0 standard as of
-     *                   2024 Mar 1; otherwise <code>false</code>. These original prescriptions define the reverse of
-     *                   what is actually implemented by CFITSIO and its tools <code>fpack</code> and
-     *                   <code>funpack</code>. (Our default is to conform to CFITSIO, and the expected revision of the
-     *                   standard to match).
+     * @param value <code>true</code> if we should use VLA indices in compressed tables that follow the format described
+     *                  in the original Pence et al. 2013 convention, and also the FITS 4.0 standard as of 2024 Mar 1;
+     *                  otherwise <code>false</code>. These original prescriptions define the reverse of what is
+     *                  actually implemented by CFITSIO and its tools <code>fpack</code> and <code>funpack</code>. (Our
+     *                  default is to conform to CFITSIO, and the expected revision of the standard to match).
      * 
-     * @see          #hasOldStandardVLAIndexing()
-     * @see          #asBinaryTableHDU()
+     * @see         #hasOldStandardVLAIndexing()
+     * @see         #asBinaryTableHDU()
      * 
-     * @since        1.19.1
-     * 
-     * @author       Attila Kovacs
+     * @since       1.19.1
      */
     public static void useOldStandardVLAIndexing(boolean value) {
         reversedVLAIndices = value;
@@ -155,8 +152,6 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @see    #useOldStandardVLAIndexing(boolean)
      * 
      * @since  1.19.1
-     * 
-     * @author Attila Kovacs
      */
     public static boolean hasOldStandardVLAIndexing() {
         return reversedVLAIndices;

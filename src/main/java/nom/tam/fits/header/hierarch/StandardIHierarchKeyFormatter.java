@@ -47,6 +47,12 @@ import nom.tam.fits.utilities.FitsLineAppender;
 public class StandardIHierarchKeyFormatter implements IHierarchKeyFormatter {
     private boolean allowMixedCase;
 
+    /**
+     * Instantiates a new standard formatter for ESO HIERARCH style keywords.
+     */
+    public StandardIHierarchKeyFormatter() {
+    }
+
     @Override
     public String toHeaderString(String key) {
         StringBuilder formatted = new StringBuilder(key.length());

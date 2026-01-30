@@ -153,6 +153,7 @@ public enum DataDescription implements IFitsHeader {
      * 
      * @deprecated Use {@link Standard#TDMAXn} instead.
      */
+    @Deprecated
     TDMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "maximum value in the column"),
 
     /**
@@ -162,6 +163,7 @@ public enum DataDescription implements IFitsHeader {
      * 
      * @deprecated Use {@link Standard#TDMINn} instead.
      */
+    @Deprecated
     TDMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "minimum value in the column"),
 
     /**
@@ -179,8 +181,9 @@ public enum DataDescription implements IFitsHeader {
      * 
      * @deprecated Use {@link Standard#TLMAXn} instead.
      */
-
+    @Deprecated
     TLMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "maximum legal value in the column"),
+
     /**
      * The value field of this indexed keyword shall contain a floating point number specifying the lower bound of the
      * legal range of physical values that may be represented in column n of the table. The column may contain values
@@ -190,8 +193,9 @@ public enum DataDescription implements IFitsHeader {
      * 
      * @deprecated Use {@link Standard#TLMINn} instead.
      */
-
+    @Deprecated
     TLMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "minimum legal value in the column"),
+
     /**
      * The value field shall contain a character string that defines the order in which the rows in the current FITS
      * ASCII or binary table extension have been sorted. The character string lists the name (as given by the TTYPEn

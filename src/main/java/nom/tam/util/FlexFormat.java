@@ -117,6 +117,13 @@ public class FlexFormat {
     private static final DecimalFormatSymbols SYMBOLS = DecimalFormatSymbols.getInstance(Locale.US);
 
     /**
+     * Instantiates flexible-width number formatting for numbers in FITS
+     * headers.
+     */
+    public FlexFormat() {
+    }
+
+    /**
      * Sets the maximum number of decimal places to show after the leading
      * figure (i.e. fractional digits in exponential format). If the value has
      * more precision than this value it will be rounded to the specified
@@ -224,8 +231,8 @@ public class FlexFormat {
      * 
      * @param value
      *            the number to check
-     * @return <code>true</code> if the specified number is a decimal type
-     *         value, or else <code>false</code> if it is an integer type.
+     * @return <code>true</code> if the specified number is a decimal type value,
+     *         or else <code>false</code> if it is an integer type.
      */
     private static boolean isDecimal(Number value) {
         return value instanceof Float || value instanceof Double || value instanceof BigDecimal;
@@ -241,8 +248,8 @@ public class FlexFormat {
      * 
      * @param value
      *            the decimal value to print
-     * @return the string representing the value, or an empty string if the
-     *         value was <code>null</code>.
+     * @return the string representing the value, or an empty string if the value
+     *         was <code>null</code>.
      * @throws LongValueException
      *             if the decimal value cannot be represented in the alotted
      *             space with any precision

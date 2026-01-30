@@ -70,6 +70,7 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
      *                 take a BinaryTable as its argument with heap and all. It cannot be used for compressing binary
      *                 tables with variable-length columns.
      */
+    @Deprecated
     public BinaryTableTileCompressor(CompressedTableData compressedTable, ColumnTable<?> columnTable,
             BinaryTableTileDescription description) {
         super(columnTable, description);

@@ -152,6 +152,7 @@ public class AsciiTable extends AbstractTableData {
      * 
      * @deprecated               (<i>for internal use</i>) Visibility may be reduced to the package level in the future.
      */
+    @Deprecated
     public AsciiTable(Header hdr) throws FitsException {
         this(hdr, isI10PreferInt);
     }
@@ -177,6 +178,7 @@ public class AsciiTable extends AbstractTableData {
      * 
      * @deprecated               Use {@link #setI10PreferInt(boolean)} instead prior to reading ASCII tables.
      */
+    @Deprecated
     public AsciiTable(Header hdr, boolean preferInt) throws FitsException {
         String ext = hdr.getStringValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
 
@@ -983,6 +985,7 @@ public class AsciiTable extends AbstractTableData {
      *                 new HDU and editing the header as necessary to incorporate custom entries. May be removed from
      *                 the API in the future.
      */
+    @Deprecated
     @Override
     public void updateAfterDelete(int oldNCol, Header hdr) throws FitsException {
 

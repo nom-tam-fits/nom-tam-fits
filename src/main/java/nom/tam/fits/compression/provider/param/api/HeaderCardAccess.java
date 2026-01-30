@@ -59,6 +59,7 @@ import nom.tam.fits.header.IFitsHeader;
  *                 <code>HeaderCardException</code> to be soft exceptions itself, there is no reason to convert. It just
  *                 adds confusion.
  */
+@Deprecated
 public class HeaderCardAccess implements IHeaderAccess {
 
     private final HeaderCard headerCard;

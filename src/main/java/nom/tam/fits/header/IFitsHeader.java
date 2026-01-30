@@ -67,6 +67,7 @@ public interface IFitsHeader {
         /** keyword must appear in extension HDUs only */
         EXTENSION,
         /** @deprecated Use {@link #ANY} instead. */
+        @Deprecated
         PRIMARY_EXTENSION;
 
     }
