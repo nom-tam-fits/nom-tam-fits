@@ -157,13 +157,16 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             return 1;
         }
 
+        int[] dims = null;
+
         try {
-            int[] dims = ArrayFuncs.checkRegularArray(newColumn, false);
-            if (dims.length != 2) {
-                throw new TableException("Not a 2D array: " + newColumn.getClass());
-            }
+            dims = ArrayFuncs.checkRegularArray(newColumn, false);
         } catch (Exception e) {
             throw new TableException(e);
+        }
+
+        if (dims.length != 2) {
+            throw new TableException("Not a 2D array: " + newColumn.getClass());
         }
 
         Object[] entries = (Object[]) newColumn;
@@ -174,6 +177,10 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         Object first = entries[0];
         if (!first.getClass().getComponentType().isPrimitive()) {
             throw new TableException("Entries are not a primitive arrays: " + first.getClass());
+        }
+
+        if (getNRows() > 0 && dims[0] != getNRows()) {
+            throw new TableException("Mismatched row count: got " + dims[0] + ", expected " + getNRows());
         }
 
         return Array.getLength(first);
