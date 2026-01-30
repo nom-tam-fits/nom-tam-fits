@@ -626,6 +626,7 @@ public class StokesTest {
         Assertions.assertFalse(Stokes.parameters().equals(null));
     }
 
+    @SuppressWarnings("unlikely-arg-type")
     @Test
     public void testEqualsOther() throws Exception {
         Assertions.assertFalse(Stokes.parameters().equals("blah"));

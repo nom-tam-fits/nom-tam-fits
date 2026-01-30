@@ -111,18 +111,21 @@ public class TilerTest {
     private void doTile3(final String test, final Object data, final ImageTiler t, final int x, final int y, final int nx,
             final int ny) throws Exception {
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        final ArrayDataOutput output = new FitsOutputStream(byteArrayOutputStream);
 
-        t.getTile(output, new int[] {y, x}, new int[] {ny, nx});
+        try (final ArrayDataOutput output = new FitsOutputStream(byteArrayOutputStream)) {
+            t.getTile(output, new int[] {y, x}, new int[] {ny, nx});
+        }
 
         float resultSum = 0;
         float expectedSum = 0;
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-        final ArrayDataInput input = new FitsInputStream(byteArrayInputStream);
+
         final Class<?> type = ArrayFuncs.getBaseClass(data);
         final Object testOutput = ArrayFuncs.newInstance(type, ny * nx);
 
-        input.readLArray(testOutput);
+        try (final ArrayDataInput input = new FitsInputStream(byteArrayInputStream)) {
+            input.readLArray(testOutput);
+        }
 
         int length = Array.getLength(testOutput);
         for (int i = 0; i < nx; i++) {

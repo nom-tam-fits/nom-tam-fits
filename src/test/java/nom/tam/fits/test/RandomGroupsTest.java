@@ -50,7 +50,6 @@ import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsFile;
-import nom.tam.util.SafeClose;
 
 /**
  * Test random groups formats in FITS data. Write and read random groups data
@@ -65,9 +64,8 @@ public class RandomGroupsTest {
         float[] pa = new float[3];
 
         Object[][] data = new Object[1][2];
-        FitsFile bf = null;
-        try {
-            bf = new FitsFile("target/rg1.fits", "rw");
+
+        try (FitsFile bf = new FitsFile("target/rg1.fits", "rw")) {
 
             data[0][0] = pa;
             data[0][1] = fa;
@@ -95,14 +93,11 @@ public class RandomGroupsTest {
             bf.write(padding);
 
             bf.flush();
-        } finally {
-            SafeClose.close(bf);
         }
 
         // Read back the data.
-        Fits f = null;
-        try {
-            f = new Fits("target/rg1.fits");
+
+        try (Fits f = new Fits("target/rg1.fits")) {
             BasicHDU<?>[] hdus = f.read();
 
             data = (Object[][]) hdus[0].getKernel();
@@ -118,27 +113,19 @@ public class RandomGroupsTest {
                     Assertions.assertEquals(i * j, fa[j][j], 0, "dataTest:" + i + " " + j);
                 }
             }
-        } finally {
-            SafeClose.close(f);
         }
 
         // Now do it in one fell swoop -- but we have to have
         // all the data in place first.
-        try {
-            f = new Fits();
-            bf = new FitsFile("target/rg2.fits", "rw");
+        try (Fits f = new Fits(); FitsFile bf = new FitsFile("target/rg2.fits", "rw")) {
             // Generate a FITS HDU from the kernel.
             f.addHDU(RandomGroupsHDU.createFrom(data));
             f.write(bf);
 
             bf.flush();
-        } finally {
-            SafeClose.close(bf);
-            SafeClose.close(f);
         }
 
-        try {
-            f = new Fits("target/rg2.fits");
+        try (Fits f = new Fits("target/rg2.fits")) {
             BasicHDU<?> groupHDU = f.read()[0];
             data = (Object[][]) groupHDU.getKernel();
             for (int i = 0; i < data.length; i++) {
@@ -161,8 +148,6 @@ public class RandomGroupsTest {
             Assertions.assertTrue(groupInfo.indexOf("Number of groups:20") >= 0);
             Assertions.assertTrue(groupInfo.indexOf("Parameters: float[3]") >= 0);
             Assertions.assertTrue(groupInfo.indexOf("Data:float[20, 20]") >= 0);
-        } finally {
-            SafeClose.close(f);
         }
     }
 
@@ -190,22 +175,18 @@ public class RandomGroupsTest {
         float[][] fa = new float[20][20];
         float[] pa = new float[3];
         RandomGroupsData groups;
-        FitsFile bf = null;
-        try {
-            bf = new FitsFile("target/testResetData", "rw");
+
+        try (FitsFile bf = new FitsFile("target/testResetData", "rw")) {
             Object[][] data = new Object[1][2];
             data[0][0] = pa;
             data[0][1] = fa;
             groups = RandomGroupsHDU.createFrom(data).getData();
             bf.writeLong(1);
             groups.write(bf);
-        } finally {
-            SafeClose.close(bf);
         }
 
         // ok now test it
-        try {
-            bf = new FitsFile("target/testResetData", "rw");
+        try (FitsFile bf = new FitsFile("target/testResetData", "rw")) {
             bf.readLong();
             groups = new RandomGroupsData();
             groups.read(bf);
@@ -214,8 +195,6 @@ public class RandomGroupsTest {
             Assertions.assertEquals(0, bf.getFilePointer());
             groups.reset();
             Assertions.assertEquals(8, bf.getFilePointer());
-        } finally {
-            SafeClose.close(bf);
         }
     }
 
@@ -277,43 +256,29 @@ public class RandomGroupsTest {
 
     @Test
     public void testCreateParmOnly() throws Exception {
-        RandomGroupsData g = new RandomGroupsData(new Object[][] {{new int[4], null}});
+        new RandomGroupsData(new Object[][] {{new int[4], null}});
     }
 
     @Test
     public void testCreateWrongParDim() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            RandomGroupsData g = new RandomGroupsData(new Object[][] {{new int[4][4], new int[10]}});
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new RandomGroupsData(new Object[][] {{new int[4][4], new int[10]}}));
     }
 
     @Test
     public void testCreateWrongDim1() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            RandomGroupsData g = new RandomGroupsData(new Object[5][3]);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new RandomGroupsData(new Object[5][3]));
     }
 
     @Test
     public void testCreateMismatchedType() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            RandomGroupsData g = new RandomGroupsData(new Object[5][1]);
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new RandomGroupsData(new Object[5][1]));
     }
 
     @Test
     public void testCreateWrongDim2() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            RandomGroupsData g = new RandomGroupsData(new Object[][] {{new int[] {1, 2}, new double[] {3.0, 4.0, 5.0}}});
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new RandomGroupsData(new Object[][] {{new int[] {1, 2}, new double[] {3.0, 4.0, 5.0}}}));
     }
 
     @Test
@@ -468,19 +433,16 @@ public class RandomGroupsTest {
 
     @Test
     public void testAddRandomGroupsAsExtensionException() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        short[][] img = new short[7][11];
+        short[] parms = new short[] {1, 2, 3, 4, 5, 6};
 
-            short[][] img = new short[7][11];
-            short[] parms = new short[] {1, 2, 3, 4, 5, 6};
+        RandomGroupsData data = new RandomGroupsData(new Object[][] {{parms, img}});
+        RandomGroupsHDU hdu = data.toHDU();
 
-            RandomGroupsData data = new RandomGroupsData(new Object[][] {{parms, img}});
-            RandomGroupsHDU hdu = data.toHDU();
-
-            Fits fits = new Fits();
+        try (Fits fits = new Fits()) {
             fits.addHDU(new NullDataHDU());
-            fits.addHDU(hdu); // throws exception
-
-        });
+            Assertions.assertThrows(FitsException.class, () -> fits.addHDU(hdu));
+        }
     }
 
     @Test

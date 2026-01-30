@@ -196,17 +196,13 @@ public class HeaderTest {
     /** Confirm initial location versus EXTEND keyword (V. Forchi). */
     @Test
     public void extendTest() throws Exception {
-        Fits f = null;
-        try {
-            f = new Fits("target/ht1.fits");
+        try (Fits f = new Fits("target/ht1.fits")) {
             Header h = f.getHDU(0).getHeader();
             h.addValue("TESTKEY", "TESTVAL", "TESTCOMM");
             h.rewrite();
-        } finally {
-            SafeClose.close(f);
         }
-        try {
-            f = new Fits("target/ht1.fits");
+
+        try (Fits f = new Fits("target/ht1.fits")) {
             Header h = f.getHDU(0).getHeader();
 
             // We should be pointed after the EXTEND and before TESTKEY
@@ -221,8 +217,6 @@ public class HeaderTest {
             Assertions.assertEquals(c.next().getKey(), EXTEND.key());
             Assertions.assertEquals(c.next().getKey(), "TESTKEY2");
             Assertions.assertEquals(c.next().getKey(), "TESTKEY");
-        } finally {
-            SafeClose.close(f);
         }
     }
 
@@ -236,9 +230,8 @@ public class HeaderTest {
         for (int i = 0; i < 20; i++) {
             lng += seq;
         }
-        Fits f = null;
-        try {
-            f = new Fits("target/ht1.fits");
+
+        try (Fits f = new Fits("target/ht1.fits")) {
             Header hdr = f.getHDU(0).getHeader();
 
             Assertions.assertTrue(FitsFactory.isLongStringsEnabled(), "Set state:");
@@ -253,13 +246,10 @@ public class HeaderTest {
             hdr.addValue("APOS2", sixty + " ''''''''''", "Should be 71 chars long");
 
             // Now try to read the values back.
-            FitsFile bf = null;
-            try {
-                bf = new FitsFile("target/ht4.hdr", "rw");
+            try (FitsFile bf = new FitsFile("target/ht4.hdr", "rw")) {
                 hdr.write(bf);
-            } finally {
-                SafeClose.close(bf);
             }
+
             String val = hdr.getStringValue("LONG1");
             Assertions.assertEquals(lng, val);
             val = hdr.getStringValue("LONG2");
@@ -279,8 +269,8 @@ public class HeaderTest {
             Assertions.assertTrue(!val.equals(lng));
             Assertions.assertTrue(val.length() <= 70);
             Assertions.assertEquals(hdr.getStringValue("SHORT"), "A STRING ENDING IN A &");
-            try {
-                bf = new FitsFile("target/ht4.hdr", "r");
+
+            try (FitsFile bf = new FitsFile("target/ht4.hdr", "r")) {
                 hdr = new Header(bf);
                 Assertions.assertTrue(FitsFactory.isLongStringsEnabled());
                 Assertions.assertEquals(lng, hdr.getStringValue("LONG1"));
@@ -306,11 +296,7 @@ public class HeaderTest {
                 Assertions.assertEquals(cnt - 2, hdr.getNumberOfCards());
                 Assertions.assertEquals(pcnt - 9, hdr.getNumberOfPhysicalCards());
 
-            } finally {
-                SafeClose.close(bf);
             }
-        } finally {
-            SafeClose.close(f);
         }
     }
 
@@ -404,13 +390,16 @@ public class HeaderTest {
             byte[] bytes = new byte[cardString.length() + 160];
             Arrays.fill(bytes, (byte) ' ');
             System.arraycopy(AsciiFuncs.getBytes(cardString), 0, bytes, 0, cardString.length());
-            HeaderCard rereadCard = new HeaderCard(new FitsInputStream(new ByteArrayInputStream(bytes)));
 
-            Assertions.assertEquals(cardValue, rereadCard.getValue());
-            Assertions.assertEquals(headerCard.getValue(), rereadCard.getValue());
-            Assertions.assertEquals(cardComment, headerCard.getComment());
-            Assertions.assertTrue(cardComment
-                    .startsWith(rereadCard.getComment() == null ? "" : rereadCard.getComment().replaceAll(" ", "")));
+            try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(bytes))) {
+                HeaderCard rereadCard = new HeaderCard(in);
+
+                Assertions.assertEquals(cardValue, rereadCard.getValue());
+                Assertions.assertEquals(headerCard.getValue(), rereadCard.getValue());
+                Assertions.assertEquals(cardComment, headerCard.getComment());
+                Assertions.assertTrue(cardComment
+                        .startsWith(rereadCard.getComment() == null ? "" : rereadCard.getComment().replaceAll(" ", "")));
+            }
         } catch (HeaderCardException e) {
             Assertions.assertTrue(!FitsFactory.isLongStringsEnabled() && cardValue.length() > 68);
         }
@@ -961,29 +950,21 @@ public class HeaderTest {
     }
 
     /** Truncate header test. */
+    @SuppressWarnings("resource")
     public void truncatedFileCheckTest() throws Exception {
-        FileInputStream f = null;
-        FileOutputStream out = null;
-        try {
-            f = new FileInputStream("target/ht1.fits");//
-            out = new FileOutputStream("target/ht1_truncated.fits");
+        try (FileInputStream f = new FileInputStream("target/ht1.fits"); //
+                FileOutputStream out = new FileOutputStream("target/ht1_truncated.fits")) {
             byte[] buffer = new byte[1024];
             int count = f.read(buffer);
             out.write(buffer, 0, count);
-        } finally {
-            SafeClose.close(out);
-            SafeClose.close(f);
         }
-        Fits fits = null;
+
         boolean isTruncated = false;
 
-        try {
-            fits = new Fits("target/ht1_truncated.fits");
+        try (Fits fits = new Fits("target/ht1_truncated.fits")) {
             ImageHDU hdu = (ImageHDU) fits.getHDU(0);
             hdu.getHeader();
             isTruncated = Fits.checkTruncated(fits.getStream());
-        } finally {
-            SafeClose.close(fits);
         }
 
         Assertions.assertTrue(isTruncated);
@@ -1221,7 +1202,6 @@ public class HeaderTest {
         Assertions.assertEquals(n, h.getNumberOfCards());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testGetKeyByIndex() throws Exception {
         Header h = new Header();
@@ -1416,20 +1396,23 @@ public class HeaderTest {
     public void testCheckTruncatedFile() throws Exception {
         File file = new File("noskip.bin");
 
-        FitsFile f = new FitsFile(file, "rw");
-        int[][] i = new int[10][10];
-        BasicHDU<?> hdu = FitsFactory.hduFactory(i);
-        hdu.getHeader().write(f);
+        try (FitsFile f = new FitsFile(file, "rw")) {
+            int[][] i = new int[10][10];
+            BasicHDU<?> hdu = FitsFactory.hduFactory(i);
+            hdu.getHeader().write(f);
+        }
 
-        FitsFile f2 = new FitsFile(file, "rw") {
+        try (FitsFile f2 = new FitsFile(file, "rw") {
             @Override
             public void skipAllBytes(long n) throws IOException {
                 // Skip just beyond the end, so checkTruncated() will return true.
                 super.skipAllBytes(length() - getFilePointer() + 1);
             }
-        };
+        }) {
 
-        new Header(f2);
+            new Header(f2);
+        }
+
         file.delete();
         // No exception
     }
@@ -1541,19 +1524,23 @@ public class HeaderTest {
         Assertions.assertNull(h.getBigIntegerValue(NAXISn.n(2), null));
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void testGetRandomAccessInputFile() throws Exception {
-        Fits f = new Fits(new FitsFile("src/test/resources/nom/tam/fits/test/test.fits", "r"));
-        BasicHDU<?> hdu = f.readHDU();
-        Assertions.assertNotNull(hdu.getHeader().getRandomAccessInput());
+        try (Fits f = new Fits(new FitsFile("src/test/resources/nom/tam/fits/test/test.fits", "r"))) {
+            BasicHDU<?> hdu = f.readHDU();
+            Assertions.assertNotNull(hdu.getHeader().getRandomAccessInput());
+        }
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void testGetRandomAccessInputStream() throws Exception {
-        Fits f = new Fits(
-                new FitsInputStream(new FileInputStream(new File("src/test/resources/nom/tam/fits/test/test.fits"))));
-        BasicHDU<?> hdu = f.readHDU();
-        Assertions.assertNull(hdu.getHeader().getRandomAccessInput());
+        try (Fits f = new Fits(
+                new FitsInputStream(new FileInputStream(new File("src/test/resources/nom/tam/fits/test/test.fits"))))) {
+            BasicHDU<?> hdu = f.readHDU();
+            Assertions.assertNull(hdu.getHeader().getRandomAccessInput());
+        }
     }
 
     @Test
@@ -1586,26 +1573,28 @@ public class HeaderTest {
 
     @Test
     public void testFindCards() throws Exception {
-        Fits f = new Fits(
-                new FitsInputStream(new FileInputStream(new File("src/test/resources/nom/tam/fits/test/test.fits"))));
-        Header hdr = f.readHDU().getHeader();
-        HeaderCard[] cds = hdr.findCards("NAX.*");
-        /*
-         * ought to find 3 cards, NAXIS, NAXIS1, NAXIS2, that start with NAX
-         */
-        Assertions.assertEquals(3, cds.length);
+        try (Fits f = new Fits(
+                new FitsInputStream(new FileInputStream(new File("src/test/resources/nom/tam/fits/test/test.fits"))))) {
+            Header hdr = f.readHDU().getHeader();
+            HeaderCard[] cds = hdr.findCards("NAX.*");
 
-        cds = hdr.findCards(".*Y.*");
-        /*
-         * ought to find no card which has a key with a Y
-         */
-        Assertions.assertEquals(0, cds.length);
+            /*
+             * ought to find 3 cards, NAXIS, NAXIS1, NAXIS2, that start with NAX
+             */
+            Assertions.assertEquals(3, cds.length);
 
-        cds = hdr.findCards(".*\\d");
-        /*
-         * ought to find the two cards that end on digits, namely NAXIS1 and NAXIS2
-         */
-        Assertions.assertEquals(2, cds.length);
+            cds = hdr.findCards(".*Y.*");
+            /*
+             * ought to find no card which has a key with a Y
+             */
+            Assertions.assertEquals(0, cds.length);
+
+            cds = hdr.findCards(".*\\d");
+            /*
+             * ought to find the two cards that end on digits, namely NAXIS1 and NAXIS2
+             */
+            Assertions.assertEquals(2, cds.length);
+        }
     }
 
     @Test

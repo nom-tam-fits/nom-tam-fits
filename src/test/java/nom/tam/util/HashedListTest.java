@@ -246,6 +246,7 @@ public class HashedListTest {
         Assertions.assertFalse(j.hasPrev());
     }
 
+    @SuppressWarnings("unlikely-arg-type")
     @Test
     public void testIterator() {
 
@@ -274,6 +275,7 @@ public class HashedListTest {
         j.next();
         j.next();
         j.remove(); // Should get rid of second row
+
         Assertions.assertFalse(h1.contains("Row 2"));
         Assertions.assertTrue(j.hasNext());
         Assertions.assertEquals("Row 3", j.next().value);
@@ -286,13 +288,8 @@ public class HashedListTest {
 
     @Test
     public void testIndexOfWhenNotInList() {
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
-
-            HashedList<TestCursorValue> h = new HashedList<>();
-
-            h.indexOf(new TestCursorValue("K", "R"));
-
-        });
+        HashedList<TestCursorValue> h = new HashedList<>();
+        Assertions.assertThrows(NoSuchElementException.class, () -> h.indexOf(new TestCursorValue("K", "R")));
     }
 
     @Deprecated
@@ -307,36 +304,21 @@ public class HashedListTest {
 
     @Test
     public void testIteratorWithNegativeIndex() {
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
-
-            HashedList<TestCursorValue> h = new HashedList<>();
-
-            h.iterator(-1);
-
-        });
+        HashedList<TestCursorValue> h = new HashedList<>();
+        Assertions.assertThrows(NoSuchElementException.class, () -> h.iterator(-1));
     }
 
     @Test
     public void testIteratorWithTooBigIndex() {
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
-
-            HashedList<TestCursorValue> h = new HashedList<>();
-
-            h.iterator(h.size() + 1);
-
-        });
+        HashedList<TestCursorValue> h = new HashedList<>();
+        Assertions.assertThrows(NoSuchElementException.class, () -> h.iterator(h.size() + 1));
     }
 
     @Test
     public void testIteratorForNonPresentKey() {
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
-
-            HashedList<TestCursorValue> h = new HashedList<>();
-            h.add(new TestCursorValue("K", "R"));
-
-            h.iterator("K1");
-
-        });
+        HashedList<TestCursorValue> h = new HashedList<>();
+        h.add(new TestCursorValue("K", "R"));
+        Assertions.assertThrows(NoSuchElementException.class, () -> h.iterator("K1"));
     }
 
     @Test
@@ -352,24 +334,14 @@ public class HashedListTest {
 
     @Test
     public void testIteratorNextWhenNone() {
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
-
-            HashedList<TestCursorValue> h = new HashedList<>();
-
-            h.iterator(0).next();
-
-        });
+        HashedList<TestCursorValue> h = new HashedList<>();
+        Assertions.assertThrows(NoSuchElementException.class, () -> h.iterator(0).next());
     }
 
     @Test
     public void testIteratorPrevWhenNone() {
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
-
-            HashedList<TestCursorValue> h = new HashedList<>();
-
-            h.iterator(0).prev();
-
-        });
+        HashedList<TestCursorValue> h = new HashedList<>();
+        Assertions.assertThrows(NoSuchElementException.class, () -> h.iterator(0).prev());
     }
 
     @Test
@@ -381,6 +353,7 @@ public class HashedListTest {
         Assertions.assertFalse(h.remove(h.size()));
     }
 
+    @SuppressWarnings("unlikely-arg-type")
     @Test
     public void testRemoveWhenNotPresent() {
         HashedList<TestCursorValue> h = new HashedList<>();

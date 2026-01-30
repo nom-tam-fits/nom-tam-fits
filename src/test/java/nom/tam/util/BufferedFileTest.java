@@ -64,6 +64,7 @@ public class BufferedFileTest {
         }
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void testReadWriteAscii() throws IOException {
         FitsFactory.setUseUnicodeChars(false);
@@ -79,6 +80,7 @@ public class BufferedFileTest {
         }
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void testReadWriteUnicode() throws IOException {
         FitsFactory.setUseUnicodeChars(true);

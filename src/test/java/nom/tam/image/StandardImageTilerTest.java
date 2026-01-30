@@ -36,7 +36,9 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -75,7 +77,18 @@ public class StandardImageTilerTest {
 
     private TestImageTiler tiler;
 
+    private static FitsFile file;
     private int[][] dataArray;
+
+    @BeforeAll
+    public static void init() throws Exception {
+        file = new FitsFile("target/StandardImageTilerTest", "rw");
+    }
+
+    @AfterAll
+    public static void cleanup() throws Exception {
+        file.close();
+    }
 
     @BeforeEach
     public void setup() throws Exception {
@@ -83,11 +96,12 @@ public class StandardImageTilerTest {
         for (int[] intArray : dataArray) {
             Arrays.fill(intArray, 1);
         }
-        FitsFile file = new FitsFile("target/StandardImageTilerTest", "rw");
+
+        file.seek(0);
         file.writeArray(dataArray);
         file.seek(0);
-        tiler = new TestImageTiler(file, 0, ArrayFuncs.getDimensions(dataArray), ArrayFuncs.getBaseClass(dataArray));
 
+        tiler = new TestImageTiler(file, 0, ArrayFuncs.getDimensions(dataArray), ArrayFuncs.getBaseClass(dataArray));
     }
 
     @Test

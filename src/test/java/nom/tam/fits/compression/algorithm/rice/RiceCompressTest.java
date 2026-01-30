@@ -365,14 +365,15 @@ public class RiceCompressTest {
         c.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1);
         c.compress();
 
-        Fits cf = new Fits();
-        cf.addHDU(c);
-        cf.write(fileName);
+        try (Fits cf = new Fits()) {
+            cf.addHDU(c);
+            cf.write(fileName);
+        }
 
-        cf = new Fits(fileName);
-        c = (CompressedImageHDU) cf.getHDU(1);
-
-        return c.asImageHDU().getKernel();
+        try (Fits cf = new Fits(fileName)) {
+            c = (CompressedImageHDU) cf.getHDU(1);
+            return c.asImageHDU().getKernel();
+        }
     }
 
     @Test

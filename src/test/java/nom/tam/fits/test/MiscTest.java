@@ -87,9 +87,9 @@ public class MiscTest {
         props.put("version", "1.1.1-SNAPSHOT");
         File propFile = new File("target/test-classes/META-INF/maven/gov.nasa.gsfc.heasarc/nom-tam-fits/pom.properties");
         propFile.getParentFile().mkdirs();
-        OutputStream out = new FileOutputStream(propFile);
-        props.store(out, "test version");
-        out.close();
+        try (OutputStream out = new FileOutputStream(propFile)) {
+            props.store(out, "test version");
+        }
         String version = Fits.version();
         Assertions.assertEquals("1.1.1-SNAPSHOT", version);
     }

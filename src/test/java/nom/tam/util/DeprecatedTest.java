@@ -49,26 +49,29 @@ public class DeprecatedTest {
     public void testBufferedFileConstructors() throws Exception {
         File f = new File("bftest.bin");
 
-        BufferedFile bf = new BufferedFile(f, "rw", 1024);
-        bf.close();
+        try (BufferedFile bf = new BufferedFile(f, "rw", 1024)) {
+        }
 
-        bf = new BufferedFile(f, "rw");
-        bf.write(new byte[100]);
-        bf.close();
+        try (BufferedFile bf = new BufferedFile(f, "rw")) {
+            bf.write(new byte[100]);
+        }
         Assertions.assertEquals(100, f.length());
 
-        bf = new BufferedFile(f);
-        Assertions.assertEquals(100, bf.length());
-        bf.close();
+        try (BufferedFile bf = new BufferedFile(f)) {
+            Assertions.assertEquals(100, bf.length());
+        }
 
         f.delete();
     }
 
     @Test
     public void testBufferedDataInputStreamConstructors() throws Exception {
-        ByteArrayInputStream bi = new ByteArrayInputStream(new byte[100]);
-        BufferedDataInputStream i = new BufferedDataInputStream(bi);
-        i = new BufferedDataInputStream(bi, 16);
+        try (ByteArrayInputStream bi = new ByteArrayInputStream(new byte[100])) {
+            try (BufferedDataInputStream i = new BufferedDataInputStream(bi)) {
+            }
+            try (BufferedDataInputStream i = new BufferedDataInputStream(bi, 16)) {
+            }
+        }
     }
 
     @Test

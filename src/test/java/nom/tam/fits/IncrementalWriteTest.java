@@ -84,13 +84,14 @@ public class IncrementalWriteTest {
 
     @Test
     public void incrementalWriteReverse() throws Exception {
-        Fits fits = new Fits();
-        fits.addHDU(createHDU());
-        fits.addHDU(createHDU());
+        try (Fits fits = new Fits()) {
+            fits.addHDU(createHDU());
+            fits.addHDU(createHDU());
 
-        try (FitsFile f = new FitsFile(fileName, "rw")) {
-            fits.getHDU(1).write(f);
-            fits.getHDU(0).write(f);
+            try (FitsFile f = new FitsFile(fileName, "rw")) {
+                fits.getHDU(1).write(f);
+                fits.getHDU(0).write(f);
+            }
         }
         checkFile();
     }

@@ -128,10 +128,8 @@ public class TestArrayFuncs {
         if (xClass.equals(float[].class)) {
             if (tolf == 0) {
                 return Arrays.equals((float[]) x, (float[]) y);
-            } else {
-                return floatArrayEquals((float[]) x, (float[]) y, (float) tolf);
             }
-
+            return floatArrayEquals((float[]) x, (float[]) y, (float) tolf);
         } else if (xClass.equals(byte[].class)) {
             return Arrays.equals((byte[]) x, (byte[]) y);
 

@@ -278,17 +278,20 @@ public class ImageMaskTest {
         constrs[0].newInstance();
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected TileBuffer createTileBuffer(Buffer buffer, ElementType type) {
         TileBuffer tileBuffer = TileBufferFactory.createTileBuffer(type, 0, 10, 10, 1);
         tileBuffer.setData(buffer);
         return tileBuffer;
     }
 
+    @SuppressWarnings("rawtypes")
     protected void createTilePreserver(Buffer buffer, ImageNullPixelMask mask, ElementType type, int tileIndex) {
         TileBuffer tileBuffer = createTileBuffer(buffer, type);
         mask.createTilePreserver(tileBuffer, tileIndex).preserveNull();
     }
 
+    @SuppressWarnings("rawtypes")
     protected NullPixelMaskRestorer createTileRestorer(Buffer buffer, ImageNullPixelMask mask, ElementType type,
             int tileIndex) {
         TileBuffer tileBuffer = createTileBuffer(buffer, type);

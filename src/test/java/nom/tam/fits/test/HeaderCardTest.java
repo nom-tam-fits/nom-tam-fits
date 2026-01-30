@@ -218,7 +218,6 @@ public class HeaderCardTest {
 
     @Test
     public void testMissingEndQuotes() throws Exception {
-        boolean thrown = false;
         HeaderCard hc = null;
 
         FitsFactory.setAllowHeaderRepairs(false);
@@ -324,7 +323,7 @@ public class HeaderCardTest {
         Assertions.assertEquals('7', hc.toString().charAt(79));
         Assertions.assertEquals(new BigDecimal("123.666666666666666666666666666666666666666666666666666666666666666667"),
                 hc.getValue(BigDecimal.class, null));
-        Assertions.assertEquals(new Double("123.6666666666666667"), hc.getValue(Double.class, null));
+        Assertions.assertEquals(123.66666666666667, hc.getValue(Double.class, null));
         Assertions.assertEquals(80, hc.toString().length());
     }
 
@@ -346,7 +345,7 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard("TEST", new BigDecimal("123.0"), "dummy");
         Assertions.assertEquals(BigDecimal.class, hc.valueType());
         Assertions.assertEquals(new BigDecimal("123.0"), hc.getValue(BigDecimal.class, null));
-        Assertions.assertEquals(new Double("123.0"), hc.getValue(Double.class, null));
+        Assertions.assertEquals(123.0, hc.getValue(Double.class, null));
         Assertions.assertEquals(80, hc.toString().length());
     }
 
@@ -924,11 +923,12 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard("HIERARCH.TEST.TEST.TEST.TEST.TEST.TEST", //
                 "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla ",
                 " dummy");
-        FitsInputStream data = headerCardToStream(hc);
-        HeaderCard headerCard = new HeaderCard(data);
-        Assertions.assertEquals(hc.getKey(), headerCard.getKey());
-        Assertions.assertEquals(hc.getValue(), headerCard.getValue());
 
+        try (FitsInputStream data = headerCardToStream(hc)) {
+            HeaderCard headerCard = new HeaderCard(data);
+            Assertions.assertEquals(hc.getKey(), headerCard.getKey());
+            Assertions.assertEquals(hc.getValue(), headerCard.getValue());
+        }
     }
 
     protected FitsInputStream headerCardToStream(HeaderCard hc) throws Exception {
@@ -943,22 +943,28 @@ public class HeaderCardTest {
         Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
         Assertions.assertEquals("HIERARCH TEST1 TEST2 TEST3 TEST4 TEST5 TEST6 = 'xy'                             ",
                 headerCard.toString());
-        Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6",
-                new HeaderCard(headerCardToStream(headerCard)).getKey());
+
+        try (FitsInputStream in = headerCardToStream(headerCard)) {
+            Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", new HeaderCard(in).getKey());
+        }
 
         FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(1));
         Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
         Assertions.assertEquals("HIERARCH TEST1.TEST2.TEST3.TEST4.TEST5.TEST6 = 'xy'                             ",
                 headerCard.toString());
-        Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6",
-                new HeaderCard(headerCardToStream(headerCard)).getKey());
+
+        try (FitsInputStream in = headerCardToStream(headerCard)) {
+            Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", new HeaderCard(in).getKey());
+        }
 
         FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
         Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
         Assertions.assertEquals("HIERARCH  TEST1.TEST2.TEST3.TEST4.TEST5.TEST6 = 'xy'                            ",
                 headerCard.toString());
-        Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6",
-                new HeaderCard(headerCardToStream(headerCard)).getKey());
+
+        try (FitsInputStream in = headerCardToStream(headerCard)) {
+            Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", new HeaderCard(in).getKey());
+        }
 
     }
 
@@ -1030,22 +1036,28 @@ public class HeaderCardTest {
         Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
         Assertions.assertEquals("HIERARCH TEST1 TEST2 TEST3 TEST4 TEST5 TEST6 = 'xy'                             ",
                 headerCard.toString());
-        Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6",
-                new HeaderCard(headerCardToStream(headerCard)).getKey());
+
+        try (FitsInputStream in = headerCardToStream(headerCard)) {
+            Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", new HeaderCard(in).getKey());
+        }
 
         FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(1));
         Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
         Assertions.assertEquals("HIERARCH TEST1.TEST2.TEST3.TEST4.TEST5.TEST6 = 'xy'                             ",
                 headerCard.toString());
-        Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6",
-                new HeaderCard(headerCardToStream(headerCard)).getKey());
+
+        try (FitsInputStream in = headerCardToStream(headerCard)) {
+            Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", new HeaderCard(in).getKey());
+        }
 
         FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
         Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
         Assertions.assertEquals("HIERARCH  TEST1.TEST2.TEST3.TEST4.TEST5.TEST6 = 'xy'                            ",
                 headerCard.toString());
-        Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6",
-                new HeaderCard(headerCardToStream(headerCard)).getKey());
+
+        try (FitsInputStream in = headerCardToStream(headerCard)) {
+            Assertions.assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", new HeaderCard(in).getKey());
+        }
     }
 
     @Test

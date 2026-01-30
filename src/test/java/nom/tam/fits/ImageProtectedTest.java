@@ -51,79 +51,60 @@ public class ImageProtectedTest {
 
     @Test
     public void testImageDataFail() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ImageData data = new ImageData("test");
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ImageData("test"));
     }
 
     @Test
     public void testImageDataFailWrongDatatype() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ImageData data = new ImageData(new String[] {"test"});
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ImageData(new String[] {"test"}));
     }
 
     @Test
     public void testImageDataFailUnfilledDimention() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            ImageData data = new ImageData(new int[][] {null});
-
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ImageData(new int[][] {null}));
     }
 
     @Test
     public void testGetDataFromFileFailing() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header header = new Header();
+        header.nullImage();
+        header.setNaxes(2);
+        header.setNaxis(1, 2);
+        header.setNaxis(2, 2);
+        ImageData data = new ImageData(header);
 
-            Header header = new Header();
-            header.nullImage();
-            header.setNaxes(2);
-            header.setNaxis(1, 2);
-            header.setNaxis(2, 2);
-            ImageData data = new ImageData(header);
-            FitsFile input = new FitsFile("target/testGetDataFromFileFailing.bin", "rw");
+        try (FitsFile input = new FitsFile("target/testGetDataFromFileFailing.bin", "rw")) {
             input.write(new byte[2880]);
-            input.close();
-            input = new FitsFile("target/testGetDataFromFileFailing.bin", "rw");
-            data.read(input);
-            input.close();
-            data.getData();
+        }
 
-        });
+        try (FitsFile input = new FitsFile("target/testGetDataFromFileFailing.bin", "rw")) {
+            data.read(input);
+        }
+
+        Assertions.assertThrows(FitsException.class, () -> data.getData());
     }
 
     @Test
     public void testGetDataFromWrongHeaderGroup() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header header = new Header();
+        header.nullImage();
+        header.setNaxes(2);
+        header.setNaxis(1, 2);
+        header.setNaxis(2, 2);
+        header.addValue(GCOUNT, 2);
 
-            Header header = new Header();
-            header.nullImage();
-            header.setNaxes(2);
-            header.setNaxis(1, 2);
-            header.setNaxis(2, 2);
-            header.addValue(GCOUNT, 2);
-            ImageData data = new ImageData(header);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> new ImageData(header));
     }
 
     @Test
     public void testGetDataFromWrongHeaderDimention() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header header = new Header();
+        header.nullImage();
+        header.setNaxes(2);
+        header.setNaxis(1, -2);
+        header.setNaxis(2, 2);
 
-            Header header = new Header();
-            header.nullImage();
-            header.setNaxes(2);
-            header.setNaxis(1, -2);
-            header.setNaxis(2, 2);
-            ImageData data = new ImageData(header);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> new ImageData(header));
     }
 
     public void testReadFileFailing() throws Exception {
@@ -134,128 +115,119 @@ public class ImageProtectedTest {
         header.setNaxis(1, 2);
         header.setNaxis(2, 2);
         ImageData data = new ImageData(header);
-        FitsFile input = new FitsFile("target/truncated.bin", "rw");
-        input.write(new byte[2]);
-        input.close();
-        input = new FitsFile("target/truncated.bin", "rw");
-        data.read(input);
 
-        // AK: read used to throw an exception as skipAllByes failed beyond the file's end.
-        // However, the contract of RandomAccess is to allow skipAllBytes() to move beyond
-        // the file's end. But, we can check if the file pointer is beyond the current
-        // end-of-file, so that's what we will check for from now on.
-        Assertions.assertTrue(Fits.checkTruncated(input));
-        input.close();
+        try (FitsFile input = new FitsFile("target/truncated.bin", "rw")) {
+            input.write(new byte[2]);
+        }
+
+        try (FitsFile input = new FitsFile("target/truncated.bin", "rw")) {
+            data.read(input);
+
+            // AK: read used to throw an exception as skipAllByes failed beyond the file's end.
+            // However, the contract of RandomAccess is to allow skipAllBytes() to move beyond
+            // the file's end. But, we can check if the file pointer is beyond the current
+            // end-of-file, so that's what we will check for from now on.
+            Assertions.assertTrue(Fits.checkTruncated(input));
+        }
     }
 
     @Test
     public void testReadInputFailing() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header header = new Header();
+        header.nullImage();
+        header.setNaxes(2);
+        header.setNaxis(1, 2);
+        header.setNaxis(2, 2);
+        ImageData data = new ImageData(header);
 
-            Header header = new Header();
-            header.nullImage();
-            header.setNaxes(2);
-            header.setNaxis(1, 2);
-            header.setNaxis(2, 2);
-            ImageData data = new ImageData(header);
-            FitsInputStream input = new FitsInputStream(new ByteArrayInputStream(new byte[2]));
-            try {
-                data.read(input);
-            } finally {
-                input.close();
-            }
-
-        });
+        try (FitsInputStream input = new FitsInputStream(new ByteArrayInputStream(new byte[2]))) {
+            Assertions.assertThrows(FitsException.class, () -> data.read(input));
+        }
     }
 
     @Test
     public void testReadInputPaddingFailing() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header header = new Header();
+        header.nullImage();
+        header.setNaxes(2);
+        header.setNaxis(1, 2);
+        header.setNaxis(2, 2);
+        ImageData data = new ImageData(header);
 
-            Header header = new Header();
-            header.nullImage();
-            header.setNaxes(2);
-            header.setNaxis(1, 2);
-            header.setNaxis(2, 2);
-            ImageData data = new ImageData(header);
-            FitsInputStream input = new FitsInputStream(new ByteArrayInputStream(new byte[20])) {
+        try (FitsInputStream input = new FitsInputStream(new ByteArrayInputStream(new byte[20])) {
 
-                @Override
-                public void skipAllBytes(long toSkip) throws IOException {
-                    throw new IOException();
-                }
-            };
-            try {
-                data.read(input);
-            } finally {
-                input.close();
+            @Override
+            public void skipAllBytes(long toSkip) throws IOException {
+                throw new IOException();
             }
+        }) {
 
-        });
+            Assertions.assertThrows(FitsException.class, () -> data.read(input));
+        }
     }
 
     @Test
     public void testWriteFailing() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        ImageData data = new ImageData(new int[][] {{1, 2}, {3, 4}});
+        try (FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
 
-            ImageData data = new ImageData(new int[][] {{1, 2}, {3, 4}});
-            FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
+            @Override
+            public void writeArray(Object o) throws IOException {
+                ThrowAnyException.throwIOException("could not write");
+            }
+        }) {
 
-                @Override
-                public void writeArray(Object o) throws IOException {
-                    ThrowAnyException.throwIOException("could not write");
-                }
-            };
-            data.write(out);
-
-        });
+            Assertions.assertThrows(FitsException.class, () -> data.write(out));
+        }
     }
 
     @Test
     public void testGetDataFromFileduringWriteFailing() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header header = new Header();
+        header.nullImage();
+        header.setNaxes(2);
+        header.setNaxis(1, 2);
+        header.setNaxis(2, 2);
+        ImageData data = new ImageData(header);
 
-            Header header = new Header();
-            header.nullImage();
-            header.setNaxes(2);
-            header.setNaxis(1, 2);
-            header.setNaxis(2, 2);
-            ImageData data = new ImageData(header);
-            FitsFile input = new FitsFile("target/testGetDataFromFileduringWriteFailing.bin", "rw");
+        try (FitsFile input = new FitsFile("target/testGetDataFromFileduringWriteFailing.bin", "rw")) {
             input.write(new byte[2880]);
-            input.close();
-            input = new FitsFile("target/testGetDataFromFileduringWriteFailing.bin", "rw");
-            data.read(input);
-            input.close();
-            // file closed so no possibility to get the image data.
-            FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
-            data.write(out);
+        }
 
-        });
+        try (FitsFile input = new FitsFile("target/testGetDataFromFileduringWriteFailing.bin", "rw")) {
+            data.read(input);
+        }
+
+        // file closed so no possibility to get the image data.
+        try (FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream())) {
+            Assertions.assertThrows(FitsException.class, () -> data.write(out));
+        }
+
     }
 
     @Test
     public void testGetDataHeaderduringWriteFailing() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
+        Header header = new Header();
+        header.nullImage();
+        header.setNaxes(2);
+        header.setNaxis(1, 2);
+        header.setNaxis(2, 2);
+        ImageData data = new ImageData(header);
 
-            Header header = new Header();
-            header.nullImage();
-            header.setNaxes(2);
-            header.setNaxis(1, 2);
-            header.setNaxis(2, 2);
-            ImageData data = new ImageData(header);
-            FitsFile input = new FitsFile("target/testGetDataHeaderduringWriteFailing.bin", "rw");
+        try (FitsFile input = new FitsFile("target/testGetDataHeaderduringWriteFailing.bin", "rw")) {
             input.write(new byte[2880]);
-            input.close();
-            input = new FitsFile("target/testGetDataHeaderduringWriteFailing.bin", "rw");
-            data.read(input);
-            input.close();
-            data.setTiler(null);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            FitsOutputStream out = new FitsOutputStream(outputStream);
-            data.write(out);
+        }
 
-        });
+        try (FitsFile input = new FitsFile("target/testGetDataHeaderduringWriteFailing.bin", "rw")) {
+            data.read(input);
+        }
+
+        data.setTiler(null);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        try (FitsOutputStream out = new FitsOutputStream(outputStream)) {
+            Assertions.assertThrows(FitsException.class, () -> data.write(out));
+        }
     }
 
     @Test
@@ -268,22 +240,27 @@ public class ImageProtectedTest {
             header.setNaxis(1, 2);
             header.setNaxis(2, 2);
             ImageData data = new ImageData(header);
-            FitsFile input = new FitsFile("target/testGetDataHeaderduringWriteImposibleFailing.bin", "rw");
-            input.write(new byte[2880]);
-            input.close();
-            input = new FitsFile("target/testGetDataHeaderduringWriteImposibleFailing.bin", "rw");
-            data.read(input);
-            input.close();
-            data.setTiler(null);
 
-            // this can not realy happen but just to be sure
-            Field field = data.getClass().getDeclaredField("dataDescription");
-            field.setAccessible(true);
-            field.set(data, null);
+            try (FitsFile input = new FitsFile("target/testGetDataHeaderduringWriteImposibleFailing.bin", "rw")) {
+                input.write(new byte[2880]);
+            }
 
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            FitsOutputStream out = new FitsOutputStream(outputStream);
-            data.write(out);
+            try (FitsFile input = new FitsFile("target/testGetDataHeaderduringWriteImposibleFailing.bin", "rw")) {
+                data.read(input);
+                input.close();
+                data.setTiler(null);
+
+                // this can not realy happen but just to be sure
+                Field field = data.getClass().getDeclaredField("dataDescription");
+                field.setAccessible(true);
+                field.set(data, null);
+
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+                try (FitsOutputStream out = new FitsOutputStream(outputStream)) {
+                    data.write(out);
+                }
+            }
 
         });
     }

@@ -43,20 +43,18 @@ public class ArrayStreamTest {
     @Test
     public void testPublicInputConstructor() throws Exception {
         ByteArrayOutputStream bo = new ByteArrayOutputStream(100);
-        ArrayOutputStream o = new ArrayOutputStream(bo, 100, new FitsEncoder(OutputWriter.from(bo)));
-        o.write(1);
-        o.close();
-
+        try (ArrayOutputStream o = new ArrayOutputStream(bo, 100, new FitsEncoder(OutputWriter.from(bo)))) {
+            o.write(1);
+        }
         // All is good if wse got this far without an exception.
     }
 
     @Test
     public void testPublicOutputConstructors() throws Exception {
         ByteArrayInputStream bi = new ByteArrayInputStream(new byte[100]);
-        ArrayInputStream i = new ArrayInputStream(bi, 100, new FitsDecoder(InputReader.from(bi)));
-        i.read();
-        i.close();
-
+        try (ArrayInputStream i = new ArrayInputStream(bi, 100, new FitsDecoder(InputReader.from(bi)))) {
+            i.read();
+        }
         // All is good if wse got this far without an exception.
     }
 

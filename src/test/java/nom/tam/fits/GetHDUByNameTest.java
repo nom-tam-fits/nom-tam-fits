@@ -52,25 +52,26 @@ public class GetHDUByNameTest {
 
     @BeforeEach
     public void writeTestFits() throws Exception {
-        Fits fits = new Fits();
+        try (Fits fits = new Fits()) {
 
-        Header h = new Header();
-        h.setSimple(true);
-        h.setBitpix(Bitpix.INTEGER);
-        h.setNaxes(0);
+            Header h = new Header();
+            h.setSimple(true);
+            h.setBitpix(Bitpix.INTEGER);
+            h.setNaxes(0);
 
-        fits.addHDU(Fits.makeHDU(h));
+            fits.addHDU(Fits.makeHDU(h));
 
-        fits.addHDU(makeExtension("EXTA", -1));
-        fits.addHDU(makeExtension("EXTA", 1));
-        fits.addHDU(makeExtension("EXTA", 2));
-        fits.addHDU(makeExtension("EXTB", 1));
-        fits.addHDU(makeExtension("EXTB", 2));
-        fits.addHDU(makeExtension("EXTC", -1));
+            fits.addHDU(makeExtension("EXTA", -1));
+            fits.addHDU(makeExtension("EXTA", 1));
+            fits.addHDU(makeExtension("EXTA", 2));
+            fits.addHDU(makeExtension("EXTB", 1));
+            fits.addHDU(makeExtension("EXTB", 2));
+            fits.addHDU(makeExtension("EXTC", -1));
 
-        try (FitsOutputStream out = new FitsOutputStream(new FileOutputStream(new File(extensionFile)))) {
-            fits.write(out);
-            out.close();
+            try (FitsOutputStream out = new FitsOutputStream(new FileOutputStream(new File(extensionFile)))) {
+                fits.write(out);
+                out.close();
+            }
         }
     }
 

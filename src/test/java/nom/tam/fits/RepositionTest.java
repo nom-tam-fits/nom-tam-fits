@@ -43,20 +43,13 @@ public class RepositionTest {
 
     @Test
     public void testFitsUtilRepositionNull() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            FitsUtil.reposition(null, 1);
-
-        });
+        Assertions.assertThrows(FitsException.class, () -> FitsUtil.reposition(null, 1));
     }
 
     @Test
     public void testFitsUtilReposition() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
-            FitsUtil.reposition(out, -1);
-
-        });
+        try (FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream())) {
+            Assertions.assertThrows(FitsException.class, () -> FitsUtil.reposition(out, -1));
+        }
     }
 }

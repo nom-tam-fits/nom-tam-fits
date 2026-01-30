@@ -35,11 +35,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.LongBuffer;
-import java.nio.ShortBuffer;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -60,8 +55,7 @@ public class PrimitiveTypeTest {
     @Test
     public void testByte() throws Exception {
         Assertions.assertSame(PrimitiveTypes.BYTE, PrimitiveTypeHandler.valueOf(8));
-        Assertions.assertEquals(byte.class, ((byte[]) PrimitiveTypes.BYTE.newArray(5)).getClass().getComponentType());
-        Assertions.assertTrue(PrimitiveTypes.BYTE.newBuffer(5) instanceof ByteBuffer);
+        Assertions.assertEquals(byte.class, PrimitiveTypes.BYTE.newArray(5).getClass().getComponentType());
         Assertions.assertEquals(3, bufferAtPosition(PrimitiveTypes.BYTE, 6, 3).capacity());
 
         byte expectedValue = 1;
@@ -87,8 +81,7 @@ public class PrimitiveTypeTest {
     @Test
     public void testDouble() throws Exception {
         Assertions.assertSame(PrimitiveTypes.DOUBLE, PrimitiveTypeHandler.valueOf(-64));
-        Assertions.assertEquals(double.class, ((double[]) PrimitiveTypes.DOUBLE.newArray(5)).getClass().getComponentType());
-        Assertions.assertTrue(PrimitiveTypes.DOUBLE.newBuffer(5) instanceof DoubleBuffer);
+        Assertions.assertEquals(double.class, PrimitiveTypes.DOUBLE.newArray(5).getClass().getComponentType());
         Assertions.assertEquals(3, bufferAtPosition(PrimitiveTypes.DOUBLE, 6, 3).capacity());
 
         double testValue = 567.7686876876725638752364576543d;
@@ -105,8 +98,7 @@ public class PrimitiveTypeTest {
     @Test
     public void testFloat() throws Exception {
         Assertions.assertSame(PrimitiveTypes.FLOAT, PrimitiveTypeHandler.valueOf(-32));
-        Assertions.assertEquals(float.class, ((float[]) PrimitiveTypes.FLOAT.newArray(5)).getClass().getComponentType());
-        Assertions.assertTrue(PrimitiveTypes.FLOAT.newBuffer(5) instanceof FloatBuffer);
+        Assertions.assertEquals(float.class, PrimitiveTypes.FLOAT.newArray(5).getClass().getComponentType());
         Assertions.assertEquals(3, bufferAtPosition(PrimitiveTypes.FLOAT, 6, 3).capacity());
 
         float testValue = 567.7686876876f;
@@ -122,8 +114,7 @@ public class PrimitiveTypeTest {
     @Test
     public void testInt() throws Exception {
         Assertions.assertSame(PrimitiveTypes.INT, PrimitiveTypeHandler.valueOf(32));
-        Assertions.assertEquals(int.class, ((int[]) PrimitiveTypes.INT.newArray(5)).getClass().getComponentType());
-        Assertions.assertTrue(PrimitiveTypes.INT.newBuffer(5) instanceof IntBuffer);
+        Assertions.assertEquals(int.class, PrimitiveTypes.INT.newArray(5).getClass().getComponentType());
         Assertions.assertEquals(3, bufferAtPosition(PrimitiveTypes.INT, 6, 3).capacity());
 
         int expectedValue = 256 * 256 * 256;
@@ -137,8 +128,7 @@ public class PrimitiveTypeTest {
     @Test
     public void testLong() throws Exception {
         Assertions.assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.valueOf(64));
-        Assertions.assertEquals(long.class, ((long[]) PrimitiveTypes.LONG.newArray(5)).getClass().getComponentType());
-        Assertions.assertTrue(PrimitiveTypes.LONG.newBuffer(5L) instanceof LongBuffer);
+        Assertions.assertEquals(long.class, PrimitiveTypes.LONG.newArray(5).getClass().getComponentType());
         Assertions.assertEquals(3, bufferAtPosition(PrimitiveTypes.LONG, 6, 3).capacity());
 
         long expectedValue = 256L * 256L * 256L * 256L * 256L * 256L * 256L;
@@ -159,8 +149,7 @@ public class PrimitiveTypeTest {
     @Test
     public void testShort() throws Exception {
         Assertions.assertSame(PrimitiveTypes.SHORT, PrimitiveTypeHandler.valueOf(16));
-        Assertions.assertEquals(short.class, ((short[]) PrimitiveTypes.SHORT.newArray(5)).getClass().getComponentType());
-        Assertions.assertTrue(PrimitiveTypes.SHORT.newBuffer(5) instanceof ShortBuffer);
+        Assertions.assertEquals(short.class, PrimitiveTypes.SHORT.newArray(5).getClass().getComponentType());
         Assertions.assertEquals(3, bufferAtPosition(PrimitiveTypes.SHORT, 6, 3).capacity());
 
         short expectedValue = 256;

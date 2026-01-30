@@ -112,11 +112,8 @@ public class JunkTest {
             }
         }
 
-        int pos = 0;
         try (Fits f = new Fits("target/j1.fits")) {
             f.read();
-        } catch (Exception e) {
-            pos = 1;
         }
 
         FitsFactory.setDefaults();

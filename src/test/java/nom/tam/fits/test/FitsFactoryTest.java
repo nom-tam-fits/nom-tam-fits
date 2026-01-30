@@ -88,6 +88,7 @@ public class FitsFactoryTest {
 
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void testInitThreadPool() throws Exception {
         ExecutorService s = FitsFactory.threadPool();

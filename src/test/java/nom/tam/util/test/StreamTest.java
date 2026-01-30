@@ -83,6 +83,7 @@ public class StreamTest {
 
     }
 
+    @SuppressWarnings("resource")
     @BeforeAll
     public static void setup() throws Exception {
         PipedInputStream pipeInput = new PipedInputStream(10240);
@@ -576,18 +577,19 @@ public class StreamTest {
 
     @Test
     public void testIntEof() throws Exception {
-        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[3]));
-
-        Assertions.assertThrows(EOFException.class, () -> in.readInt());
-        Assertions.assertEquals(0, in.available());
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[3]))) {
+            Assertions.assertThrows(EOFException.class, () -> in.readInt());
+            Assertions.assertEquals(0, in.available());
+        }
     }
 
     @Test
     public void testReadLine() throws Exception {
-        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes("test line")));
-        Assertions.assertTrue(in.toString().contains("pos=0"), in.toString());
-        Assertions.assertEquals("test line", in.readLine());
-        Assertions.assertEquals(0, in.available());
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes("test line")))) {
+            Assertions.assertTrue(in.toString().contains("pos=0"), in.toString());
+            Assertions.assertEquals("test line", in.readLine());
+            Assertions.assertEquals(0, in.available());
+        }
     }
 
     @Test
@@ -703,13 +705,12 @@ public class StreamTest {
 
     private FitsInputStream create8ByteInput() {
         InputStream fileInput = new ByteArrayInputStream(new byte[1000]) {
-
-            int count = 0;
+            int n = 0;
 
             @Override
             public int read(byte[] obuf, int offset, int len) {
-                if (count == 0) {
-                    return count = 8;
+                if (n == 0) {
+                    return n = 8;
                 }
                 return -1;
             }

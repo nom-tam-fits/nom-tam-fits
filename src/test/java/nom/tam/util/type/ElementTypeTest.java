@@ -58,37 +58,37 @@ public class ElementTypeTest {
 
     @Test
     public void testDefaultSizeOfByte() throws Exception {
-        Assertions.assertEquals(ElementType.BYTE.size(), ElementType.BYTE.size(new Byte((byte) 0)));
+        Assertions.assertEquals(ElementType.BYTE.size(), ElementType.BYTE.size((byte) 0));
     }
 
     @Test
     public void testDefaultSizeOfChar() throws Exception {
-        Assertions.assertEquals(ElementType.CHAR.size(), ElementType.CHAR.size(new Character('X')));
+        Assertions.assertEquals(ElementType.CHAR.size(), ElementType.CHAR.size('X'));
     }
 
     @Test
     public void testDefaultSizeOfShort() throws Exception {
-        Assertions.assertEquals(ElementType.SHORT.size(), ElementType.SHORT.size(new Short((short) 1)));
+        Assertions.assertEquals(ElementType.SHORT.size(), ElementType.SHORT.size((short) 1));
     }
 
     @Test
     public void testDefaultSizeOfInt() throws Exception {
-        Assertions.assertEquals(ElementType.INT.size(), ElementType.INT.size(new Integer(2)));
+        Assertions.assertEquals(ElementType.INT.size(), ElementType.INT.size(2));
     }
 
     @Test
     public void testDefaultSizeOfLong() throws Exception {
-        Assertions.assertEquals(ElementType.LONG.size(), ElementType.LONG.size(new Long(3L)));
+        Assertions.assertEquals(ElementType.LONG.size(), ElementType.LONG.size(3L));
     }
 
     @Test
     public void testDefaultSizeOfFloat() throws Exception {
-        Assertions.assertEquals(ElementType.FLOAT.size(), ElementType.FLOAT.size(new Float(4.0F)));
+        Assertions.assertEquals(ElementType.FLOAT.size(), ElementType.FLOAT.size(4.0F));
     }
 
     @Test
     public void testDefaultSizeOfDouble() throws Exception {
-        Assertions.assertEquals(ElementType.DOUBLE.size(), ElementType.DOUBLE.size(new Double(5.0)));
+        Assertions.assertEquals(ElementType.DOUBLE.size(), ElementType.DOUBLE.size(5.0));
     }
 
     @Test

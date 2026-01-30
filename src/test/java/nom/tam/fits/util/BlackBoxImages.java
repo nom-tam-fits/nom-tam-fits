@@ -35,13 +35,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.zip.GZIPInputStream;
-
-import nom.tam.util.SafeClose;
 
 @SuppressWarnings({"javadoc", "deprecation"})
 public class BlackBoxImages {
@@ -97,34 +96,29 @@ public class BlackBoxImages {
     }
 
     private static void unsplitt(File base, File to) {
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(to);
-            FileChannel outChannel = out.getChannel();
+        try (FileOutputStream out = new FileOutputStream(to); FileChannel outChannel = out.getChannel()) {
             int number = 0;
             long offset = 0L;
             File from = new File(base.getParentFile(), base.getName() + String.format("%02d", number) + ".part");
             while (from.exists()) {
-                ReadableByteChannel rbc = Channels.newChannel(new FileInputStream(from));
-                offset += outChannel.transferFrom(rbc, offset, Long.MAX_VALUE);
-                number++;
-                from = new File(base.getParentFile(), base.getName() + String.format("%02d", number) + ".part");
+                try (FileInputStream in = new FileInputStream(from); ReadableByteChannel rbc = Channels.newChannel(in)) {
+                    offset += outChannel.transferFrom(rbc, offset, Long.MAX_VALUE);
+                    number++;
+                    from = new File(base.getParentFile(), base.getName() + String.format("%02d", number) + ".part");
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            SafeClose.close(out);
         }
     }
 
     protected static boolean downloadImage(String url, String localFile) {
-        try {
-            URL website = new URL(url);
-            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+        try (InputStream is = new URL(url).openStream(); ReadableByteChannel rbc = Channels.newChannel(is)) {
             new File(localFile).getParentFile().mkdirs();
-            FileOutputStream fos = new FileOutputStream(localFile);
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-            fos.close();
+
+            try (FileOutputStream fos = new FileOutputStream(localFile); FileChannel fc = fos.getChannel()) {
+                fc.transferFrom(rbc, 0, Long.MAX_VALUE);
+            }
             return true;
         } catch (Exception e) {
             return false;
@@ -136,15 +130,12 @@ public class BlackBoxImages {
      */
     public static void gunzipIt(File from, File to) {
         byte[] buffer = new byte[4096];
-        try {
-            GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(from));
-            FileOutputStream out = new FileOutputStream(to);
+        try (GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(from));
+                FileOutputStream out = new FileOutputStream(to)) {
             int len;
             while ((len = gzis.read(buffer)) > 0) {
                 out.write(buffer, 0, len);
             }
-            gzis.close();
-            out.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

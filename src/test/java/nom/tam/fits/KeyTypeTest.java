@@ -285,7 +285,7 @@ public class KeyTypeTest {
 
     @Test
     public void createRealKeyInt() throws Exception {
-        HeaderCard c = HeaderCard.create(Standard.BZERO, new Integer(1));
+        HeaderCard c = HeaderCard.create(Standard.BZERO, Integer.valueOf(1));
         Assertions.assertEquals(Standard.BZERO.key(), c.getKey());
         Assertions.assertEquals(1.0, c.getValue(Double.class, Double.NaN).intValue(), 1e-12);
     }
@@ -320,7 +320,7 @@ public class KeyTypeTest {
     public void createComplexKeyInt() throws Exception {
         ComplexKey k = new ComplexKey("CVAL");
         ComplexValue z = new ComplexValue(1.0, 0.0);
-        HeaderCard c = HeaderCard.create(k, new Integer(1));
+        HeaderCard c = HeaderCard.create(k, Integer.valueOf(1));
         Assertions.assertEquals(k.key(), c.getKey());
         Assertions.assertEquals(z, c.getValue(ComplexValue.class, null));
     }

@@ -71,6 +71,12 @@ public class ArrayFuncsTest {
         public boolean equals(Object x) {
             return x instanceof CloneTest && ((CloneTest) x).value == value;
         }
+
+        @Override
+        public int hashCode() {
+            // TODO Auto-generated method stub
+            return super.hashCode();
+        }
     }
 
     /**
@@ -111,13 +117,13 @@ public class ArrayFuncsTest {
         Assertions.assertEquals(ArrayFuncs.computeSize("1234"), 4);
         Assertions.assertEquals(ArrayFuncs.computeSize(new Object()), 0);
         Assertions.assertEquals(ArrayFuncs.computeSize(new Double[5]), 0);
-        Assertions.assertEquals(ArrayFuncs.computeSize(new Double[] {new Double(0), new Double(1), new Double(2)}), 24);
+        Assertions.assertEquals(ArrayFuncs.computeSize(new Double[] {0.0, 1.0, 2.0}), 24);
         Assertions.assertEquals(ArrayFuncs.computeLSize(x), 24);
         Assertions.assertEquals(ArrayFuncs.computeLSize(new double[3]), 24);
         Assertions.assertEquals(ArrayFuncs.computeLSize("1234"), 4);
         Assertions.assertEquals(ArrayFuncs.computeLSize(new Object()), 0);
         Assertions.assertEquals(ArrayFuncs.computeLSize(new Double[5]), 0);
-        Assertions.assertEquals(ArrayFuncs.computeLSize(new Double[] {new Double(0), new Double(1), new Double(2)}), 24);
+        Assertions.assertEquals(ArrayFuncs.computeLSize(new Double[] {0.0, 1.0, 2.0}), 24);
     }
 
     /**
@@ -399,7 +405,7 @@ public class ArrayFuncsTest {
         int[] result = nom.tam.util.ArrayFuncs.getDimensions(o);
         Assertions.assertEquals(expResult, result);
 
-        Assertions.assertEquals(ArrayFuncs.getDimensions(new Integer(0)).length, 0);
+        Assertions.assertEquals(ArrayFuncs.getDimensions(0).length, 0);
         int[][] test = new int[2][3];
         int[] dims = ArrayFuncs.getDimensions(test);
         Assertions.assertEquals(2, dims.length);
@@ -428,8 +434,6 @@ public class ArrayFuncsTest {
     @Test
     public void testNElements() {
         System.out.println("nElements");
-
-        Object o = null;
 
         Assertions.assertEquals(ArrayFuncs.nElements(null), 0);
         Assertions.assertEquals(ArrayFuncs.nElements(new int[2][2][3]), 12);

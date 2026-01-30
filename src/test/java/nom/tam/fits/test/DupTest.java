@@ -80,32 +80,36 @@ public class DupTest {
     @Test
     public void test() throws Exception {
 
-        Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits");
-        Header hdr = f.readHDU().getHeader();
-        Assertions.assertEquals(8640, hdr.getSize());
-        Assertions.assertEquals(8640, hdr.getMinimumSize());
-        Assertions.assertTrue(hdr.hadDuplicates());
-        List<HeaderCard> dups = hdr.getDuplicates();
+        try (Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits")) {
+            Header hdr = f.readHDU().getHeader();
 
-        int nDups = dups.size();
-        System.out.println("Number of duplicates:" + nDups);
-        Assertions.assertTrue(dups != null && dups.size() > 0);
-        // AK: It is rewritable with preallocated blank space that is now supported!
-        Assertions.assertTrue(hdr.rewriteable());
+            Assertions.assertEquals(8640, hdr.getSize());
+            Assertions.assertEquals(8640, hdr.getMinimumSize());
+            Assertions.assertTrue(hdr.hadDuplicates());
+            List<HeaderCard> dups = hdr.getDuplicates();
 
-        DataOutputStream bf = new DataOutputStream(new FileOutputStream("target/created_dup.fits"));
-        hdr.resetOriginalSize();
-        Assertions.assertEquals(2880, hdr.getMinimumSize());
-        f.write(bf);
-        bf.flush();
-        bf.close();
-        Fits g = new Fits("target/created_dup.fits");
-        hdr = g.readHDU().getHeader();
-        Assertions.assertEquals(2880, hdr.getSize());
-        Assertions.assertEquals(2880, hdr.getMinimumSize());
-        Assertions.assertTrue(hdr.rewriteable());
-        Assertions.assertFalse(hdr.hadDuplicates());
-        Assertions.assertTrue(hdr.getDuplicates() == null);
+            int nDups = dups.size();
+            System.out.println("Number of duplicates:" + nDups);
+            Assertions.assertTrue(dups != null && dups.size() > 0);
+            // AK: It is rewritable with preallocated blank space that is now supported!
+            Assertions.assertTrue(hdr.rewriteable());
+
+            try (DataOutputStream bf = new DataOutputStream(new FileOutputStream("target/created_dup.fits"))) {
+                hdr.resetOriginalSize();
+                Assertions.assertEquals(2880, hdr.getMinimumSize());
+                f.write(bf);
+                bf.flush();
+            }
+        }
+
+        try (Fits g = new Fits("target/created_dup.fits")) {
+            Header hdr = g.readHDU().getHeader();
+            Assertions.assertEquals(2880, hdr.getSize());
+            Assertions.assertEquals(2880, hdr.getMinimumSize());
+            Assertions.assertTrue(hdr.rewriteable());
+            Assertions.assertFalse(hdr.hadDuplicates());
+            Assertions.assertTrue(hdr.getDuplicates() == null);
+        }
     }
 
     private Logger getParserLogger() {
@@ -125,10 +129,11 @@ public class DupTest {
         Header.setParserWarningsEnabled(true);
         Assertions.assertTrue(Header.isParserWarningsEnabled()); // Check that warings are enabled
 
-        Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits");
-        Header h = f.readHDU().getHeader();
+        try (Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits")) {
+            Header h = f.readHDU().getHeader();
+            Assertions.assertTrue(h.hadDuplicates()); // Check that we did indeed have duplicates
+        }
 
-        Assertions.assertTrue(h.hadDuplicates()); // Check that we did indeed have duplicates
         Assertions.assertNotEquals(initCount, counter.getCount()); // Check that logger was called on them
     }
 
@@ -144,22 +149,24 @@ public class DupTest {
         Header.setParserWarningsEnabled(false);
         Assertions.assertFalse(Header.isParserWarningsEnabled()); // Check that warings are enabled
 
-        Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits");
-        Header h = f.readHDU().getHeader();
+        try (Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits")) {
+            Header h = f.readHDU().getHeader();
+            Assertions.assertTrue(h.hadDuplicates()); // Check that we did indeed have duplicates
+        }
 
-        Assertions.assertTrue(h.hadDuplicates()); // Check that we did indeed have duplicates
         Assertions.assertEquals(initCount, counter.getCount()); // Check that logger was NOT called on them
-
         l.removeHandler(counter);
+
     }
 
     @Test
     public void dupesSetTest() throws Exception {
-        Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits");
-        Header h = f.readHDU().getHeader();
+        try (Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits")) {
+            Header h = f.readHDU().getHeader();
 
-        Set<?> keys = h.getDuplicateKeySet();
-        Assertions.assertTrue(keys.contains("CARD"));
+            Set<?> keys = h.getDuplicateKeySet();
+            Assertions.assertTrue(keys.contains("CARD"));
+        }
     }
 
 }

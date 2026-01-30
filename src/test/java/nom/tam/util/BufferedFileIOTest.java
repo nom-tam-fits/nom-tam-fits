@@ -54,153 +54,156 @@ public class BufferedFileIOTest {
 
     @Test
     public void testNegativeSeek() throws Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
-            b.seek(-1);
-
-        });
+        try (BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256)) {
+            Assertions.assertThrows(IllegalArgumentException.class, () -> b.seek(-1));
+        }
     }
 
     @Test
     public void testGetFD() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
-        Assertions.assertNotNull(b.getFD());
+        try (BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256)) {
+            Assertions.assertNotNull(b.getFD());
+        }
     }
 
     @Test
     public void testNotAvailable() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
+        try (BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256)) {
+            b.setLength(10);
+            Assertions.assertEquals(10, b.length());
 
-        b.setLength(10);
-        Assertions.assertEquals(10, b.length());
-
-        Assertions.assertTrue(b.hasAvailable(10));
-        Assertions.assertFalse(b.hasAvailable(11));
+            Assertions.assertTrue(b.hasAvailable(10));
+            Assertions.assertFalse(b.hasAvailable(11));
+        }
     }
 
     @Test
     public void testTruncate() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
+        try (BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256)) {
+            b.setLength(10);
+            Assertions.assertEquals(10, b.length());
 
-        b.setLength(10);
-        Assertions.assertEquals(10, b.length());
+            b.seek(10);
+            Assertions.assertEquals(10, b.getFilePointer());
 
-        b.seek(10);
-        Assertions.assertEquals(10, b.getFilePointer());
-
-        b.setLength(9);
-        Assertions.assertEquals(9, b.length());
-        Assertions.assertEquals(9, b.getFilePointer());
+            b.setLength(9);
+            Assertions.assertEquals(9, b.length());
+            Assertions.assertEquals(9, b.getFilePointer());
+        }
     }
 
     @Test
     public void testFlushNone() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
-        b.write(1);
-        b.setLength(0);
-        b.flush();
+        try (BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256)) {
+            b.write(1);
+            b.setLength(0);
+            b.flush();
+        }
     }
 
     @Test
     public void testWriteBeyond() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
-        b.setLength(10);
-        Assertions.assertEquals(10, b.length());
+        try (BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256)) {
+            b.setLength(10);
+            Assertions.assertEquals(10, b.length());
 
-        b.seek(11);
-        Assertions.assertEquals(11, b.getFilePointer());
-        b.write(1);
-        Assertions.assertEquals(12, b.getFilePointer());
-        Assertions.assertEquals(12, b.length());
+            b.seek(11);
+            Assertions.assertEquals(11, b.getFilePointer());
+            b.write(1);
+            Assertions.assertEquals(12, b.getFilePointer());
+            Assertions.assertEquals(12, b.length());
 
-        b.seek(20);
-        Assertions.assertEquals(20, b.getFilePointer());
-        b.write(new byte[40], 0, 40);
-        Assertions.assertEquals(60, b.getFilePointer());
-        Assertions.assertEquals(60, b.length());
+            b.seek(20);
+            Assertions.assertEquals(20, b.getFilePointer());
+            b.write(new byte[40], 0, 40);
+            Assertions.assertEquals(60, b.getFilePointer());
+            Assertions.assertEquals(60, b.length());
+        }
     }
 
     @Test
     public void testWriteBeyondBuf() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 16);
-        b.setLength(10);
-        Assertions.assertEquals(10, b.length());
+        try (BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 16)) {
+            b.setLength(10);
+            Assertions.assertEquals(10, b.length());
 
-        b.seek(20);
-        Assertions.assertEquals(20, b.getFilePointer());
-        b.write(1);
-        Assertions.assertEquals(21, b.getFilePointer());
-        Assertions.assertEquals(21, b.length());
+            b.seek(20);
+            Assertions.assertEquals(20, b.getFilePointer());
+            b.write(1);
+            Assertions.assertEquals(21, b.getFilePointer());
+            Assertions.assertEquals(21, b.length());
 
-        b.seek(100);
-        Assertions.assertEquals(100, b.getFilePointer());
-        b.write(new byte[40], 0, 40);
-        Assertions.assertEquals(140, b.getFilePointer());
-        Assertions.assertEquals(140, b.length());
+            b.seek(100);
+            Assertions.assertEquals(100, b.getFilePointer());
+            b.write(new byte[40], 0, 40);
+            Assertions.assertEquals(140, b.getFilePointer());
+            Assertions.assertEquals(140, b.length());
+        }
     }
 
     @Test
     public void testReadBeyond() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
-        b.setLength(10);
-        Assertions.assertEquals(10, b.length());
+        try (BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256)) {
+            b.setLength(10);
+            Assertions.assertEquals(10, b.length());
 
-        b.seek(11);
-        Assertions.assertEquals(11, b.getFilePointer());
-        Assertions.assertEquals(-1, b.read());
+            b.seek(11);
+            Assertions.assertEquals(11, b.getFilePointer());
+            Assertions.assertEquals(-1, b.read());
 
-        Assertions.assertEquals(11, b.getFilePointer());
-        Assertions.assertEquals(-1, b.read(new byte[40], 0, 40));
+            Assertions.assertEquals(11, b.getFilePointer());
+            Assertions.assertEquals(-1, b.read(new byte[40], 0, 40));
+        }
     }
 
     @Test
     public void testReadFullyBeyond() throws Exception {
-        Assertions.assertThrows(EOFException.class, () -> {
-
-            BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
+        try (BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256)) {
             b.setLength(10);
             Assertions.assertEquals(10, b.length());
-            b.readFully(new byte[40], 0, 40);
-
-        });
+            Assertions.assertThrows(EOFException.class, () -> b.readFully(new byte[40], 0, 40));
+        }
     }
 
     @Test
     public void testSkipBackBuffer() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 100);
-        b.seek(100);
-        b.write(1);
+        try (BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 100)) {
+            b.seek(100);
+            b.write(1);
 
-        Assertions.assertEquals(101, b.length());
-        b.skip(-b.length());
-        Assertions.assertEquals(0, b.getFilePointer());
+            Assertions.assertEquals(101, b.length());
+            b.skip(-b.length());
+            Assertions.assertEquals(0, b.getFilePointer());
+        }
     }
 
     @Test
     public void testWriteManySingles() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 100);
-        for (int i = 0; i < 300; i++) {
-            b.write(i);
+        try (BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 100)) {
+            for (int i = 0; i < 300; i++) {
+                b.write(i);
+            }
         }
     }
 
     @Test
     public void testWriteAhead() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 100);
-        b.setLength(10);
-        b.seek(200);
-        b.write(1);
-        Assertions.assertEquals(201, b.length());
+        try (BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 100)) {
+            b.setLength(10);
+            b.seek(200);
+            b.write(1);
+            Assertions.assertEquals(201, b.length());
+        }
     }
 
     @Test
     public void testWriteAgain() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 100);
-        b.write(1);
-        b.seek(0);
-        b.write(2);
-        b.seek(0);
-        Assertions.assertEquals(2, b.read());
+        try (BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 100)) {
+            b.write(1);
+            b.seek(0);
+            b.write(2);
+            b.seek(0);
+            Assertions.assertEquals(2, b.read());
+        }
     }
 }

@@ -121,13 +121,21 @@ public class HeaderProtectedTest {
 
         header = new Header();
         header.nullImage();
-        header.write(new FitsOutputStream(new ByteArrayOutputStream(), 80));
+
+        try (FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream(), 80)) {
+            header.write(out);
+        }
+
         Assertions.assertEquals(0L, header.getDataSize());
         header.setNaxes(2);
         header.setNaxis(1, 0);
         header.setNaxis(2, 2);
         header.addValue(GROUPS, true);
-        header.write(new FitsOutputStream(new ByteArrayOutputStream(), 80));
+
+        try (FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream(), 80)) {
+            header.write(out);
+        }
+
         Assertions.assertEquals(FitsUtil.addPadding(2L), header.getDataSize());
     }
 

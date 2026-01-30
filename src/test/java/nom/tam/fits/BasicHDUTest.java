@@ -91,8 +91,8 @@ public class BasicHDUTest {
         try (Fits fits = new Fits()) {
             fits.addHDU(hdu);
 
-            try (ByteBufferOutputStream out = new ByteBufferOutputStream(buf)) {
-                fits.write(new FitsOutputStream(out));
+            try (FitsOutputStream out = new FitsOutputStream(new ByteBufferOutputStream(buf))) {
+                fits.write(out);
             }
         }
 

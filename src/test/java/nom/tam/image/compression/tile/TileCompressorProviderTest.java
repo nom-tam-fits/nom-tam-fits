@@ -235,6 +235,7 @@ public class TileCompressorProviderTest {
         provider.compress(null, null, options);
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void testTileCompressionError() throws Exception {
         Assertions.assertThrows(IllegalStateException.class, () -> {
@@ -299,6 +300,7 @@ public class TileCompressorProviderTest {
         }
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     public void testFailedDecompression() throws Exception {
         Assertions.assertThrows(IllegalStateException.class, () -> {
@@ -311,6 +313,7 @@ public class TileCompressorProviderTest {
                     return control.option();
                 }
             };
+
             final TileBuffer tileBuffer = TileBufferFactory.createTileBuffer((ElementType) PrimitiveTypes.BYTE, 0, 10, 10,
                     10);
             TileDecompressor tileDecompressor = new TileDecompressor(image, 1, new TileArea()) {

@@ -21,7 +21,6 @@ import nom.tam.util.Cursor;
 import nom.tam.util.FitsFile;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
-import nom.tam.util.SafeClose;
 
 /*
  * #%L
@@ -64,11 +63,7 @@ public class PaddingTest {
 
     @Test
     public void test1() throws Exception {
-        Fits f = null;
-        FitsFile bf = null;
-        try {
-            f = new Fits();
-            bf = new FitsFile("target/padding1.fits", "rw");
+        try (Fits f = new Fits(); FitsFile bf = new FitsFile("target/padding1.fits", "rw")) {
 
             byte[][] bimg = new byte[20][20];
             for (int i = 0; i < 20; i++) {
@@ -83,14 +78,10 @@ public class PaddingTest {
             hdr.write(bf);
             bf.writeArray(bimg); // The data but no following padding.
             bf.flush();
-        } finally {
-            SafeClose.close(bf);
-            SafeClose.close(f);
         }
 
         // Now try reading this back.
-        try {
-            f = new Fits("target/padding1.fits");
+        try (Fits f = new Fits("target/padding1.fits")) {
 
             f.read();
             Assertions.assertEquals(1, f.getNumberOfHDUs());
@@ -126,16 +117,13 @@ public class PaddingTest {
             Assertions.assertEquals(data[1] + 0, 5);
             Assertions.assertEquals(data[2] + 0, 5);
             Assertions.assertEquals(data[3] + 0, 6);
-        } finally {
-            SafeClose.close(f);
         }
     }
 
     @Test
     public void test2() throws Exception {
-        Fits f = null;
-        try {
-            f = new Fits();
+
+        try (Fits f = new Fits()) {
             byte[][] bimg = new byte[20][20];
             for (int i = 0; i < 20; i++) {
                 for (int j = 0; j < 20; j++) {
@@ -147,40 +135,37 @@ public class PaddingTest {
             f.addHDU(hdu);
 
             // First create a FITS file with a truncated second HDU.
-            FitsFile bf = new FitsFile("target/padding2.fits", "rw");
-            f.write(bf);
+            try (FitsFile bf = new FitsFile("target/padding2.fits", "rw")) {
+                f.write(bf);
 
-            hdu.getHeader().setXtension(XTENSION_IMAGE);
-            Cursor<String, HeaderCard> curs = hdu.getHeader().iterator();
-            int cnt = 0;
-            // Write the header
-            while (curs.hasNext()) {
-                bf.write(curs.next().toString().getBytes());
-                cnt++;
-            }
-
-            // The padding between header and data
-            byte[] b = new byte[(36 - cnt) * 80]; // Assuming fewer than 36
-            // cards.
-            for (int i = 0; i < b.length; i++) {
-                b[i] = 32; // i.e., a blank
-            }
-            bf.write(b);
-            for (int i = 0; i < 20; i++) {
-                for (int j = 0; j < 20; j++) {
-                    bimg[i][j] = (byte) (2 * (i + j));
+                hdu.getHeader().setXtension(XTENSION_IMAGE);
+                Cursor<String, HeaderCard> curs = hdu.getHeader().iterator();
+                int cnt = 0;
+                // Write the header
+                while (curs.hasNext()) {
+                    bf.write(curs.next().toString().getBytes());
+                    cnt++;
                 }
+
+                // The padding between header and data
+                byte[] b = new byte[(36 - cnt) * 80]; // Assuming fewer than 36
+                // cards.
+                for (int i = 0; i < b.length; i++) {
+                    b[i] = 32; // i.e., a blank
+                }
+                bf.write(b);
+                for (int i = 0; i < 20; i++) {
+                    for (int j = 0; j < 20; j++) {
+                        bimg[i][j] = (byte) (2 * (i + j));
+                    }
+                }
+                bf.writeArray(bimg); // The data but no following padding.
+                bf.flush();
             }
-            bf.writeArray(bimg); // The data but no following padding.
-            bf.flush();
-            bf.close();
-        } finally {
-            SafeClose.close(f);
         }
 
         // Now try reading this back.
-        try {
-            f = new Fits("target/padding2.fits");
+        try (Fits f = new Fits("target/padding2.fits")) {
             f.read();
 
             Assertions.assertEquals(2, f.getNumberOfHDUs());
@@ -202,8 +187,6 @@ public class PaddingTest {
             }
             Assertions.assertEquals(0, miss);
             Assertions.assertEquals(400, match);
-        } finally {
-            SafeClose.close(f);
         }
     }
 
@@ -211,23 +194,25 @@ public class PaddingTest {
     public void testPaddingExceptionFile() throws Exception {
         float[][] data = new float[10][10];
         BasicHDU<?> hdu = FitsFactory.hduFactory(data);
-        Fits fits = new Fits();
 
-        fits.addHDU(hdu);
+        try (Fits fits = new Fits()) {
+            fits.addHDU(hdu);
 
-        byte[] buf = new byte[10000];
-        FitsOutputStream fo = new FitsOutputStream(new ByteBufferOutputStream(ByteBuffer.wrap(buf)));
-        fits.write(fo);
+            byte[] buf = new byte[10000];
 
-        FileOutputStream out = new FileOutputStream(new File("target/padex1.fits"));
-        out.write(buf, 0, 2 * 2880 - 1);
-        out.close();
+            try (FitsOutputStream fo = new FitsOutputStream(new ByteBufferOutputStream(ByteBuffer.wrap(buf)))) {
+                fits.write(fo);
+            }
 
-        fits = new Fits("target/padex1.fits");
-        BasicHDU<?>[] hdus = fits.read();
-        fits.close();
+            try (FileOutputStream out = new FileOutputStream(new File("target/padex1.fits"))) {
+                out.write(buf, 0, 2 * 2880 - 1);
+            }
+        }
 
-        Assertions.assertEquals(1, hdus.length);
+        try (Fits fits = new Fits("target/padex1.fits")) {
+            BasicHDU<?>[] hdus = fits.read();
+            Assertions.assertEquals(1, hdus.length);
+        }
 
         // No Exception
     }
@@ -236,23 +221,23 @@ public class PaddingTest {
     public void testPaddingExceptionStream() throws Exception {
         float[][] data = new float[10][10];
         BasicHDU<?> hdu = FitsFactory.hduFactory(data);
-        Fits fits = new Fits();
 
-        fits.addHDU(hdu);
-        fits.write("target/padex2.fits");
-        fits.close();
+        try (Fits fits = new Fits()) {
+            fits.addHDU(hdu);
+            fits.write("target/padex2.fits");
+        }
 
         byte[] tr = new byte[2 * 2880 - 1];
-        FileInputStream in = new FileInputStream(new File("target/padex2.fits"));
-        in.read(tr);
-        in.close();
+        try (FileInputStream in = new FileInputStream(new File("target/padex2.fits"))) {
+            in.read(tr);
+        }
 
-        FitsInputStream fi = new FitsInputStream(new ByteBufferInputStream(ByteBuffer.wrap(tr)));
-        fits = new Fits(fi);
-        BasicHDU<?>[] hdus = fits.read();
-        fits.close();
-
-        Assertions.assertEquals(1, hdus.length);
+        try (FitsInputStream fi = new FitsInputStream(new ByteBufferInputStream(ByteBuffer.wrap(tr)));
+                Fits fits = new Fits(fi)) {
+            BasicHDU<?>[] hdus = fits.read();
+            fits.close();
+            Assertions.assertEquals(1, hdus.length);
+        }
 
         // No Exception
     }

@@ -79,7 +79,7 @@ public class EnumHeaderTest {
 
     public Header createHeader() throws FitsException {
         byte[][] bimg = new byte[20][20];
-        BasicHDU hdu = Fits.makeHDU(bimg);
+        BasicHDU<?> hdu = Fits.makeHDU(bimg);
         Header hdr = hdu.getHeader();
         return hdr;
     }

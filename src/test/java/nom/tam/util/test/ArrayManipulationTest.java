@@ -47,45 +47,51 @@ public class ArrayManipulationTest {
 
     @Test
     public void testArrayIterator() {
-        MultiArrayIterator primitiveArrayIterator = new MultiArrayIterator(testArray);
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        MultiArrayIterator i = new MultiArrayIterator(testArray);
 
-        Assertions.assertEquals("[1.0, 2.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assertions.assertEquals("[3.0, 4.0, 5.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assertions.assertEquals("[6.0, 7.0, 8.0, 9.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assertions.assertEquals("[10.0, 11.0, 12.0, 13.0, 14.0, 15.0]",
-                Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assertions.assertEquals("[16.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assertions.assertNull(primitiveArrayIterator.next());
-        Assertions.assertEquals(16, primitiveArrayIterator.size());
-        primitiveArrayIterator.reset();
-        Assertions.assertEquals("[1.0, 2.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
+        Assertions.assertEquals("[1.0, 2.0]", Arrays.toString(((double[]) i.next())));
+        Assertions.assertEquals("[3.0, 4.0, 5.0]", Arrays.toString(((double[]) i.next())));
+        Assertions.assertEquals("[6.0, 7.0, 8.0, 9.0]", Arrays.toString(((double[]) i.next())));
+        Assertions.assertEquals("[10.0, 11.0, 12.0, 13.0, 14.0, 15.0]", Arrays.toString(((double[]) i.next())));
+        Assertions.assertEquals("[16.0]", Arrays.toString(((double[]) i.next())));
+        Assertions.assertNull(i.next());
+        Assertions.assertEquals(16, i.size());
+        i.reset();
+        Assertions.assertEquals("[1.0, 2.0]", Arrays.toString(((double[]) i.next())));
     }
 
     @Test
     public void testArrayIteratorSpecials() {
 
-        MultiArrayIterator primitiveArrayIterator = new MultiArrayIterator(new double[10]);
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        MultiArrayIterator i = new MultiArrayIterator(new double[10]);
         Assertions.assertEquals("[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
-                Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        primitiveArrayIterator.reset();
-        Assertions.assertEquals(10, primitiveArrayIterator.size());
-        primitiveArrayIterator.reset();
-        Assertions.assertEquals("[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
-                Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assertions.assertNull(primitiveArrayIterator.next());
+                Arrays.toString(((double[]) i.next())));
 
-        primitiveArrayIterator = new MultiArrayIterator(new double[2][10]);
-        Assertions.assertEquals(20, primitiveArrayIterator.size());
-        primitiveArrayIterator.reset();
+        i.reset();
+        Assertions.assertEquals(10, i.size());
+
+        i.reset();
         Assertions.assertEquals("[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
-                Arrays.toString(((double[]) primitiveArrayIterator.next())));
+                Arrays.toString(((double[]) i.next())));
+        Assertions.assertNull(i.next());
+
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        MultiArrayIterator i2 = new MultiArrayIterator(new double[2][10]);
+        Assertions.assertEquals(20, i2.size());
+        i2.reset();
+
         Assertions.assertEquals("[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
-                Arrays.toString(((double[]) primitiveArrayIterator.next())));
-        Assertions.assertNull(primitiveArrayIterator.next());
+                Arrays.toString(((double[]) i2.next())));
+        Assertions.assertEquals("[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
+                Arrays.toString(((double[]) i2.next())));
+        Assertions.assertNull(i2.next());
 
         Assertions.assertFalse(MultiArrayPointer.isSubArray(new Object[0]));
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     public void testSize() {
         Assertions.assertEquals(16, new MultiArrayIterator(testArray).size());

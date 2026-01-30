@@ -46,10 +46,10 @@ public class FitsStreamTest {
 
         Boolean[] b = new Boolean[] {Boolean.TRUE, Boolean.FALSE, null};
 
-        FitsOutputStream o = new FitsOutputStream(bo);
-        o.write(b);
-        o.writeBoolean(b[0]);
-        o.flush();
+        try (FitsOutputStream o = new FitsOutputStream(bo)) {
+            o.write(b);
+            o.writeBoolean(b[0]);
+        }
 
         FitsInputStream i = new FitsInputStream(new ByteArrayInputStream(bo.toByteArray()));
 

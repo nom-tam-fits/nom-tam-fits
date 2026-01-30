@@ -192,38 +192,45 @@ public class CompressedImageTilerTest {
     @Test
     public void doCompressedImageTest() throws Exception {
         final File sourceFile = new File("src/test/resources/nom/tam/image/provided/m13real_rice.fits");
-        final Fits sourceFits = new Fits(sourceFile, true);
 
-        final CompressedImageHDU cfitsioTable = (CompressedImageHDU) sourceFits.getHDU(1);
-        final ElementType<?> elementType = ElementType.forBitpix(cfitsioTable.getHeader().getIntValue(Compression.ZBITPIX));
-        final CompressedImageTiler testSubject = new CompressedImageTiler(cfitsioTable);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ArrayDataOutput arrayDataOutput = new FitsOutputStream(byteArrayOutputStream);
-        final int[] cornerStarts = new int[] {10, 10};
-        final int[] lengths = new int[] {20, 20};
-        final int[] steps = new int[] {1, 1};
-        testSubject.getTile(arrayDataOutput, cornerStarts, lengths, steps);
-        arrayDataOutput.flush();
-        arrayDataOutput.close();
+        try (final Fits sourceFits = new Fits(sourceFile, true)) {
 
-        byte[] data = byteArrayOutputStream.toByteArray();
-        Assertions.assertEquals((lengths[0] * lengths[1] * elementType.size()), data.length);
+            final CompressedImageHDU cfitsioTable = (CompressedImageHDU) sourceFits.getHDU(1);
+            final ElementType<?> elementType = ElementType
+                    .forBitpix(cfitsioTable.getHeader().getIntValue(Compression.ZBITPIX));
+            final CompressedImageTiler testSubject = new CompressedImageTiler(cfitsioTable);
 
-        Assertions.assertArrayEquals((float[][]) cfitsioTable.asImageHDU().getData().getData(),
-                (float[][]) testSubject.getCompleteImage());
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.getTile(cornerStarts, lengths));
-        Assertions.assertThrows(UnsupportedOperationException.class,
-                () -> testSubject.getTile(Array.newInstance(Integer.class, 20 * 20), cornerStarts, lengths));
+            final int[] cornerStarts = new int[] {10, 10};
+            final int[] lengths = new int[] {20, 20};
+            final int[] steps = new int[] {1, 1};
 
-        byteArrayOutputStream = new ByteArrayOutputStream();
-        arrayDataOutput = new FitsOutputStream(byteArrayOutputStream);
-        testSubject.getTile(arrayDataOutput, cornerStarts, lengths);
-        arrayDataOutput.flush();
-        arrayDataOutput.close();
+            try (ArrayDataOutput arrayDataOutput = new FitsOutputStream(byteArrayOutputStream)) {
+                testSubject.getTile(arrayDataOutput, cornerStarts, lengths, steps);
+                arrayDataOutput.flush();
+            }
 
-        data = byteArrayOutputStream.toByteArray();
-        Assertions.assertEquals((lengths[0] * lengths[1] * elementType.size()), data.length);
+            byte[] data = byteArrayOutputStream.toByteArray();
+            Assertions.assertEquals((lengths[0] * lengths[1] * elementType.size()), data.length);
+
+            Assertions.assertArrayEquals((float[][]) cfitsioTable.asImageHDU().getData().getData(),
+                    (float[][]) testSubject.getCompleteImage());
+
+            Assertions.assertThrows(UnsupportedOperationException.class, () -> testSubject.getTile(cornerStarts, lengths));
+            Assertions.assertThrows(UnsupportedOperationException.class,
+                    () -> testSubject.getTile(Array.newInstance(Integer.class, 20 * 20), cornerStarts, lengths));
+
+            byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try (ArrayDataOutput arrayDataOutput = new FitsOutputStream(byteArrayOutputStream)) {
+                testSubject.getTile(arrayDataOutput, cornerStarts, lengths);
+                arrayDataOutput.flush();
+            }
+
+            data = byteArrayOutputStream.toByteArray();
+            Assertions.assertEquals((lengths[0] * lengths[1] * elementType.size()), data.length);
+        }
     }
 
     @Test
@@ -331,47 +338,56 @@ public class CompressedImageTilerTest {
     @Test
     public void doTestM13RealRice() throws Exception {
         final File sourceFile = new File("src/test/resources/nom/tam/image/provided/m13real_rice.fits");
-        final Fits sourceFits = new Fits(sourceFile, true);
-        final CompressedImageHDU compressedImageHDU = (CompressedImageHDU) sourceFits.getHDU(1);
-        final Header compressedHeader = compressedImageHDU.getHeader();
-        final ElementType<?> elementType = ElementType.forBitpix(compressedHeader.getIntValue(Compression.ZBITPIX));
 
-        // [100:200, 100:200]
-        final int[] cornerStarts = new int[] {100, 100};
-        final int[] lengths = new int[] {100, 100};
-        final int[] steps = new int[] {1, 1};
-        final CompressedImageTiler testSubject = new CompressedImageTiler(compressedImageHDU);
-        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        final ArrayDataOutput arrayDataOutput = new FitsOutputStream(byteArrayOutputStream);
-        testSubject.getTile(arrayDataOutput, cornerStarts, lengths, steps);
-        Assertions.assertEquals(lengths[0] * lengths[1] * elementType.size(), byteArrayOutputStream.toByteArray().length);
-        final long expected = (long) lengths[0] * lengths[1] * elementType.size();
-        FitsUtil.pad(arrayDataOutput, expected);
-        arrayDataOutput.flush();
-        arrayDataOutput.close();
+        try (final Fits sourceFits = new Fits(sourceFile, true)) {
+            final CompressedImageHDU compressedImageHDU = (CompressedImageHDU) sourceFits.getHDU(1);
+            final Header compressedHeader = compressedImageHDU.getHeader();
+            final ElementType<?> elementType = ElementType.forBitpix(compressedHeader.getIntValue(Compression.ZBITPIX));
 
-        final Fits fits = new Fits();
-        final File target = File.createTempFile("m13real_rice_test", ".fits");
-        if (target.exists()) {
-            Assertions.assertTrue(target.delete());
+            // [100:200, 100:200]
+            final int[] cornerStarts = new int[] {100, 100};
+            final int[] lengths = new int[] {100, 100};
+            final int[] steps = new int[] {1, 1};
+
+            final CompressedImageTiler testSubject = new CompressedImageTiler(compressedImageHDU);
+            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try (final ArrayDataOutput arrayDataOutput = new FitsOutputStream(byteArrayOutputStream)) {
+                testSubject.getTile(arrayDataOutput, cornerStarts, lengths, steps);
+                Assertions.assertEquals(lengths[0] * lengths[1] * elementType.size(),
+                        byteArrayOutputStream.toByteArray().length);
+                final long expected = (long) lengths[0] * lengths[1] * elementType.size();
+                FitsUtil.pad(arrayDataOutput, expected);
+                arrayDataOutput.flush();
+            }
+
+            final File target = File.createTempFile("m13real_rice_test", ".fits");
+            if (target.exists()) {
+                Assertions.assertTrue(target.delete());
+            }
+
+            final ImageHDU imageHDU = compressedImageHDU.asImageHDU();
+            final Header header = imageHDU.getHeader();
+            header.setSimple(true);
+            header.setNaxes(2);
+            header.setNaxis(1, lengths[0]);
+            header.setNaxis(2, lengths[1]);
+            header.findCard("CRPIX1").setValue(51.5D);
+            header.findCard("CRPIX2").setValue(51.5D);
+            header.deleteKey("CHECKSUM");
+            header.deleteKey("DATASUM");
+            header.deleteKey("TFIELDS");
+            final ImageHDU hdu = (ImageHDU) FitsFactory.hduFactory(header);
+
+            try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()))) {
+                hdu.getData().read(in);
+            }
+
+            try (Fits fits = new Fits()) {
+                fits.addHDU(hdu);
+                fits.write(target);
+            }
         }
-
-        final ImageHDU imageHDU = compressedImageHDU.asImageHDU();
-        final Header header = imageHDU.getHeader();
-        header.setSimple(true);
-        header.setNaxes(2);
-        header.setNaxis(1, lengths[0]);
-        header.setNaxis(2, lengths[1]);
-        header.findCard("CRPIX1").setValue(51.5D);
-        header.findCard("CRPIX2").setValue(51.5D);
-        header.deleteKey("CHECKSUM");
-        header.deleteKey("DATASUM");
-        header.deleteKey("TFIELDS");
-        final ImageHDU hdu = (ImageHDU) FitsFactory.hduFactory(header);
-        hdu.getData().read(new FitsInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray())));
-        fits.addHDU(hdu);
-        fits.write(target);
-        fits.close();
     }
 
     @Test
@@ -723,7 +739,6 @@ public class CompressedImageTilerTest {
             };
 
             Assertions.assertThrows(IOException.class, () -> testSubject.getTile(output, new int[] {2, 2}, new int[] {4}));
-
         }
     }
 
@@ -791,7 +806,6 @@ public class CompressedImageTilerTest {
 
             @Override
             void init() {
-
             }
 
             @Override
@@ -839,50 +853,56 @@ public class CompressedImageTilerTest {
     @Test
     public void doTestFZStep() throws Exception {
         final File sourceFile = new File("src/test/resources/nom/tam/image/provided/m13real_rice.fits");
-        final Fits sourceFits = new Fits(sourceFile, true);
-        final CompressedImageHDU compressedImageHDU = (CompressedImageHDU) sourceFits.getHDU(1);
-        final Header compressedHeader = compressedImageHDU.getHeader();
-        final ElementType<?> bufferElementType = ElementType.forBitpix(compressedHeader.getIntValue(Compression.ZBITPIX));
 
-        // [10:69:2, 10:49:2]
-        final int[] cornerStarts = new int[] {10, 10};
-        final int[] lengths = new int[] {40, 60};
-        final int[] steps = new int[] {2, 2};
-        final CompressedImageTiler testSubject = new CompressedImageTiler(compressedImageHDU);
-        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        final ArrayDataOutput arrayDataOutput = new FitsOutputStream(byteArrayOutputStream);
-        final long expected = ((long) (lengths[0] / steps[0]) * (lengths[1] / steps[1])) * bufferElementType.size();
-        testSubject.getTile(arrayDataOutput, cornerStarts, lengths, steps);
-        Assertions.assertEquals(expected, byteArrayOutputStream.toByteArray().length);
-        FitsUtil.pad(arrayDataOutput, expected);
-        arrayDataOutput.flush();
-        arrayDataOutput.close();
+        try (final Fits sourceFits = new Fits(sourceFile, true)) {
+            final CompressedImageHDU compressedImageHDU = (CompressedImageHDU) sourceFits.getHDU(1);
+            final Header compressedHeader = compressedImageHDU.getHeader();
+            final ElementType<?> bufferElementType = ElementType
+                    .forBitpix(compressedHeader.getIntValue(Compression.ZBITPIX));
 
-        final Fits fits = new Fits();
-        final File target = File.createTempFile("m13real_rice_test_step", ".fits");
-        if (target.exists()) {
-            Assertions.assertTrue(target.delete());
+            // [10:69:2, 10:49:2]
+            final int[] cornerStarts = new int[] {10, 10};
+            final int[] lengths = new int[] {40, 60};
+            final int[] steps = new int[] {2, 2};
+            final CompressedImageTiler testSubject = new CompressedImageTiler(compressedImageHDU);
+            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try (final ArrayDataOutput arrayDataOutput = new FitsOutputStream(byteArrayOutputStream)) {
+                final long expected = ((long) (lengths[0] / steps[0]) * (lengths[1] / steps[1])) * bufferElementType.size();
+                testSubject.getTile(arrayDataOutput, cornerStarts, lengths, steps);
+                Assertions.assertEquals(expected, byteArrayOutputStream.toByteArray().length);
+                FitsUtil.pad(arrayDataOutput, expected);
+                arrayDataOutput.flush();
+            }
+
+            try (final Fits fits = new Fits()) {
+                final File target = File.createTempFile("m13real_rice_test_step", ".fits");
+                if (target.exists()) {
+                    Assertions.assertTrue(target.delete());
+                }
+
+                final ImageHDU imageHDU = compressedImageHDU.asImageHDU();
+                final Header header = imageHDU.getHeader();
+                header.setSimple(true);
+                header.setNaxes(2);
+                header.setNaxis(1, lengths[1] / steps[1]);
+                header.setNaxis(2, lengths[0] / steps[0]);
+                header.findCard("CRPIX1").setValue(7.125e+01D);
+                header.findCard("CRPIX2").setValue(7.125e+01D);
+                header.deleteKey("CHECKSUM");
+                header.deleteKey("DATASUM");
+                header.deleteKey("TFIELDS");
+                final ImageHDU hdu = (ImageHDU) FitsFactory.hduFactory(header);
+                hdu.getData().read(new FitsInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray())));
+                fits.addHDU(hdu);
+                fits.write(target);
+                fits.close();
+
+                final ImageHDU resultImageHDU = (ImageHDU) fits.getHDU(0);
+                Assertions.assertEquals(hdu.getData(), resultImageHDU.getData());
+            }
         }
 
-        final ImageHDU imageHDU = compressedImageHDU.asImageHDU();
-        final Header header = imageHDU.getHeader();
-        header.setSimple(true);
-        header.setNaxes(2);
-        header.setNaxis(1, lengths[1] / steps[1]);
-        header.setNaxis(2, lengths[0] / steps[0]);
-        header.findCard("CRPIX1").setValue(7.125e+01D);
-        header.findCard("CRPIX2").setValue(7.125e+01D);
-        header.deleteKey("CHECKSUM");
-        header.deleteKey("DATASUM");
-        header.deleteKey("TFIELDS");
-        final ImageHDU hdu = (ImageHDU) FitsFactory.hduFactory(header);
-        hdu.getData().read(new FitsInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray())));
-        fits.addHDU(hdu);
-        fits.write(target);
-        fits.close();
-
-        final ImageHDU resultImageHDU = (ImageHDU) fits.getHDU(0);
-        Assertions.assertEquals(hdu.getData(), resultImageHDU.getData());
     }
 
     @Test

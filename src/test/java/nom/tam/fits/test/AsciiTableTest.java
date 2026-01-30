@@ -37,11 +37,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,7 +60,6 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsFile;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
-import nom.tam.util.SafeClose;
 import nom.tam.util.TestArrayFuncs;
 
 import static nom.tam.fits.header.DataDescription.TDMAXn;
@@ -85,55 +79,53 @@ public class AsciiTableTest {
 
     @Test
     public void testDeferredClosedError() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            Fits f = makeAsciiTable();
+        try (Fits f = makeAsciiTable()) {
             f.write("target/at1.fits");
+        }
 
-            // Read back the data from the file.
-            File file = new File("target/at1.fits");
-            f = new Fits(file);
+        // Read back the data from the file.
+        File file = new File("target/at1.fits");
+
+        try (Fits f = new Fits(file)) {
             f.read();
             AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
 
             Assertions.assertTrue(hdu.getData().isDeferred());
             f.getStream().close();
-            hdu.getData().getData();
-
-        });
+            Assertions.assertThrows(FitsException.class, () -> hdu.getData().getData());
+        }
     }
 
     @Test
     public void testDeferredStream() throws Exception {
-        Fits f = makeAsciiTable();
-        f.write("target/at1.fits");
+        try (Fits f = makeAsciiTable()) {
+            f.write("target/at1.fits");
+        }
 
         // Read back the data from the file.
-        f = new Fits(new FitsInputStream(new FileInputStream("target/at1.fits")));
-        f.read();
-        AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
-
-        Assertions.assertFalse(hdu.getData().isDeferred());
-        f.close();
+        try (Fits f = new Fits(new FitsInputStream(new FileInputStream("target/at1.fits")))) {
+            f.read();
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+            Assertions.assertFalse(hdu.getData().isDeferred());
+        }
     }
 
     public void createByColumn() throws Exception {
-        Fits f = makeAsciiTable();
-        writeFile(f, "target/at1.fits");
+        try (Fits f = makeAsciiTable()) {
+            writeFile(f, "target/at1.fits");
+        }
 
         // Read back the data from the file.
-        f = new Fits("target/at1.fits");
-        f.read();
-        AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
-        checkByColumn(hdu);
-        Fits f2 = null;
-        try {
-            f2 = new Fits(new FileInputStream(new File("target/at1.fits")));
-            // lets trigger the read over a stream and test again
-            hdu = (AsciiTableHDU) f2.getHDU(1);
+        try (Fits f = new Fits("target/at1.fits")) {
+            f.read();
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
             checkByColumn(hdu);
-        } finally {
-            SafeClose.close(f2);
+        }
+
+        try (Fits f2 = new Fits(new FileInputStream(new File("target/at1.fits")))) {
+            // lets trigger the read over a stream and test again
+            AsciiTableHDU hdu = (AsciiTableHDU) f2.getHDU(1);
+            checkByColumn(hdu);
         }
     }
 
@@ -153,32 +145,30 @@ public class AsciiTableTest {
     public void createByRow() throws Exception {
 
         // Create a table row by row .
-        Fits f = new Fits();
-        AsciiTable data = new AsciiTable();
-        Object[] row = new Object[4];
+        try (Fits f = new Fits()) {
+            AsciiTable data = new AsciiTable();
 
-        for (int i = 0; i < 50; i++) {
-            data.addRow(getRow(i));
+            for (int i = 0; i < 50; i++) {
+                data.addRow(getRow(i));
+            }
+
+            f.addHDU(Fits.makeHDU(data));
+
+            Assertions.assertEquals(33, data.getRowLen());
+
+            writeFile(f, "target/at2.fits");
         }
-
-        f.addHDU(Fits.makeHDU(data));
-
-        Assertions.assertEquals(33, data.getRowLen());
-
-        writeFile(f, "target/at2.fits");
 
         // Read it back.
-        f = new Fits("target/at2.fits");
+        try (Fits f = new Fits("target/at2.fits")) {
+            checkByRow(f);
+        }
 
-        checkByRow(f);
-        Fits f2 = null;
-        try {
-            f2 = new Fits(new FileInputStream(new File("target/at2.fits")));
+        try (Fits f2 = new Fits(new FileInputStream(new File("target/at2.fits")))) {
             // lets trigger the read over a stream and test again
             checkByRow(f2);
-        } finally {
-            SafeClose.close(f2);
         }
+
     }
 
     protected void checkByRow(Fits f) throws FitsException, IOException {
@@ -204,34 +194,38 @@ public class AsciiTableTest {
 
     public void delete() throws Exception {
 
-        Fits f = new Fits("target/at1.fits");
+        try (Fits f = new Fits("target/at1.fits")) {
+            TableHDU<?> th = (TableHDU<?>) f.getHDU(1);
+            Assertions.assertEquals(50, th.getNRows());
+            th.deleteRows(2, 2);
+            Assertions.assertEquals(48, th.getNRows());
+            th.deleteRows(50);
+            Assertions.assertEquals(48, th.getNRows());
 
-        TableHDU<?> th = (TableHDU<?>) f.getHDU(1);
-        Assertions.assertEquals(50, th.getNRows());
-        th.deleteRows(2, 2);
-        Assertions.assertEquals(48, th.getNRows());
-        th.deleteRows(50);
-        Assertions.assertEquals(48, th.getNRows());
-        FitsFile bf = new FitsFile("target/at1y.fits", "rw");
-        f.write(bf);
-        bf.close();
+            try (FitsFile bf = new FitsFile("target/at1y.fits", "rw")) {
+                f.write(bf);
+            }
+        }
 
-        f = new Fits("target/at1y.fits");
-        th = (TableHDU<?>) f.getHDU(1);
-        Assertions.assertEquals(48, th.getNRows());
+        try (Fits f = new Fits("target/at1y.fits")) {
+            TableHDU<?> th = (TableHDU<?>) f.getHDU(1);
+            Assertions.assertEquals(48, th.getNRows());
 
-        Assertions.assertEquals(5, th.getNCols());
-        th.deleteColumnsIndexZero(3, 2);
-        Assertions.assertEquals(3, th.getNCols());
-        th.deleteColumnsIndexZero(0, 2);
-        Assertions.assertEquals(1, th.getNCols());
-        bf = new FitsFile("target/at1z.fits", "rw");
-        f.write(bf);
-        bf.close();
+            Assertions.assertEquals(5, th.getNCols());
+            th.deleteColumnsIndexZero(3, 2);
+            Assertions.assertEquals(3, th.getNCols());
+            th.deleteColumnsIndexZero(0, 2);
+            Assertions.assertEquals(1, th.getNCols());
 
-        f = new Fits("target/at1z.fits");
-        th = (TableHDU<?>) f.getHDU(1);
-        Assertions.assertEquals(1, th.getNCols());
+            try (FitsFile bf = new FitsFile("target/at1z.fits", "rw")) {
+                f.write(bf);
+            }
+        }
+
+        try (Fits f = new Fits("target/at1z.fits")) {
+            TableHDU<?> th = (TableHDU<?>) f.getHDU(1);
+            Assertions.assertEquals(1, th.getNCols());
+        }
     }
 
     Object[] getRow(int i) {
@@ -277,82 +271,94 @@ public class AsciiTableTest {
     }
 
     public void modifyTable() throws Exception {
-
-        Fits f = new Fits("target/at1.fits");
         Object[] samp = getSampleCols();
 
-        AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
-        AsciiTable data = hdu.getData();
-        float[] f1 = (float[]) data.getColumn(0);
-        float[] f2 = f1.clone();
-        for (int i = 0; i < f2.length; i++) {
-            f2[i] = 2 * f2[i];
-        }
-
-        data.setColumn(0, f2);
-        f1 = new float[] {3.14159f};
-        data.setElement(3, 0, f1);
-
-        hdu.setNullString(0, "**INVALID**");
-        data.setNull(5, 0, true);
-        hdu.setNull(6, 0, true);
-
+        AsciiTableHDU hdu = null;
+        AsciiTable data = null;
+        float[] f2 = null;
         Object[] row = new Object[5];
-        row[0] = new float[] {6.28f};
-        row[1] = new int[] {22};
-        row[2] = new long[] {0};
-        row[3] = new double[] {-3};
-        row[4] = new String[] {"A string"};
 
-        data.setRow(5, row);
+        try (Fits f = new Fits("target/at1.fits")) {
+            hdu = (AsciiTableHDU) f.getHDU(1);
+            data = hdu.getData();
 
-        data.setElement(4, 2, new long[] {54321});
-
-        FitsFile bf = new FitsFile("target/at1x.fits", "rw");
-        f.write(bf);
-
-        f = new Fits("target/at1x.fits");
-        AsciiTableHDU asciiHdu = (AsciiTableHDU) f.getHDU(1);
-        AsciiTable tab = asciiHdu.getData();
-        Object[] kern = (Object[]) tab.getKernel();
-
-        float[] fx = (float[]) kern[0];
-        int[] ix = (int[]) kern[1];
-        long[] lx = (long[]) kern[2];
-        double[] dx = (double[]) kern[3];
-        String[] sx = (String[]) kern[4];
-
-        int[] iy = (int[]) samp[1];
-        long[] ly = (long[]) samp[2];
-        double[] dy = (double[]) samp[3];
-        String[] sy = (String[]) samp[4];
-
-        Assertions.assertTrue(tab.isNull(6, 0));
-        Assertions.assertFalse(tab.isNull(5, 0));
-        Assertions.assertTrue(hdu.isNull(6, 0));
-        Assertions.assertFalse(hdu.isNull(5, 0));
-
-        for (int i = 0; i < data.getNRows(); i++) {
-            if (i != 5) {
-                if (i != 6) { // Null
-                    Assertions.assertEquals(1., f2[i] / fx[i], 1.e-6, "f" + i);
-                }
-                Assertions.assertEquals(iy[i], ix[i], "i" + i);
-                if (i == 4) {
-                    Assertions.assertEquals(54321L, lx[i], "l4");
-                } else {
-                    Assertions.assertEquals(ly[i], lx[i], "l" + i);
-                }
-                Assertions.assertEquals(1., dy[i] / dx[i], 1.e-14, "d" + i);
-                Assertions.assertEquals(sy[i], sx[i].trim(), "s" + i);
+            float[] f1 = (float[]) data.getColumn(0);
+            f2 = f1.clone();
+            for (int i = 0; i < f2.length; i++) {
+                f2[i] = 2 * f2[i];
             }
-        }
-        Object[] r5 = data.getRow(5);
-        String[] st = (String[]) r5[4];
-        st[0] = st[0].trim();
-        Assertions.assertTrue(TestArrayFuncs.arrayEquals(row, r5, 1.e-6, 1.e-14));
 
-        addDeleteColumn(asciiHdu);
+            data.setColumn(0, f2);
+            f1 = new float[] {3.14159f};
+            data.setElement(3, 0, f1);
+
+            hdu.setNullString(0, "**INVALID**");
+            data.setNull(5, 0, true);
+            hdu.setNull(6, 0, true);
+
+            row[0] = new float[] {6.28f};
+            row[1] = new int[] {22};
+            row[2] = new long[] {0};
+            row[3] = new double[] {-3};
+            row[4] = new String[] {"A string"};
+
+            data.setRow(5, row);
+
+            data.setElement(4, 2, new long[] {54321});
+
+            try (FitsFile bf = new FitsFile("target/at1x.fits", "rw")) {
+                f.write(bf);
+            }
+
+            Assertions.assertTrue(hdu.isNull(6, 0));
+            Assertions.assertFalse(hdu.isNull(5, 0));
+        }
+
+        Assertions.assertNotNull(hdu);
+        Assertions.assertNotNull(data);
+        Assertions.assertNotNull(f2);
+
+        try (Fits f = new Fits("target/at1x.fits")) {
+            AsciiTableHDU asciiHdu = (AsciiTableHDU) f.getHDU(1);
+            AsciiTable tab = asciiHdu.getData();
+            Object[] kern = (Object[]) tab.getKernel();
+
+            float[] fx = (float[]) kern[0];
+            int[] ix = (int[]) kern[1];
+            long[] lx = (long[]) kern[2];
+            double[] dx = (double[]) kern[3];
+            String[] sx = (String[]) kern[4];
+
+            int[] iy = (int[]) samp[1];
+            long[] ly = (long[]) samp[2];
+            double[] dy = (double[]) samp[3];
+            String[] sy = (String[]) samp[4];
+
+            Assertions.assertTrue(tab.isNull(6, 0));
+            Assertions.assertFalse(tab.isNull(5, 0));
+
+            for (int i = 0; i < data.getNRows(); i++) {
+                if (i != 5) {
+                    if (i != 6) { // Null
+                        Assertions.assertEquals(1., f2[i] / fx[i], 1.e-6, "f" + i);
+                    }
+                    Assertions.assertEquals(iy[i], ix[i], "i" + i);
+                    if (i == 4) {
+                        Assertions.assertEquals(54321L, lx[i], "l4");
+                    } else {
+                        Assertions.assertEquals(ly[i], lx[i], "l" + i);
+                    }
+                    Assertions.assertEquals(1., dy[i] / dx[i], 1.e-14, "d" + i);
+                    Assertions.assertEquals(sy[i], sx[i].trim(), "s" + i);
+                }
+            }
+            Object[] r5 = data.getRow(5);
+            String[] st = (String[]) r5[4];
+            st[0] = st[0].trim();
+            Assertions.assertTrue(TestArrayFuncs.arrayEquals(row, r5, 1.e-6, 1.e-14));
+
+            addDeleteColumn(asciiHdu);
+        }
     }
 
     private void addDeleteColumn(AsciiTableHDU asciiHdu) throws FitsException {
@@ -375,40 +381,31 @@ public class AsciiTableTest {
     // have a least one character in the output column.
     @Test
     public void nullAscii() throws Exception {
-        FitsFile bf = new FitsFile("target/at3.fits", "rw");
+
         Object[] o = new Object[] {new String[] {null, null, null}, new String[] {"", "", ""},
                 new String[] {null, "", null}, new String[] {" ", " ", " "}, new String[] {"abc", "def", null}};
         // use the depricated factory method.
         BasicHDU<?> ahdu = FitsFactory.HDUFactory(o);
-        Fits f = null;
-        try {
-            f = new Fits();
+
+        try (Fits f = new Fits(); FitsFile bf = new FitsFile("target/at3.fits", "rw")) {
             f.addHDU(ahdu);
             f.write(bf);
-        } finally {
-            SafeClose.close(f);
         }
-        bf.close();
 
-        BasicHDU<?> bhdu;
-        try {
-            f = new Fits("target/at3.fits");
-            bhdu = f.getHDU(1);
-        } finally {
-            SafeClose.close(f);
+        try (Fits f = new Fits("target/at3.fits")) {
+            BasicHDU<?> bhdu = f.getHDU(1);
+
+            Header hdr = bhdu.getHeader();
+            Assertions.assertEquals(hdr.getStringValue("TFORM1"), "A1");
+            Assertions.assertEquals(hdr.getStringValue("TFORM2"), "A1");
+            Assertions.assertEquals(hdr.getStringValue("TFORM3"), "A1");
+            Assertions.assertEquals(hdr.getStringValue("TFORM4"), "A1");
+            Assertions.assertEquals(hdr.getStringValue("TFORM5"), "A3");
         }
-        Header hdr = bhdu.getHeader();
-        Assertions.assertEquals(hdr.getStringValue("TFORM1"), "A1");
-        Assertions.assertEquals(hdr.getStringValue("TFORM2"), "A1");
-        Assertions.assertEquals(hdr.getStringValue("TFORM3"), "A1");
-        Assertions.assertEquals(hdr.getStringValue("TFORM4"), "A1");
-        Assertions.assertEquals(hdr.getStringValue("TFORM5"), "A3");
     }
 
     public void readByColumn() throws Exception {
-        Fits f = null;
-        try {
-            f = new Fits("target/at1.fits");
+        try (Fits f = new Fits("target/at1.fits")) {
             AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
             AsciiTable data = hdu.getData();
             Object[] cols = getSampleCols();
@@ -426,44 +423,44 @@ public class AsciiTableTest {
                 }
                 Assertions.assertTrue(TestArrayFuncs.arrayEquals(cols[j], col, 1.e-6, 1.e-14), "Ascii Columns:" + j);
             }
-        } finally {
-            SafeClose.close(f);
         }
     }
 
     public void readByElement() throws Exception {
+        try (Fits f = new Fits("target/at2.fits")) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+            AsciiTable data = hdu.getData();
 
-        Fits f = new Fits("target/at2.fits");
-        AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
-        AsciiTable data = hdu.getData();
-
-        for (int i = 0; i < data.getNRows(); i++) {
-            Object[] row = data.getRow(i);
-            for (int j = 0; j < data.getNCols(); j++) {
-                Object val = data.getElement(i, j);
-                Assertions.assertTrue(TestArrayFuncs.arrayEquals(val, row[j]), "Ascii readElement " + i + ", " + j);
+            for (int i = 0; i < data.getNRows(); i++) {
+                Object[] row = data.getRow(i);
+                for (int j = 0; j < data.getNCols(); j++) {
+                    Object val = data.getElement(i, j);
+                    Assertions.assertTrue(TestArrayFuncs.arrayEquals(val, row[j]), "Ascii readElement " + i + ", " + j);
+                }
             }
         }
     }
 
     public void readByRow() throws Exception {
+        try (Fits f = new Fits("target/at1.fits")) {
+            Object[] cols = getSampleCols();
 
-        Fits f = new Fits("target/at1.fits");
-        Object[] cols = getSampleCols();
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+            AsciiTable data = hdu.getData();
 
-        AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
-        AsciiTable data = hdu.getData();
-
-        for (int i = 0; i < data.getNRows(); i++) {
-            Assertions.assertEquals(50, data.getNRows(), "Rows:" + i);
-            Object[] row = data.getRow(i);
-            Assertions.assertEquals(1.F, ((float[]) cols[0])[i] / ((float[]) row[0])[0], 1.e-6, "Ascii Rows: float" + i);
-            Assertions.assertEquals(((int[]) cols[1])[i], ((int[]) row[1])[0], "Ascii Rows: int" + i);
-            Assertions.assertEquals(((long[]) cols[2])[i], ((long[]) row[2])[0], "Ascii Rows: long" + i);
-            Assertions.assertEquals(1., ((double[]) cols[3])[i] / ((double[]) row[3])[0], 1.e-14, "Ascii Rows: double" + i);
-            String[] st = (String[]) row[4];
-            st[0] = st[0].trim();
-            Assertions.assertEquals(((String[]) cols[4])[i], ((String[]) row[4])[0], "Ascii Rows: Str" + i);
+            for (int i = 0; i < data.getNRows(); i++) {
+                Assertions.assertEquals(50, data.getNRows(), "Rows:" + i);
+                Object[] row = data.getRow(i);
+                Assertions.assertEquals(1.F, ((float[]) cols[0])[i] / ((float[]) row[0])[0], 1.e-6,
+                        "Ascii Rows: float" + i);
+                Assertions.assertEquals(((int[]) cols[1])[i], ((int[]) row[1])[0], "Ascii Rows: int" + i);
+                Assertions.assertEquals(((long[]) cols[2])[i], ((long[]) row[2])[0], "Ascii Rows: long" + i);
+                Assertions.assertEquals(1., ((double[]) cols[3])[i] / ((double[]) row[3])[0], 1.e-14,
+                        "Ascii Rows: double" + i);
+                String[] st = (String[]) row[4];
+                st[0] = st[0].trim();
+                Assertions.assertEquals(((String[]) cols[4])[i], ((String[]) row[4])[0], "Ascii Rows: Str" + i);
+            }
         }
     }
 
@@ -484,10 +481,9 @@ public class AsciiTableTest {
     }
 
     public void writeFile(Fits f, String name) throws Exception {
-        FitsFile bf = new FitsFile(name, "rw");
-        f.write(bf);
-        bf.flush();
-        bf.close();
+        try (FitsFile bf = new FitsFile(name, "rw")) {
+            f.write(bf);
+        }
     }
 
     @Test
@@ -528,13 +524,10 @@ public class AsciiTableTest {
     @Test
     public void testBadCases() throws Exception {
         // Create a table row by row .
-        Fits f = new Fits();
         AsciiTable data = new AsciiTable();
         for (int i = 0; i < 50; i++) {
             data.addRow(getRow(i));
         }
-
-        f.addHDU(Fits.makeHDU(data));
 
         Exception actual = Assertions.assertThrows(FitsException.class, () -> data.addRow(null));
         Assertions.assertEquals(NullPointerException.class, actual.getCause().getClass());
@@ -558,35 +551,16 @@ public class AsciiTableTest {
         actual = Assertions.assertThrows(FitsException.class, () -> data.addRow(new Object[5]));
         Assertions.assertTrue(actual.getCause() instanceof NullPointerException);
 
-        final List<LogRecord> logs = new ArrayList<>();
-        Logger.getLogger(AsciiTable.class.getName()).addHandler(new Handler() {
-
-            @Override
-            public void publish(LogRecord record) {
-                logs.add(record);
-            }
-
-            @Override
-            public void flush() {
-            }
-
-            @Override
-            public void close() throws SecurityException {
-            }
-        });
     }
 
     @Test
     public void testBadCases2() throws Exception {
         // Create a table row by row .
-        Fits f = new Fits();
         AsciiTable data = new AsciiTable();
 
         for (int i = 0; i < 50; i++) {
             data.addRow(getRow(i));
         }
-
-        f.addHDU(Fits.makeHDU(data));
 
         Assertions.assertThrows(FitsException.class, () -> data.addColumn(null));
         Assertions.assertThrows(FitsException.class, () -> data.addColumn(new int[10], 99));
@@ -600,82 +574,87 @@ public class AsciiTableTest {
 
     @Test
     public void testDeleteSpecials() throws Exception {
-        AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
-        Assertions.assertEquals(50, hdu.getNRows());
-        hdu.deleteRows(-1, 1);
-        Assertions.assertEquals(50, hdu.getNRows());
-        hdu.deleteRows(49, 10);
-        Assertions.assertEquals(49, hdu.getNRows());
+        try (Fits f = makeAsciiTable()) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+            Assertions.assertEquals(50, hdu.getNRows());
+            hdu.deleteRows(-1, 1);
+            Assertions.assertEquals(50, hdu.getNRows());
+            hdu.deleteRows(49, 10);
+            Assertions.assertEquals(49, hdu.getNRows());
+        }
     }
 
     @Test
     public void testSpecials() throws Exception {
-        AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
-        Assertions.assertEquals("I10", hdu.getColumnFormat(1));
-        Assertions.assertEquals("I10", hdu.getColumnMeta(1, "TFORM"));
-        Assertions.assertEquals(TableHDU.getDefaultColumnName(1), hdu.getColumnName(1));
+        try (Fits f = makeAsciiTable()) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+            Assertions.assertEquals("I10", hdu.getColumnFormat(1));
+            Assertions.assertEquals("I10", hdu.getColumnMeta(1, "TFORM"));
+            Assertions.assertEquals(TableHDU.getDefaultColumnName(1), hdu.getColumnName(1));
 
-        hdu.setColumnMeta(1, "TTYPE", "TATA", null);
-        Assertions.assertEquals("TATA", hdu.getColumnName(1));
-        Object colValue = hdu.getColumn("TATA");
-        Assertions.assertNotNull(colValue);
-        int[] copy = (int[]) ArrayFuncs.genericClone(colValue);
-        copy[0] = 3333;
-        hdu.setColumn("TATA", copy);
-        Assertions.assertEquals(3333, ((int[]) hdu.getColumn("TATA"))[0]);
+            hdu.setColumnMeta(1, "TTYPE", "TATA", null);
+            Assertions.assertEquals("TATA", hdu.getColumnName(1));
+            Object colValue = hdu.getColumn("TATA");
+            Assertions.assertNotNull(colValue);
+            int[] copy = (int[]) ArrayFuncs.genericClone(colValue);
+            copy[0] = 3333;
+            hdu.setColumn("TATA", copy);
+            Assertions.assertEquals(3333, ((int[]) hdu.getColumn("TATA"))[0]);
 
-        Assertions.assertNull(hdu.getHeader().getStringValue("TNULL2"));
-        hdu.setNull(1, 1, true);
-        Assertions.assertEquals("NULL", hdu.getHeader().getStringValue("TNULL2"));
-        Assertions.assertTrue(hdu.isNull(1, 1));
-
+            Assertions.assertNull(hdu.getHeader().getStringValue("TNULL2"));
+            hdu.setNull(1, 1, true);
+            Assertions.assertEquals("NULL", hdu.getHeader().getStringValue("TNULL2"));
+            Assertions.assertTrue(hdu.isNull(1, 1));
+        }
     }
 
     @Test
     public void testDelete() throws Exception {
-        AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
-        Assertions.assertEquals(5, hdu.getNCols());
-        hdu.deleteColumnsIndexOne(1, 1, new String[] {});
-        Assertions.assertEquals(4, hdu.getNCols());
+        try (Fits f = makeAsciiTable()) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+            Assertions.assertEquals(5, hdu.getNCols());
+            hdu.deleteColumnsIndexOne(1, 1, new String[] {});
+            Assertions.assertEquals(4, hdu.getNCols());
+        }
     }
 
     @Test
     public void testDeleteNegative() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
-            hdu.deleteColumnsIndexOne(0, 1, new String[] {});
-
-        });
+        try (Fits f = makeAsciiTable()) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+            Assertions.assertThrows(FitsException.class, () -> hdu.deleteColumnsIndexOne(0, 1, new String[] {}));
+        }
     }
 
     @Test
     public void testDeleteEmpty() throws Exception {
-        AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
-        hdu.deleteColumnsIndexOne(1, 0, new String[] {});
-        Assertions.assertEquals(5, hdu.getNCols());
+        try (Fits f = makeAsciiTable()) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+            hdu.deleteColumnsIndexOne(1, 0, new String[] {});
+            Assertions.assertEquals(5, hdu.getNCols());
+        }
     }
 
     @Test
     public void testAddRow() throws Exception {
-        AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
-        Assertions.assertEquals(50, hdu.getNRows());
-        hdu.addRow(new Object[] {new float[] {1.5f}, new int[] {5}, new long[] {5L}, new double[] {5.6d},
-                new String[] {"EXTRA"}});
-        float[] floatColumn = ((float[]) hdu.getColumn(0));
-        Assertions.assertEquals(1.5f, floatColumn[floatColumn.length - 1], 0.000000000000f);
-        String[] stringColumn = ((String[]) hdu.getColumn(4));
-        Assertions.assertEquals("EXTRA", stringColumn[stringColumn.length - 1]);
+        try (Fits f = makeAsciiTable()) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+            Assertions.assertEquals(50, hdu.getNRows());
+            hdu.addRow(new Object[] {new float[] {1.5f}, new int[] {5}, new long[] {5L}, new double[] {5.6d},
+                    new String[] {"EXTRA"}});
+            float[] floatColumn = ((float[]) hdu.getColumn(0));
+            Assertions.assertEquals(1.5f, floatColumn[floatColumn.length - 1], 0.000000000000f);
+            String[] stringColumn = ((String[]) hdu.getColumn(4));
+            Assertions.assertEquals("EXTRA", stringColumn[stringColumn.length - 1]);
+        }
     }
 
     @Test
     public void testGetWrongColumnFormat() throws Exception {
-        Assertions.assertThrows(FitsException.class, () -> {
-
-            AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
-            hdu.getColumnFormat(5);
-
-        });
+        try (Fits f = makeAsciiTable()) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+            Assertions.assertThrows(FitsException.class, () -> hdu.getColumnFormat(5));
+        }
     }
 
     @Test
@@ -706,7 +685,6 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[10]));
 
         new AsciiTable(hdr); // no exception
     }
@@ -767,12 +745,12 @@ public class AsciiTableTest {
         AsciiTableHDU table = (AsciiTableHDU) Fits.makeHDU(getSampleCols());
         ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream()) {
 
-            int count = 0;
+            int n = 0;
 
             @Override
             public void write(byte[] b) throws IOException {
-                count += b.length;
-                if (count > 4500) {
+                n += b.length;
+                if (n > 4500) {
                     throw new IOException("XXXXX");
                 }
                 super.write(b);
@@ -926,24 +904,31 @@ public class AsciiTableTest {
         String i10loc = "src/test/resources/nom/tam/fits/test/test_i10.fits";
 
         // Default configuration is preferInt.
-        AsciiTable t0 = (AsciiTable) new Fits(i10loc).getHDU(1).getData();
-        Assertions.assertEquals(int[].class, t0.getColumn(1).getClass());
+        try (Fits f = new Fits(i10loc)) {
+            AsciiTable t0 = (AsciiTable) f.getHDU(1).getData();
+            Assertions.assertEquals(int[].class, t0.getColumn(1).getClass());
 
-        // Test with explicit configuration.
-        AsciiTable ti = readAsciiTable(i10loc, true);
-        Assertions.assertEquals(int[].class, ti.getColumn(1).getClass());
+            // Test with explicit configuration.
+            AsciiTable ti = readAsciiTable(i10loc, true);
+            Assertions.assertEquals(int[].class, ti.getColumn(1).getClass());
 
-        AsciiTable tl = readAsciiTable(i10loc, false);
-        Assertions.assertEquals(long[].class, tl.getColumn(1).getClass());
+            AsciiTable tl = readAsciiTable(i10loc, false);
+            Assertions.assertEquals(long[].class, tl.getColumn(1).getClass());
+        }
     }
 
     private AsciiTable readAsciiTable(String location, boolean preferInt) throws Exception {
-        ArrayDataInput in = new FitsFile(location);
-        // Skip the primary HDU
-        Header primaryHdr = Header.readHeader(in);
-        Header tblHdr = Header.readHeader(in);
-        AsciiTable table = new AsciiTable(tblHdr, preferInt);
-        table.read(in);
+        AsciiTable table = null;
+
+        try (ArrayDataInput in = new FitsFile(location)) {
+            // Skip the primary HDU
+            Header.readHeader(in);
+            Header tblHdr = Header.readHeader(in);
+            table = new AsciiTable(tblHdr, preferInt);
+            table.read(in);
+            table.getKernel(); // Make sure we have the data before we close the file
+        }
+
         return table;
     }
 
@@ -954,16 +939,18 @@ public class AsciiTableTest {
         int col = 1;
 
         // Default configuration is preferInt.
-        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+        try (Fits f = new Fits(i10loc)) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
 
-        hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE, null, true);
-        hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE, null, true);
+            hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE, null, true);
+            hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE, null, true);
 
-        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
-        Assertions.assertEquals(int.class, t1.getColumnType(col));
+            AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+            Assertions.assertEquals(int.class, t1.getColumnType(col));
 
-        t1 = new AsciiTable(hdu.getHeader(), false);
-        Assertions.assertEquals(int.class, t1.getColumnType(col));
+            t1 = new AsciiTable(hdu.getHeader(), false);
+            Assertions.assertEquals(int.class, t1.getColumnType(col));
+        }
     }
 
     @Test
@@ -973,16 +960,18 @@ public class AsciiTableTest {
         int col = 1;
 
         // Default configuration is preferInt.
-        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+        try (Fits f = new Fits(i10loc)) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
 
-        hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE, null, true);
-        hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE, null, true);
+            hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE, null, true);
+            hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE, null, true);
 
-        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
-        Assertions.assertEquals(int.class, t1.getColumnType(col));
+            AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+            Assertions.assertEquals(int.class, t1.getColumnType(col));
 
-        t1 = new AsciiTable(hdu.getHeader(), false);
-        Assertions.assertEquals(int.class, t1.getColumnType(col));
+            t1 = new AsciiTable(hdu.getHeader(), false);
+            Assertions.assertEquals(int.class, t1.getColumnType(col));
+        }
     }
 
     @Test
@@ -992,16 +981,18 @@ public class AsciiTableTest {
         int col = 1;
 
         // Default configuration is preferInt.
-        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+        try (Fits f = new Fits(i10loc)) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
 
-        hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE - 1L, null, true);
-        hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE, null, true);
+            hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE - 1L, null, true);
+            hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE, null, true);
 
-        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
-        Assertions.assertEquals(long.class, t1.getColumnType(col));
+            AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+            Assertions.assertEquals(long.class, t1.getColumnType(col));
 
-        t1 = new AsciiTable(hdu.getHeader(), false);
-        Assertions.assertEquals(long.class, t1.getColumnType(col));
+            t1 = new AsciiTable(hdu.getHeader(), false);
+            Assertions.assertEquals(long.class, t1.getColumnType(col));
+        }
     }
 
     @Test
@@ -1011,16 +1002,18 @@ public class AsciiTableTest {
         int col = 1;
 
         // Default configuration is preferInt.
-        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+        try (Fits f = new Fits(i10loc)) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
 
-        hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE - 1L, null, true);
-        hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE, null, true);
+            hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE - 1L, null, true);
+            hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE, null, true);
 
-        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
-        Assertions.assertEquals(long.class, t1.getColumnType(col));
+            AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+            Assertions.assertEquals(long.class, t1.getColumnType(col));
 
-        t1 = new AsciiTable(hdu.getHeader(), false);
-        Assertions.assertEquals(long.class, t1.getColumnType(col));
+            t1 = new AsciiTable(hdu.getHeader(), false);
+            Assertions.assertEquals(long.class, t1.getColumnType(col));
+        }
     }
 
     @Test
@@ -1030,16 +1023,18 @@ public class AsciiTableTest {
         int col = 1;
 
         // Default configuration is preferInt.
-        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+        try (Fits f = new Fits(i10loc)) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
 
-        hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE, null, true);
-        hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE + 1L, null, true);
+            hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE, null, true);
+            hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE + 1L, null, true);
 
-        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
-        Assertions.assertEquals(long.class, t1.getColumnType(col));
+            AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+            Assertions.assertEquals(long.class, t1.getColumnType(col));
 
-        t1 = new AsciiTable(hdu.getHeader(), false);
-        Assertions.assertEquals(long.class, t1.getColumnType(col));
+            t1 = new AsciiTable(hdu.getHeader(), false);
+            Assertions.assertEquals(long.class, t1.getColumnType(col));
+        }
     }
 
     @Test
@@ -1049,16 +1044,18 @@ public class AsciiTableTest {
         int col = 1;
 
         // Default configuration is preferInt.
-        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+        try (Fits f = new Fits(i10loc)) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
 
-        hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE, null, true);
-        hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE + 1L, null, true);
+            hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE, null, true);
+            hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE + 1L, null, true);
 
-        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
-        Assertions.assertEquals(long.class, t1.getColumnType(col));
+            AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+            Assertions.assertEquals(long.class, t1.getColumnType(col));
 
-        t1 = new AsciiTable(hdu.getHeader(), false);
-        Assertions.assertEquals(long.class, t1.getColumnType(col));
+            t1 = new AsciiTable(hdu.getHeader(), false);
+            Assertions.assertEquals(long.class, t1.getColumnType(col));
+        }
     }
 
     @Test
@@ -1068,15 +1065,17 @@ public class AsciiTableTest {
         int col = 1;
 
         // Default configuration is preferInt.
-        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+        try (Fits f = new Fits(i10loc)) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
 
-        hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE, null, true);
+            hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE, null, true);
 
-        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
-        Assertions.assertEquals(int.class, t1.getColumnType(col));
+            AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+            Assertions.assertEquals(int.class, t1.getColumnType(col));
 
-        t1 = new AsciiTable(hdu.getHeader(), false);
-        Assertions.assertEquals(long.class, t1.getColumnType(col));
+            t1 = new AsciiTable(hdu.getHeader(), false);
+            Assertions.assertEquals(long.class, t1.getColumnType(col));
+        }
     }
 
     @Test
@@ -1086,15 +1085,17 @@ public class AsciiTableTest {
         int col = 1;
 
         // Default configuration is preferInt.
-        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+        try (Fits f = new Fits(i10loc)) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
 
-        hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE, null, true);
+            hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE, null, true);
 
-        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
-        Assertions.assertEquals(int.class, t1.getColumnType(col));
+            AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+            Assertions.assertEquals(int.class, t1.getColumnType(col));
 
-        t1 = new AsciiTable(hdu.getHeader(), false);
-        Assertions.assertEquals(long.class, t1.getColumnType(col));
+            t1 = new AsciiTable(hdu.getHeader(), false);
+            Assertions.assertEquals(long.class, t1.getColumnType(col));
+        }
     }
 
     @Test
@@ -1104,15 +1105,17 @@ public class AsciiTableTest {
         int col = 1;
 
         // Default configuration is preferInt.
-        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+        try (Fits f = new Fits(i10loc)) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
 
-        hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE, null, true);
+            hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE, null, true);
 
-        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
-        Assertions.assertEquals(int.class, t1.getColumnType(col));
+            AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+            Assertions.assertEquals(int.class, t1.getColumnType(col));
 
-        t1 = new AsciiTable(hdu.getHeader(), false);
-        Assertions.assertEquals(long.class, t1.getColumnType(col));
+            t1 = new AsciiTable(hdu.getHeader(), false);
+            Assertions.assertEquals(long.class, t1.getColumnType(col));
+        }
     }
 
     @Test
@@ -1122,15 +1125,17 @@ public class AsciiTableTest {
         int col = 1;
 
         // Default configuration is preferInt.
-        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+        try (Fits f = new Fits(i10loc)) {
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
 
-        hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE, null, true);
+            hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE, null, true);
 
-        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
-        Assertions.assertEquals(int.class, t1.getColumnType(col));
+            AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+            Assertions.assertEquals(int.class, t1.getColumnType(col));
 
-        t1 = new AsciiTable(hdu.getHeader(), false);
-        Assertions.assertEquals(long.class, t1.getColumnType(col));
+            t1 = new AsciiTable(hdu.getHeader(), false);
+            Assertions.assertEquals(long.class, t1.getColumnType(col));
+        }
     }
 
     @Test

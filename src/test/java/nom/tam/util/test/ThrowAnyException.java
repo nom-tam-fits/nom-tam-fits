@@ -42,6 +42,7 @@ public class ThrowAnyException {
     private ThrowAnyException() {
     }
 
+    @SuppressWarnings("unchecked")
     public static <E extends Throwable> void throwAny(Throwable e) throws E {
         throw (E) e;
     }

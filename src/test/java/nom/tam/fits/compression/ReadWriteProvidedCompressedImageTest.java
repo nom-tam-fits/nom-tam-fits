@@ -145,6 +145,7 @@ public class ReadWriteProvidedCompressedImageTest {
     /**
      * Assertions.assert two files files (one compressed and one uncompressed and use as little memory as possible.
      */
+    @SuppressWarnings("unchecked")
     private <T>
 
             void assertCompressedToUncompressedImage(String fileName, String unCompfileName, Class<T> clazz,
@@ -461,6 +462,7 @@ public class ReadWriteProvidedCompressedImageTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T readHDU(Fits fits, Class<T> clazz) throws FitsException, IOException {
         BasicHDU<?> result = fits.readHDU();
         while (result != null && (isEmptyImage(result) || !clazz.isAssignableFrom(result.getClass()))) {
@@ -643,9 +645,9 @@ public class ReadWriteProvidedCompressedImageTest {
     public void testSomeBlanksInCompressedFloatImage() throws Exception {
         double[][] data = newTestImageWithSomeBlanks("");
 
-        try (Fits f = new Fits()) {
-            FitsOutputStream bdos = new FitsOutputStream(
-                    new FileOutputStream("target/testSomeBlanksInCompressedFloatImage.fits.fz"));
+        try (Fits f = new Fits();
+                FitsOutputStream bdos = new FitsOutputStream(
+                        new FileOutputStream("target/testSomeBlanksInCompressedFloatImage.fits.fz"))) {
             ImageData imageData = new ImageData(data);
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);

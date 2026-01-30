@@ -43,6 +43,7 @@ public class DeprecatedTest {
 
     @Test
     public void testPrimitiveTypeBaseConstructor() throws Exception {
+        @SuppressWarnings("unused")
         PrimitiveTypeBase<?> i = new PrimitiveTypeBase<IntBuffer>(4, false, int.class, Integer.class, IntBuffer.class, 'I',
                 Bitpix.VALUE_FOR_INT) {
 

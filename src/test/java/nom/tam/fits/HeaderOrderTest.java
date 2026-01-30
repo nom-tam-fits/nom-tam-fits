@@ -72,37 +72,38 @@ public class HeaderOrderTest {
      */
     @Test
     public void headerOrder() throws Exception {
-        ArrayDataOutput dos = new FitsOutputStream(new ByteArrayOutputStream(), 80);
-        Header header = new Header();
+        try (ArrayDataOutput dos = new FitsOutputStream(new ByteArrayOutputStream(), 80)) {
+            Header header = new Header();
 
-        header.addValue(BLOCKED, true);
-        header.addValue(SIMPLE, true);
-        header.addValue(BITPIX, 8);
-        header.addValue(THEAP, 1);
-        header.addValue(NAXIS, 0);
-        header.insertCommentStyle(END.key(), null);
+            header.addValue(BLOCKED, true);
+            header.addValue(SIMPLE, true);
+            header.addValue(BITPIX, 8);
+            header.addValue(THEAP, 1);
+            header.addValue(NAXIS, 0);
+            header.insertCommentStyle(END.key(), null);
 
-        // Check that the order is what we expect...
-        Assertions.assertEquals(SIMPLE.key(), header.iterator(1).next().getKey());
-        Assertions.assertEquals(BITPIX.key(), header.iterator(2).next().getKey());
-        Assertions.assertEquals(THEAP.key(), header.iterator(3).next().getKey());
-        Assertions.assertEquals(NAXIS.key(), header.iterator(4).next().getKey());
-        Assertions.assertEquals(END.key(), header.iterator(5).next().getKey());
+            // Check that the order is what we expect...
+            Assertions.assertEquals(SIMPLE.key(), header.iterator(1).next().getKey());
+            Assertions.assertEquals(BITPIX.key(), header.iterator(2).next().getKey());
+            Assertions.assertEquals(THEAP.key(), header.iterator(3).next().getKey());
+            Assertions.assertEquals(NAXIS.key(), header.iterator(4).next().getKey());
+            Assertions.assertEquals(END.key(), header.iterator(5).next().getKey());
 
-        header.write(dos);
-        Assertions.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
-        Assertions.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
-        header = new Header();
-        header.addValue(SIMPLE, true);
-        header.addValue(BITPIX, 8);
-        header.addValue(NAXIS, 0);
-        header.insertCommentStyle(END.key(), null);
-        header.addValue(THEAP, 1);
-        header.addValue(BLOCKED, true);
-        Assertions.assertEquals(END.key(), header.iterator(3).next().getKey());
-        header.write(dos);
-        Assertions.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
-        Assertions.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
+            header.write(dos);
+            Assertions.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
+            Assertions.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
+            header = new Header();
+            header.addValue(SIMPLE, true);
+            header.addValue(BITPIX, 8);
+            header.addValue(NAXIS, 0);
+            header.insertCommentStyle(END.key(), null);
+            header.addValue(THEAP, 1);
+            header.addValue(BLOCKED, true);
+            Assertions.assertEquals(END.key(), header.iterator(3).next().getKey());
+            header.write(dos);
+            Assertions.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
+            Assertions.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
+        }
     }
 
     @Test

@@ -116,12 +116,14 @@ public class RandomAccessFileChannelTest {
         }
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void testClose() throws Exception {
         final File tempFile = File.createTempFile("test", "tmp");
         tempFile.deleteOnExit();
 
         final Path testPath = tempFile.toPath();
+
         final RandomAccessFileChannel testSubject = new RandomAccessFileChannel(testPath);
         testSubject.close();
 
