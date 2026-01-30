@@ -42,6 +42,8 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.zip.GZIPInputStream;
 
+import org.junit.jupiter.api.Assumptions;
+
 @SuppressWarnings({"javadoc", "deprecation"})
 public class BlackBoxImages {
 
@@ -51,7 +53,7 @@ public class BlackBoxImages {
     public static String getBlackBoxImage(final String fileName) {
         String skipBackboxImages = System.getProperty("skip.backbox.images", "false");
         if (skipBackboxImages.equals("true")) {
-            org.junit.jupiter.api.Assumptions.assumeTrue(false);
+            Assumptions.assumeTrue(false);
         }
         if (new File("../blackbox-images/" + fileName).exists()) {
             return "../blackbox-images/" + fileName;

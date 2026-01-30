@@ -66,6 +66,7 @@ public class GZip2CompressTest {
     public void testByteCompressIOException() throws Exception {
         ByteGZip2Compressor c = new ByteGZip2Compressor() {
 
+            @SuppressWarnings("resource")
             @Override
             protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
                 return new GZIPOutputStream(new ByteBufferOutputStream(compressed), 100) {

@@ -1058,8 +1058,39 @@ public class BaseFitsTest {
             }
         }; Fits f = new Fits()) {
             Assertions.assertThrows(FitsException.class, () -> f.write((DataOutput) o));
-        } catch (IOException e) {
+            Exception e = Assertions.assertThrows(IOException.class, () -> o.close());
             Assertions.assertEquals("flush disabled.", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testWriteStreamIOException() throws Exception {
+        try (FitsOutputStream o = new FitsOutputStream(new FileOutputStream(new File(TMP_FITS_NAME))) {
+            @Override
+            public void write(byte[] b) throws IOException {
+                throw new IOException("write disabled");
+            }
+        }; Fits f = new Fits()) {
+            f.addHDU(new NullDataHDU());
+            Exception e = Assertions.assertThrows(FitsException.class, () -> f.write((DataOutput) o));
+            Assertions.assertEquals(IOException.class, e.getCause().getClass());
+            Assertions.assertEquals("write disabled", e.getCause().getMessage());
+        }
+    }
+
+    @Test
+    public void testWriteFileIOException() throws Exception {
+        try (FitsFile o = new FitsFile(TMP_FITS_NAME, "rw"); Fits f = new Fits()) {
+            f.write(o);
+        }
+
+        try (FitsFile o = new FitsFile(TMP_FITS_NAME, "r"); Fits f = new Fits()) {
+            f.addHDU(new NullDataHDU());
+            Exception e = Assertions.assertThrows(FitsException.class, () -> f.write((DataOutput) o));
+            Assertions.assertEquals(IOException.class, e.getCause().getClass());
+        } catch (IOException e) {
+            // For some reason this is thrown at the end of the try-with-resource block...
+            Assertions.assertEquals("Bad file descriptor", e.getMessage());
         }
     }
 

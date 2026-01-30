@@ -686,7 +686,12 @@ public class AsciiTableTest {
                 .card(Standard.TBCOLn.n(1)).value(4)//
                 .card(Standard.TFORMn.n(1)).value("I1");
 
-        new AsciiTable(hdr); // no exception
+        AsciiTable tab = new AsciiTable(hdr); // no exception
+
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[2880 * 2]))) {
+            Exception e = Assertions.assertThrows(FitsException.class, () -> tab.read(in));
+            Assertions.assertTrue(e.getMessage().contains("GB"));
+        }
     }
 
     @Test
