@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
  - [#793] `README.md` anchors now use the newer `id` attribute instead of the deprecated `name` attribute for defining in-page references. The older form was not processed correctly by the Maven Doxia markdown module (2.0.0), breaking in-page navigation on the site. The use of the `id` tag seems to fix it, and it works on Github also. (by @attipaci, thanks to @gpdf)
 
+### Deprecated
+
+ - [#823] Classes and members that were already documented as deprecated, are now in fact annotated as such also. I.e., as of now the compiler will complain when these are referenced in application code, unless once compiles with the option to enabled deprecations. 
+
 ### Changed
 
  - [#821] Migrated test suite to JUnit5. (by @attipaci)
@@ -23,12 +27,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
  - [#823] Various fixes to cure `javadoc` warnings.
 
+ - [#824] Updated maven site schema and fluido skins to 2.1.0.
+
  - Uses the latest Maven build and runtime dependencies. (by @attipaci)
 
-
-### Removed
-
- - [#823] Classes and members that were already documented as deprecated, are now in fact annotated as such also. I.e., as of now the compiler will complain when these are referenced in application code, unless once compiles with the option to enabled deprecations. 
 
 ## [1.21.2] - 2025-09-15
 

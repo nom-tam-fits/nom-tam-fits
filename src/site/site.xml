@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="nom-tam-fits">
+<site xmlns="http://maven.apache.org/SITE/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SITE/2.0.0 https://maven.apache.org/xsd/site-2.0.0.xsd" 
+  name="nom-tam-fits">
 	<skin>
 		<groupId>org.apache.maven.skins</groupId>
 		<artifactId>maven-fluido-skin</artifactId>
-		<version>2.0.0-M10</version>
+		<version>2.1.0</version>
 	</skin>
-	<bannerLeft>
-		<name>nom.tam.fits</name>
-		<src>images/fits_logo_text.png</src>
-		<href>https://github.com/nom-tam-fits/nom-tam-fits</href>
-	</bannerLeft>
+
 	<publishDate position="left" format="yyyy-MM-dd" />
 	<version position="right" />
-	<poweredBy>
-		<logo name="Maven" href="https://maven.apache.org/" img="https://maven.apache.org/images/logos/maven-feather.png" />
-	</poweredBy>
+
 	<custom>
 		<fluidoSkin>
 			<topBarEnabled>false</topBarEnabled>
 			<sideBarEnabled>true</sideBarEnabled>
+			<topBarIcon>
+				<name>nom.tam.fits</name>
+				<alt>Java FITS library</alt>
+				<src>/images/fits_logo_text.png</src>
+				<href>https://github.com/nom-tam-fits/nom-tam-fits</href>
+			</topBarIcon>
 			<gitHub>
 				<projectId>nom-tam-fits/nom-tam-fits</projectId>
 				<ribbonOrientation>right</ribbonOrientation>
@@ -26,7 +28,7 @@
 			</gitHub>
 		</fluidoSkin>
 	</custom>
-	
+
 	<body>
 		<head>
 		<![CDATA[
@@ -67,7 +69,7 @@
     "url": "http://nom-tam-fits.github.io/nom-tam-fits/",
     "image": "https://github.com/nom-tam-fits/nom-tam-fits/blob/master/src/site/resources/images/fits_logo.png"
   },
-  "abstract": "FITS (Flexible Image Transport System) is a binary format of many astronomical datasets and images. The nom.tam.fits library allows you to read, write, or modify FITS files from your Java application. It is an open-source, community maintained, project hosted on GitHub. The library requires a level of familiarity with FITS and its common standards and conventions for effective use. As such, users are encouraged to familiarize themselves with the FITS standard and conventions described therein to be effective users of this library.",
+  "abstract": "FITS (Flexible Image Transport System) i'gov.nasa.gsfc.heasarc:nom-tam-fits:jar:1.21.3-SNAPSHOT' s a binary format of many astronomical datasets and images. The nom.tam.fits library allows you to read, write, or modify FITS files from your Java application. It is an open-source, community maintained, project hosted on GitHub. The library requires a level of familiarity with FITS and its common standards and conventions for effective use. As such, users are encouraged to familiarize themselves with the FITS standard and conventions described therein to be effective users of this library.",
   "audience": {
     "audienceType": [ "astronomers", "software developers" ],
     "description": "Anyone who wants to (or needs to) deal with FITS files in a Java application."
@@ -105,4 +107,4 @@
 		<menu ref="reports" />
 		<footer><![CDATA[nom.tam.fits documentation]]></footer>
 	</body>
-</project>
+</site>
