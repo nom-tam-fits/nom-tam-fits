@@ -51,6 +51,7 @@ import nom.tam.fits.header.Bitpix;
  *
  * @param <B> the generic type of data buffer
  */
+@SuppressWarnings("deprecation")
 public abstract class ElementType<B extends Buffer> {
 
     /**

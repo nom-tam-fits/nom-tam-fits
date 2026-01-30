@@ -564,6 +564,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
      * 
      * @return                    A suitable copier instance.
      */
+    @Deprecated
     public static synchronized MultiArrayCopyFactory<?, ?> select(Class<?> primitiveType, Class<?> primitiveType2) {
         Map<Class<?>, MultiArrayCopyFactory<?, ?>> from = MultiArrayCopyFactory.FACTORIES.get(primitiveType);
         if (from != null) {
@@ -584,6 +585,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
      * @param destPos starting position in the destonation array
      * @param length  the number of elements to copy
      */
+    @Deprecated
     public void arraycopy(Source src, int srcPos, Destination dest, int destPos, int length) {
         System.arraycopy(src, srcPos, dest, destPos, length);
     }

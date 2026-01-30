@@ -55,6 +55,7 @@ public abstract class BufferDecoder extends FitsDecoder {
      *              <code>checkBuffer(int)</code> (and it's safest if you don't override or ever call
      *              <code>checkBuffer(int)</code> from your code!).
      */
+    @Deprecated
     public BufferDecoder(BufferPointer p) {
         super();
 
@@ -91,6 +92,7 @@ public abstract class BufferDecoder extends FitsDecoder {
         p.length = p.buffer == null ? 0 : p.buffer.length >>> 1;
     }
 
+    @Deprecated
     @Override
     boolean makeAvailable(int needBytes) throws IOException {
         pretendHalfPopulated();
@@ -111,6 +113,7 @@ public abstract class BufferDecoder extends FitsDecoder {
     protected void checkBuffer(int needBytes) throws IOException {
     }
 
+    @Deprecated
     @Override
     protected int read(byte[] buf, int offset, int length) throws IOException {
         throw new UnsupportedOperationException(
@@ -147,6 +150,7 @@ public abstract class BufferDecoder extends FitsDecoder {
      *                                      supported for decoding.
      * @throws IOException              if there was an IO error reading from the input
      */
+    @Deprecated
     protected long readLArray(Object o) throws IOException {
         try {
             return super.readArray(o);

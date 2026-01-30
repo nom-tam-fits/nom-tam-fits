@@ -53,6 +53,7 @@ public class BufferedFile extends FitsFile {
      * 
      * @throws IOException if there was an error opening the file
      */
+    @Deprecated
     public BufferedFile(File file, String mode, int bufferSize) throws IOException {
         super(file, mode, bufferSize);
     }
@@ -65,6 +66,7 @@ public class BufferedFile extends FitsFile {
      * 
      * @throws IOException if there was an error opening the file
      */
+    @Deprecated
     public BufferedFile(File file, String mode) throws IOException {
         super(file, mode);
     }
@@ -76,6 +78,7 @@ public class BufferedFile extends FitsFile {
      * 
      * @throws IOException if there was an error opening the file
      */
+    @Deprecated
     public BufferedFile(File file) throws IOException {
         super(file);
     }
@@ -89,6 +92,7 @@ public class BufferedFile extends FitsFile {
      * 
      * @throws IOException if there was an error opening the file
      */
+    @Deprecated
     public BufferedFile(String filename, String mode, int bufferSize) throws IOException {
         super(filename, mode, bufferSize);
     }
@@ -101,6 +105,7 @@ public class BufferedFile extends FitsFile {
      * 
      * @throws IOException if there was an error opening the file
      */
+    @Deprecated
     public BufferedFile(String filename, String mode) throws IOException {
         super(filename, mode);
     }
@@ -112,6 +117,7 @@ public class BufferedFile extends FitsFile {
      * 
      * @throws IOException if there was an error opening the file
      */
+    @Deprecated
     public BufferedFile(String filename) throws IOException {
         super(filename);
     }

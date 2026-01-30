@@ -49,6 +49,7 @@ public class BufferedDataOutputStream extends FitsOutputStream {
      * @param o         the underlying output stream
      * @param bufLength the size of the buffer to use in bytes.
      */
+    @Deprecated
     public BufferedDataOutputStream(OutputStream o, int bufLength) {
         super(o, bufLength);
     }
@@ -58,6 +59,7 @@ public class BufferedDataOutputStream extends FitsOutputStream {
      *
      * @param o the underlying output stream
      */
+    @Deprecated
     public BufferedDataOutputStream(OutputStream o) {
         super(o);
     }

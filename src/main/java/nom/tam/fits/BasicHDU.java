@@ -395,8 +395,6 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @throws FitsException if the BITPIX value in the header is absent or invalid.
      *
      * @since                1.16
-     *
-     * @see                  #getBitPix()
      */
     public Bitpix getBitpix() throws FitsException {
         return Bitpix.fromHeader(myHeader);

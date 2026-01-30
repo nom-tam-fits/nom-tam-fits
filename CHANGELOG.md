@@ -13,6 +13,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+ - [#821] Migrated test suite to JUnit5. (by @attipaci)
+ 
+ - [#821] Test suite cleanup: fix resource leaks, and cure most compiler warnings. (by @attipaci)
+
+ - [#822] `ColumnTable.addWrappedColumn()` and `.setWrappedColumn()` now checks if the new column has the same number of rows as existing columns in the table. (by @attipaci)
+
  - Uses the latest Maven build and runtime dependencies. (by @attipaci)
 
 
