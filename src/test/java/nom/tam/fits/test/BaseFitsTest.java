@@ -1080,17 +1080,17 @@ public class BaseFitsTest {
 
     @Test
     public void testWriteFileIOException() throws Exception {
-        try (FitsFile o = new FitsFile(TMP_FITS_NAME, "rw"); Fits f = new Fits()) {
-            f.write(o);
-        }
-
-        try (FitsFile o = new FitsFile(TMP_FITS_NAME, "r"); Fits f = new Fits()) {
+        try (FitsFile o = new FitsFile(TMP_FITS_NAME, "rw") {
+            @Override
+            public void setLength(long l) throws IOException {
+                throw new IOException("resize disabled");
+            }
+        }; Fits f = new Fits()) {
             f.addHDU(new NullDataHDU());
-            Exception e = Assertions.assertThrows(FitsException.class, () -> f.write((DataOutput) o));
+            Exception e = Assertions.assertThrows(Exception.class, () -> f.write((DataOutput) o));
+            Assertions.assertEquals(FitsException.class, e.getClass());
             Assertions.assertEquals(IOException.class, e.getCause().getClass());
-        } catch (IOException e) {
-            // For some reason this is thrown at the end of the try-with-resource block...
-            Assertions.assertEquals("Bad file descriptor", e.getMessage());
+            Assertions.assertEquals("resize disabled", e.getCause().getMessage());
         }
     }
 
