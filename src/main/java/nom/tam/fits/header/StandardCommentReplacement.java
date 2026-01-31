@@ -47,30 +47,36 @@ class StandardCommentReplacement {
 
     private final String ref;
 
+    @Deprecated
     protected StandardCommentReplacement(String ref, Class<?> context) {
         this.ref = ref;
         this.context = context;
         comment = null;
     }
 
+    @Deprecated
     protected StandardCommentReplacement(String ref, Class<?> context, String comment) {
         this.ref = ref;
         this.context = context;
         this.comment = comment;
     }
 
+    @Deprecated
     public String getComment() {
         return comment;
     }
 
+    @Deprecated
     public Class<?> getContext() {
         return context;
     }
 
+    @Deprecated
     public String getRef() {
         return ref;
     }
 
+    @Deprecated
     public void setComment(String comment) {
         this.comment = comment;
     }

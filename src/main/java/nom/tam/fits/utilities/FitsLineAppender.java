@@ -69,6 +69,7 @@ public class FitsLineAppender {
     /**
      * create a new FitsLineAppender that will have space allocated for one line.
      */
+    @Deprecated
     public FitsLineAppender() {
         buffer = new StringBuilder(HeaderCard.FITS_HEADER_CARD_SIZE);
     }
@@ -78,6 +79,7 @@ public class FitsLineAppender {
      *
      * @param character the character to append to the line.
      */
+    @Deprecated
     public void append(char character) {
         buffer.append(character);
         charCount++;
@@ -88,6 +90,7 @@ public class FitsLineAppender {
      *
      * @param stringValue the sub string to append.
      */
+    @Deprecated
     public void append(FitsSubString stringValue) {
         stringValue.appendTo(buffer);
         charCount += stringValue.length();
@@ -99,6 +102,7 @@ public class FitsLineAppender {
      *
      * @param string the string to append
      */
+    @Deprecated
     public void append(String string) {
         charCount = charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
         int newLength = charCount + string.length();
@@ -118,6 +122,7 @@ public class FitsLineAppender {
      * @param toReplace the character to replace
      * @param with      the character to replace the toReplace character with.
      */
+    @Deprecated
     public void appendReplacing(String key, char toReplace, char with) {
         int size = key.length();
         for (int index = 0; index < size; index++) {
@@ -137,6 +142,7 @@ public class FitsLineAppender {
      *
      * @param count the number of spaces to write.
      */
+    @Deprecated
     public void appendSpacesTo(int count) {
         charCount = charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
         if (charCount != 0) {
@@ -151,6 +157,7 @@ public class FitsLineAppender {
     /**
      * fill the rest of current line with spaces and start a new fits line.
      */
+    @Deprecated
     public void completeLine() {
         int count = HeaderCard.FITS_HEADER_CARD_SIZE - charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
         if (count < HeaderCard.FITS_HEADER_CARD_SIZE) {
@@ -163,6 +170,7 @@ public class FitsLineAppender {
     /**
      * @return the character position in the current line.
      */
+    @Deprecated
     public int length() {
         charCount = charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
         return charCount;
@@ -171,12 +179,14 @@ public class FitsLineAppender {
     /**
      * @return the number of characters still available in the current fits line.
      */
+    @Deprecated
     public int spaceLeftInLine() {
         charCount = charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
         return HeaderCard.FITS_HEADER_CARD_SIZE - charCount;
     }
 
     @Override
+    @Deprecated
     public String toString() {
         return buffer.toString();
     }
@@ -188,6 +198,7 @@ public class FitsLineAppender {
      * @param start the starting index of the substring to append
      * @param end   the index where the substring ends (exclusive).
      */
+    @Deprecated
     public void append(String key, int start, int end) {
         buffer.append(key, start, end);
         charCount += end - start;

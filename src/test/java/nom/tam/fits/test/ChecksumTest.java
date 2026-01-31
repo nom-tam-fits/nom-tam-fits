@@ -119,14 +119,15 @@ public class ChecksumTest {
 
     @Test
     public void testCheckSumBasic() throws Exception {
-        FileInputStream in = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits");
+        try (FileInputStream in = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits")) {
 
-        try (Fits fits = new Fits()) {
-            try (FitsInputStream fin = new FitsInputStream(in)) {
-                fits.setStream(fin);
-                fits.read();
+            try (Fits fits = new Fits()) {
+                try (FitsInputStream fin = new FitsInputStream(in)) {
+                    fits.setStream(fin);
+                    fits.read();
+                }
+                fits.setChecksum();
             }
-            fits.setChecksum();
         }
     }
 
@@ -134,9 +135,9 @@ public class ChecksumTest {
     public void testCheckSum2() throws Exception {
         // AK: This test requires long strings to be disabled.
         FitsFactory.setLongStringsEnabled(false);
-        FileInputStream in = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits");
 
-        try (Fits fits = new Fits()) {
+        try (FileInputStream in = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits");
+                Fits fits = new Fits()) {
             try (FitsInputStream fin = new FitsInputStream(in)) {
                 fits.setStream(fin);
                 fits.read();

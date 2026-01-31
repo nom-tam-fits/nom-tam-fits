@@ -69,6 +69,7 @@ public interface IHeaderAccess {
      * 
      * @since  1.19
      */
+    @Deprecated
     Header getHeader();
 
     /**

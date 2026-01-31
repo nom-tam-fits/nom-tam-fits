@@ -58,6 +58,7 @@ public final class CompressionLibLoaderProtection {
      * 
      * @throws IOException if there was an IO error processing the input.
      */
+    @Deprecated
     public static InputStream createBZip2Stream(InputStream in) throws IOException {
         return new org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream(in);
     }
@@ -71,6 +72,7 @@ public final class CompressionLibLoaderProtection {
      * 
      * @throws IOException if there was an IO error processing the input.
      */
+    @Deprecated
     public static InputStream createZStream(InputStream in) throws IOException {
         return new org.apache.commons.compress.compressors.z.ZCompressorInputStream(in);
     }

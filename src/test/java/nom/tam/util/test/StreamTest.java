@@ -332,10 +332,10 @@ public class StreamTest {
     public void testSkipBytesWithException1() throws Exception {
         int total = 256;
 
-        InputStream input = new ByteArrayInputStream(new byte[total]);
-        FitsInputStream myIn = new FitsInputStream(input);
-
-        Assertions.assertThrows(EOFException.class, () -> myIn.skipAllBytes(1000L));
+        try (InputStream input = new ByteArrayInputStream(new byte[total]);
+                FitsInputStream myIn = new FitsInputStream(input)) {
+            Assertions.assertThrows(EOFException.class, () -> myIn.skipAllBytes(1000L));
+        }
     }
 
     @Test
@@ -348,8 +348,10 @@ public class StreamTest {
                 throw new UnsupportedOperationException("skip not supported");
             }
         };
-        FitsInputStream myIn = new FitsInputStream(input);
-        Assertions.assertThrows(EOFException.class, () -> myIn.skipAllBytes(1000L));
+
+        try (FitsInputStream myIn = new FitsInputStream(input)) {
+            Assertions.assertThrows(EOFException.class, () -> myIn.skipAllBytes(1000L));
+        }
     }
 
     @Test
@@ -514,10 +516,10 @@ public class StreamTest {
 
     @Test
     public void testReadFully() throws Exception {
-        PipedInputStream pipeInput = new PipedInputStream(1024);
         byte[] readBytes = new byte[255];
 
-        try (FitsOutputStream out = new FitsOutputStream(new PipedOutputStream(pipeInput));
+        try (PipedInputStream pipeInput = new PipedInputStream(1024);
+                FitsOutputStream out = new FitsOutputStream(new PipedOutputStream(pipeInput));
                 FitsInputStream in = new FitsInputStream(pipeInput)) {
             for (int index = 0; index < 255; index++) {
                 out.writeByte(index);

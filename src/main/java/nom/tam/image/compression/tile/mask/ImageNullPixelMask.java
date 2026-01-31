@@ -40,6 +40,7 @@ import nom.tam.image.tile.operation.buffer.TileBuffer;
 /**
  * Support for blank (<code>null</code>) values in compressed images.
  */
+@SuppressWarnings("javadoc")
 public class ImageNullPixelMask {
 
     private final AbstractNullPixelMask[] nullPixelMasks;

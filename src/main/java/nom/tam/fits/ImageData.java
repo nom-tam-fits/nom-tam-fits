@@ -204,10 +204,10 @@ public class ImageData extends Data {
      * 
      * @param data the buffer that may hold this image's data in serialized form.
      */
+    @SuppressWarnings("deprecation")
     public void setBuffer(Buffer data) {
         ElementType<Buffer> elementType = ElementType.forClass(getType());
         dataArray = ArrayFuncs.newInstance(getType(), getDimensions());
-        @SuppressWarnings("deprecation")
         MultiArrayIterator<?> iterator = new MultiArrayIterator<>(dataArray);
         Object array = iterator.next();
         while (array != null) {

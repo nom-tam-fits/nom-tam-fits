@@ -89,20 +89,24 @@ public class ExternalBZip2CompressionProvider implements ICompressProvider {
      * @return The system command for decompressing <code>.bz2</code> files, or <code>null</code> if there is no
      *             <code>BZIP_DECOMPRESSOR</code> environment variable that could inform us.
      */
+    @Deprecated
     public String getBzip2Cmd() {
         return System.getProperty("BZIP_DECOMPRESSOR", System.getenv("BZIP_DECOMPRESSOR"));
     }
 
+    @Deprecated
     @Override
     public InputStream decompress(InputStream in) throws IOException, FitsException {
         return bunzipper(in);
     }
 
+    @Deprecated
     @Override
     public int priority() {
         return PRIORITY;
     }
 
+    @Deprecated
     @Override
     public boolean provides(int mag1, int mag2) {
         return mag1 == 'B' && mag2 == 'Z' && getBzip2Cmd() != null;

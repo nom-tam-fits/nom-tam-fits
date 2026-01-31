@@ -41,6 +41,7 @@ import java.lang.reflect.Array;
 public class MultiArrayPointer {
 
     /** A dummy object to mark the end. */
+    @Deprecated
     public static final Object END = new Object();
 
     private Object array;

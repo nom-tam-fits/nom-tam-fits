@@ -57,6 +57,7 @@ public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
      * 
      * @throws IllegalArgumentException if count is less than 1
      */
+    @Deprecated
     public BlanksDotHierarchKeyFormatter(int count) throws IllegalArgumentException {
         if (count < 1) {
             throw new IllegalArgumentException("HIERARCH needs at least one blank space after it.");
@@ -69,16 +70,19 @@ public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
         blanks = builder.toString();
     }
 
+    @Deprecated
     @Override
     public void append(String key, FitsLineAppender buffer) {
         buffer.append(toHeaderString(key));
     }
 
+    @Deprecated
     @Override
     public int getExtraSpaceRequired(String key) {
         return blanks.length() - 1;
     }
 
+    @Deprecated
     @Override
     public String toHeaderString(String key) {
         if (!allowMixedCase) {
@@ -88,11 +92,13 @@ public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
         return HIERARCH.key() + blanks + key.substring(HIERARCH.key().length() + 1);
     }
 
+    @Deprecated
     @Override
     public void setCaseSensitive(boolean value) {
         allowMixedCase = value;
     }
 
+    @Deprecated
     @Override
     public final boolean isCaseSensitive() {
         return allowMixedCase;

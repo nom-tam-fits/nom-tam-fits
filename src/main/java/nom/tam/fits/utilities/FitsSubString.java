@@ -62,6 +62,7 @@ public class FitsSubString {
      *
      * @param originalString the string to represent.
      */
+    @Deprecated
     public FitsSubString(String originalString) {
         this.originalString = originalString == null ? "" : originalString;
         offset = 0;
@@ -73,6 +74,7 @@ public class FitsSubString {
      *
      * @param buffer the buffer to append to.
      */
+    @Deprecated
     public void appendTo(StringBuilder buffer) {
         buffer.append(originalString, offset, offset + length);
     }
@@ -84,6 +86,7 @@ public class FitsSubString {
      *
      * @return     the character at the specified position
      */
+    @Deprecated
     public char charAt(int pos) {
         return originalString.charAt(pos + offset);
     }
@@ -93,6 +96,7 @@ public class FitsSubString {
      * 
      * @return get the length of the orginal string from the current offset.
      */
+    @Deprecated
     public int fullLength() {
         return originalString.length() - offset;
     }
@@ -103,6 +107,7 @@ public class FitsSubString {
      *
      * @param max the maximum string legth to set.
      */
+    @Deprecated
     public void getAdjustedLength(int max) {
         if (max <= 0) {
             length = 0;
@@ -122,6 +127,7 @@ public class FitsSubString {
      * 
      * @return the string length of this String.
      */
+    @Deprecated
     public int length() {
         return length;
     }
@@ -130,6 +136,7 @@ public class FitsSubString {
      * shift the sting to the rest of the string, the part of the original string that is after the part of the string
      * this instance currently represents.
      */
+    @Deprecated
     public void rest() {
         offset += length;
         length = originalString.length() - offset;
@@ -140,6 +147,7 @@ public class FitsSubString {
      *
      * @param count the number of chars to skip
      */
+    @Deprecated
     public void skip(int count) {
         offset += count;
         length -= count;
@@ -152,6 +160,7 @@ public class FitsSubString {
      *
      * @return        true if the current string starts with the specified string.
      */
+    @Deprecated
     public boolean startsWith(String string) {
         return originalString.regionMatches(offset, string, 0, string.length());
     }

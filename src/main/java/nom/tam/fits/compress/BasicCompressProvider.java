@@ -82,16 +82,19 @@ public class BasicCompressProvider implements ICompressProvider {
         }
     }
 
+    @Deprecated
     @Override
     public InputStream decompress(InputStream in) throws IOException, FitsException {
         return compressInputStream(in);
     }
 
+    @Deprecated
     @Override
     public int priority() {
         return PRIORITY;
     }
 
+    @Deprecated
     @Override
     public boolean provides(int mag1, int mag2) {
         return mag1 == COMPRESS_MAGIC_BYTE1 && mag2 == COMPRESS_MAGIC_BYTE2;

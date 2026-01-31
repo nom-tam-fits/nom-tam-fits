@@ -703,23 +703,25 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream());
 
-        AsciiTable tab = new AsciiTable(hdr) {
-            @Override
-            public void write(ArrayDataOutput str) throws FitsException {
-                try {
-                    Field field = AsciiTable.class.getDeclaredField("data");
-                    field.setAccessible(true);
-                    field.set(this, new Object[] {new int[10]});
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+        try (ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream())) {
+
+            AsciiTable tab = new AsciiTable(hdr) {
+                @Override
+                public void write(ArrayDataOutput str) throws FitsException {
+                    try {
+                        Field field = AsciiTable.class.getDeclaredField("data");
+                        field.setAccessible(true);
+                        field.set(this, new Object[] {new int[10]});
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    super.write(str);
                 }
-                super.write(str);
-            }
-        };
+            };
 
-        Assertions.assertThrows(FitsException.class, () -> tab.write(str));
+            Assertions.assertThrows(FitsException.class, () -> tab.write(str));
+        }
 
     }
 
@@ -732,7 +734,6 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream());
 
         AsciiTable tab = new AsciiTable(hdr) {
 
@@ -743,14 +744,16 @@ public class AsciiTableTest {
             }
         };
 
-        Assertions.assertThrows(FitsException.class, () -> tab.write(str));
+        try (ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream())) {
+            Assertions.assertThrows(FitsException.class, () -> tab.write(str));
+        }
     }
 
     @Test
     public void testToFailedWrite2() throws Exception {
         AsciiTableHDU table = (AsciiTableHDU) Fits.makeHDU(getSampleCols());
-        ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream()) {
 
+        try (ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream()) {
             int n = 0;
 
             @Override
@@ -761,9 +764,9 @@ public class AsciiTableTest {
                 }
                 super.write(b);
             }
-        };
-
-        Assertions.assertThrows(FitsException.class, () -> table.getData().write(str));
+        }) {
+            Assertions.assertThrows(FitsException.class, () -> table.getData().write(str));
+        }
     }
 
     @Test
@@ -857,7 +860,6 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(2)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
 
         AsciiTable asciiTable = new AsciiTable(hdr) {
 
@@ -872,7 +874,9 @@ public class AsciiTableTest {
             }
         };
 
-        Assertions.assertThrows(PaddingException.class, () -> asciiTable.read(str));
+        try (ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 - 1]))) {
+            Assertions.assertThrows(PaddingException.class, () -> asciiTable.read(str));
+        }
     }
 
     @Test
@@ -884,11 +888,12 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(2)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
 
         AsciiTable asciiTable = new AsciiTable(hdr);
 
-        Assertions.assertThrows(FitsException.class, () -> asciiTable.read(str));
+        try (ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 - 1]))) {
+            Assertions.assertThrows(FitsException.class, () -> asciiTable.read(str));
+        }
     }
 
     @Test
