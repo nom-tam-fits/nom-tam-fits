@@ -7,13 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+Upcoming maintenance release, with version bump. No significant API changes, but a lot of the previously announced deprecations are now actually in effect. Other than that, this release is mainly just a lot of cleanup of the test suite, and javadoc warnings.
+
 ### Fixed
 
- - [#793] `README.md` anchors now use the newer `id` attribute instead of the deprecated `name` attribute for defining in-page references. The older form was not processed correctly by the Maven Doxia markdown module (2.0.0), breaking in-page navigation on the site. The use of the `id` tag seems to fix it, and it works on Github also. (by @attipaci, thanks to @gpdf)
+ - [#793] `README.md` anchors now use the newer `id` attribute instead of the deprecated `name` attribute for defining in-page references. The older form was not processed correctly by the Maven doxia markdown module (2.0.0), breaking in-page navigation on the site. The use of the `id` tag seems to fix it, and it works on Github also. (by @attipaci, thanks to @gpdf)
 
 ### Deprecated
 
- - [#823] Classes and members that were already documented as deprecated, are now in fact annotated as such also. I.e., as of now the compiler will complain when these are referenced in application code, unless once compiles with the option to enabled deprecations. 
+ - [#823] Classes and members that were already documented as deprecated, are now in fact annotated as such also. I.e., the compiler will warn by default when the deprecated API us used in your application code. You can disable the watnings at the compiler level (e.g. `-Xlint:-deprecation`), or else you can use the `@SuppressWarnings("deprecate")` annotation in your source code, on top of your classes / methods that reference the deprecated entities. (by @attipaci)
 
 ### Changed
 
@@ -23,11 +25,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
  - [#822] `ColumnTable.addWrappedColumn()` and `.setWrappedColumn()` now checks if the new column has the same number of rows as existing columns in the table. (by @attipaci)
  
- - [#823] `CompressorProvider.newCompressor()` used to catch exceptions and return `null` if something went wrong. It's better to throw these exceptions.
+ - [#823] `CompressorProvider.newCompressor()` used to catch exceptions and return `null` if something went wrong. It's better to throw these exceptions. (by @attipaci)
 
- - [#823] Various fixes to cure `javadoc` warnings.
+ - [#823] Various fixes to cure `javadoc` warnings. (by @attipaci)
 
- - [#824] Updated maven site schema and fluido skins to 2.1.0.
+ - [#824] Updated maven site schema and fluido skins to 2.1.0. (by @attipaci)
 
  - Uses the latest Maven build and runtime dependencies. (by @attipaci)
 
