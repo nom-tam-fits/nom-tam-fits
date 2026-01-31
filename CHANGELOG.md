@@ -17,6 +17,8 @@ Upcoming maintenance release, with version bump. No significant API changes, but
 
  - [#823] Classes and members that were already documented as deprecated, are now in fact annotated as such also. I.e., the compiler will warn by default when the deprecated API us used in your application code. You can disable the watnings at the compiler level (e.g. `-Xlint:-deprecation`), or else you can use the `@SuppressWarnings("deprecate")` annotation in your source code, on top of your classes / methods that reference the deprecated entities. (by @attipaci)
 
+ - [#825] Deprecate members of deprecated classes explicitly also. (by @attipaci)
+
 ### Changed
 
  - [#821] Migrated test suite to JUnit5. (by @attipaci)

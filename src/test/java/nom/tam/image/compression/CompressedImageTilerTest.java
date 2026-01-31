@@ -839,8 +839,9 @@ public class CompressedImageTilerTest {
             }
         };
         final ByteArrayOutputStream outputByteStream = new ByteArrayOutputStream();
-        final ArrayDataOutput output = new FitsOutputStream(outputByteStream);
-        testSubject.getTile(output, new int[] {91, 9}, new int[] {2, 2}, new int[] {1, 1});
+        try (final ArrayDataOutput output = new FitsOutputStream(outputByteStream)) {
+            testSubject.getTile(output, new int[] {91, 9}, new int[] {2, 2}, new int[] {1, 1});
+        }
     }
 
     @Test
@@ -893,9 +894,13 @@ public class CompressedImageTilerTest {
                 header.deleteKey("DATASUM");
                 header.deleteKey("TFIELDS");
                 final ImageHDU hdu = (ImageHDU) FitsFactory.hduFactory(header);
-                hdu.getData().read(new FitsInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray())));
-                fits.addHDU(hdu);
-                fits.write(target);
+
+                try (FitsInputStream in = new FitsInputStream(
+                        new ByteArrayInputStream(byteArrayOutputStream.toByteArray()))) {
+                    hdu.getData().read(in);
+                    fits.addHDU(hdu);
+                    fits.write(target);
+                }
                 fits.close();
 
                 final ImageHDU resultImageHDU = (ImageHDU) fits.getHDU(0);

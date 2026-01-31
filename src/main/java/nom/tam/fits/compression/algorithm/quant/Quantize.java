@@ -43,22 +43,26 @@ import java.util.Arrays;
 @SuppressWarnings("javadoc")
 public class Quantize {
 
+    @Deprecated
     class DoubleArrayPointer {
 
         private final double[] array;
 
         private int startIndex;
 
+        @Deprecated
         DoubleArrayPointer(double[] arrayIn) {
             array = arrayIn;
         }
 
+        @Deprecated
         public DoubleArrayPointer copy(long l) {
             DoubleArrayPointer result = new DoubleArrayPointer(array);
             result.startIndex = (int) l;
             return result;
         }
 
+        @Deprecated
         public double get(int ii) {
             return array[ii + startIndex];
         }
@@ -125,6 +129,7 @@ public class Quantize {
 
     private double xnoise5;
 
+    @Deprecated
     public Quantize(QuantizeOption quantizeOption) {
         parameter = quantizeOption;
     }
@@ -299,6 +304,7 @@ public class Quantize {
         return false;
     }
 
+    @Deprecated
     protected void computeMedianOfValuesEachRow(int nrows, int nrows2, double[] diffs2, double[] diffs3, double[] diffs5) {
         // compute median of the values for each row.
         if (nrows == 0) {
@@ -323,6 +329,7 @@ public class Quantize {
         }
     }
 
+    @Deprecated
     protected int findNextValidPixelWithNullCheck(int nx, DoubleArrayPointer rowpix, int ii) {
         return ii;
     }
@@ -338,14 +345,17 @@ public class Quantize {
         return pixelValue;
     }
 
+    @Deprecated
     protected double getNoise2() {
         return noise2;
     }
 
+    @Deprecated
     protected double getNoise3() {
         return noise3;
     }
 
+    @Deprecated
     protected double getNoise5() {
         return noise5;
     }
@@ -358,6 +368,7 @@ public class Quantize {
         xmaxval = Double.MIN_VALUE;
     }
 
+    @Deprecated
     protected boolean isNull(double d) {
         return false;
     }
@@ -390,6 +401,7 @@ public class Quantize {
      * 
      * @return       true if the quantification was possible
      */
+    @Deprecated
     public boolean quantize(double[] fdata, int nxpix, int nypix) {
         // MAD 2nd, 3rd, and 5th order noise values
         double stdev;

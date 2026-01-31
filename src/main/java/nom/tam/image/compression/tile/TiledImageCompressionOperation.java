@@ -80,7 +80,7 @@ import static nom.tam.image.compression.tile.TileCompressionType.UNCOMPRESSED;
  * complete compression of a tiled describing an image ordered from left to right and top down. the tiles all have the
  * same geometry only the tiles at the right and bottom sides can have different (truncated) sizes.
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"javadoc", "deprecation"})
 public class TiledImageCompressionOperation extends AbstractTiledImageOperation<TileCompressionOperation> {
 
     /**

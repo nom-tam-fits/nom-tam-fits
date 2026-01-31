@@ -531,15 +531,16 @@ public class BaseFitsTest {
     @Test
     public void testFitsRandomGroupDataWrite() throws Exception {
         RandomGroupsData data = new RandomGroupsData(new Object[][] {new Object[] {new int[10], new int[10]}});
-        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
+
+        try (FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
 
             @Override
             public void writeArray(Object o) throws IOException {
                 throw new IOException();
             }
-        };
-
-        Assertions.assertThrows(FitsException.class, () -> data.write(out));
+        }) {
+            Assertions.assertThrows(FitsException.class, () -> data.write(out));
+        }
     }
 
     @Test
@@ -860,15 +861,15 @@ public class BaseFitsTest {
 
     @Test
     public void testFitsUtilPad() throws Exception {
-        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
+        try (FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
 
             @Override
             public void write(byte[] b) throws IOException {
                 throw new IOException();
             }
-        };
-
-        Assertions.assertThrows(FitsException.class, () -> FitsUtil.pad(out, 1L, (byte) 0));
+        }) {
+            Assertions.assertThrows(FitsException.class, () -> FitsUtil.pad(out, 1L, (byte) 0));
+        }
     }
 
     @Test

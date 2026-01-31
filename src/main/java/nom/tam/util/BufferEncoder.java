@@ -56,6 +56,7 @@ public abstract class BufferEncoder extends FitsEncoder {
      *              <code>needBuffer(int)</code> implementation (and it's safest if you don't override or ever call
      *              <code>needBuffer(int)</code> from your code!).
      */
+    @Deprecated
     public BufferEncoder(BufferPointer p) {
         super();
 
@@ -104,12 +105,14 @@ public abstract class BufferEncoder extends FitsEncoder {
     protected void needBuffer(int need) throws IOException {
     }
 
+    @Deprecated
     @Override
     void need(int bytes) throws IOException {
         pretendHalfPopulated();
         super.need(bytes);
     }
 
+    @Deprecated
     @Override
     protected void write(byte[] b, int from, int len) throws IOException {
         throw new UnsupportedOperationException(
@@ -129,6 +132,7 @@ public abstract class BufferEncoder extends FitsEncoder {
      * @throws IllegalStateException if there was an IO error flushing the conversion buffer or writing the new byte
      *                                   after it.
      */
+    @Deprecated
     protected void writeUncheckedByte(byte b) throws IllegalStateException {
         try {
             flush();

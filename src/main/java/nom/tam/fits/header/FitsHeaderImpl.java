@@ -61,6 +61,7 @@ public class FitsHeaderImpl extends FitsKey {
      * 
      * @throws IllegalArgumentException if the keyword name is invalid.
      */
+    @Deprecated
     public FitsHeaderImpl(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment)
             throws IllegalArgumentException {
         super(headerName, status, hdu, valueType, comment);

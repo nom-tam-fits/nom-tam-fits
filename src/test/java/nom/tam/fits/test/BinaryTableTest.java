@@ -1231,7 +1231,9 @@ public class BinaryTableTest {
         field.setAccessible(true);
         field.set(btab, 10);
 
-        btab.write(new FitsOutputStream(out));
+        try (FitsOutputStream f = new FitsOutputStream(out)) {
+            btab.write(f);
+        }
 
         try (FitsOutputStream f = new FitsOutputStream(out) {
 
@@ -1398,15 +1400,14 @@ public class BinaryTableTest {
         BinaryTableHDU tableHdu = new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ArrayDataOutput os = new FitsOutputStream(out);
 
-        try (Fits f = new Fits()) {
+        try (Fits f = new Fits(); ArrayDataOutput os = new FitsOutputStream(out)) {
             f.addHDU(tableHdu);
             f.write(os);
         }
 
-        try (Fits f = new Fits()) {
-            f.read(new FitsInputStream(new ByteArrayInputStream(out.toByteArray())));
+        try (Fits f = new Fits(); FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(out.toByteArray()))) {
+            f.read(in);
             btab = (BinaryTable) f.getHDU(1).getData();
 
             Assertions.assertEquals('T', ((byte[]) btab.getData().getColumn(0))[0]);
@@ -1438,15 +1439,14 @@ public class BinaryTableTest {
         BinaryTableHDU tableHdu = new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ArrayDataOutput os = new FitsOutputStream(out);
 
-        try (Fits f = new Fits()) {
+        try (Fits f = new Fits(); ArrayDataOutput os = new FitsOutputStream(out)) {
             f.addHDU(tableHdu);
             f.write(os);
         }
 
-        try (Fits f = new Fits()) {
-            f.read(new FitsInputStream(new ByteArrayInputStream(out.toByteArray())));
+        try (Fits f = new Fits(); FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(out.toByteArray()))) {
+            f.read(in);
             btab = (BinaryTable) f.getHDU(1).getData();
 
             // very strange cast to short?
@@ -1477,15 +1477,14 @@ public class BinaryTableTest {
         BinaryTableHDU tableHdu = new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ArrayDataOutput os = new FitsOutputStream(out);
 
-        try (Fits f = new Fits()) {
+        try (Fits f = new Fits(); ArrayDataOutput os = new FitsOutputStream(out)) {
             f.addHDU(tableHdu);
             f.write(os);
         }
 
-        try (Fits f = new Fits()) {
-            f.read(new FitsInputStream(new ByteArrayInputStream(out.toByteArray())));
+        try (Fits f = new Fits(); FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(out.toByteArray()))) {
+            f.read(in);
             btab = (BinaryTable) f.getHDU(1).getData();
 
             // very strange cast to short?

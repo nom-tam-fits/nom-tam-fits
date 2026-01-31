@@ -110,6 +110,7 @@ public class ByteParser {
      * @param input The byte array to be parsed. Note that the array can be re-used by refilling its contents and
      *                  resetting the offset.
      */
+    @Deprecated
     public ByteParser(byte[] input) {
         this.input = input;
         offset = 0;
@@ -167,6 +168,7 @@ public class ByteParser {
      *
      * @throws FormatException if the double was in an unknown format
      */
+    @Deprecated
     public boolean getBoolean() throws FormatException {
         return getBoolean(input.length - offset);
     }
@@ -181,6 +183,7 @@ public class ByteParser {
      *
      * @throws FormatException if the double was in an unknown format
      */
+    @Deprecated
     public boolean getBoolean(int length) throws FormatException {
 
         int startOffset = offset;
@@ -207,6 +210,7 @@ public class ByteParser {
      * 
      * @return the buffer being used by the parser
      */
+    @Deprecated
     public byte[] getBuffer() {
         return input;
     }
@@ -219,6 +223,7 @@ public class ByteParser {
      *
      * @throws FormatException if the double was in an unknown format
      */
+    @Deprecated
     public double getDouble() throws FormatException {
         return getDouble(input.length - offset);
     }
@@ -234,6 +239,7 @@ public class ByteParser {
      *
      * @throws FormatException if the double was in an unknown format
      */
+    @Deprecated
     public double getDouble(int length) throws FormatException {
         int startOffset = offset;
         boolean error = true;
@@ -326,6 +332,7 @@ public class ByteParser {
      *
      * @throws FormatException if the float was in an unknown format
      */
+    @Deprecated
     public float getFloat() throws FormatException {
         return (float) getDouble(input.length - offset);
     }
@@ -340,6 +347,7 @@ public class ByteParser {
      *
      * @throws FormatException if the float was in an unknown format
      */
+    @Deprecated
     public float getFloat(int length) throws FormatException {
         return (float) getDouble(length);
     }
@@ -351,6 +359,7 @@ public class ByteParser {
      *
      * @throws FormatException if the integer was in an unknown format
      */
+    @Deprecated
     public int getInt() throws FormatException {
         return getInt(input.length - offset);
     }
@@ -366,6 +375,7 @@ public class ByteParser {
      *
      * @throws FormatException if the integer was in an unknown format
      */
+    @Deprecated
     public int getInt(int length) throws FormatException {
         int startOffset = offset;
 
@@ -409,6 +419,7 @@ public class ByteParser {
      *
      * @throws FormatException if the long was in an unknown format
      */
+    @Deprecated
     public long getLong(int length) throws FormatException {
 
         int startOffset = offset;
@@ -450,6 +461,7 @@ public class ByteParser {
      * @return the number of characters used to parse the previous number (or the length of the previous String
      *             returned).
      */
+    @Deprecated
     public int getNumberLength() {
         return numberLength;
     }
@@ -459,6 +471,7 @@ public class ByteParser {
      *
      * @return The current offset within the buffer.
      */
+    @Deprecated
     public int getOffset() {
         return offset;
     }
@@ -470,6 +483,7 @@ public class ByteParser {
      *
      * @param  length The length of the string.
      */
+    @Deprecated
     public String getString(int length) {
         String s = AsciiFuncs.asciiString(input, offset, length);
         offset += length;
@@ -494,6 +508,7 @@ public class ByteParser {
      *
      * @param buf buffer to set
      */
+    @Deprecated
     public void setBuffer(byte[] buf) {
         input = buf;
         offset = 0;
@@ -504,6 +519,7 @@ public class ByteParser {
      *
      * @param offset The desired offset from the beginning of the array.
      */
+    @Deprecated
     public void setOffset(int offset) {
         this.offset = offset;
     }
@@ -513,6 +529,7 @@ public class ByteParser {
      *
      * @param nBytes number of bytes to skip
      */
+    @Deprecated
     public void skip(int nBytes) {
         offset += nBytes;
     }
@@ -524,6 +541,7 @@ public class ByteParser {
      *
      * @param  length The maximum number of characters to skip.
      */
+    @Deprecated
     public int skipWhite(int length) {
         int i;
         for (i = 0; i < length; i++) {

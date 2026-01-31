@@ -51,16 +51,16 @@ public class FitsStreamTest {
             o.writeBoolean(b[0]);
         }
 
-        FitsInputStream i = new FitsInputStream(new ByteArrayInputStream(bo.toByteArray()));
+        try (FitsInputStream i = new FitsInputStream(new ByteArrayInputStream(bo.toByteArray()))) {
+            Boolean[] b2 = new Boolean[b.length];
+            i.read(b2);
 
-        Boolean[] b2 = new Boolean[b.length];
-        i.read(b2);
+            for (int k = 0; k < b.length; k++) {
+                Assertions.assertEquals(b[k], b2[k], "[" + k + "]");
+            }
 
-        for (int k = 0; k < b.length; k++) {
-            Assertions.assertEquals(b[k], b2[k], "[" + k + "]");
+            Assertions.assertEquals(b[0].booleanValue(), i.readBoolean());
         }
-
-        Assertions.assertEquals(b[0].booleanValue(), i.readBoolean());
     }
 
 }

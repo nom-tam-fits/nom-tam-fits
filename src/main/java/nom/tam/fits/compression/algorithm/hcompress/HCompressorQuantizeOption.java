@@ -53,6 +53,7 @@ public class HCompressorQuantizeOption extends QuantizeOption {
     /**
      * Creates a new set of options for HCompress with quantization, initialized to default values.
      */
+    @Deprecated
     public HCompressorQuantizeOption() {
         super(new HCompressorOption());
     }
@@ -63,6 +64,7 @@ public class HCompressorQuantizeOption extends QuantizeOption {
      * 
      * @param compressOption The HCompress options to use
      */
+    @Deprecated
     public HCompressorQuantizeOption(HCompressorOption compressOption) {
         super(compressOption);
     }
@@ -74,6 +76,7 @@ public class HCompressorQuantizeOption extends QuantizeOption {
      * 
      * @see    #getCompressOption(Class)
      */
+    @Deprecated
     public HCompressorOption getHCompressorOption() {
         return (HCompressorOption) getCompressOption();
     }

@@ -42,6 +42,10 @@ package nom.tam.fits;
 @Deprecated
 public abstract class AbstractTableData extends Data implements TableData {
 
+    /**
+     * Instantiates an empty data table.
+     */
+    @Deprecated
     protected AbstractTableData() {
     }
 

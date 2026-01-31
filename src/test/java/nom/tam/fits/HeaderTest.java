@@ -838,21 +838,21 @@ public class HeaderTest {
         Assertions.assertNull(header.nextCard());
         Assertions.assertNull(header.getCard(-1));
 
-        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
+        try (FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream())) {
+            Assertions.assertThrows(FitsException.class, () -> header.write(out));
 
-        Assertions.assertThrows(FitsException.class, () -> header.write(out));
+            header.addValue("DUMMY", false, "");
+            Assertions.assertThrows(FitsException.class, () -> header.write(out));
 
-        header.addValue("DUMMY", false, "");
-        Assertions.assertThrows(FitsException.class, () -> header.write(out));
+            header.addValue("XTENSION", "", "");
+            Assertions.assertThrows(FitsException.class, () -> header.write(out));
 
-        header.addValue("XTENSION", "", "");
-        Assertions.assertThrows(FitsException.class, () -> header.write(out));
+            header.findCard(XTENSION.key()).setValue(XTENSION_BINTABLE);
+            Assertions.assertThrows(FitsException.class, () -> header.write(out));
 
-        header.findCard(XTENSION.key()).setValue(XTENSION_BINTABLE);
-        Assertions.assertThrows(FitsException.class, () -> header.write(out));
-
-        header.removeCard("DUMMY");
-        Assertions.assertThrows(FitsException.class, () -> header.write(out));
+            header.removeCard("DUMMY");
+            Assertions.assertThrows(FitsException.class, () -> header.write(out));
+        }
     }
 
     @Test
@@ -971,9 +971,9 @@ public class HeaderTest {
     public void truncatedFileExceptionTest() throws Exception {
         String header = "SIMPLE                                                                          " + //
                 "XXXXXX                                                                          ";
-        FitsInputStream data = new FitsInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(header)));
-
-        Assertions.assertThrows(IOException.class, () -> new Header().read(data));
+        try (FitsInputStream data = new FitsInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(header)))) {
+            Assertions.assertThrows(IOException.class, () -> new Header().read(data));
+        }
     }
 
     @Test
@@ -1007,38 +1007,43 @@ public class HeaderTest {
         hdr.addValue("VOTMETA", true, "Table metadata in VOTable format");
         hdr.addValue("EXTEND", true, "There are standard extensions");
         // ...
-        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
-        hdr.write(out);
+
         int votMetaIndex = -1;
         int extendIndex = -1;
         Cursor<String, HeaderCard> iterator = hdr.iterator();
-        for (int index = 0; iterator.hasNext(); index++) {
-            HeaderCard card = iterator.next();
-            if (card.getKey().equals("VOTMETA")) {
-                votMetaIndex = index;
+
+        try (FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream())) {
+            hdr.write(out);
+
+            for (int index = 0; iterator.hasNext(); index++) {
+                HeaderCard card = iterator.next();
+                if (card.getKey().equals("VOTMETA")) {
+                    votMetaIndex = index;
+                }
+                if (card.getKey().equals("EXTEND")) {
+                    extendIndex = index;
+                }
             }
-            if (card.getKey().equals("EXTEND")) {
-                extendIndex = index;
-            }
+            Assertions.assertTrue(votMetaIndex > extendIndex);
+            hdr.setHeaderSorter(new HeaderOrder() {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public int compare(String c1, String c2) {
+                    int result = super.compare(c1, c2);
+                    if (c1.equals("VOTMETA")) {
+                        return c2.equals(Standard.EXTEND.key()) ? -1 : 1;
+                    }
+                    if (c2.equals("VOTMETA")) {
+                        return c1.equals(Standard.EXTEND.key()) ? 1 : -1;
+                    }
+                    return result;
+                }
+            });
+            hdr.write(out);
         }
-        Assertions.assertTrue(votMetaIndex > extendIndex);
-        hdr.setHeaderSorter(new HeaderOrder() {
 
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int compare(String c1, String c2) {
-                int result = super.compare(c1, c2);
-                if (c1.equals("VOTMETA")) {
-                    return c2.equals(Standard.EXTEND.key()) ? -1 : 1;
-                }
-                if (c2.equals("VOTMETA")) {
-                    return c1.equals(Standard.EXTEND.key()) ? 1 : -1;
-                }
-                return result;
-            }
-        });
-        hdr.write(out);
         votMetaIndex = -1;
         extendIndex = -1;
         iterator = hdr.iterator();
@@ -1067,8 +1072,10 @@ public class HeaderTest {
         hdr.addValue("VOTMETA", true, "Table metadata in VOTable format");
         hdr.addValue("EXTEND", true, "There are standard extensions");
         // ...
-        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
-        hdr.write(out);
+        try (FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream())) {
+            hdr.write(out);
+        }
+
         int votMetaIndex = -1;
         int extendIndex = -1;
         Cursor<String, HeaderCard> iterator = hdr.iterator();
@@ -1344,34 +1351,35 @@ public class HeaderTest {
             BasicHDU<?> hdu = FitsFactory.hduFactory(i);
             hdu.getHeader().write(o);
 
-            FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(bo.toByteArray())) {
+            try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(bo.toByteArray())) {
                 @Override
                 public void skipAllBytes(long n) throws IOException {
                     throw new IOException("disabled skipping");
                 }
-            };
-
-            Assertions.assertThrows(IOException.class, () -> new Header(in));
+            }) {
+                Assertions.assertThrows(IOException.class, () -> new Header(in));
+            }
         }
     }
 
     @Test
     public void testMissingPaddingStream() throws Exception {
-        ByteArrayOutputStream bo = new ByteArrayOutputStream(4000);
-        FitsOutputStream o = new FitsOutputStream(bo);
         int[][] i = new int[10][10];
         BasicHDU<?> hdu = FitsFactory.hduFactory(i);
-        hdu.getHeader().write(o);
 
-        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(bo.toByteArray())) {
-            @Override
-            public void skipAllBytes(long n) throws IOException {
-                throw new EOFException("nothing left");
+        try (ByteArrayOutputStream bo = new ByteArrayOutputStream(4000); FitsOutputStream o = new FitsOutputStream(bo)) {
+            hdu.getHeader().write(o);
+
+            try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(bo.toByteArray())) {
+                @Override
+                public void skipAllBytes(long n) throws IOException {
+                    throw new EOFException("nothing left");
+                }
+            }) {
+                new Header(in);
+                // No exception
             }
-        };
-
-        new Header(in);
-        // No exception
+        }
     }
 
     @Test

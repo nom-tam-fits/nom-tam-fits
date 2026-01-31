@@ -1657,7 +1657,7 @@ public class HeaderCardTest {
 
     @Test
     public void testHeaderReadThrowsEOF() throws Exception {
-        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[100])) {
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[100])) {
             @Override
             public int read(byte[] b, int off, int len) throws IOException {
                 // The contract of read is that it should not throw EOFException, but return -1.
@@ -1665,13 +1665,14 @@ public class HeaderCardTest {
                 // contract and throws an exception anyway.
                 throw new EOFException();
             }
-        };
-        Assertions.assertThrows(EOFException.class, () -> new HeaderCard(in));
+        }) {
+            Assertions.assertThrows(EOFException.class, () -> new HeaderCard(in));
+        }
     }
 
     @Test
     public void testHeaderReadThrowsEOF2() throws Exception {
-        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[100])) {
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[100])) {
             @Override
             public int read(byte[] b, int off, int len) throws IOException {
                 if (off > 0) {
@@ -1682,8 +1683,9 @@ public class HeaderCardTest {
                 }
                 return 1;
             }
-        };
-        Assertions.assertThrows(TruncatedFileException.class, () -> new HeaderCard(in));
+        }) {
+            Assertions.assertThrows(TruncatedFileException.class, () -> new HeaderCard(in));
+        }
     }
 
     @Test
@@ -1984,25 +1986,31 @@ public class HeaderCardTest {
         HeaderCard c;
 
         im = "COMMENT = blah                                                                  ";
-        c = new HeaderCard(new FitsInputStream(new ByteArrayInputStream(im.getBytes())));
-        Assertions.assertEquals(Standard.COMMENT.key(), c.getKey());
-        Assertions.assertTrue(c.isCommentStyleCard());
-        Assertions.assertNull(c.getValue());
-        Assertions.assertEquals("= blah", c.getComment());
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(im.getBytes()))) {
+            c = new HeaderCard(in);
+            Assertions.assertEquals(Standard.COMMENT.key(), c.getKey());
+            Assertions.assertTrue(c.isCommentStyleCard());
+            Assertions.assertNull(c.getValue());
+            Assertions.assertEquals("= blah", c.getComment());
+        }
 
         im = "HISTORY = blah                                                                  ";
-        c = new HeaderCard(new FitsInputStream(new ByteArrayInputStream(im.getBytes())));
-        Assertions.assertEquals(Standard.HISTORY.key(), c.getKey());
-        Assertions.assertTrue(c.isCommentStyleCard());
-        Assertions.assertNull(c.getValue());
-        Assertions.assertEquals("= blah", c.getComment());
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(im.getBytes()))) {
+            c = new HeaderCard(in);
+            Assertions.assertEquals(Standard.HISTORY.key(), c.getKey());
+            Assertions.assertTrue(c.isCommentStyleCard());
+            Assertions.assertNull(c.getValue());
+            Assertions.assertEquals("= blah", c.getComment());
+        }
 
         im = "        = blah                                                                  ";
-        c = new HeaderCard(new FitsInputStream(new ByteArrayInputStream(im.getBytes())));
-        Assertions.assertEquals(Standard.BLANKS.key(), c.getKey());
-        Assertions.assertTrue(c.isCommentStyleCard());
-        Assertions.assertNull(c.getValue());
-        Assertions.assertEquals("= blah", c.getComment());
+        try (FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(im.getBytes()))) {
+            c = new HeaderCard(in);
+            Assertions.assertEquals(Standard.BLANKS.key(), c.getKey());
+            Assertions.assertTrue(c.isCommentStyleCard());
+            Assertions.assertNull(c.getValue());
+            Assertions.assertEquals("= blah", c.getComment());
+        }
     }
 
 }

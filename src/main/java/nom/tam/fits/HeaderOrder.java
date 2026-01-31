@@ -134,6 +134,7 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
      *             1 if the second argument should be written first <br>
      *             0 if either is legal.
      */
+    @Deprecated
     @Override
     public int compare(String c1, String c2) {
         int i1 = indexOf(c1);

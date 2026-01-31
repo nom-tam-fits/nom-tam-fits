@@ -81,6 +81,7 @@ public class CloseIS extends FilterInputStream {
      * @param proc       The process that is using the input stream
      * @param compressed the compressed input stream that is used by the process.
      */
+    @Deprecated
     @SuppressWarnings("resource")
     public CloseIS(Process proc, final InputStream compressed) {
         super(new BufferedInputStream(proc.getInputStream(), CompressionManager.ONE_MEGABYTE));
@@ -144,6 +145,7 @@ public class CloseIS extends FilterInputStream {
         copier.start();
     }
 
+    @Deprecated
     @Override
     public int read() throws IOException {
         int result = 0;
@@ -180,6 +182,7 @@ public class CloseIS extends FilterInputStream {
         }
     }
 
+    @Deprecated
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
         int result = 0;
@@ -194,6 +197,7 @@ public class CloseIS extends FilterInputStream {
     }
 
     @Override
+    @Deprecated
     public void close() throws IOException {
         super.close();
         input.close();

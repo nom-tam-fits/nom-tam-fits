@@ -145,9 +145,10 @@ ill-conceived, confusing, or generally unsafe to use; or because they were inter
 have been exposed to users in the first place. Rest assured, the deprecations do not cripple the intended 
 functionality of the library. If anything they make the library less confusing and safer to use. The Javadoc API 
 documentation mentions alternatives for the methods that were deprecated, as appropriate. And, if nothing else 
-works, you should still be able to compile your old code with deprecations enabled in the compiler options. Rest 
-assured, all deprecated methods, no matter how ill-conceived or dodgy they may be, will be supported in all
-future releases prior to version __2.0__ of the library.
+works, you should still be able to compile your old code. You can turn off the compiler warnings either by adding the 
+`-Xlint:-deprecate` compiler option, or adding `@SuppressWarnings("deprecate")` on top of the functions of your
+applications, which reference the deprecated API. Rest assured, all deprecated methods, no matter how ill-conceived or 
+dodgy they may be, will be supported in all future releases prior to version __2.0__ of the library.
 
 
 

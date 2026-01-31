@@ -55,51 +55,61 @@ public enum CXCStclSharedExt implements IFitsHeader {
     /**
      * Same as {@link STScIExt#CLOCKAPP}.
      */
+    @Deprecated
     CLOCKAPP(STScIExt.CLOCKAPP),
 
     /**
      * Same as {@link STScIExt#MJDREF}.
      */
+    @Deprecated
     MJDREF(STScIExt.MJDREF),
 
     /**
      * Same as {@link STScIExt#TASSIGN}.
      */
+    @Deprecated
     TASSIGN(STScIExt.TASSIGN),
 
     /**
      * Same as {@link DateTime#TIMEDEL}.
      */
+    @Deprecated
     TIMEDEL(DateTime.TIMEDEL),
 
     /**
      * Same as {@link STScIExt#TIMEREF}.
      */
+    @Deprecated
     TIMEREF(STScIExt.TIMEREF),
 
     /**
      * Same as {@link STScIExt#TIMEUNIT}.
      */
+    @Deprecated
     TIMEUNIT(STScIExt.TIMEUNIT),
 
     /**
      * Same as {@link STScIExt#TIMVERSN}.
      */
+    @Deprecated
     TIMVERSN(STScIExt.TIMVERSN),
 
     /**
      * Same as {@link STScIExt#TIMEZERO}.
      */
+    @Deprecated
     TIMEZERO(STScIExt.TIMEZERO),
 
     /**
      * Same as {@link STScIExt#TSTART}.
      */
+    @Deprecated
     TSTART(STScIExt.TSTART),
 
     /**
      * Same as {@link CXCStclSharedExt#TSTOP}.
      */
+    @Deprecated
     TSTOP(STScIExt.TSTOP);
 
     private final FitsKey key;
@@ -108,6 +118,7 @@ public enum CXCStclSharedExt implements IFitsHeader {
         key = orig.impl();
     }
 
+    @Deprecated
     @Override
     public final FitsKey impl() {
         return key;

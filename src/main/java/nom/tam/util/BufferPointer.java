@@ -47,16 +47,19 @@ public class BufferPointer {
     /**
      * The data buffer.
      */
+    @Deprecated
     protected byte[] buffer;
 
     /**
      * The number of valid characters in the buffer
      */
+    @Deprecated
     protected int length;
 
     /**
      * The current offset into the buffer
      */
+    @Deprecated
     protected int pos;
 
     /**
@@ -101,6 +104,7 @@ public class BufferPointer {
     /**
      * Invalidates the pointer, setting both the length and the position to zero.
      */
+    @Deprecated
     protected void invalidate() {
         length = 0;
         pos = 0;
@@ -111,6 +115,7 @@ public class BufferPointer {
      * 
      * @return the current position
      */
+    @Deprecated
     public int position() {
         return pos;
     }
@@ -120,6 +125,7 @@ public class BufferPointer {
      * 
      * @return the size (or accessible limit) of the buffer
      */
+    @Deprecated
     public int limit() {
         return length;
     }

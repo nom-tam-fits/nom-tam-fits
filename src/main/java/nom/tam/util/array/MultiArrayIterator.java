@@ -62,6 +62,7 @@ public class MultiArrayIterator<BaseArray> {
      * 
      * @param baseArray the multidimensional array, whose elements we want to iterate over.
      */
+    @Deprecated
     public MultiArrayIterator(BaseArray baseArray) {
         this.baseArray = baseArray;
         baseIsNoSubArray = !MultiArrayPointer.isSubArray(this.baseArray);
@@ -81,6 +82,7 @@ public class MultiArrayIterator<BaseArray> {
      * 
      * @see    ArrayFuncs#getBaseClass(Object)
      */
+    @Deprecated
     public Class<?> deepComponentType() {
         return ArrayFuncs.getBaseClass(baseArray);
     }
@@ -90,6 +92,7 @@ public class MultiArrayIterator<BaseArray> {
      * 
      * @return the next array element in the top-level array object.
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public BaseArray next() {
         if (baseIsNoSubArray) {
@@ -112,6 +115,7 @@ public class MultiArrayIterator<BaseArray> {
     /**
      * Resets the iterator so it can be re-used again.
      */
+    @Deprecated
     public void reset() {
         if (baseIsNoSubArray) {
             baseNextCalled = false;
@@ -132,6 +136,7 @@ public class MultiArrayIterator<BaseArray> {
      * 
      * @see    ArrayFuncs#countElements(Object)
      */
+    @Deprecated
     public int size() {
         return (int) ArrayFuncs.countElements(baseArray);
     }

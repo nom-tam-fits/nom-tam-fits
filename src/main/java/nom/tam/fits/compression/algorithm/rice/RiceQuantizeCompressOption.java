@@ -52,6 +52,7 @@ public class RiceQuantizeCompressOption extends QuantizeOption {
     /**
      * Creates a new set of options for Rice compression with quantization, initialized to default values.
      */
+    @Deprecated
     public RiceQuantizeCompressOption() {
         super(new RiceCompressOption());
     }
@@ -62,6 +63,7 @@ public class RiceQuantizeCompressOption extends QuantizeOption {
      * 
      * @param compressOption The Rice compression options to use
      */
+    @Deprecated
     public RiceQuantizeCompressOption(RiceCompressOption compressOption) {
         super(compressOption);
     }
@@ -73,6 +75,7 @@ public class RiceQuantizeCompressOption extends QuantizeOption {
      * 
      * @see    #getCompressOption(Class)
      */
+    @Deprecated
     public RiceCompressOption getRiceCompressOption() {
         return (RiceCompressOption) super.getCompressOption();
     }
