@@ -527,282 +527,283 @@
 <a class="jxr_linenumber" name="L519" href="#L519">519</a> <em class="jxr_javadoccomment">     * @deprecated               Use {@link Fits#makeHDU(Object)} instead (this method may either be migrated to</em>
 <a class="jxr_linenumber" name="L520" href="#L520">520</a> <em class="jxr_javadoccomment">     *                               {@link Fits} entirely or else have visibility reduced to the package level).</em>
 <a class="jxr_linenumber" name="L521" href="#L521">521</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L522" href="#L522">522</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> BasicHDU&lt;?&gt; hduFactory(Object o) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L523" href="#L523">523</a>         <a name="Data" href="../../../nom/tam/fits/Data.html#Data">Data</a> d;
-<a class="jxr_linenumber" name="L524" href="#L524">524</a>         <a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> h;
-<a class="jxr_linenumber" name="L525" href="#L525">525</a> 
-<a class="jxr_linenumber" name="L526" href="#L526">526</a>         <strong class="jxr_keyword">if</strong> (o == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L527" href="#L527">527</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="NullDataHDU" href="../../../nom/tam/fits/NullDataHDU.html#NullDataHDU">NullDataHDU</a>();
-<a class="jxr_linenumber" name="L528" href="#L528">528</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a>) {
-<a class="jxr_linenumber" name="L529" href="#L529">529</a>             h = (<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a>) o;
-<a class="jxr_linenumber" name="L530" href="#L530">530</a>             d = dataFactory(h);
-<a class="jxr_linenumber" name="L531" href="#L531">531</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (ImageHDU.isData(o)) {
-<a class="jxr_linenumber" name="L532" href="#L532">532</a>             d = ImageHDU.encapsulate(o);
-<a class="jxr_linenumber" name="L533" href="#L533">533</a>             h = ImageHDU.manufactureHeader(d);
-<a class="jxr_linenumber" name="L534" href="#L534">534</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (current().isUseAsciiTables() &amp;&amp; AsciiTableHDU.isData(o)) {
-<a class="jxr_linenumber" name="L535" href="#L535">535</a>             d = AsciiTableHDU.encapsulate(o);
-<a class="jxr_linenumber" name="L536" href="#L536">536</a>             h = AsciiTableHDU.manufactureHeader(d);
-<a class="jxr_linenumber" name="L537" href="#L537">537</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (BinaryTableHDU.isData(o)) {
-<a class="jxr_linenumber" name="L538" href="#L538">538</a>             d = BinaryTableHDU.encapsulate(o);
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>             h = BinaryTableHDU.manufactureHeader(d);
-<a class="jxr_linenumber" name="L540" href="#L540">540</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L541" href="#L541">541</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"This type of data is not supported for FITS representation"</span>);
-<a class="jxr_linenumber" name="L542" href="#L542">542</a>         }
-<a class="jxr_linenumber" name="L543" href="#L543">543</a> 
-<a class="jxr_linenumber" name="L544" href="#L544">544</a>         <strong class="jxr_keyword">return</strong> hduFactory(h, d);
-<a class="jxr_linenumber" name="L545" href="#L545">545</a>     }
-<a class="jxr_linenumber" name="L546" href="#L546">546</a> 
-<a class="jxr_linenumber" name="L547" href="#L547">547</a>     <em class="jxr_comment">// CHECKSTYLE:OFF</em>
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L549" href="#L549">549</a> <em class="jxr_javadoccomment">     * @deprecated               (&lt;i&gt;duplicate method for internal use&lt;/i&gt;) Same as {@link #hduFactory(Header, Data)},</em>
-<a class="jxr_linenumber" name="L550" href="#L550">550</a> <em class="jxr_javadoccomment">     *                               and will be removed in the future.</em>
-<a class="jxr_linenumber" name="L551" href="#L551">551</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L552" href="#L552">552</a> <em class="jxr_javadoccomment">     * @return                   Given Header and data objects return the appropriate type of HDU.</em>
-<a class="jxr_linenumber" name="L553" href="#L553">553</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L554" href="#L554">554</a> <em class="jxr_javadoccomment">     * @param      hdr           the header of the date</em>
-<a class="jxr_linenumber" name="L555" href="#L555">555</a> <em class="jxr_javadoccomment">     * @param      d             the data</em>
-<a class="jxr_linenumber" name="L556" href="#L556">556</a> <em class="jxr_javadoccomment">     * @param      &lt;DataClass&gt;   the class of the data</em>
-<a class="jxr_linenumber" name="L557" href="#L557">557</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L558" href="#L558">558</a> <em class="jxr_javadoccomment">     * @throws     FitsException if the operation failed</em>
-<a class="jxr_linenumber" name="L559" href="#L559">559</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L560" href="#L560">560</a>     @Deprecated
-<a class="jxr_linenumber" name="L561" href="#L561">561</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;DataClass <strong class="jxr_keyword">extends</strong> Data&gt; BasicHDU&lt;DataClass&gt; HDUFactory(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> hdr, DataClass d) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L562" href="#L562">562</a>         <strong class="jxr_keyword">return</strong> hduFactory(hdr, d);
-<a class="jxr_linenumber" name="L563" href="#L563">563</a>     }
-<a class="jxr_linenumber" name="L564" href="#L564">564</a> 
-<a class="jxr_linenumber" name="L565" href="#L565">565</a>     <em class="jxr_comment">// CHECKSTYLE:ON</em>
-<a class="jxr_linenumber" name="L566" href="#L566">566</a> 
-<a class="jxr_linenumber" name="L567" href="#L567">567</a>     <em class="jxr_comment">// CHECKSTYLE:OFF</em>
-<a class="jxr_linenumber" name="L568" href="#L568">568</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L569" href="#L569">569</a> <em class="jxr_javadoccomment">     * @return                   Given an object, create the appropriate FITS header to describe it.</em>
-<a class="jxr_linenumber" name="L570" href="#L570">570</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L571" href="#L571">571</a> <em class="jxr_javadoccomment">     * @param      o             The object to be described.</em>
-<a class="jxr_linenumber" name="L572" href="#L572">572</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L573" href="#L573">573</a> <em class="jxr_javadoccomment">     * @throws     FitsException if the parameter could not be converted to a hdu.</em>
-<a class="jxr_linenumber" name="L574" href="#L574">574</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L575" href="#L575">575</a> <em class="jxr_javadoccomment">     * @deprecated               Use {@link Fits#makeHDU(Object)} instead (will removed in the future. Duplicate of</em>
-<a class="jxr_linenumber" name="L576" href="#L576">576</a> <em class="jxr_javadoccomment">     *                               {@link #hduFactory(Object)}</em>
-<a class="jxr_linenumber" name="L577" href="#L577">577</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L578" href="#L578">578</a>     @Deprecated
-<a class="jxr_linenumber" name="L579" href="#L579">579</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> BasicHDU&lt;?&gt; HDUFactory(Object o) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L580" href="#L580">580</a>         <strong class="jxr_keyword">return</strong> hduFactory(o);
-<a class="jxr_linenumber" name="L581" href="#L581">581</a>     }
-<a class="jxr_linenumber" name="L582" href="#L582">582</a> 
-<a class="jxr_linenumber" name="L583" href="#L583">583</a>     <em class="jxr_comment">// CHECKSTYLE:ON</em>
-<a class="jxr_linenumber" name="L584" href="#L584">584</a> 
-<a class="jxr_linenumber" name="L585" href="#L585">585</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L586" href="#L586">586</a> <em class="jxr_javadoccomment">     * Restores all settings to their default values.</em>
-<a class="jxr_linenumber" name="L587" href="#L587">587</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L588" href="#L588">588</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
-<a class="jxr_linenumber" name="L589" href="#L589">589</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L590" href="#L590">590</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setDefaults() {
-<a class="jxr_linenumber" name="L591" href="#L591">591</a>         FitsSettings s = current();
-<a class="jxr_linenumber" name="L592" href="#L592">592</a>         s.useExponentD = DEFAULT_USE_EXPONENT_D;
-<a class="jxr_linenumber" name="L593" href="#L593">593</a>         s.allowHeaderRepairs = DEFAULT_ALLOW_HEADER_REPAIRS;
-<a class="jxr_linenumber" name="L594" href="#L594">594</a>         s.allowTerminalJunk = DEFAULT_ALLOW_TERMINAL_JUNK;
-<a class="jxr_linenumber" name="L595" href="#L595">595</a>         s.checkAsciiStrings = DEFAULT_CHECK_ASCII_STRINGS;
-<a class="jxr_linenumber" name="L596" href="#L596">596</a>         s.longStringsEnabled = DEFAULT_LONG_STRINGS_ENABLED;
-<a class="jxr_linenumber" name="L597" href="#L597">597</a>         s.skipBlankAfterAssign = DEFAULT_SKIP_BLANK_AFTER_ASSIGN;
-<a class="jxr_linenumber" name="L598" href="#L598">598</a>         s.useAsciiTables = DEFAULT_USE_ASCII_TABLES;
-<a class="jxr_linenumber" name="L599" href="#L599">599</a>         s.useHierarch = DEFAULT_USE_HIERARCH;
-<a class="jxr_linenumber" name="L600" href="#L600">600</a>         s.useUnicodeChars = DEFAULT_USE_UNICODE_CHARS;
-<a class="jxr_linenumber" name="L601" href="#L601">601</a>         s.hierarchKeyFormatter = DEFAULT_HIERARCH_FORMATTER;
-<a class="jxr_linenumber" name="L602" href="#L602">602</a>         s.hierarchKeyFormatter.setCaseSensitive(DEFAULT_CASE_SENSITIVE_HIERARCH);
-<a class="jxr_linenumber" name="L603" href="#L603">603</a>     }
-<a class="jxr_linenumber" name="L604" href="#L604">604</a> 
-<a class="jxr_linenumber" name="L605" href="#L605">605</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L606" href="#L606">606</a> <em class="jxr_javadoccomment">     * Sets whether 'D' may be used instead of 'E' to mark the exponent for a floating point value with precision beyond</em>
-<a class="jxr_linenumber" name="L607" href="#L607">607</a> <em class="jxr_javadoccomment">     * that of a 32-bit float.</em>
-<a class="jxr_linenumber" name="L608" href="#L608">608</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L609" href="#L609">609</a> <em class="jxr_javadoccomment">     * @param allowExponentD if &lt;code&gt;true&lt;/code&gt; D will be used instead of E to indicate the exponent of a decimal with</em>
-<a class="jxr_linenumber" name="L610" href="#L610">610</a> <em class="jxr_javadoccomment">     *                           more precision than a 32-bit float.</em>
-<a class="jxr_linenumber" name="L611" href="#L611">611</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L612" href="#L612">612</a> <em class="jxr_javadoccomment">     * @since                1.16</em>
-<a class="jxr_linenumber" name="L613" href="#L613">613</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L614" href="#L614">614</a> <em class="jxr_javadoccomment">     * @see                  #isUseExponentD()</em>
-<a class="jxr_linenumber" name="L615" href="#L615">615</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L616" href="#L616">616</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setUseExponentD(<strong class="jxr_keyword">boolean</strong> allowExponentD) {
-<a class="jxr_linenumber" name="L617" href="#L617">617</a>         current().useExponentD = allowExponentD;
-<a class="jxr_linenumber" name="L618" href="#L618">618</a>     }
-<a class="jxr_linenumber" name="L619" href="#L619">619</a> 
-<a class="jxr_linenumber" name="L620" href="#L620">620</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L621" href="#L621">621</a> <em class="jxr_javadoccomment">     * Do we allow junk after a valid FITS file?</em>
-<a class="jxr_linenumber" name="L622" href="#L622">622</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L623" href="#L623">623</a> <em class="jxr_javadoccomment">     * @param allowTerminalJunk value to set</em>
-<a class="jxr_linenumber" name="L624" href="#L624">624</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L625" href="#L625">625</a> <em class="jxr_javadoccomment">     * @see                     #getAllowTerminalJunk()</em>
-<a class="jxr_linenumber" name="L626" href="#L626">626</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L627" href="#L627">627</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setAllowTerminalJunk(<strong class="jxr_keyword">boolean</strong> allowTerminalJunk) {
-<a class="jxr_linenumber" name="L628" href="#L628">628</a>         current().allowTerminalJunk = allowTerminalJunk;
-<a class="jxr_linenumber" name="L629" href="#L629">629</a>     }
-<a class="jxr_linenumber" name="L630" href="#L630">630</a> 
-<a class="jxr_linenumber" name="L631" href="#L631">631</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L632" href="#L632">632</a> <em class="jxr_javadoccomment">     * Do we allow automatic header repairs, like missing end quotes?</em>
-<a class="jxr_linenumber" name="L633" href="#L633">633</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L634" href="#L634">634</a> <em class="jxr_javadoccomment">     * @param allowHeaderRepairs value to set</em>
-<a class="jxr_linenumber" name="L635" href="#L635">635</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L636" href="#L636">636</a> <em class="jxr_javadoccomment">     * @see                      #isAllowHeaderRepairs()</em>
-<a class="jxr_linenumber" name="L637" href="#L637">637</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L638" href="#L638">638</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setAllowHeaderRepairs(<strong class="jxr_keyword">boolean</strong> allowHeaderRepairs) {
-<a class="jxr_linenumber" name="L639" href="#L639">639</a>         current().allowHeaderRepairs = allowHeaderRepairs;
-<a class="jxr_linenumber" name="L640" href="#L640">640</a>     }
-<a class="jxr_linenumber" name="L641" href="#L641">641</a> 
-<a class="jxr_linenumber" name="L642" href="#L642">642</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L643" href="#L643">643</a> <em class="jxr_javadoccomment">     * Enable/Disable checking of strings values used in tables to ensure that they are within the range specified by</em>
-<a class="jxr_linenumber" name="L644" href="#L644">644</a> <em class="jxr_javadoccomment">     * the FITS standard. The standard only allows the values 0x20 - 0x7E with null bytes allowed in one limited</em>
-<a class="jxr_linenumber" name="L645" href="#L645">645</a> <em class="jxr_javadoccomment">     * context. Disabled by default.</em>
-<a class="jxr_linenumber" name="L646" href="#L646">646</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L647" href="#L647">647</a> <em class="jxr_javadoccomment">     * @param checkAsciiStrings value to set</em>
-<a class="jxr_linenumber" name="L648" href="#L648">648</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L649" href="#L649">649</a> <em class="jxr_javadoccomment">     * @see                     #getCheckAsciiStrings()</em>
-<a class="jxr_linenumber" name="L650" href="#L650">650</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L651" href="#L651">651</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setCheckAsciiStrings(<strong class="jxr_keyword">boolean</strong> checkAsciiStrings) {
-<a class="jxr_linenumber" name="L652" href="#L652">652</a>         current().checkAsciiStrings = checkAsciiStrings;
-<a class="jxr_linenumber" name="L653" href="#L653">653</a>     }
-<a class="jxr_linenumber" name="L654" href="#L654">654</a> 
-<a class="jxr_linenumber" name="L655" href="#L655">655</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L656" href="#L656">656</a> <em class="jxr_javadoccomment">     * There is not a real standard how to write hierarch keys, default we use the one where every key is separated by a</em>
-<a class="jxr_linenumber" name="L657" href="#L657">657</a> <em class="jxr_javadoccomment">     * blank. If you want or need another format assing the formater here.</em>
-<a class="jxr_linenumber" name="L658" href="#L658">658</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L659" href="#L659">659</a> <em class="jxr_javadoccomment">     * @param formatter the hierarch key formatter.</em>
-<a class="jxr_linenumber" name="L660" href="#L660">660</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L661" href="#L661">661</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setHierarchFormater(<a name="IHierarchKeyFormatter" href="../../../nom/tam/fits/header/hierarch/IHierarchKeyFormatter.html#IHierarchKeyFormatter">IHierarchKeyFormatter</a> formatter) {
-<a class="jxr_linenumber" name="L662" href="#L662">662</a>         current().hierarchKeyFormatter = formatter;
-<a class="jxr_linenumber" name="L663" href="#L663">663</a>     }
-<a class="jxr_linenumber" name="L664" href="#L664">664</a> 
-<a class="jxr_linenumber" name="L665" href="#L665">665</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L666" href="#L666">666</a> <em class="jxr_javadoccomment">     * Enable/Disable longstring support.</em>
-<a class="jxr_linenumber" name="L667" href="#L667">667</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L668" href="#L668">668</a> <em class="jxr_javadoccomment">     * @param longStringsEnabled value to set</em>
-<a class="jxr_linenumber" name="L669" href="#L669">669</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L670" href="#L670">670</a> <em class="jxr_javadoccomment">     * @see                      #isLongStringsEnabled()</em>
-<a class="jxr_linenumber" name="L671" href="#L671">671</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L672" href="#L672">672</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setLongStringsEnabled(<strong class="jxr_keyword">boolean</strong> longStringsEnabled) {
-<a class="jxr_linenumber" name="L673" href="#L673">673</a>         current().longStringsEnabled = longStringsEnabled;
-<a class="jxr_linenumber" name="L674" href="#L674">674</a>     }
-<a class="jxr_linenumber" name="L675" href="#L675">675</a> 
-<a class="jxr_linenumber" name="L676" href="#L676">676</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L677" href="#L677">677</a> <em class="jxr_javadoccomment">     * If set to true the blank after the assign in the header cards in not written. The blank is stronly recommendet</em>
-<a class="jxr_linenumber" name="L678" href="#L678">678</a> <em class="jxr_javadoccomment">     * but in some cases it is important that it can be ommitted.</em>
-<a class="jxr_linenumber" name="L679" href="#L679">679</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L680" href="#L680">680</a> <em class="jxr_javadoccomment">     * @param      skipBlankAfterAssign value to set</em>
-<a class="jxr_linenumber" name="L681" href="#L681">681</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L682" href="#L682">682</a> <em class="jxr_javadoccomment">     * @deprecated                      The FITS standard is very explicit that assignment must be "= " (equals followed</em>
-<a class="jxr_linenumber" name="L683" href="#L683">683</a> <em class="jxr_javadoccomment">     *                                      by a blank space). It is also very specific that string values must have</em>
-<a class="jxr_linenumber" name="L684" href="#L684">684</a> <em class="jxr_javadoccomment">     *                                      their opening quote in byte 11 (counted from 1). If we allow skipping the</em>
-<a class="jxr_linenumber" name="L685" href="#L685">685</a> <em class="jxr_javadoccomment">     *                                      space, we will violate both standards in a way that is likely to break</em>
-<a class="jxr_linenumber" name="L686" href="#L686">686</a> <em class="jxr_javadoccomment">     *                                      compatibility with other tools.</em>
-<a class="jxr_linenumber" name="L687" href="#L687">687</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L688" href="#L688">688</a> <em class="jxr_javadoccomment">     * @see                             #isSkipBlankAfterAssign()</em>
-<a class="jxr_linenumber" name="L689" href="#L689">689</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L690" href="#L690">690</a>     @Deprecated
-<a class="jxr_linenumber" name="L691" href="#L691">691</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setSkipBlankAfterAssign(<strong class="jxr_keyword">boolean</strong> skipBlankAfterAssign) {
-<a class="jxr_linenumber" name="L692" href="#L692">692</a>         current().skipBlankAfterAssign = skipBlankAfterAssign;
-<a class="jxr_linenumber" name="L693" href="#L693">693</a>     }
-<a class="jxr_linenumber" name="L694" href="#L694">694</a> 
-<a class="jxr_linenumber" name="L695" href="#L695">695</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L696" href="#L696">696</a> <em class="jxr_javadoccomment">     * Indicate whether ASCII tables should be used where feasible.</em>
-<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L698" href="#L698">698</a> <em class="jxr_javadoccomment">     * @param useAsciiTables value to set</em>
-<a class="jxr_linenumber" name="L699" href="#L699">699</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L700" href="#L700">700</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setUseAsciiTables(<strong class="jxr_keyword">boolean</strong> useAsciiTables) {
-<a class="jxr_linenumber" name="L701" href="#L701">701</a>         current().useAsciiTables = useAsciiTables;
-<a class="jxr_linenumber" name="L702" href="#L702">702</a>     }
-<a class="jxr_linenumber" name="L703" href="#L703">703</a> 
-<a class="jxr_linenumber" name="L704" href="#L704">704</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L705" href="#L705">705</a> <em class="jxr_javadoccomment">     * Enable/Disable hierarchical keyword processing.</em>
-<a class="jxr_linenumber" name="L706" href="#L706">706</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L707" href="#L707">707</a> <em class="jxr_javadoccomment">     * @param useHierarch value to set</em>
-<a class="jxr_linenumber" name="L708" href="#L708">708</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L709" href="#L709">709</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setUseHierarch(<strong class="jxr_keyword">boolean</strong> useHierarch) {
-<a class="jxr_linenumber" name="L710" href="#L710">710</a>         current().useHierarch = useHierarch;
-<a class="jxr_linenumber" name="L711" href="#L711">711</a>     }
-<a class="jxr_linenumber" name="L712" href="#L712">712</a> 
-<a class="jxr_linenumber" name="L713" href="#L713">713</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L714" href="#L714">714</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L715" href="#L715">715</a> <em class="jxr_javadoccomment">     * Enable/Disable writing &lt;code&gt;char[]&lt;/code&gt; arrays as &lt;code&gt;short[]&lt;/code&gt; in FITS binary tables (with column type</em>
-<a class="jxr_linenumber" name="L716" href="#L716">716</a> <em class="jxr_javadoccomment">     * 'I'), instead of as standard FITS 1-byte ASCII characters (with column type 'A'). The old default of this library</em>
-<a class="jxr_linenumber" name="L717" href="#L717">717</a> <em class="jxr_javadoccomment">     * has been to use unicode, and that behavior remains the default &amp;mdash; the same as setting the argument to</em>
-<a class="jxr_linenumber" name="L718" href="#L718">718</a> <em class="jxr_javadoccomment">     * &lt;code&gt;true&lt;/code&gt;. On the flipside, setting it to &lt;code&gt;false&lt;/code&gt; provides more convergence between the</em>
-<a class="jxr_linenumber" name="L719" href="#L719">719</a> <em class="jxr_javadoccomment">     * handling of &lt;code&gt;char[]&lt;/code&gt; columns and the nearly identical &lt;code&gt;String&lt;/code&gt; columns, which have already</em>
-<a class="jxr_linenumber" name="L720" href="#L720">720</a> <em class="jxr_javadoccomment">     * been restricted to ASCII before.</em>
-<a class="jxr_linenumber" name="L721" href="#L721">721</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L722" href="#L722">722</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L723" href="#L723">723</a> <em class="jxr_javadoccomment">     * @param value &lt;code&gt;true&lt;/code&gt; to write &lt;code&gt;char[]&lt;/code&gt; arrays as if &lt;code&gt;short[]&lt;/code&gt; with column type</em>
-<a class="jxr_linenumber" name="L724" href="#L724">724</a> <em class="jxr_javadoccomment">     *                  'I' to binary tables (old behaviour, and hence default), or else &lt;code&gt;false&lt;/code&gt; to write</em>
-<a class="jxr_linenumber" name="L725" href="#L725">725</a> <em class="jxr_javadoccomment">     *                  them as &lt;code&gt;byte[]&lt;/code&gt; with column type 'A', the same as for &lt;code&gt;String&lt;/code&gt; (preferred</em>
-<a class="jxr_linenumber" name="L726" href="#L726">726</a> <em class="jxr_javadoccomment">     *                  behaviour)</em>
-<a class="jxr_linenumber" name="L727" href="#L727">727</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L728" href="#L728">728</a> <em class="jxr_javadoccomment">     * @since       1.16</em>
-<a class="jxr_linenumber" name="L729" href="#L729">729</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L730" href="#L730">730</a> <em class="jxr_javadoccomment">     * @see         #isUseUnicodeChars()</em>
-<a class="jxr_linenumber" name="L731" href="#L731">731</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L732" href="#L732">732</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setUseUnicodeChars(<strong class="jxr_keyword">boolean</strong> value) {
-<a class="jxr_linenumber" name="L733" href="#L733">733</a>         current().useUnicodeChars = value;
-<a class="jxr_linenumber" name="L734" href="#L734">734</a>     }
-<a class="jxr_linenumber" name="L735" href="#L735">735</a> 
-<a class="jxr_linenumber" name="L736" href="#L736">736</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L737" href="#L737">737</a> <em class="jxr_javadoccomment">     * Returns the common thread pool that we use for processing FITS files.</em>
-<a class="jxr_linenumber" name="L738" href="#L738">738</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L739" href="#L739">739</a> <em class="jxr_javadoccomment">     * @return the thread pool for processing FITS files.</em>
-<a class="jxr_linenumber" name="L740" href="#L740">740</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L741" href="#L741">741</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> ExecutorService threadPool() {
-<a class="jxr_linenumber" name="L742" href="#L742">742</a>         <strong class="jxr_keyword">if</strong> (threadPool == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L743" href="#L743">743</a>             initializeThreadPool();
-<a class="jxr_linenumber" name="L744" href="#L744">744</a>         }
-<a class="jxr_linenumber" name="L745" href="#L745">745</a>         <strong class="jxr_keyword">return</strong> threadPool;
-<a class="jxr_linenumber" name="L746" href="#L746">746</a>     }
-<a class="jxr_linenumber" name="L747" href="#L747">747</a> 
-<a class="jxr_linenumber" name="L748" href="#L748">748</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L749" href="#L749">749</a> <em class="jxr_javadoccomment">     * Use thread local settings for the current thread instead of the global ones if the parameter is set to true, else</em>
-<a class="jxr_linenumber" name="L750" href="#L750">750</a> <em class="jxr_javadoccomment">     * use the shared global settings.</em>
-<a class="jxr_linenumber" name="L751" href="#L751">751</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L752" href="#L752">752</a> <em class="jxr_javadoccomment">     * @param useThreadSettings true if the thread should not share the global settings.</em>
-<a class="jxr_linenumber" name="L753" href="#L753">753</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L754" href="#L754">754</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> useThreadLocalSettings(<strong class="jxr_keyword">boolean</strong> useThreadSettings) {
-<a class="jxr_linenumber" name="L755" href="#L755">755</a>         <strong class="jxr_keyword">if</strong> (useThreadSettings) {
-<a class="jxr_linenumber" name="L756" href="#L756">756</a>             LOCAL_SETTINGS.set(GLOBAL_SETTINGS.copy());
-<a class="jxr_linenumber" name="L757" href="#L757">757</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L758" href="#L758">758</a>             LOCAL_SETTINGS.remove();
-<a class="jxr_linenumber" name="L759" href="#L759">759</a>         }
-<a class="jxr_linenumber" name="L760" href="#L760">760</a>     }
-<a class="jxr_linenumber" name="L761" href="#L761">761</a> 
-<a class="jxr_linenumber" name="L762" href="#L762">762</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> initializeThreadPool() {
-<a class="jxr_linenumber" name="L763" href="#L763">763</a>         <strong class="jxr_keyword">synchronized</strong> (GLOBAL_SETTINGS) {
-<a class="jxr_linenumber" name="L764" href="#L764">764</a>             <strong class="jxr_keyword">if</strong> (threadPool == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L765" href="#L765">765</a>                 threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L766" href="#L766">766</a>                         <strong class="jxr_keyword">new</strong> ThreadFactory() {
-<a class="jxr_linenumber" name="L767" href="#L767">767</a>                             <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> counter = 1;
-<a class="jxr_linenumber" name="L768" href="#L768">768</a> 
-<a class="jxr_linenumber" name="L769" href="#L769">769</a>                             @Override
-<a class="jxr_linenumber" name="L770" href="#L770">770</a>                             <strong class="jxr_keyword">public</strong> Thread newThread(Runnable r) {
-<a class="jxr_linenumber" name="L771" href="#L771">771</a>                                 Thread thread = <strong class="jxr_keyword">new</strong> Thread(r, <span class="jxr_string">"nom-tam-fits worker "</span> + counter++);
-<a class="jxr_linenumber" name="L772" href="#L772">772</a>                                 thread.setDaemon(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L773" href="#L773">773</a>                                 <strong class="jxr_keyword">return</strong> thread;
-<a class="jxr_linenumber" name="L774" href="#L774">774</a>                             }
-<a class="jxr_linenumber" name="L775" href="#L775">775</a>                         });
-<a class="jxr_linenumber" name="L776" href="#L776">776</a>             }
-<a class="jxr_linenumber" name="L777" href="#L777">777</a>         }
-<a class="jxr_linenumber" name="L778" href="#L778">778</a>     }
-<a class="jxr_linenumber" name="L779" href="#L779">779</a> 
-<a class="jxr_linenumber" name="L780" href="#L780">780</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L781" href="#L781">781</a> <em class="jxr_javadoccomment">     * Returns the current settings that guide how we read or produce FITS files.</em>
-<a class="jxr_linenumber" name="L782" href="#L782">782</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L783" href="#L783">783</a> <em class="jxr_javadoccomment">     * @return the current active settings for generating or interpreting FITS files.</em>
-<a class="jxr_linenumber" name="L784" href="#L784">784</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L785" href="#L785">785</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> FitsSettings current() {
-<a class="jxr_linenumber" name="L786" href="#L786">786</a>         FitsSettings settings = LOCAL_SETTINGS.get();
-<a class="jxr_linenumber" name="L787" href="#L787">787</a>         <strong class="jxr_keyword">if</strong> (settings == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L788" href="#L788">788</a>             <strong class="jxr_keyword">return</strong> GLOBAL_SETTINGS;
-<a class="jxr_linenumber" name="L789" href="#L789">789</a>         }
-<a class="jxr_linenumber" name="L790" href="#L790">790</a>         <strong class="jxr_keyword">return</strong> settings;
-<a class="jxr_linenumber" name="L791" href="#L791">791</a>     }
-<a class="jxr_linenumber" name="L792" href="#L792">792</a> 
-<a class="jxr_linenumber" name="L793" href="#L793">793</a>     <strong class="jxr_keyword">private</strong> <a name="FitsFactory" href="../../../nom/tam/fits/FitsFactory.html#FitsFactory">FitsFactory</a>() {
-<a class="jxr_linenumber" name="L794" href="#L794">794</a>     }
-<a class="jxr_linenumber" name="L795" href="#L795">795</a> }
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>     @Deprecated
+<a class="jxr_linenumber" name="L523" href="#L523">523</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> BasicHDU&lt;?&gt; hduFactory(Object o) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L524" href="#L524">524</a>         <a name="Data" href="../../../nom/tam/fits/Data.html#Data">Data</a> d;
+<a class="jxr_linenumber" name="L525" href="#L525">525</a>         <a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> h;
+<a class="jxr_linenumber" name="L526" href="#L526">526</a> 
+<a class="jxr_linenumber" name="L527" href="#L527">527</a>         <strong class="jxr_keyword">if</strong> (o == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="NullDataHDU" href="../../../nom/tam/fits/NullDataHDU.html#NullDataHDU">NullDataHDU</a>();
+<a class="jxr_linenumber" name="L529" href="#L529">529</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (o instanceof <a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a>) {
+<a class="jxr_linenumber" name="L530" href="#L530">530</a>             h = (<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a>) o;
+<a class="jxr_linenumber" name="L531" href="#L531">531</a>             d = dataFactory(h);
+<a class="jxr_linenumber" name="L532" href="#L532">532</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (ImageHDU.isData(o)) {
+<a class="jxr_linenumber" name="L533" href="#L533">533</a>             d = ImageHDU.encapsulate(o);
+<a class="jxr_linenumber" name="L534" href="#L534">534</a>             h = ImageHDU.manufactureHeader(d);
+<a class="jxr_linenumber" name="L535" href="#L535">535</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (current().isUseAsciiTables() &amp;&amp; AsciiTableHDU.isData(o)) {
+<a class="jxr_linenumber" name="L536" href="#L536">536</a>             d = AsciiTableHDU.encapsulate(o);
+<a class="jxr_linenumber" name="L537" href="#L537">537</a>             h = AsciiTableHDU.manufactureHeader(d);
+<a class="jxr_linenumber" name="L538" href="#L538">538</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (BinaryTableHDU.isData(o)) {
+<a class="jxr_linenumber" name="L539" href="#L539">539</a>             d = BinaryTableHDU.encapsulate(o);
+<a class="jxr_linenumber" name="L540" href="#L540">540</a>             h = BinaryTableHDU.manufactureHeader(d);
+<a class="jxr_linenumber" name="L541" href="#L541">541</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L542" href="#L542">542</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"This type of data is not supported for FITS representation"</span>);
+<a class="jxr_linenumber" name="L543" href="#L543">543</a>         }
+<a class="jxr_linenumber" name="L544" href="#L544">544</a> 
+<a class="jxr_linenumber" name="L545" href="#L545">545</a>         <strong class="jxr_keyword">return</strong> hduFactory(h, d);
+<a class="jxr_linenumber" name="L546" href="#L546">546</a>     }
+<a class="jxr_linenumber" name="L547" href="#L547">547</a> 
+<a class="jxr_linenumber" name="L548" href="#L548">548</a>     <em class="jxr_comment">// CHECKSTYLE:OFF</em>
+<a class="jxr_linenumber" name="L549" href="#L549">549</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L550" href="#L550">550</a> <em class="jxr_javadoccomment">     * @deprecated               (&lt;i&gt;duplicate method for internal use&lt;/i&gt;) Same as {@link #hduFactory(Header, Data)},</em>
+<a class="jxr_linenumber" name="L551" href="#L551">551</a> <em class="jxr_javadoccomment">     *                               and will be removed in the future.</em>
+<a class="jxr_linenumber" name="L552" href="#L552">552</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L553" href="#L553">553</a> <em class="jxr_javadoccomment">     * @return                   Given Header and data objects return the appropriate type of HDU.</em>
+<a class="jxr_linenumber" name="L554" href="#L554">554</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L555" href="#L555">555</a> <em class="jxr_javadoccomment">     * @param      hdr           the header of the date</em>
+<a class="jxr_linenumber" name="L556" href="#L556">556</a> <em class="jxr_javadoccomment">     * @param      d             the data</em>
+<a class="jxr_linenumber" name="L557" href="#L557">557</a> <em class="jxr_javadoccomment">     * @param      &lt;DataClass&gt;   the class of the data</em>
+<a class="jxr_linenumber" name="L558" href="#L558">558</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L559" href="#L559">559</a> <em class="jxr_javadoccomment">     * @throws     FitsException if the operation failed</em>
+<a class="jxr_linenumber" name="L560" href="#L560">560</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L561" href="#L561">561</a>     @Deprecated
+<a class="jxr_linenumber" name="L562" href="#L562">562</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;DataClass <strong class="jxr_keyword">extends</strong> Data&gt; BasicHDU&lt;DataClass&gt; HDUFactory(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> hdr, DataClass d) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L563" href="#L563">563</a>         <strong class="jxr_keyword">return</strong> hduFactory(hdr, d);
+<a class="jxr_linenumber" name="L564" href="#L564">564</a>     }
+<a class="jxr_linenumber" name="L565" href="#L565">565</a> 
+<a class="jxr_linenumber" name="L566" href="#L566">566</a>     <em class="jxr_comment">// CHECKSTYLE:ON</em>
+<a class="jxr_linenumber" name="L567" href="#L567">567</a> 
+<a class="jxr_linenumber" name="L568" href="#L568">568</a>     <em class="jxr_comment">// CHECKSTYLE:OFF</em>
+<a class="jxr_linenumber" name="L569" href="#L569">569</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L570" href="#L570">570</a> <em class="jxr_javadoccomment">     * @return                   Given an object, create the appropriate FITS header to describe it.</em>
+<a class="jxr_linenumber" name="L571" href="#L571">571</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L572" href="#L572">572</a> <em class="jxr_javadoccomment">     * @param      o             The object to be described.</em>
+<a class="jxr_linenumber" name="L573" href="#L573">573</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L574" href="#L574">574</a> <em class="jxr_javadoccomment">     * @throws     FitsException if the parameter could not be converted to a hdu.</em>
+<a class="jxr_linenumber" name="L575" href="#L575">575</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L576" href="#L576">576</a> <em class="jxr_javadoccomment">     * @deprecated               Use {@link Fits#makeHDU(Object)} instead (will removed in the future. Duplicate of</em>
+<a class="jxr_linenumber" name="L577" href="#L577">577</a> <em class="jxr_javadoccomment">     *                               {@link #hduFactory(Object)}</em>
+<a class="jxr_linenumber" name="L578" href="#L578">578</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L579" href="#L579">579</a>     @Deprecated
+<a class="jxr_linenumber" name="L580" href="#L580">580</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> BasicHDU&lt;?&gt; HDUFactory(Object o) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L581" href="#L581">581</a>         <strong class="jxr_keyword">return</strong> hduFactory(o);
+<a class="jxr_linenumber" name="L582" href="#L582">582</a>     }
+<a class="jxr_linenumber" name="L583" href="#L583">583</a> 
+<a class="jxr_linenumber" name="L584" href="#L584">584</a>     <em class="jxr_comment">// CHECKSTYLE:ON</em>
+<a class="jxr_linenumber" name="L585" href="#L585">585</a> 
+<a class="jxr_linenumber" name="L586" href="#L586">586</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L587" href="#L587">587</a> <em class="jxr_javadoccomment">     * Restores all settings to their default values.</em>
+<a class="jxr_linenumber" name="L588" href="#L588">588</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L589" href="#L589">589</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
+<a class="jxr_linenumber" name="L590" href="#L590">590</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L591" href="#L591">591</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setDefaults() {
+<a class="jxr_linenumber" name="L592" href="#L592">592</a>         FitsSettings s = current();
+<a class="jxr_linenumber" name="L593" href="#L593">593</a>         s.useExponentD = DEFAULT_USE_EXPONENT_D;
+<a class="jxr_linenumber" name="L594" href="#L594">594</a>         s.allowHeaderRepairs = DEFAULT_ALLOW_HEADER_REPAIRS;
+<a class="jxr_linenumber" name="L595" href="#L595">595</a>         s.allowTerminalJunk = DEFAULT_ALLOW_TERMINAL_JUNK;
+<a class="jxr_linenumber" name="L596" href="#L596">596</a>         s.checkAsciiStrings = DEFAULT_CHECK_ASCII_STRINGS;
+<a class="jxr_linenumber" name="L597" href="#L597">597</a>         s.longStringsEnabled = DEFAULT_LONG_STRINGS_ENABLED;
+<a class="jxr_linenumber" name="L598" href="#L598">598</a>         s.skipBlankAfterAssign = DEFAULT_SKIP_BLANK_AFTER_ASSIGN;
+<a class="jxr_linenumber" name="L599" href="#L599">599</a>         s.useAsciiTables = DEFAULT_USE_ASCII_TABLES;
+<a class="jxr_linenumber" name="L600" href="#L600">600</a>         s.useHierarch = DEFAULT_USE_HIERARCH;
+<a class="jxr_linenumber" name="L601" href="#L601">601</a>         s.useUnicodeChars = DEFAULT_USE_UNICODE_CHARS;
+<a class="jxr_linenumber" name="L602" href="#L602">602</a>         s.hierarchKeyFormatter = DEFAULT_HIERARCH_FORMATTER;
+<a class="jxr_linenumber" name="L603" href="#L603">603</a>         s.hierarchKeyFormatter.setCaseSensitive(DEFAULT_CASE_SENSITIVE_HIERARCH);
+<a class="jxr_linenumber" name="L604" href="#L604">604</a>     }
+<a class="jxr_linenumber" name="L605" href="#L605">605</a> 
+<a class="jxr_linenumber" name="L606" href="#L606">606</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L607" href="#L607">607</a> <em class="jxr_javadoccomment">     * Sets whether 'D' may be used instead of 'E' to mark the exponent for a floating point value with precision beyond</em>
+<a class="jxr_linenumber" name="L608" href="#L608">608</a> <em class="jxr_javadoccomment">     * that of a 32-bit float.</em>
+<a class="jxr_linenumber" name="L609" href="#L609">609</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L610" href="#L610">610</a> <em class="jxr_javadoccomment">     * @param allowExponentD if &lt;code&gt;true&lt;/code&gt; D will be used instead of E to indicate the exponent of a decimal with</em>
+<a class="jxr_linenumber" name="L611" href="#L611">611</a> <em class="jxr_javadoccomment">     *                           more precision than a 32-bit float.</em>
+<a class="jxr_linenumber" name="L612" href="#L612">612</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L613" href="#L613">613</a> <em class="jxr_javadoccomment">     * @since                1.16</em>
+<a class="jxr_linenumber" name="L614" href="#L614">614</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L615" href="#L615">615</a> <em class="jxr_javadoccomment">     * @see                  #isUseExponentD()</em>
+<a class="jxr_linenumber" name="L616" href="#L616">616</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L617" href="#L617">617</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setUseExponentD(<strong class="jxr_keyword">boolean</strong> allowExponentD) {
+<a class="jxr_linenumber" name="L618" href="#L618">618</a>         current().useExponentD = allowExponentD;
+<a class="jxr_linenumber" name="L619" href="#L619">619</a>     }
+<a class="jxr_linenumber" name="L620" href="#L620">620</a> 
+<a class="jxr_linenumber" name="L621" href="#L621">621</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L622" href="#L622">622</a> <em class="jxr_javadoccomment">     * Do we allow junk after a valid FITS file?</em>
+<a class="jxr_linenumber" name="L623" href="#L623">623</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L624" href="#L624">624</a> <em class="jxr_javadoccomment">     * @param allowTerminalJunk value to set</em>
+<a class="jxr_linenumber" name="L625" href="#L625">625</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L626" href="#L626">626</a> <em class="jxr_javadoccomment">     * @see                     #getAllowTerminalJunk()</em>
+<a class="jxr_linenumber" name="L627" href="#L627">627</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L628" href="#L628">628</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setAllowTerminalJunk(<strong class="jxr_keyword">boolean</strong> allowTerminalJunk) {
+<a class="jxr_linenumber" name="L629" href="#L629">629</a>         current().allowTerminalJunk = allowTerminalJunk;
+<a class="jxr_linenumber" name="L630" href="#L630">630</a>     }
+<a class="jxr_linenumber" name="L631" href="#L631">631</a> 
+<a class="jxr_linenumber" name="L632" href="#L632">632</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L633" href="#L633">633</a> <em class="jxr_javadoccomment">     * Do we allow automatic header repairs, like missing end quotes?</em>
+<a class="jxr_linenumber" name="L634" href="#L634">634</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L635" href="#L635">635</a> <em class="jxr_javadoccomment">     * @param allowHeaderRepairs value to set</em>
+<a class="jxr_linenumber" name="L636" href="#L636">636</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L637" href="#L637">637</a> <em class="jxr_javadoccomment">     * @see                      #isAllowHeaderRepairs()</em>
+<a class="jxr_linenumber" name="L638" href="#L638">638</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L639" href="#L639">639</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setAllowHeaderRepairs(<strong class="jxr_keyword">boolean</strong> allowHeaderRepairs) {
+<a class="jxr_linenumber" name="L640" href="#L640">640</a>         current().allowHeaderRepairs = allowHeaderRepairs;
+<a class="jxr_linenumber" name="L641" href="#L641">641</a>     }
+<a class="jxr_linenumber" name="L642" href="#L642">642</a> 
+<a class="jxr_linenumber" name="L643" href="#L643">643</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L644" href="#L644">644</a> <em class="jxr_javadoccomment">     * Enable/Disable checking of strings values used in tables to ensure that they are within the range specified by</em>
+<a class="jxr_linenumber" name="L645" href="#L645">645</a> <em class="jxr_javadoccomment">     * the FITS standard. The standard only allows the values 0x20 - 0x7E with null bytes allowed in one limited</em>
+<a class="jxr_linenumber" name="L646" href="#L646">646</a> <em class="jxr_javadoccomment">     * context. Disabled by default.</em>
+<a class="jxr_linenumber" name="L647" href="#L647">647</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L648" href="#L648">648</a> <em class="jxr_javadoccomment">     * @param checkAsciiStrings value to set</em>
+<a class="jxr_linenumber" name="L649" href="#L649">649</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L650" href="#L650">650</a> <em class="jxr_javadoccomment">     * @see                     #getCheckAsciiStrings()</em>
+<a class="jxr_linenumber" name="L651" href="#L651">651</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L652" href="#L652">652</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setCheckAsciiStrings(<strong class="jxr_keyword">boolean</strong> checkAsciiStrings) {
+<a class="jxr_linenumber" name="L653" href="#L653">653</a>         current().checkAsciiStrings = checkAsciiStrings;
+<a class="jxr_linenumber" name="L654" href="#L654">654</a>     }
+<a class="jxr_linenumber" name="L655" href="#L655">655</a> 
+<a class="jxr_linenumber" name="L656" href="#L656">656</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L657" href="#L657">657</a> <em class="jxr_javadoccomment">     * There is not a real standard how to write hierarch keys, default we use the one where every key is separated by a</em>
+<a class="jxr_linenumber" name="L658" href="#L658">658</a> <em class="jxr_javadoccomment">     * blank. If you want or need another format assing the formater here.</em>
+<a class="jxr_linenumber" name="L659" href="#L659">659</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L660" href="#L660">660</a> <em class="jxr_javadoccomment">     * @param formatter the hierarch key formatter.</em>
+<a class="jxr_linenumber" name="L661" href="#L661">661</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L662" href="#L662">662</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setHierarchFormater(<a name="IHierarchKeyFormatter" href="../../../nom/tam/fits/header/hierarch/IHierarchKeyFormatter.html#IHierarchKeyFormatter">IHierarchKeyFormatter</a> formatter) {
+<a class="jxr_linenumber" name="L663" href="#L663">663</a>         current().hierarchKeyFormatter = formatter;
+<a class="jxr_linenumber" name="L664" href="#L664">664</a>     }
+<a class="jxr_linenumber" name="L665" href="#L665">665</a> 
+<a class="jxr_linenumber" name="L666" href="#L666">666</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L667" href="#L667">667</a> <em class="jxr_javadoccomment">     * Enable/Disable longstring support.</em>
+<a class="jxr_linenumber" name="L668" href="#L668">668</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L669" href="#L669">669</a> <em class="jxr_javadoccomment">     * @param longStringsEnabled value to set</em>
+<a class="jxr_linenumber" name="L670" href="#L670">670</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L671" href="#L671">671</a> <em class="jxr_javadoccomment">     * @see                      #isLongStringsEnabled()</em>
+<a class="jxr_linenumber" name="L672" href="#L672">672</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L673" href="#L673">673</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setLongStringsEnabled(<strong class="jxr_keyword">boolean</strong> longStringsEnabled) {
+<a class="jxr_linenumber" name="L674" href="#L674">674</a>         current().longStringsEnabled = longStringsEnabled;
+<a class="jxr_linenumber" name="L675" href="#L675">675</a>     }
+<a class="jxr_linenumber" name="L676" href="#L676">676</a> 
+<a class="jxr_linenumber" name="L677" href="#L677">677</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L678" href="#L678">678</a> <em class="jxr_javadoccomment">     * If set to true the blank after the assign in the header cards in not written. The blank is stronly recommendet</em>
+<a class="jxr_linenumber" name="L679" href="#L679">679</a> <em class="jxr_javadoccomment">     * but in some cases it is important that it can be ommitted.</em>
+<a class="jxr_linenumber" name="L680" href="#L680">680</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L681" href="#L681">681</a> <em class="jxr_javadoccomment">     * @param      skipBlankAfterAssign value to set</em>
+<a class="jxr_linenumber" name="L682" href="#L682">682</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L683" href="#L683">683</a> <em class="jxr_javadoccomment">     * @deprecated                      The FITS standard is very explicit that assignment must be "= " (equals followed</em>
+<a class="jxr_linenumber" name="L684" href="#L684">684</a> <em class="jxr_javadoccomment">     *                                      by a blank space). It is also very specific that string values must have</em>
+<a class="jxr_linenumber" name="L685" href="#L685">685</a> <em class="jxr_javadoccomment">     *                                      their opening quote in byte 11 (counted from 1). If we allow skipping the</em>
+<a class="jxr_linenumber" name="L686" href="#L686">686</a> <em class="jxr_javadoccomment">     *                                      space, we will violate both standards in a way that is likely to break</em>
+<a class="jxr_linenumber" name="L687" href="#L687">687</a> <em class="jxr_javadoccomment">     *                                      compatibility with other tools.</em>
+<a class="jxr_linenumber" name="L688" href="#L688">688</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L689" href="#L689">689</a> <em class="jxr_javadoccomment">     * @see                             #isSkipBlankAfterAssign()</em>
+<a class="jxr_linenumber" name="L690" href="#L690">690</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L691" href="#L691">691</a>     @Deprecated
+<a class="jxr_linenumber" name="L692" href="#L692">692</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setSkipBlankAfterAssign(<strong class="jxr_keyword">boolean</strong> skipBlankAfterAssign) {
+<a class="jxr_linenumber" name="L693" href="#L693">693</a>         current().skipBlankAfterAssign = skipBlankAfterAssign;
+<a class="jxr_linenumber" name="L694" href="#L694">694</a>     }
+<a class="jxr_linenumber" name="L695" href="#L695">695</a> 
+<a class="jxr_linenumber" name="L696" href="#L696">696</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_javadoccomment">     * Indicate whether ASCII tables should be used where feasible.</em>
+<a class="jxr_linenumber" name="L698" href="#L698">698</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L699" href="#L699">699</a> <em class="jxr_javadoccomment">     * @param useAsciiTables value to set</em>
+<a class="jxr_linenumber" name="L700" href="#L700">700</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L701" href="#L701">701</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setUseAsciiTables(<strong class="jxr_keyword">boolean</strong> useAsciiTables) {
+<a class="jxr_linenumber" name="L702" href="#L702">702</a>         current().useAsciiTables = useAsciiTables;
+<a class="jxr_linenumber" name="L703" href="#L703">703</a>     }
+<a class="jxr_linenumber" name="L704" href="#L704">704</a> 
+<a class="jxr_linenumber" name="L705" href="#L705">705</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L706" href="#L706">706</a> <em class="jxr_javadoccomment">     * Enable/Disable hierarchical keyword processing.</em>
+<a class="jxr_linenumber" name="L707" href="#L707">707</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L708" href="#L708">708</a> <em class="jxr_javadoccomment">     * @param useHierarch value to set</em>
+<a class="jxr_linenumber" name="L709" href="#L709">709</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L710" href="#L710">710</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setUseHierarch(<strong class="jxr_keyword">boolean</strong> useHierarch) {
+<a class="jxr_linenumber" name="L711" href="#L711">711</a>         current().useHierarch = useHierarch;
+<a class="jxr_linenumber" name="L712" href="#L712">712</a>     }
+<a class="jxr_linenumber" name="L713" href="#L713">713</a> 
+<a class="jxr_linenumber" name="L714" href="#L714">714</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L715" href="#L715">715</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L716" href="#L716">716</a> <em class="jxr_javadoccomment">     * Enable/Disable writing &lt;code&gt;char[]&lt;/code&gt; arrays as &lt;code&gt;short[]&lt;/code&gt; in FITS binary tables (with column type</em>
+<a class="jxr_linenumber" name="L717" href="#L717">717</a> <em class="jxr_javadoccomment">     * 'I'), instead of as standard FITS 1-byte ASCII characters (with column type 'A'). The old default of this library</em>
+<a class="jxr_linenumber" name="L718" href="#L718">718</a> <em class="jxr_javadoccomment">     * has been to use unicode, and that behavior remains the default &amp;mdash; the same as setting the argument to</em>
+<a class="jxr_linenumber" name="L719" href="#L719">719</a> <em class="jxr_javadoccomment">     * &lt;code&gt;true&lt;/code&gt;. On the flipside, setting it to &lt;code&gt;false&lt;/code&gt; provides more convergence between the</em>
+<a class="jxr_linenumber" name="L720" href="#L720">720</a> <em class="jxr_javadoccomment">     * handling of &lt;code&gt;char[]&lt;/code&gt; columns and the nearly identical &lt;code&gt;String&lt;/code&gt; columns, which have already</em>
+<a class="jxr_linenumber" name="L721" href="#L721">721</a> <em class="jxr_javadoccomment">     * been restricted to ASCII before.</em>
+<a class="jxr_linenumber" name="L722" href="#L722">722</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L723" href="#L723">723</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L724" href="#L724">724</a> <em class="jxr_javadoccomment">     * @param value &lt;code&gt;true&lt;/code&gt; to write &lt;code&gt;char[]&lt;/code&gt; arrays as if &lt;code&gt;short[]&lt;/code&gt; with column type</em>
+<a class="jxr_linenumber" name="L725" href="#L725">725</a> <em class="jxr_javadoccomment">     *                  'I' to binary tables (old behaviour, and hence default), or else &lt;code&gt;false&lt;/code&gt; to write</em>
+<a class="jxr_linenumber" name="L726" href="#L726">726</a> <em class="jxr_javadoccomment">     *                  them as &lt;code&gt;byte[]&lt;/code&gt; with column type 'A', the same as for &lt;code&gt;String&lt;/code&gt; (preferred</em>
+<a class="jxr_linenumber" name="L727" href="#L727">727</a> <em class="jxr_javadoccomment">     *                  behaviour)</em>
+<a class="jxr_linenumber" name="L728" href="#L728">728</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L729" href="#L729">729</a> <em class="jxr_javadoccomment">     * @since       1.16</em>
+<a class="jxr_linenumber" name="L730" href="#L730">730</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L731" href="#L731">731</a> <em class="jxr_javadoccomment">     * @see         #isUseUnicodeChars()</em>
+<a class="jxr_linenumber" name="L732" href="#L732">732</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L733" href="#L733">733</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setUseUnicodeChars(<strong class="jxr_keyword">boolean</strong> value) {
+<a class="jxr_linenumber" name="L734" href="#L734">734</a>         current().useUnicodeChars = value;
+<a class="jxr_linenumber" name="L735" href="#L735">735</a>     }
+<a class="jxr_linenumber" name="L736" href="#L736">736</a> 
+<a class="jxr_linenumber" name="L737" href="#L737">737</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L738" href="#L738">738</a> <em class="jxr_javadoccomment">     * Returns the common thread pool that we use for processing FITS files.</em>
+<a class="jxr_linenumber" name="L739" href="#L739">739</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L740" href="#L740">740</a> <em class="jxr_javadoccomment">     * @return the thread pool for processing FITS files.</em>
+<a class="jxr_linenumber" name="L741" href="#L741">741</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L742" href="#L742">742</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> ExecutorService threadPool() {
+<a class="jxr_linenumber" name="L743" href="#L743">743</a>         <strong class="jxr_keyword">if</strong> (threadPool == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L744" href="#L744">744</a>             initializeThreadPool();
+<a class="jxr_linenumber" name="L745" href="#L745">745</a>         }
+<a class="jxr_linenumber" name="L746" href="#L746">746</a>         <strong class="jxr_keyword">return</strong> threadPool;
+<a class="jxr_linenumber" name="L747" href="#L747">747</a>     }
+<a class="jxr_linenumber" name="L748" href="#L748">748</a> 
+<a class="jxr_linenumber" name="L749" href="#L749">749</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L750" href="#L750">750</a> <em class="jxr_javadoccomment">     * Use thread local settings for the current thread instead of the global ones if the parameter is set to true, else</em>
+<a class="jxr_linenumber" name="L751" href="#L751">751</a> <em class="jxr_javadoccomment">     * use the shared global settings.</em>
+<a class="jxr_linenumber" name="L752" href="#L752">752</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L753" href="#L753">753</a> <em class="jxr_javadoccomment">     * @param useThreadSettings true if the thread should not share the global settings.</em>
+<a class="jxr_linenumber" name="L754" href="#L754">754</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L755" href="#L755">755</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> useThreadLocalSettings(<strong class="jxr_keyword">boolean</strong> useThreadSettings) {
+<a class="jxr_linenumber" name="L756" href="#L756">756</a>         <strong class="jxr_keyword">if</strong> (useThreadSettings) {
+<a class="jxr_linenumber" name="L757" href="#L757">757</a>             LOCAL_SETTINGS.set(GLOBAL_SETTINGS.copy());
+<a class="jxr_linenumber" name="L758" href="#L758">758</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L759" href="#L759">759</a>             LOCAL_SETTINGS.remove();
+<a class="jxr_linenumber" name="L760" href="#L760">760</a>         }
+<a class="jxr_linenumber" name="L761" href="#L761">761</a>     }
+<a class="jxr_linenumber" name="L762" href="#L762">762</a> 
+<a class="jxr_linenumber" name="L763" href="#L763">763</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> initializeThreadPool() {
+<a class="jxr_linenumber" name="L764" href="#L764">764</a>         <strong class="jxr_keyword">synchronized</strong> (GLOBAL_SETTINGS) {
+<a class="jxr_linenumber" name="L765" href="#L765">765</a>             <strong class="jxr_keyword">if</strong> (threadPool == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L766" href="#L766">766</a>                 threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L767" href="#L767">767</a>                         <strong class="jxr_keyword">new</strong> ThreadFactory() {
+<a class="jxr_linenumber" name="L768" href="#L768">768</a>                             <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> counter = 1;
+<a class="jxr_linenumber" name="L769" href="#L769">769</a> 
+<a class="jxr_linenumber" name="L770" href="#L770">770</a>                             @Override
+<a class="jxr_linenumber" name="L771" href="#L771">771</a>                             <strong class="jxr_keyword">public</strong> Thread newThread(Runnable r) {
+<a class="jxr_linenumber" name="L772" href="#L772">772</a>                                 Thread thread = <strong class="jxr_keyword">new</strong> Thread(r, <span class="jxr_string">"nom-tam-fits worker "</span> + counter++);
+<a class="jxr_linenumber" name="L773" href="#L773">773</a>                                 thread.setDaemon(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L774" href="#L774">774</a>                                 <strong class="jxr_keyword">return</strong> thread;
+<a class="jxr_linenumber" name="L775" href="#L775">775</a>                             }
+<a class="jxr_linenumber" name="L776" href="#L776">776</a>                         });
+<a class="jxr_linenumber" name="L777" href="#L777">777</a>             }
+<a class="jxr_linenumber" name="L778" href="#L778">778</a>         }
+<a class="jxr_linenumber" name="L779" href="#L779">779</a>     }
+<a class="jxr_linenumber" name="L780" href="#L780">780</a> 
+<a class="jxr_linenumber" name="L781" href="#L781">781</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L782" href="#L782">782</a> <em class="jxr_javadoccomment">     * Returns the current settings that guide how we read or produce FITS files.</em>
+<a class="jxr_linenumber" name="L783" href="#L783">783</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L784" href="#L784">784</a> <em class="jxr_javadoccomment">     * @return the current active settings for generating or interpreting FITS files.</em>
+<a class="jxr_linenumber" name="L785" href="#L785">785</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L786" href="#L786">786</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> FitsSettings current() {
+<a class="jxr_linenumber" name="L787" href="#L787">787</a>         FitsSettings settings = LOCAL_SETTINGS.get();
+<a class="jxr_linenumber" name="L788" href="#L788">788</a>         <strong class="jxr_keyword">if</strong> (settings == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L789" href="#L789">789</a>             <strong class="jxr_keyword">return</strong> GLOBAL_SETTINGS;
+<a class="jxr_linenumber" name="L790" href="#L790">790</a>         }
+<a class="jxr_linenumber" name="L791" href="#L791">791</a>         <strong class="jxr_keyword">return</strong> settings;
+<a class="jxr_linenumber" name="L792" href="#L792">792</a>     }
+<a class="jxr_linenumber" name="L793" href="#L793">793</a> 
+<a class="jxr_linenumber" name="L794" href="#L794">794</a>     <strong class="jxr_keyword">private</strong> <a name="FitsFactory" href="../../../nom/tam/fits/FitsFactory.html#FitsFactory">FitsFactory</a>() {
+<a class="jxr_linenumber" name="L795" href="#L795">795</a>     }
+<a class="jxr_linenumber" name="L796" href="#L796">796</a> }
 </pre>
 <hr/>
-<div id="footer">© 1996–2025 nom-tam-fits</div>
+<div id="footer">© 1996–2026 nom-tam-fits</div>
 </body>
 </html>

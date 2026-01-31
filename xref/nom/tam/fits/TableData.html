@@ -328,11 +328,12 @@
 <a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">     *                               tables in a new HDU after column deletions, and then edit the new header as</em>
 <a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">     *                               necessary to incorporate custom entries. May be removed from the API in the future.</em>
 <a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L323" href="#L323">323</a>     <strong class="jxr_keyword">void</strong> updateAfterDelete(<strong class="jxr_keyword">int</strong> oldNcol, <a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> hdr) <strong class="jxr_keyword">throws</strong> FitsException;
-<a class="jxr_linenumber" name="L324" href="#L324">324</a> 
-<a class="jxr_linenumber" name="L325" href="#L325">325</a> }
+<a class="jxr_linenumber" name="L323" href="#L323">323</a>     @Deprecated
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>     <strong class="jxr_keyword">void</strong> updateAfterDelete(<strong class="jxr_keyword">int</strong> oldNcol, <a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> hdr) <strong class="jxr_keyword">throws</strong> FitsException;
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> 
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> }
 </pre>
 <hr/>
-<div id="footer">© 1996–2025 nom-tam-fits</div>
+<div id="footer">© 1996–2026 nom-tam-fits</div>
 </body>
 </html>

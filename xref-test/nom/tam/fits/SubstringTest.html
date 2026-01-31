@@ -8,8 +8,8 @@
 <div id="overview"><a href="../../../../testapidocs/nom/tam/fits/SubstringTest.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> nom.tam.fits;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.Assert;
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Assertions;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment">/*-</em>
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * #%L</em>
@@ -53,8 +53,8 @@
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>          Header h = <strong class="jxr_keyword">new</strong> Header();
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>          h.addValue(Standard.TFORMn.n(1), <span class="jxr_string">"10A2"</span>);
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>          ColumnDesc c = BinaryTable.getDescriptor(h, 0);
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>          Assert.assertEquals(2, c.getElementWidth());
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>          Assert.assertEquals(5, c.getElementCount());
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>          Assertions.assertEquals(2, c.getElementWidth());
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>          Assertions.assertEquals(5, c.getElementCount());
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>      }
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>      @Test
@@ -62,8 +62,8 @@
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>          Header h = <strong class="jxr_keyword">new</strong> Header();
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>          h.addValue(Standard.TFORMn.n(1), <span class="jxr_string">"10A:SSTR"</span>);
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>          ColumnDesc c = BinaryTable.getDescriptor(h, 0);
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          Assert.assertEquals(10, c.getElementWidth());
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          Assert.assertEquals(1, c.getElementCount());
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>          Assertions.assertEquals(10, c.getElementWidth());
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          Assertions.assertEquals(1, c.getElementCount());
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>      }
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>      @Test
@@ -71,8 +71,8 @@
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>          Header h = <strong class="jxr_keyword">new</strong> Header();
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>          h.addValue(Standard.TFORMn.n(1), <span class="jxr_string">"10A:SSTRz"</span>);
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>          ColumnDesc c = BinaryTable.getDescriptor(h, 0);
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          Assert.assertEquals(10, c.getElementWidth());
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          Assert.assertEquals(1, c.getElementCount());
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          Assertions.assertEquals(10, c.getElementWidth());
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          Assertions.assertEquals(1, c.getElementCount());
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>      }
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>      @Test
@@ -80,9 +80,9 @@
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>          Header h = <strong class="jxr_keyword">new</strong> Header();
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>          h.addValue(Standard.TFORMn.n(1), <span class="jxr_string">"10A:SSTR2/032"</span>);
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>          ColumnDesc c = BinaryTable.getDescriptor(h, 0);
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          Assert.assertEquals(2, c.getElementWidth());
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          Assert.assertEquals(5, c.getElementCount());
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          Assert.assertEquals((byte) 32, c.getStringDelimiter());
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>          Assertions.assertEquals(2, c.getElementWidth());
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          Assertions.assertEquals(5, c.getElementCount());
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          Assertions.assertEquals((byte) 32, c.getStringDelimiter());
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>      }
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>  
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>      @Test
@@ -90,9 +90,9 @@
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>          Header h = <strong class="jxr_keyword">new</strong> Header();
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>          h.addValue(Standard.TFORMn.n(1), <span class="jxr_string">"10A:SSTR2/z"</span>);
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>          ColumnDesc c = BinaryTable.getDescriptor(h, 0);
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>          Assert.assertEquals(2, c.getElementWidth());
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>          Assert.assertEquals(5, c.getElementCount());
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>          Assert.assertEquals((byte) 0, c.getStringDelimiter());
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>          Assertions.assertEquals(2, c.getElementWidth());
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>          Assertions.assertEquals(5, c.getElementCount());
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>          Assertions.assertEquals((byte) 0, c.getStringDelimiter());
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>      }
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>      @SuppressWarnings(<span class="jxr_string">"deprecation"</span>)
@@ -104,13 +104,13 @@
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>          tab.addRow(<strong class="jxr_keyword">new</strong> Object[] {<strong class="jxr_keyword">new</strong> String[] {<span class="jxr_string">"1234567890"</span>}});
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>          ColumnDesc c = tab.getDescriptor(0);
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>          Assert.assertEquals((byte) 32, c.getStringDelimiter());
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>         Assert.assertEquals(11, c.getStringLength());
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>          Assertions.assertEquals((byte) 32, c.getStringDelimiter());
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>         Assertions.assertEquals(11, c.getStringLength());
 <a class="jxr_linenumber" name="L101" href="#L101">101</a> 
 <a class="jxr_linenumber" name="L102" href="#L102">102</a>         Header h = <strong class="jxr_keyword">new</strong> Header();
 <a class="jxr_linenumber" name="L103" href="#L103">103</a>         tab.fillHeader(h);
 <a class="jxr_linenumber" name="L104" href="#L104">104</a> 
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>         Assert.assertEquals(<span class="jxr_string">"1PA:SSTR11/032"</span>, h.getStringValue(Standard.TFORMn.n(1)));
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>         Assertions.assertEquals(<span class="jxr_string">"1PA:SSTR11/032"</span>, h.getStringValue(Standard.TFORMn.n(1)));
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>     }
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> 
 <a class="jxr_linenumber" name="L108" href="#L108">108</a>     @Test
@@ -119,31 +119,31 @@
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>         h.addValue(Standard.TFORMn.n(1), <span class="jxr_string">"30A:SSTR5"</span>);
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>         h.addValue(Standard.TDIMn.n(1), <span class="jxr_string">"(10,3)"</span>);
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>         ColumnDesc c = BinaryTable.getDescriptor(h, 0);
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>         Assert.assertEquals(10, c.getElementWidth());
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>         Assert.assertEquals(3, c.getElementCount());
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>         Assert.assertEquals((byte) 0, c.getStringDelimiter());
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>         Assertions.assertEquals(10, c.getElementWidth());
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>         Assertions.assertEquals(3, c.getElementCount());
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>         Assertions.assertEquals((byte) 0, c.getStringDelimiter());
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>     }
 <a class="jxr_linenumber" name="L118" href="#L118">118</a> 
 <a class="jxr_linenumber" name="L119" href="#L119">119</a>     @Test
 <a class="jxr_linenumber" name="L120" href="#L120">120</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSringDelimiter() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L121" href="#L121">121</a>         ColumnDesc c = ColumnDesc.createForDelimitedStringArrays((byte) 32);
-<a class="jxr_linenumber" name="L122" href="#L122">122</a>         Assert.assertEquals((byte) 32, c.getStringDelimiter());
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>         Assertions.assertEquals((byte) 32, c.getStringDelimiter());
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>     }
 <a class="jxr_linenumber" name="L124" href="#L124">124</a> 
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>     @Test
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testOutOfRangeDelimiter() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>         ColumnDesc c = ColumnDesc.createForDelimitedStringArrays((byte) 31);
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>         Assert.assertEquals((byte) 31, c.getStringDelimiter());
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>         Assertions.assertEquals((byte) 31, c.getStringDelimiter());
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>     }
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> 
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>     @Test
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testOutOfRangeDelimiter2() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>         ColumnDesc c = ColumnDesc.createForDelimitedStringArrays((byte) 128);
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>         Assert.assertEquals((byte) 128, c.getStringDelimiter());
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>         Assertions.assertEquals((byte) 128, c.getStringDelimiter());
 <a class="jxr_linenumber" name="L135" href="#L135">135</a>     }
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> }
 </pre>
 <hr/>
-<div id="footer">© 1996–2025 nom-tam-fits</div>
+<div id="footer">© 1996–2026 nom-tam-fits</div>
 </body>
 </html>

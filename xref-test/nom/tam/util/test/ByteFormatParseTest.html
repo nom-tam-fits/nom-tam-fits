@@ -39,514 +39,510 @@
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_comment"> * #L%</em>
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertArrayEquals;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertEquals;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> java.util.Arrays;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> java.util.Arrays;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Assertions;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> org.junit.Assert;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.AsciiFuncs;
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment">/** This class tests the ByteFormatter and ByteParser classes.</em>
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ByteFormatter;
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ByteParser;
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.FormatException;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.AsciiFuncs;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">/** This class tests the ByteFormatter and ByteParser classes.</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ByteFormatter;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ByteParser;
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.FormatException;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  @SuppressWarnings({<span class="jxr_string">"javadoc"</span>, <span class="jxr_string">"deprecation"</span>})
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> ByteFormatParseTest {
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="ByteFormatParseTest" href="../../../../nom/tam/util/test/ByteFormatParseTest.html#ByteFormatParseTest">ByteFormatParseTest</a> {
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      byte[] buffer = <strong class="jxr_keyword">new</strong> byte[100000];
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>      byte[] buffer = <strong class="jxr_keyword">new</strong> byte[100000];
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>      ByteFormatter bf = <strong class="jxr_keyword">new</strong> ByteFormatter();
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>      ByteFormatter bf = <strong class="jxr_keyword">new</strong> ByteFormatter();
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      ByteParser bp = <strong class="jxr_keyword">new</strong> ByteParser(buffer);
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>      ByteParser bp = <strong class="jxr_keyword">new</strong> ByteParser(buffer);
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>      <strong class="jxr_keyword">int</strong> offset = 0;
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">int</strong> offset = 0;
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">int</strong> cnt = 0;
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">int</strong> cnt = 0;
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>      @Test
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testBoolean() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          <strong class="jxr_keyword">boolean</strong>[] btst = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">boolean</strong>[100];
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; btst.length; i++) {
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>              btst[i] = Math.random() &gt; 0.5;
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          }
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          offset = 0;
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">boolean</strong> element : btst) {
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>              <strong class="jxr_keyword">if</strong> (offset == 0) {
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>                  offset = bf.format(element, buffer);
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>              } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>                  offset = bf.format(element, buffer, offset, 1);
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>              }
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>              offset = bf.format(<span class="jxr_string">" "</span>, buffer, offset, 1);
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          }
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          bp.setOffset(0);
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; btst.length; i++) {
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>              assertEquals(<span class="jxr_string">"Boolean:"</span> + i, btst[i], bp.getBoolean());
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          }
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>      }
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>  
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>      @Test(expected = FormatException.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFailingBoolean() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>          <strong class="jxr_keyword">new</strong> ByteParser(<strong class="jxr_keyword">new</strong> byte[0]).getBoolean();
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>      }
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>      @Test
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testToShortDouble() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>          byte[] input = {'5', '0'};
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>          ByteParser parser = <strong class="jxr_keyword">new</strong> ByteParser(input);
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">double</strong> value = parser.getDouble(2);
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>          Assert.assertEquals(50.0, value, 0.00000000001d);
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>      }
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>      @Test
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDouble() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>  
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 10; i++) {
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>             buffer[i] = (byte) ' ';
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>         }
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>         bp.setOffset(0);
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>         assertEquals(<span class="jxr_string">"DoubBlank"</span>, 0., bp.getDouble(10), 0.);
-<a class="jxr_linenumber" name="L105" href="#L105">105</a> 
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>         <strong class="jxr_keyword">double</strong>[] dbl = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[100];
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 6; i &lt; dbl.length; i++) {
-<a class="jxr_linenumber" name="L108" href="#L108">108</a>             dbl[i] = 2 * (Math.random() - 0.5) * Math.pow(10, 60 * (Math.random() - 0.5));
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>         }
-<a class="jxr_linenumber" name="L110" href="#L110">110</a> 
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>         dbl[0] = Double.MAX_VALUE;
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>         dbl[1] = Double.MIN_VALUE;
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>         dbl[2] = 0;
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>         dbl[3] = Double.NaN;
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>         dbl[4] = Double.POSITIVE_INFINITY;
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>         dbl[5] = Double.NEGATIVE_INFINITY;
-<a class="jxr_linenumber" name="L117" href="#L117">117</a> 
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>         offset = 0;
-<a class="jxr_linenumber" name="L119" href="#L119">119</a>         cnt = 0;
-<a class="jxr_linenumber" name="L120" href="#L120">120</a>         <strong class="jxr_keyword">while</strong> (cnt &lt; dbl.length) {
-<a class="jxr_linenumber" name="L121" href="#L121">121</a>             offset = bf.format(dbl[cnt], buffer, offset, 25);
-<a class="jxr_linenumber" name="L122" href="#L122">122</a>             cnt++;
-<a class="jxr_linenumber" name="L123" href="#L123">123</a>             <strong class="jxr_keyword">if</strong> (cnt % 4 == 0) {
-<a class="jxr_linenumber" name="L124" href="#L124">124</a>                 offset = bf.format(<span class="jxr_string">"\n"</span>, buffer, offset, 1);
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>                 offset = bf.format(<span class="jxr_string">" "</span>, buffer, offset, 1);
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>             }
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>         }
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>         bf.format(99.9, bp.getBuffer(), offset, 25);
-<a class="jxr_linenumber" name="L130" href="#L130">130</a> 
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>         bp.setOffset(0);
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; dbl.length; i++) {
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>      @Test
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testBoolean() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          <strong class="jxr_keyword">boolean</strong>[] btst = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">boolean</strong>[100];
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; btst.length; i++) {
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>              btst[i] = Math.random() &gt; 0.5;
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          }
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          offset = 0;
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">boolean</strong> element : btst) {
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>              <strong class="jxr_keyword">if</strong> (offset == 0) {
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>                  offset = bf.format(element, buffer);
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>              } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>                  offset = bf.format(element, buffer, offset, 1);
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>              }
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>              offset = bf.format(<span class="jxr_string">" "</span>, buffer, offset, 1);
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>          }
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          bp.setOffset(0);
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; btst.length; i++) {
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>              Assertions.assertEquals(btst[i], bp.getBoolean(), <span class="jxr_string">"Boolean:"</span> + i);
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          }
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>      }
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>      @Test
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFailingBoolean() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>          Assertions.assertThrows(FormatException.<strong class="jxr_keyword">class</strong>, () -&gt; <strong class="jxr_keyword">new</strong> ByteParser(<strong class="jxr_keyword">new</strong> byte[0]).getBoolean());
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>      }
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>      @Test
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testToShortDouble() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>          byte[] input = {'5', '0'};
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          ByteParser parser = <strong class="jxr_keyword">new</strong> ByteParser(input);
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>          <strong class="jxr_keyword">double</strong> value = parser.getDouble(2);
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          Assertions.assertEquals(50.0, value, 0.00000000001d);
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>      }
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>      @Test
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDouble() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 10; i++) {
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>              buffer[i] = (byte) ' ';
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>         }
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>         bp.setOffset(0);
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>         Assertions.assertEquals(0., bp.getDouble(10), 0.);
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> 
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>         <strong class="jxr_keyword">double</strong>[] dbl = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[100];
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 6; i &lt; dbl.length; i++) {
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>             dbl[i] = 2 * (Math.random() - 0.5) * Math.pow(10, 60 * (Math.random() - 0.5));
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>         }
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> 
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>         dbl[0] = Double.MAX_VALUE;
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>         dbl[1] = Double.MIN_VALUE;
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>         dbl[2] = 0;
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>         dbl[3] = Double.NaN;
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>         dbl[4] = Double.POSITIVE_INFINITY;
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>         dbl[5] = Double.NEGATIVE_INFINITY;
+<a class="jxr_linenumber" name="L115" href="#L115">115</a> 
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>         offset = 0;
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>         cnt = 0;
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>         <strong class="jxr_keyword">while</strong> (cnt &lt; dbl.length) {
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>             offset = bf.format(dbl[cnt], buffer, offset, 25);
+<a class="jxr_linenumber" name="L120" href="#L120">120</a>             cnt++;
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>             <strong class="jxr_keyword">if</strong> (cnt % 4 == 0) {
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>                 offset = bf.format(<span class="jxr_string">"\n"</span>, buffer, offset, 1);
+<a class="jxr_linenumber" name="L123" href="#L123">123</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>                 offset = bf.format(<span class="jxr_string">" "</span>, buffer, offset, 1);
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>             }
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>         }
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>         bf.format(99.9, bp.getBuffer(), offset, 25);
+<a class="jxr_linenumber" name="L128" href="#L128">128</a> 
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>         bp.setOffset(0);
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; dbl.length; i++) {
+<a class="jxr_linenumber" name="L131" href="#L131">131</a> 
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>             <strong class="jxr_keyword">double</strong> chk = bp.getDouble(25);
 <a class="jxr_linenumber" name="L133" href="#L133">133</a> 
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>             <strong class="jxr_keyword">double</strong> chk = bp.getDouble(25);
-<a class="jxr_linenumber" name="L135" href="#L135">135</a> 
-<a class="jxr_linenumber" name="L136" href="#L136">136</a>             <strong class="jxr_keyword">double</strong> dx = Math.abs(chk - dbl[i]);
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>             <strong class="jxr_keyword">if</strong> (dbl[i] != 0) {
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>                 dx = dx / Math.abs(dbl[i]);
-<a class="jxr_linenumber" name="L139" href="#L139">139</a>             }
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>             <strong class="jxr_keyword">if</strong> (Double.isNaN(dbl[i])) {
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>                 assertEquals(<span class="jxr_string">"Double check:"</span> + i, <strong class="jxr_keyword">true</strong>, Double.isNaN(chk));
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (Double.isInfinite(dbl[i])) {
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>                 assertEquals(<span class="jxr_string">"Double check:"</span> + i, dbl[i], chk, 0);
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>                 assertEquals(<span class="jxr_string">"Double check:"</span> + i, 0., dx, 1.e-14);
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>             }
-<a class="jxr_linenumber" name="L147" href="#L147">147</a> 
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>             <strong class="jxr_keyword">if</strong> ((i + 1) % 4 == 0) {
-<a class="jxr_linenumber" name="L149" href="#L149">149</a>                 bp.skip(1);
-<a class="jxr_linenumber" name="L150" href="#L150">150</a>             }
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>         }
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>         assertEquals(99.9, bp.getDouble(), 1.e-14);
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>     }
-<a class="jxr_linenumber" name="L154" href="#L154">154</a> 
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>     @Test
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFloat() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L157" href="#L157">157</a> 
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 10; i++) {
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>             buffer[i] = (byte) ' ';
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>         }
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>         bp.setOffset(0);
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>         assertEquals(<span class="jxr_string">"FloatBlank"</span>, 0.f, bp.getFloat(10), 0.);
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> 
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>         <strong class="jxr_keyword">float</strong>[] flt = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[100];
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 6; i &lt; flt.length; i++) {
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>             flt[i] = (<strong class="jxr_keyword">float</strong>) (2 * (Math.random() - 0.5) * Math.pow(10, 60 * (Math.random() - 0.5)));
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>         }
-<a class="jxr_linenumber" name="L168" href="#L168">168</a> 
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>         flt[0] = Float.MAX_VALUE;
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>         flt[1] = Float.MIN_VALUE;
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>         flt[2] = 0;
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>         flt[3] = Float.NaN;
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>         flt[4] = Float.POSITIVE_INFINITY;
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>         flt[5] = Float.NEGATIVE_INFINITY;
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> 
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>         offset = 0;
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>         cnt = 0;
-<a class="jxr_linenumber" name="L178" href="#L178">178</a> 
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>         <strong class="jxr_keyword">while</strong> (cnt &lt; flt.length) {
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>             offset = bf.format(flt[cnt], buffer, offset, 24);
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>             cnt++;
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>             <strong class="jxr_keyword">if</strong> (cnt % 4 == 0) {
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>                 offset = bf.format(<span class="jxr_string">"\n"</span>, buffer, offset, 1);
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>                 offset = bf.format(<span class="jxr_string">" "</span>, buffer, offset, 1);
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>             }
-<a class="jxr_linenumber" name="L187" href="#L187">187</a>         }
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> 
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>         bf.format(99.9f, bp.getBuffer(), offset, 24);
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>         bp.setOffset(0);
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>             <strong class="jxr_keyword">double</strong> dx = Math.abs(chk - dbl[i]);
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>             <strong class="jxr_keyword">if</strong> (dbl[i] != 0) {
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>                 dx = dx / Math.abs(dbl[i]);
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>             }
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>             <strong class="jxr_keyword">if</strong> (Double.isNaN(dbl[i])) {
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>                 Assertions.assertTrue(Double.isNaN(chk), <span class="jxr_string">"Double check:"</span> + i);
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (Double.isInfinite(dbl[i])) {
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>                 Assertions.assertEquals(dbl[i], chk, 0, <span class="jxr_string">"Double check:"</span> + i);
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>                 Assertions.assertEquals(0., dx, 1.e-14, <span class="jxr_string">"Double check:"</span> + i);
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>             }
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> 
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>             <strong class="jxr_keyword">if</strong> ((i + 1) % 4 == 0) {
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>                 bp.skip(1);
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>             }
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>         }
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>         Assertions.assertEquals(99.9, bp.getDouble(), 1.e-14);
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>     }
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> 
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>     @Test
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFloat() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> 
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 10; i++) {
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>             buffer[i] = (byte) ' ';
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>         }
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>         bp.setOffset(0);
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>         Assertions.assertEquals(0.f, bp.getFloat(10), 0.);
+<a class="jxr_linenumber" name="L161" href="#L161">161</a> 
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>         <strong class="jxr_keyword">float</strong>[] flt = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[100];
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 6; i &lt; flt.length; i++) {
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>             flt[i] = (<strong class="jxr_keyword">float</strong>) (2 * (Math.random() - 0.5) * Math.pow(10, 60 * (Math.random() - 0.5)));
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>         }
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> 
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>         flt[0] = Float.MAX_VALUE;
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>         flt[1] = Float.MIN_VALUE;
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>         flt[2] = 0;
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>         flt[3] = Float.NaN;
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>         flt[4] = Float.POSITIVE_INFINITY;
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>         flt[5] = Float.NEGATIVE_INFINITY;
+<a class="jxr_linenumber" name="L173" href="#L173">173</a> 
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>         offset = 0;
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>         cnt = 0;
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> 
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>         <strong class="jxr_keyword">while</strong> (cnt &lt; flt.length) {
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>             offset = bf.format(flt[cnt], buffer, offset, 24);
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>             cnt++;
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>             <strong class="jxr_keyword">if</strong> (cnt % 4 == 0) {
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>                 offset = bf.format(<span class="jxr_string">"\n"</span>, buffer, offset, 1);
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>                 offset = bf.format(<span class="jxr_string">" "</span>, buffer, offset, 1);
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>             }
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>         }
+<a class="jxr_linenumber" name="L186" href="#L186">186</a> 
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>         bf.format(99.9f, bp.getBuffer(), offset, 24);
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>         bp.setOffset(0);
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> 
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; flt.length; i++) {
 <a class="jxr_linenumber" name="L191" href="#L191">191</a> 
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; flt.length; i++) {
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>             <strong class="jxr_keyword">float</strong> chk = bp.getFloat(24);
 <a class="jxr_linenumber" name="L193" href="#L193">193</a> 
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>             <strong class="jxr_keyword">float</strong> chk = bp.getFloat(24);
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> 
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>             <strong class="jxr_keyword">float</strong> dx = Math.abs(chk - flt[i]);
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>             <strong class="jxr_keyword">if</strong> (flt[i] != 0) {
-<a class="jxr_linenumber" name="L198" href="#L198">198</a>                 dx = dx / Math.abs(flt[i]);
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>             }
-<a class="jxr_linenumber" name="L200" href="#L200">200</a>             <strong class="jxr_keyword">if</strong> (Float.isNaN(flt[i])) {
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>                 assertEquals(<span class="jxr_string">"Float check:"</span> + i, <strong class="jxr_keyword">true</strong>, Float.isNaN(chk));
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (Float.isInfinite(flt[i])) {
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>                 assertEquals(<span class="jxr_string">"Float check:"</span> + i, flt[i], chk, 0);
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>                 assertEquals(<span class="jxr_string">"Float check:"</span> + i, 0., dx, 1.e-6);
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>             }
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>             <strong class="jxr_keyword">if</strong> ((i + 1) % 4 == 0) {
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>                 bp.skip(1);
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>             }
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>         }
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>         assertEquals(99.9f, bp.getFloat(), 1.e-14);
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> 
-<a class="jxr_linenumber" name="L213" href="#L213">213</a>         byte[] array = <strong class="jxr_keyword">new</strong> byte[4];
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>         bf.format(-9.8010921E9f, array);
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>         assertEquals(<span class="jxr_string">"-E10"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L216" href="#L216">216</a>     }
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> 
-<a class="jxr_linenumber" name="L218" href="#L218">218</a>     @Test
-<a class="jxr_linenumber" name="L219" href="#L219">219</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testInt() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> 
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 10; i++) {
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>             buffer[i] = (byte) ' ';
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>         }
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>         <em class="jxr_comment">// this should change nothing</em>
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>         bp.setBuffer(buffer);
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>         bp.setOffset(0);
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>         assertEquals(<span class="jxr_string">"IntBlank"</span>, 0, bp.getInt(10));
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>             <strong class="jxr_keyword">float</strong> dx = Math.abs(chk - flt[i]);
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>             <strong class="jxr_keyword">if</strong> (flt[i] != 0) {
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>                 dx = dx / Math.abs(flt[i]);
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>             }
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>             <strong class="jxr_keyword">if</strong> (Float.isNaN(flt[i])) {
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>                 Assertions.assertTrue(Float.isNaN(chk), <span class="jxr_string">"Float check:"</span> + i);
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (Float.isInfinite(flt[i])) {
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>                 Assertions.assertEquals(flt[i], chk, 0, <span class="jxr_string">"Float check:"</span> + i);
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>                 Assertions.assertEquals(0., dx, 1.e-6, <span class="jxr_string">"Float check:"</span> + i);
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>             }
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>             <strong class="jxr_keyword">if</strong> ((i + 1) % 4 == 0) {
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>                 bp.skip(1);
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>             }
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>         }
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>         Assertions.assertEquals(99.9f, bp.getFloat(), 1.e-14);
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> 
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>         byte[] array = <strong class="jxr_keyword">new</strong> byte[4];
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>         bf.format(-9.8010921E9f, array);
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>         Assertions.assertEquals(<span class="jxr_string">"-E10"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>     }
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> 
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>     @Test
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testInt() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> 
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 10; i++) {
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>             buffer[i] = (byte) ' ';
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>         }
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>         <em class="jxr_comment">// this should change nothing</em>
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>         bp.setBuffer(buffer);
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>         bp.setOffset(0);
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>         Assertions.assertEquals(0, bp.getInt(10));
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> 
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>         <strong class="jxr_keyword">int</strong>[] tint = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[100];
 <a class="jxr_linenumber" name="L228" href="#L228">228</a> 
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>         <strong class="jxr_keyword">int</strong>[] tint = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[100];
-<a class="jxr_linenumber" name="L230" href="#L230">230</a> 
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>         tint[0] = Integer.MIN_VALUE;
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>         tint[1] = Integer.MAX_VALUE;
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>         tint[2] = 0;
-<a class="jxr_linenumber" name="L234" href="#L234">234</a> 
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; tint.length; i++) {
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>             tint[i] = (<strong class="jxr_keyword">int</strong>) (Integer.MAX_VALUE * (2 * (Math.random() - .5)));
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>         }
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> 
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>         <em class="jxr_comment">// Write 100 numbers</em>
-<a class="jxr_linenumber" name="L240" href="#L240">240</a>         <strong class="jxr_keyword">int</strong> colSize = 12;
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>         <strong class="jxr_keyword">while</strong> (cnt &lt; tint.length) {
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>             offset = bf.format(tint[cnt], buffer, offset, colSize);
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>             cnt++;
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>             <strong class="jxr_keyword">if</strong> (cnt % 8 == 0) {
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>                 offset = bf.format(<span class="jxr_string">"\n"</span>, buffer, offset, 1);
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>                 offset = bf.format(<span class="jxr_string">" "</span>, buffer, offset, 1);
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>             }
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>         }
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> 
-<a class="jxr_linenumber" name="L251" href="#L251">251</a>         bf.format(Integer.MIN_VALUE, bp.getBuffer(), offset, 12);
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>         <em class="jxr_comment">// Now see if we can get them back</em>
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>         bp.setOffset(0);
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; tint.length; i++) {
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>         tint[0] = Integer.MIN_VALUE;
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>         tint[1] = Integer.MAX_VALUE;
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>         tint[2] = 0;
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> 
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; tint.length; i++) {
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>             tint[i] = (<strong class="jxr_keyword">int</strong>) (Integer.MAX_VALUE * (2 * (Math.random() - .5)));
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>         }
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> 
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>         <em class="jxr_comment">// Write 100 numbers</em>
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>         <strong class="jxr_keyword">int</strong> colSize = 12;
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>         <strong class="jxr_keyword">while</strong> (cnt &lt; tint.length) {
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>             offset = bf.format(tint[cnt], buffer, offset, colSize);
+<a class="jxr_linenumber" name="L241" href="#L241">241</a>             cnt++;
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>             <strong class="jxr_keyword">if</strong> (cnt % 8 == 0) {
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>                 offset = bf.format(<span class="jxr_string">"\n"</span>, buffer, offset, 1);
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>                 offset = bf.format(<span class="jxr_string">" "</span>, buffer, offset, 1);
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>             }
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>         }
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> 
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>         bf.format(Integer.MIN_VALUE, bp.getBuffer(), offset, 12);
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>         <em class="jxr_comment">// Now see if we can get them back</em>
+<a class="jxr_linenumber" name="L251" href="#L251">251</a>         bp.setOffset(0);
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; tint.length; i++) {
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> 
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>             <strong class="jxr_keyword">int</strong> chk = bp.getInt(colSize);
 <a class="jxr_linenumber" name="L255" href="#L255">255</a> 
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>             <strong class="jxr_keyword">int</strong> chk = bp.getInt(colSize);
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> 
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>             assertEquals(<span class="jxr_string">"IntegersRA"</span>, chk, tint[i]);
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>             <strong class="jxr_keyword">if</strong> ((i + 1) % 8 == 0) {
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>                 bp.skip(1);
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>             }
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>         }
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>             Assertions.assertEquals(chk, tint[i]);
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>             <strong class="jxr_keyword">if</strong> ((i + 1) % 8 == 0) {
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>                 bp.skip(1);
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>             }
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>         }
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> 
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>         Assertions.assertEquals(Integer.MIN_VALUE, bp.getInt());
 <a class="jxr_linenumber" name="L263" href="#L263">263</a> 
-<a class="jxr_linenumber" name="L264" href="#L264">264</a>         assertEquals(Integer.MIN_VALUE, bp.getInt());
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> 
-<a class="jxr_linenumber" name="L266" href="#L266">266</a>         offset = 0;
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>         colSize = 12;
-<a class="jxr_linenumber" name="L268" href="#L268">268</a>         cnt = 0;
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>         offset = 0;
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>         <strong class="jxr_keyword">while</strong> (cnt &lt; tint.length) {
-<a class="jxr_linenumber" name="L271" href="#L271">271</a>             offset = bf.format(tint[cnt], buffer, offset, colSize);
-<a class="jxr_linenumber" name="L272" href="#L272">272</a>             offset = bf.format(<span class="jxr_string">" "</span>, buffer, offset, 1);
-<a class="jxr_linenumber" name="L273" href="#L273">273</a>             cnt++;
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>         }
-<a class="jxr_linenumber" name="L275" href="#L275">275</a>         String myStr = <strong class="jxr_keyword">new</strong> String(buffer, 0, offset);
-<a class="jxr_linenumber" name="L276" href="#L276">276</a>         String[] array = myStr.split(<span class="jxr_string">" "</span>);
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>         offset = 0;
+<a class="jxr_linenumber" name="L265" href="#L265">265</a>         colSize = 12;
+<a class="jxr_linenumber" name="L266" href="#L266">266</a>         cnt = 0;
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>         offset = 0;
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>         <strong class="jxr_keyword">while</strong> (cnt &lt; tint.length) {
+<a class="jxr_linenumber" name="L269" href="#L269">269</a>             offset = bf.format(tint[cnt], buffer, offset, colSize);
+<a class="jxr_linenumber" name="L270" href="#L270">270</a>             offset = bf.format(<span class="jxr_string">" "</span>, buffer, offset, 1);
+<a class="jxr_linenumber" name="L271" href="#L271">271</a>             cnt++;
+<a class="jxr_linenumber" name="L272" href="#L272">272</a>         }
+<a class="jxr_linenumber" name="L273" href="#L273">273</a>         String myStr = <strong class="jxr_keyword">new</strong> String(buffer, 0, offset);
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>         String[] array = myStr.split(<span class="jxr_string">" "</span>);
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> 
+<a class="jxr_linenumber" name="L276" href="#L276">276</a>         Assertions.assertEquals(100, array.length);
 <a class="jxr_linenumber" name="L277" href="#L277">277</a> 
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>         assertEquals(<span class="jxr_string">"Split size"</span>, 100, array.length);
-<a class="jxr_linenumber" name="L279" href="#L279">279</a> 
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; array.length; i++) {
-<a class="jxr_linenumber" name="L281" href="#L281">281</a>             assertEquals(<span class="jxr_string">"Parse token"</span>, tint[i], Integer.parseInt(array[i]));
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>         }
-<a class="jxr_linenumber" name="L283" href="#L283">283</a> 
-<a class="jxr_linenumber" name="L284" href="#L284">284</a>         <strong class="jxr_keyword">int</strong> val = 1;
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>         Arrays.fill(buffer, (byte) ' ');
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> 
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 10; i++) {
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>             offset = bf.format(val, buffer, 0, 6);
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>             String test = (val + <span class="jxr_string">"      "</span>).substring(0, 6);
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>             <strong class="jxr_keyword">if</strong> (i &lt; 6) {
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>                 assertEquals(<span class="jxr_string">"TestTrunc"</span> + i, test, <strong class="jxr_keyword">new</strong> String(buffer, 0, 6));
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L293" href="#L293">293</a>                 assertEquals(<span class="jxr_string">"TestTrunc"</span> + i, <span class="jxr_string">"******"</span>, <strong class="jxr_keyword">new</strong> String(buffer, 0, 6));
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>             }
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>             val *= 10;
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>         }
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; array.length; i++) {
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>             Assertions.assertEquals(tint[i], Integer.parseInt(array[i]), <span class="jxr_string">"token "</span> + i);
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>         }
+<a class="jxr_linenumber" name="L281" href="#L281">281</a> 
+<a class="jxr_linenumber" name="L282" href="#L282">282</a>         <strong class="jxr_keyword">int</strong> val = 1;
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>         Arrays.fill(buffer, (byte) ' ');
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> 
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 10; i++) {
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>             offset = bf.format(val, buffer, 0, 6);
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>             String test = (val + <span class="jxr_string">"      "</span>).substring(0, 6);
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>             <strong class="jxr_keyword">if</strong> (i &lt; 6) {
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>                 Assertions.assertEquals(test, <strong class="jxr_keyword">new</strong> String(buffer, 0, 6), <span class="jxr_string">"TestTrunc"</span> + i);
+<a class="jxr_linenumber" name="L290" href="#L290">290</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>                 Assertions.assertEquals(<span class="jxr_string">"******"</span>, <strong class="jxr_keyword">new</strong> String(buffer, 0, 6), <span class="jxr_string">"TestTrunc"</span> + i);
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>             }
+<a class="jxr_linenumber" name="L293" href="#L293">293</a>             val *= 10;
+<a class="jxr_linenumber" name="L294" href="#L294">294</a>         }
+<a class="jxr_linenumber" name="L295" href="#L295">295</a> 
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>     }
 <a class="jxr_linenumber" name="L297" href="#L297">297</a> 
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>     }
-<a class="jxr_linenumber" name="L299" href="#L299">299</a> 
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>     @Test
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testLong() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L302" href="#L302">302</a> 
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 10; i++) {
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>             buffer[i] = (byte) ' ';
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>         }
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>         bp.setOffset(0);
-<a class="jxr_linenumber" name="L307" href="#L307">307</a>         assertEquals(<span class="jxr_string">"LongBlank"</span>, 0L, bp.getLong(10));
-<a class="jxr_linenumber" name="L308" href="#L308">308</a> 
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>         <strong class="jxr_keyword">long</strong>[] lng = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">long</strong>[100];
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; lng.length; i++) {
-<a class="jxr_linenumber" name="L311" href="#L311">311</a>             lng[i] = (<strong class="jxr_keyword">long</strong>) (Long.MAX_VALUE * (2 * (Math.random() - 0.5)));
-<a class="jxr_linenumber" name="L312" href="#L312">312</a>         }
-<a class="jxr_linenumber" name="L313" href="#L313">313</a> 
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>         lng[0] = Long.MAX_VALUE;
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>         lng[1] = Long.MIN_VALUE;
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>         lng[2] = 0;
-<a class="jxr_linenumber" name="L317" href="#L317">317</a> 
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>         offset = 0;
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; lng.length; i++) {
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>             offset = bf.format(lng[i], buffer, offset, 20);
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> 
-<a class="jxr_linenumber" name="L322" href="#L322">322</a>             <strong class="jxr_keyword">if</strong> ((i + 1) % 4 == 0) {
-<a class="jxr_linenumber" name="L323" href="#L323">323</a>                 offset = bf.format(<span class="jxr_string">"\n"</span>, buffer, offset, 1);
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>                 offset = bf.format(<span class="jxr_string">" "</span>, buffer, offset, 1);
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>             }
-<a class="jxr_linenumber" name="L327" href="#L327">327</a>         }
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>     @Test
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testLong() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L300" href="#L300">300</a> 
+<a class="jxr_linenumber" name="L301" href="#L301">301</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 10; i++) {
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>             buffer[i] = (byte) ' ';
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>         }
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>         bp.setOffset(0);
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>         Assertions.assertEquals(0L, bp.getLong(10));
+<a class="jxr_linenumber" name="L306" href="#L306">306</a> 
+<a class="jxr_linenumber" name="L307" href="#L307">307</a>         <strong class="jxr_keyword">long</strong>[] lng = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">long</strong>[100];
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; lng.length; i++) {
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>             lng[i] = (<strong class="jxr_keyword">long</strong>) (Long.MAX_VALUE * (2 * (Math.random() - 0.5)));
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>         }
+<a class="jxr_linenumber" name="L311" href="#L311">311</a> 
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>         lng[0] = Long.MAX_VALUE;
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>         lng[1] = Long.MIN_VALUE;
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>         lng[2] = 0;
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> 
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>         offset = 0;
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; lng.length; i++) {
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>             offset = bf.format(lng[i], buffer, offset, 20);
+<a class="jxr_linenumber" name="L319" href="#L319">319</a> 
+<a class="jxr_linenumber" name="L320" href="#L320">320</a>             <strong class="jxr_keyword">if</strong> ((i + 1) % 4 == 0) {
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>                 offset = bf.format(<span class="jxr_string">"\n"</span>, buffer, offset, 1);
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L323" href="#L323">323</a>                 offset = bf.format(<span class="jxr_string">" "</span>, buffer, offset, 1);
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>             }
+<a class="jxr_linenumber" name="L325" href="#L325">325</a>         }
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> 
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>         bp.setOffset(0);
 <a class="jxr_linenumber" name="L328" href="#L328">328</a> 
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>         bp.setOffset(0);
-<a class="jxr_linenumber" name="L330" href="#L330">330</a> 
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; lng.length; i++) {
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>             assertEquals(<span class="jxr_string">"Long check "</span> + i, lng[i], bp.getLong(20));
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>             bp.skip(1);
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>         }
-<a class="jxr_linenumber" name="L335" href="#L335">335</a> 
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>         byte[] array = <strong class="jxr_keyword">new</strong> byte[1];
-<a class="jxr_linenumber" name="L337" href="#L337">337</a>         bf.format(-55215921L, array);
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>         assertEquals(<span class="jxr_string">"*"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L339" href="#L339">339</a> 
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>         bf.format(Long.MIN_VALUE, array);
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>         assertEquals(<span class="jxr_string">"*"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>     }
-<a class="jxr_linenumber" name="L343" href="#L343">343</a> 
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>     @Test
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testString() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L346" href="#L346">346</a> 
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>         offset = 0;
-<a class="jxr_linenumber" name="L348" href="#L348">348</a>         String bigStr = <span class="jxr_string">"abcdefghijklmnopqrstuvwxyz"</span>;
-<a class="jxr_linenumber" name="L349" href="#L349">349</a> 
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 100; i++) {
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>             offset = bf.format(bigStr.substring(i % 27), buffer, offset, 13);
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>             offset = bf.format(<span class="jxr_string">" "</span>, buffer, offset, 1);
-<a class="jxr_linenumber" name="L353" href="#L353">353</a>         }
-<a class="jxr_linenumber" name="L354" href="#L354">354</a> 
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>         bp.setOffset(0);
-<a class="jxr_linenumber" name="L356" href="#L356">356</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 100; i++) {
-<a class="jxr_linenumber" name="L357" href="#L357">357</a>             String want = bigStr.substring(i % 27);
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>             <strong class="jxr_keyword">if</strong> (want.length() &gt; 13) {
-<a class="jxr_linenumber" name="L359" href="#L359">359</a>                 want = want.substring(0, 13);
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>             }
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>             String s = bp.getString(want.length());
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>             assertEquals(<span class="jxr_string">"String:"</span> + i, want, s);
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>             bp.skip(1);
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>         }
-<a class="jxr_linenumber" name="L365" href="#L365">365</a>     }
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> 
-<a class="jxr_linenumber" name="L367" href="#L367">367</a>     @Test
-<a class="jxr_linenumber" name="L368" href="#L368">368</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testBasics() {
-<a class="jxr_linenumber" name="L369" href="#L369">369</a> 
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>         byte[] data = <strong class="jxr_keyword">new</strong> byte[20];
-<a class="jxr_linenumber" name="L371" href="#L371">371</a>         bf.format(<strong class="jxr_keyword">true</strong>, data);
-<a class="jxr_linenumber" name="L372" href="#L372">372</a>         assertArrayEquals(createArray(20, 84), data);
-<a class="jxr_linenumber" name="L373" href="#L373">373</a>         Arrays.fill(data, (byte) 0);
-<a class="jxr_linenumber" name="L374" href="#L374">374</a>         bf.format(99.99d, data);
-<a class="jxr_linenumber" name="L375" href="#L375">375</a>         assertArrayEquals(createArray(20, 57, 57, 46, 57, 57, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48),
-<a class="jxr_linenumber" name="L376" href="#L376">376</a>                 data);
-<a class="jxr_linenumber" name="L377" href="#L377">377</a>         Arrays.fill(data, (byte) 0);
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>         bf.format(99.99f, data);
-<a class="jxr_linenumber" name="L379" href="#L379">379</a>         assertArrayEquals(createArray(20, 57, 57, 46, 57, 56, 57, 57, 57, 54, 56), data);
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>         Arrays.fill(data, (byte) 0);
-<a class="jxr_linenumber" name="L381" href="#L381">381</a>         bf.format(99, data);
-<a class="jxr_linenumber" name="L382" href="#L382">382</a>         assertArrayEquals(createArray(20, 57, 57), data);
-<a class="jxr_linenumber" name="L383" href="#L383">383</a>         Arrays.fill(data, (byte) 0);
-<a class="jxr_linenumber" name="L384" href="#L384">384</a>         bf.format(99L, data);
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>         assertArrayEquals(createArray(20, 57, 57), data);
-<a class="jxr_linenumber" name="L386" href="#L386">386</a> 
-<a class="jxr_linenumber" name="L387" href="#L387">387</a>         Arrays.fill(data, (byte) 0);
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>         bf.format(9.9E+3, data);
-<a class="jxr_linenumber" name="L389" href="#L389">389</a>         assertArrayEquals(createArray(20, 57, 57, 48, 48, 46, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48),
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>                 data);
-<a class="jxr_linenumber" name="L391" href="#L391">391</a>     }
-<a class="jxr_linenumber" name="L392" href="#L392">392</a> 
-<a class="jxr_linenumber" name="L393" href="#L393">393</a>     <strong class="jxr_keyword">private</strong> byte[] createArray(<strong class="jxr_keyword">int</strong> size, <strong class="jxr_keyword">int</strong>... values) {
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>         byte[] result = <strong class="jxr_keyword">new</strong> byte[size];
-<a class="jxr_linenumber" name="L395" href="#L395">395</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> index = 0; index &lt; values.length; index++) {
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>             result[index] = (byte) values[index];
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>         }
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>         <strong class="jxr_keyword">return</strong> result;
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>     }
-<a class="jxr_linenumber" name="L400" href="#L400">400</a> 
-<a class="jxr_linenumber" name="L401" href="#L401">401</a>     @Test(expected = FormatException.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L402" href="#L402">402</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testLongCaseError() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L403" href="#L403">403</a>         <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  A"</span>.getBytes()).getLong(10);
-<a class="jxr_linenumber" name="L404" href="#L404">404</a>     }
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> 
-<a class="jxr_linenumber" name="L406" href="#L406">406</a>     @Test
-<a class="jxr_linenumber" name="L407" href="#L407">407</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testLongCaseFillFields2() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  123456  "</span>.getBytes());
-<a class="jxr_linenumber" name="L409" href="#L409">409</a> 
-<a class="jxr_linenumber" name="L410" href="#L410">410</a>         assertEquals(123456L, byteParser.getLong(10));
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>         assertEquals(8, byteParser.getNumberLength());
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>         assertEquals(8, byteParser.getOffset());
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>     }
-<a class="jxr_linenumber" name="L414" href="#L414">414</a> 
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>     @Test(expected = FormatException.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L416" href="#L416">416</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIntCaseError() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>         <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  A"</span>.getBytes()).getInt(6);
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>     }
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> 
-<a class="jxr_linenumber" name="L420" href="#L420">420</a>     @Test
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIntCaseFillFields2() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  123  "</span>.getBytes());
-<a class="jxr_linenumber" name="L423" href="#L423">423</a> 
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>         assertEquals(123, byteParser.getInt(6));
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>         assertEquals(5, byteParser.getNumberLength());
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>         assertEquals(5, byteParser.getOffset());
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>     }
-<a class="jxr_linenumber" name="L428" href="#L428">428</a> 
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>     @Test
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIntCaseFillFields3() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  +123  "</span>.getBytes());
-<a class="jxr_linenumber" name="L432" href="#L432">432</a> 
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>         assertEquals(123, byteParser.getInt(6));
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>         assertEquals(6, byteParser.getNumberLength());
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>         assertEquals(6, byteParser.getOffset());
-<a class="jxr_linenumber" name="L436" href="#L436">436</a>     }
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> 
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>     @Test
-<a class="jxr_linenumber" name="L439" href="#L439">439</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIntCaseFillFields4() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  -123  "</span>.getBytes());
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> 
-<a class="jxr_linenumber" name="L442" href="#L442">442</a>         assertEquals(-123, byteParser.getInt(6));
-<a class="jxr_linenumber" name="L443" href="#L443">443</a>         assertEquals(6, byteParser.getNumberLength());
-<a class="jxr_linenumber" name="L444" href="#L444">444</a>         assertEquals(6, byteParser.getOffset());
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>     }
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> 
-<a class="jxr_linenumber" name="L447" href="#L447">447</a>     @Test
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDoubleFields2() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L449" href="#L449">449</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  INF           "</span>.getBytes());
-<a class="jxr_linenumber" name="L450" href="#L450">450</a> 
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>         assertEquals(Double.POSITIVE_INFINITY, byteParser.getDouble(10), 0.0000001);
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>         assertEquals(5, byteParser.getNumberLength());
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>         assertEquals(5, byteParser.getOffset());
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>         byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  INFINITY           "</span>.getBytes());
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> 
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>         assertEquals(Double.POSITIVE_INFINITY, byteParser.getDouble(10), 0.0000001);
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>         assertEquals(10, byteParser.getNumberLength());
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>         assertEquals(10, byteParser.getOffset());
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>     }
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> 
-<a class="jxr_linenumber" name="L461" href="#L461">461</a>     @Test(expected = FormatException.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L462" href="#L462">462</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDoubleFields4() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  XXXXX         "</span>.getBytes());
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; lng.length; i++) {
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>             Assertions.assertEquals(lng[i], bp.getLong(20), <span class="jxr_string">"Long check "</span> + i);
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>             bp.skip(1);
+<a class="jxr_linenumber" name="L332" href="#L332">332</a>         }
+<a class="jxr_linenumber" name="L333" href="#L333">333</a> 
+<a class="jxr_linenumber" name="L334" href="#L334">334</a>         byte[] array = <strong class="jxr_keyword">new</strong> byte[1];
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>         bf.format(-55215921L, array);
+<a class="jxr_linenumber" name="L336" href="#L336">336</a>         Assertions.assertEquals(<span class="jxr_string">"*"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L337" href="#L337">337</a> 
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>         bf.format(Long.MIN_VALUE, array);
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>         Assertions.assertEquals(<span class="jxr_string">"*"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>     }
+<a class="jxr_linenumber" name="L341" href="#L341">341</a> 
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>     @Test
+<a class="jxr_linenumber" name="L343" href="#L343">343</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testString() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L344" href="#L344">344</a> 
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>         offset = 0;
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>         String bigStr = <span class="jxr_string">"abcdefghijklmnopqrstuvwxyz"</span>;
+<a class="jxr_linenumber" name="L347" href="#L347">347</a> 
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 100; i++) {
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>             offset = bf.format(bigStr.substring(i % 27), buffer, offset, 13);
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>             offset = bf.format(<span class="jxr_string">" "</span>, buffer, offset, 1);
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>         }
+<a class="jxr_linenumber" name="L352" href="#L352">352</a> 
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>         bp.setOffset(0);
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 100; i++) {
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>             String want = bigStr.substring(i % 27);
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>             <strong class="jxr_keyword">if</strong> (want.length() &gt; 13) {
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>                 want = want.substring(0, 13);
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>             }
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>             String s = bp.getString(want.length());
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>             Assertions.assertEquals(want, s, <span class="jxr_string">"String:"</span> + i);
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>             bp.skip(1);
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>         }
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>     }
+<a class="jxr_linenumber" name="L364" href="#L364">364</a> 
+<a class="jxr_linenumber" name="L365" href="#L365">365</a>     @Test
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testBasics() {
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> 
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>         byte[] data = <strong class="jxr_keyword">new</strong> byte[20];
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>         bf.format(<strong class="jxr_keyword">true</strong>, data);
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>         Assertions.assertArrayEquals(createArray(20, 84), data);
+<a class="jxr_linenumber" name="L371" href="#L371">371</a>         Arrays.fill(data, (byte) 0);
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>         bf.format(99.99d, data);
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>         Assertions.assertArrayEquals(
+<a class="jxr_linenumber" name="L374" href="#L374">374</a>                 createArray(20, 57, 57, 46, 57, 57, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48), data);
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>         Arrays.fill(data, (byte) 0);
+<a class="jxr_linenumber" name="L376" href="#L376">376</a>         bf.format(99.99f, data);
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>         Assertions.assertArrayEquals(createArray(20, 57, 57, 46, 57, 56, 57, 57, 57, 54, 56), data);
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>         Arrays.fill(data, (byte) 0);
+<a class="jxr_linenumber" name="L379" href="#L379">379</a>         bf.format(99, data);
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>         Assertions.assertArrayEquals(createArray(20, 57, 57), data);
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>         Arrays.fill(data, (byte) 0);
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>         bf.format(99L, data);
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>         Assertions.assertArrayEquals(createArray(20, 57, 57), data);
+<a class="jxr_linenumber" name="L384" href="#L384">384</a> 
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>         Arrays.fill(data, (byte) 0);
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>         bf.format(9.9E+3, data);
+<a class="jxr_linenumber" name="L387" href="#L387">387</a>         Assertions.assertArrayEquals(
+<a class="jxr_linenumber" name="L388" href="#L388">388</a>                 createArray(20, 57, 57, 48, 48, 46, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48), data);
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>     }
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> 
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>     <strong class="jxr_keyword">private</strong> byte[] createArray(<strong class="jxr_keyword">int</strong> size, <strong class="jxr_keyword">int</strong>... values) {
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>         byte[] result = <strong class="jxr_keyword">new</strong> byte[size];
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> index = 0; index &lt; values.length; index++) {
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>             result[index] = (byte) values[index];
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>         }
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>         <strong class="jxr_keyword">return</strong> result;
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>     }
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> 
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>     @Test
+<a class="jxr_linenumber" name="L400" href="#L400">400</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testLongCaseError() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>         Assertions.assertThrows(FormatException.<strong class="jxr_keyword">class</strong>, () -&gt; <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  A"</span>.getBytes()).getLong(10));
+<a class="jxr_linenumber" name="L402" href="#L402">402</a>     }
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> 
+<a class="jxr_linenumber" name="L404" href="#L404">404</a>     @Test
+<a class="jxr_linenumber" name="L405" href="#L405">405</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testLongCaseFillFields2() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L406" href="#L406">406</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  123456  "</span>.getBytes());
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> 
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>         Assertions.assertEquals(123456L, byteParser.getLong(10));
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>         Assertions.assertEquals(8, byteParser.getNumberLength());
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>         Assertions.assertEquals(8, byteParser.getOffset());
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>     }
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> 
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>     @Test
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIntCaseError() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>         Assertions.assertThrows(FormatException.<strong class="jxr_keyword">class</strong>, () -&gt; <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  A"</span>.getBytes()).getInt(6));
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>     }
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> 
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>     @Test
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIntCaseFillFields2() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  123  "</span>.getBytes());
+<a class="jxr_linenumber" name="L421" href="#L421">421</a> 
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>         Assertions.assertEquals(123, byteParser.getInt(6));
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>         Assertions.assertEquals(5, byteParser.getNumberLength());
+<a class="jxr_linenumber" name="L424" href="#L424">424</a>         Assertions.assertEquals(5, byteParser.getOffset());
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>     }
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> 
+<a class="jxr_linenumber" name="L427" href="#L427">427</a>     @Test
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIntCaseFillFields3() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L429" href="#L429">429</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  +123  "</span>.getBytes());
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> 
+<a class="jxr_linenumber" name="L431" href="#L431">431</a>         Assertions.assertEquals(123, byteParser.getInt(6));
+<a class="jxr_linenumber" name="L432" href="#L432">432</a>         Assertions.assertEquals(6, byteParser.getNumberLength());
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>         Assertions.assertEquals(6, byteParser.getOffset());
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>     }
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> 
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>     @Test
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIntCaseFillFields4() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  -123  "</span>.getBytes());
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> 
+<a class="jxr_linenumber" name="L440" href="#L440">440</a>         Assertions.assertEquals(-123, byteParser.getInt(6));
+<a class="jxr_linenumber" name="L441" href="#L441">441</a>         Assertions.assertEquals(6, byteParser.getNumberLength());
+<a class="jxr_linenumber" name="L442" href="#L442">442</a>         Assertions.assertEquals(6, byteParser.getOffset());
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>     }
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> 
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>     @Test
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDoubleFields2() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  INF           "</span>.getBytes());
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> 
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>         Assertions.assertEquals(Double.POSITIVE_INFINITY, byteParser.getDouble(10), 0.0000001);
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>         Assertions.assertEquals(5, byteParser.getNumberLength());
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>         Assertions.assertEquals(5, byteParser.getOffset());
+<a class="jxr_linenumber" name="L452" href="#L452">452</a>         byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  INFINITY           "</span>.getBytes());
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> 
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>         Assertions.assertEquals(Double.POSITIVE_INFINITY, byteParser.getDouble(10), 0.0000001);
+<a class="jxr_linenumber" name="L455" href="#L455">455</a>         Assertions.assertEquals(10, byteParser.getNumberLength());
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>         Assertions.assertEquals(10, byteParser.getOffset());
+<a class="jxr_linenumber" name="L457" href="#L457">457</a>     }
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> 
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>     @Test
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDoubleFields4() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  XXXXX         "</span>.getBytes());
+<a class="jxr_linenumber" name="L462" href="#L462">462</a>         Assertions.assertThrows(FormatException.<strong class="jxr_keyword">class</strong>, () -&gt; byteParser.getDouble(10));
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>     }
 <a class="jxr_linenumber" name="L464" href="#L464">464</a> 
-<a class="jxr_linenumber" name="L465" href="#L465">465</a>         byteParser.getDouble(10);
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>     }
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> 
-<a class="jxr_linenumber" name="L468" href="#L468">468</a>     @Test()
-<a class="jxr_linenumber" name="L469" href="#L469">469</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testBoolean1() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L470" href="#L470">470</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  T         "</span>.getBytes());
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>     @Test()
+<a class="jxr_linenumber" name="L466" href="#L466">466</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testBoolean1() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L467" href="#L467">467</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  T         "</span>.getBytes());
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> 
+<a class="jxr_linenumber" name="L469" href="#L469">469</a>         Assertions.assertTrue(byteParser.getBoolean(10));
+<a class="jxr_linenumber" name="L470" href="#L470">470</a>         byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  F         "</span>.getBytes());
 <a class="jxr_linenumber" name="L471" href="#L471">471</a> 
-<a class="jxr_linenumber" name="L472" href="#L472">472</a>         Assert.assertTrue(byteParser.getBoolean(10));
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>         byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  F         "</span>.getBytes());
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>         Assertions.assertFalse(byteParser.getBoolean(10));
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>     }
 <a class="jxr_linenumber" name="L474" href="#L474">474</a> 
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>         Assert.assertFalse(byteParser.getBoolean(10));
-<a class="jxr_linenumber" name="L476" href="#L476">476</a>     }
-<a class="jxr_linenumber" name="L477" href="#L477">477</a> 
-<a class="jxr_linenumber" name="L478" href="#L478">478</a>     @Test(expected = FormatException.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L479" href="#L479">479</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testBoolean2() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L480" href="#L480">480</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  X         "</span>.getBytes());
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> 
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>         byteParser.getBoolean(10);
-<a class="jxr_linenumber" name="L483" href="#L483">483</a>     }
-<a class="jxr_linenumber" name="L484" href="#L484">484</a> 
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>     @Test
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFormatString() {
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>         byte[] array = <strong class="jxr_keyword">new</strong> byte[10];
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>         bf.format(<span class="jxr_string">"blabla"</span>, array);
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>         byte[] expected = {98, 108, 97, 98, 108, 97, 0, 0, 0, 0};
-<a class="jxr_linenumber" name="L490" href="#L490">490</a>         assertArrayEquals(expected, array);
-<a class="jxr_linenumber" name="L491" href="#L491">491</a>     }
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> 
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>     @Test
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFormatDouble() {
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>         byte[] array = <strong class="jxr_keyword">new</strong> byte[10];
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>         bf.format(1.9999999999999999999999999999999999999999d, array);
-<a class="jxr_linenumber" name="L497" href="#L497">497</a>         assertEquals(<span class="jxr_string">"2.00000000"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L498" href="#L498">498</a>         bf.format(2.0000000011111111111111111111111111111111, array);
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>         assertEquals(<span class="jxr_string">"2.00000000"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L500" href="#L500">500</a>         bf.format(2.0000000000000000000000000000000000011111d, array);
-<a class="jxr_linenumber" name="L501" href="#L501">501</a>         assertEquals(<span class="jxr_string">"2.00000000"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L502" href="#L502">502</a>         bf.format(0.0000000000000000000000000000000000011111d, array);
-<a class="jxr_linenumber" name="L503" href="#L503">503</a>         assertEquals(<span class="jxr_string">"1.1111E-36"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>         bf.format(111110000000000000000000000000000000000000d, array);
-<a class="jxr_linenumber" name="L505" href="#L505">505</a>         assertEquals(<span class="jxr_string">"1.11110E41"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L506" href="#L506">506</a> 
-<a class="jxr_linenumber" name="L507" href="#L507">507</a>         bf.format(1E6, array);
-<a class="jxr_linenumber" name="L508" href="#L508">508</a>         assertEquals(<span class="jxr_string">"1000000.00"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L509" href="#L509">509</a>         bf.format(1000001d, array);
-<a class="jxr_linenumber" name="L510" href="#L510">510</a>         assertEquals(<span class="jxr_string">"1.000001E6"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L511" href="#L511">511</a> 
-<a class="jxr_linenumber" name="L512" href="#L512">512</a>         bf.format(1.00000000001E7, array);
-<a class="jxr_linenumber" name="L513" href="#L513">513</a>         assertEquals(<span class="jxr_string">"1.000000E7"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L514" href="#L514">514</a>         bf.format(1.00000000001E8, array);
-<a class="jxr_linenumber" name="L515" href="#L515">515</a>         assertEquals(<span class="jxr_string">"1.000000E8"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L516" href="#L516">516</a> 
-<a class="jxr_linenumber" name="L517" href="#L517">517</a>         bf.format(1.436993288151429E-260, array);
-<a class="jxr_linenumber" name="L518" href="#L518">518</a>         assertEquals(<span class="jxr_string">"1.437E-260"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L519" href="#L519">519</a> 
-<a class="jxr_linenumber" name="L520" href="#L520">520</a>         bf.format(2.09160746257043E-170, array);
-<a class="jxr_linenumber" name="L521" href="#L521">521</a>         assertEquals(<span class="jxr_string">"2.092E-170"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L522" href="#L522">522</a> 
-<a class="jxr_linenumber" name="L523" href="#L523">523</a>         bf.format(3.599821542603323E-201, array);
-<a class="jxr_linenumber" name="L524" href="#L524">524</a>         assertEquals(<span class="jxr_string">"3.600E-201"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L525" href="#L525">525</a> 
-<a class="jxr_linenumber" name="L526" href="#L526">526</a>         bf.format(-9.995895768688865E-277, array);
-<a class="jxr_linenumber" name="L527" href="#L527">527</a>         assertEquals(<span class="jxr_string">"-1.00E-276"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>     @Test
+<a class="jxr_linenumber" name="L476" href="#L476">476</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testBoolean2() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>         ByteParser byteParser = <strong class="jxr_keyword">new</strong> ByteParser(<span class="jxr_string">"  X         "</span>.getBytes());
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>         Assertions.assertThrows(FormatException.<strong class="jxr_keyword">class</strong>, () -&gt; byteParser.getBoolean(10));
+<a class="jxr_linenumber" name="L479" href="#L479">479</a>     }
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> 
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>     @Test
+<a class="jxr_linenumber" name="L482" href="#L482">482</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFormatString() {
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>         byte[] array = <strong class="jxr_keyword">new</strong> byte[10];
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>         bf.format(<span class="jxr_string">"blabla"</span>, array);
+<a class="jxr_linenumber" name="L485" href="#L485">485</a>         byte[] expected = {98, 108, 97, 98, 108, 97, 0, 0, 0, 0};
+<a class="jxr_linenumber" name="L486" href="#L486">486</a>         Assertions.assertArrayEquals(expected, array);
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>     }
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> 
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>     @Test
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFormatDouble() {
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>         byte[] array = <strong class="jxr_keyword">new</strong> byte[10];
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>         bf.format(1.9999999999999999999999999999999999999999d, array);
+<a class="jxr_linenumber" name="L493" href="#L493">493</a>         Assertions.assertEquals(<span class="jxr_string">"2.00000000"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L494" href="#L494">494</a>         bf.format(2.0000000011111111111111111111111111111111, array);
+<a class="jxr_linenumber" name="L495" href="#L495">495</a>         Assertions.assertEquals(<span class="jxr_string">"2.00000000"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L496" href="#L496">496</a>         bf.format(2.0000000000000000000000000000000000011111d, array);
+<a class="jxr_linenumber" name="L497" href="#L497">497</a>         Assertions.assertEquals(<span class="jxr_string">"2.00000000"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L498" href="#L498">498</a>         bf.format(0.0000000000000000000000000000000000011111d, array);
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>         Assertions.assertEquals(<span class="jxr_string">"1.1111E-36"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L500" href="#L500">500</a>         bf.format(111110000000000000000000000000000000000000d, array);
+<a class="jxr_linenumber" name="L501" href="#L501">501</a>         Assertions.assertEquals(<span class="jxr_string">"1.11110E41"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L502" href="#L502">502</a> 
+<a class="jxr_linenumber" name="L503" href="#L503">503</a>         bf.format(1E6, array);
+<a class="jxr_linenumber" name="L504" href="#L504">504</a>         Assertions.assertEquals(<span class="jxr_string">"1000000.00"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L505" href="#L505">505</a>         bf.format(1000001d, array);
+<a class="jxr_linenumber" name="L506" href="#L506">506</a>         Assertions.assertEquals(<span class="jxr_string">"1.000001E6"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L507" href="#L507">507</a> 
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>         bf.format(1.00000000001E7, array);
+<a class="jxr_linenumber" name="L509" href="#L509">509</a>         Assertions.assertEquals(<span class="jxr_string">"1.000000E7"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L510" href="#L510">510</a>         bf.format(1.00000000001E8, array);
+<a class="jxr_linenumber" name="L511" href="#L511">511</a>         Assertions.assertEquals(<span class="jxr_string">"1.000000E8"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> 
+<a class="jxr_linenumber" name="L513" href="#L513">513</a>         bf.format(1.436993288151429E-260, array);
+<a class="jxr_linenumber" name="L514" href="#L514">514</a>         Assertions.assertEquals(<span class="jxr_string">"1.437E-260"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L515" href="#L515">515</a> 
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>         bf.format(2.09160746257043E-170, array);
+<a class="jxr_linenumber" name="L517" href="#L517">517</a>         Assertions.assertEquals(<span class="jxr_string">"2.092E-170"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L518" href="#L518">518</a> 
+<a class="jxr_linenumber" name="L519" href="#L519">519</a>         bf.format(3.599821542603323E-201, array);
+<a class="jxr_linenumber" name="L520" href="#L520">520</a>         Assertions.assertEquals(<span class="jxr_string">"3.600E-201"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L521" href="#L521">521</a> 
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>         bf.format(-9.995895768688865E-277, array);
+<a class="jxr_linenumber" name="L523" href="#L523">523</a>         Assertions.assertEquals(<span class="jxr_string">"-1.00E-276"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L524" href="#L524">524</a> 
+<a class="jxr_linenumber" name="L525" href="#L525">525</a>         array = <strong class="jxr_keyword">new</strong> byte[1];
+<a class="jxr_linenumber" name="L526" href="#L526">526</a>         bf.format(4.378420603609205E-19, array);
+<a class="jxr_linenumber" name="L527" href="#L527">527</a>         Assertions.assertEquals(<span class="jxr_string">"*"</span>, AsciiFuncs.asciiString(array));
 <a class="jxr_linenumber" name="L528" href="#L528">528</a> 
-<a class="jxr_linenumber" name="L529" href="#L529">529</a>         array = <strong class="jxr_keyword">new</strong> byte[1];
-<a class="jxr_linenumber" name="L530" href="#L530">530</a>         bf.format(4.378420603609205E-19, array);
-<a class="jxr_linenumber" name="L531" href="#L531">531</a>         assertEquals(<span class="jxr_string">"*"</span>, AsciiFuncs.asciiString(array));
+<a class="jxr_linenumber" name="L529" href="#L529">529</a>         array = <strong class="jxr_keyword">new</strong> byte[3];
+<a class="jxr_linenumber" name="L530" href="#L530">530</a>         bf.format(9.990475008266443E9, array);
+<a class="jxr_linenumber" name="L531" href="#L531">531</a>         Assertions.assertEquals(<span class="jxr_string">"1**"</span>, AsciiFuncs.asciiString(array));
 <a class="jxr_linenumber" name="L532" href="#L532">532</a> 
-<a class="jxr_linenumber" name="L533" href="#L533">533</a>         array = <strong class="jxr_keyword">new</strong> byte[3];
-<a class="jxr_linenumber" name="L534" href="#L534">534</a>         bf.format(9.990475008266443E9, array);
-<a class="jxr_linenumber" name="L535" href="#L535">535</a>         assertEquals(<span class="jxr_string">"1**"</span>, AsciiFuncs.asciiString(array));
-<a class="jxr_linenumber" name="L536" href="#L536">536</a> 
-<a class="jxr_linenumber" name="L537" href="#L537">537</a>     }
-<a class="jxr_linenumber" name="L538" href="#L538">538</a> 
-<a class="jxr_linenumber" name="L539" href="#L539">539</a> }
+<a class="jxr_linenumber" name="L533" href="#L533">533</a>     }
+<a class="jxr_linenumber" name="L534" href="#L534">534</a> 
+<a class="jxr_linenumber" name="L535" href="#L535">535</a> }
 </pre>
 <hr/>
-<div id="footer">© 1996–2025 nom-tam-fits</div>
+<div id="footer">© 1996–2026 nom-tam-fits</div>
 </body>
 </html>

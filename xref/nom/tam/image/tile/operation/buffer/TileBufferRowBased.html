@@ -52,27 +52,31 @@
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment"> * @deprecated Use {@link TileBufferFactory} instead to construct and access via {@link TileBuffer} interface. Its</em>
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment"> *                 visiv=bility should be reduced to the package level in the future.</em>
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="TileBufferRowBased" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferRowBased.html#TileBufferRowBased">TileBufferRowBased</a> <strong class="jxr_keyword">extends</strong> <a name="TileBuffer" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBuffer.html#TileBuffer">TileBuffer</a> {
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>      <strong class="jxr_keyword">public</strong> <a name="TileBufferRowBased" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferRowBased.html#TileBufferRowBased">TileBufferRowBased</a>(ElementType&lt;Buffer&gt; baseType, <strong class="jxr_keyword">int</strong> dataOffset, <strong class="jxr_keyword">int</strong> width, <strong class="jxr_keyword">int</strong> height) {
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>          <strong class="jxr_keyword">super</strong>(baseType, dataOffset, width, height);
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>      }
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>      @Override
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>      <strong class="jxr_keyword">public</strong> Buffer getBuffer() {
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          <strong class="jxr_keyword">return</strong> getImageBuffer();
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>      }
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>      @Override
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">public</strong> <a name="TileBufferRowBased" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferRowBased.html#TileBufferRowBased">TileBufferRowBased</a> setData(Buffer value) {
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">super</strong>.setData(value);
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>          getImageBuffer().limit(getPixelSize());
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>      }
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  }
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  @Deprecated
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="TileBufferRowBased" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferRowBased.html#TileBufferRowBased">TileBufferRowBased</a> <strong class="jxr_keyword">extends</strong> <a name="TileBuffer" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBuffer.html#TileBuffer">TileBuffer</a> {
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>      @Deprecated
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">public</strong> <a name="TileBufferRowBased" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferRowBased.html#TileBufferRowBased">TileBufferRowBased</a>(ElementType&lt;Buffer&gt; baseType, <strong class="jxr_keyword">int</strong> dataOffset, <strong class="jxr_keyword">int</strong> width, <strong class="jxr_keyword">int</strong> height) {
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          <strong class="jxr_keyword">super</strong>(baseType, dataOffset, width, height);
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>      }
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>      @Deprecated
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      @Override
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>      <strong class="jxr_keyword">public</strong> Buffer getBuffer() {
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          <strong class="jxr_keyword">return</strong> getImageBuffer();
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      }
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>      @Deprecated
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>      @Override
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>      <strong class="jxr_keyword">public</strong> <a name="TileBufferRowBased" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferRowBased.html#TileBufferRowBased">TileBufferRowBased</a> setData(Buffer value) {
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          <strong class="jxr_keyword">super</strong>.setData(value);
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          getImageBuffer().limit(getPixelSize());
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>      }
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  }
 </pre>
 <hr/>
-<div id="footer">© 1996–2025 nom-tam-fits</div>
+<div id="footer">© 1996–2026 nom-tam-fits</div>
 </body>
 </html>

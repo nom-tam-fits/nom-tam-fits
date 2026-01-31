@@ -53,21 +53,22 @@
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment">     * @deprecated for internal use only</em>
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>      @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="TileBuffer" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBuffer.html#TileBuffer">TileBuffer</a> createTileBuffer(ElementType&lt;Buffer&gt; baseType, <strong class="jxr_keyword">int</strong> dataOffset, <strong class="jxr_keyword">int</strong> imageWidth, <strong class="jxr_keyword">int</strong> width,
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>              <strong class="jxr_keyword">int</strong> height) {
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>          <strong class="jxr_keyword">if</strong> (imageWidth &gt; width) {
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>              <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="TileBufferColumnBased" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferColumnBased.html#TileBufferColumnBased">TileBufferColumnBased</a>(baseType, dataOffset, imageWidth, width, height);
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>          }
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="TileBufferRowBased" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferRowBased.html#TileBufferRowBased">TileBufferRowBased</a>(baseType, dataOffset, width, height);
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>      }
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">private</strong> <a name="TileBufferFactory" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferFactory.html#TileBufferFactory">TileBufferFactory</a>() {
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          <em class="jxr_comment">// unused</em>
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>      }
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  }
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>      @Deprecated
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="TileBuffer" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBuffer.html#TileBuffer">TileBuffer</a> createTileBuffer(ElementType&lt;Buffer&gt; baseType, <strong class="jxr_keyword">int</strong> dataOffset, <strong class="jxr_keyword">int</strong> imageWidth, <strong class="jxr_keyword">int</strong> width,
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>              <strong class="jxr_keyword">int</strong> height) {
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>          <strong class="jxr_keyword">if</strong> (imageWidth &gt; width) {
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>              <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="TileBufferColumnBased" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferColumnBased.html#TileBufferColumnBased">TileBufferColumnBased</a>(baseType, dataOffset, imageWidth, width, height);
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          }
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="TileBufferRowBased" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferRowBased.html#TileBufferRowBased">TileBufferRowBased</a>(baseType, dataOffset, width, height);
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>      }
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>      <strong class="jxr_keyword">private</strong> <a name="TileBufferFactory" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferFactory.html#TileBufferFactory">TileBufferFactory</a>() {
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          <em class="jxr_comment">// unused</em>
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      }
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  }
 </pre>
 <hr/>
-<div id="footer">© 1996–2025 nom-tam-fits</div>
+<div id="footer">© 1996–2026 nom-tam-fits</div>
 </body>
 </html>

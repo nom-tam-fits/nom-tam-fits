@@ -56,30 +56,31 @@
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment">     * @deprecated (&lt;i&gt;for internal use&lt;/i&gt;) the visibility of this constructor may be reduced to the package level in</em>
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment">     *                 future releases.</em>
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>      @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">public</strong> <a name="RiceBytePixParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/rice/RiceBytePixParameter.html#RiceBytePixParameter">RiceBytePixParameter</a>(<a name="RiceCompressOption" href="../../../../../../../nom/tam/fits/compression/algorithm/rice/RiceCompressOption.html#RiceCompressOption">RiceCompressOption</a> riceCompressOption) {
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>          <strong class="jxr_keyword">super</strong>(Compression.BYTEPIX, riceCompressOption);
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>      }
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>      @Override
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> getValueFromHeader(<a name="Header" href="../../../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../../../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          <a name="HeaderCard" href="../../../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> value = findZVal(header);
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>          <strong class="jxr_keyword">if</strong> (value != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>              getOption().setBytePix(value.getValue(Integer.<strong class="jxr_keyword">class</strong>, getOption().getBytePix()));
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>              getOption().setBytePix(RiceCompressOption.DEFAULT_RICE_BYTEPIX);
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          }
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>      }
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>      @Override
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setValueInHeader(<a name="Header" href="../../../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../../../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          <strong class="jxr_keyword">int</strong> zvalIndex = nextFreeZVal(header);
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          header.addValue(Compression.ZVALn.n(zvalIndex), getOption().getBytePix());
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>      }
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  }
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>      @Deprecated
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>      @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">public</strong> <a name="RiceBytePixParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/rice/RiceBytePixParameter.html#RiceBytePixParameter">RiceBytePixParameter</a>(<a name="RiceCompressOption" href="../../../../../../../nom/tam/fits/compression/algorithm/rice/RiceCompressOption.html#RiceCompressOption">RiceCompressOption</a> riceCompressOption) {
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          <strong class="jxr_keyword">super</strong>(Compression.BYTEPIX, riceCompressOption);
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>      }
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      @Override
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> getValueFromHeader(<a name="Header" href="../../../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../../../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          <a name="HeaderCard" href="../../../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> value = findZVal(header);
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          <strong class="jxr_keyword">if</strong> (value != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>              getOption().setBytePix(value.getValue(Integer.<strong class="jxr_keyword">class</strong>, getOption().getBytePix()));
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>              getOption().setBytePix(RiceCompressOption.DEFAULT_RICE_BYTEPIX);
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          }
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>      }
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      @Override
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setValueInHeader(<a name="Header" href="../../../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../../../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          <strong class="jxr_keyword">int</strong> zvalIndex = nextFreeZVal(header);
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          header.addValue(Compression.ZVALn.n(zvalIndex), getOption().getBytePix());
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>      }
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  }
 </pre>
 <hr/>
-<div id="footer">© 1996–2025 nom-tam-fits</div>
+<div id="footer">© 1996–2026 nom-tam-fits</div>
 </body>
 </html>

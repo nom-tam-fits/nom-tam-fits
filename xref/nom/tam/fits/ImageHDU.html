@@ -183,108 +183,109 @@
 <a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">     * @param      h the header for the image.</em>
 <a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     * @param      d the data used in the image.</em>
 <a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>     <strong class="jxr_keyword">public</strong> <a name="ImageHDU" href="../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a>(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> h, <a name="ImageData" href="../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a> d) {
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>         <strong class="jxr_keyword">super</strong>(h, d);
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>     }
-<a class="jxr_linenumber" name="L181" href="#L181">181</a> 
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> <em class="jxr_javadoccomment">     * Returns the class that can be used to divide this image into tiles that may be processed separately (and in</em>
-<a class="jxr_linenumber" name="L184" href="#L184">184</a> <em class="jxr_javadoccomment">     * parallel).</em>
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">     * @return image tiler for this image instance.</em>
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     * @see    ImageData#getTiler()</em>
-<a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>     <strong class="jxr_keyword">public</strong> <a name="StandardImageTiler" href="../../../nom/tam/image/StandardImageTiler.html#StandardImageTiler">StandardImageTiler</a> getTiler() {
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>         <strong class="jxr_keyword">return</strong> myData.getTiler();
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>     }
-<a class="jxr_linenumber" name="L193" href="#L193">193</a> 
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>     @Override
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> info(PrintStream stream) {
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>         <strong class="jxr_keyword">if</strong> (isHeader(myHeader)) {
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>             stream.println(<span class="jxr_string">"  Image"</span>);
-<a class="jxr_linenumber" name="L198" href="#L198">198</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>             stream.println(<span class="jxr_string">"  Image (bad header)"</span>);
-<a class="jxr_linenumber" name="L200" href="#L200">200</a>         }
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> 
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>         stream.println(<span class="jxr_string">"      Header Information:"</span>);
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>         stream.println(<span class="jxr_string">"         BITPIX="</span> + myHeader.getIntValue(BITPIX, -1));
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>         <strong class="jxr_keyword">int</strong> naxis = myHeader.getIntValue(NAXIS, -1);
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>         stream.println(<span class="jxr_string">"         NAXIS="</span> + naxis);
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= naxis; i++) {
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>             stream.println(<span class="jxr_string">"         NAXIS"</span> + i + <span class="jxr_string">"="</span> + myHeader.getIntValue(NAXISn.n(i), -1));
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>         }
-<a class="jxr_linenumber" name="L209" href="#L209">209</a> 
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>         stream.println(<span class="jxr_string">"      Data information:"</span>);
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L212" href="#L212">212</a>             <strong class="jxr_keyword">if</strong> (myData.getData() == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L213" href="#L213">213</a>                 stream.println(<span class="jxr_string">"        No Data"</span>);
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>                 stream.println(<span class="jxr_string">"         "</span> + ArrayFuncs.arrayDescription(myData.getData()));
-<a class="jxr_linenumber" name="L216" href="#L216">216</a>             }
-<a class="jxr_linenumber" name="L217" href="#L217">217</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L218" href="#L218">218</a>             LOG.log(Level.SEVERE, <span class="jxr_string">"Unable to get image data"</span>, e);
-<a class="jxr_linenumber" name="L219" href="#L219">219</a>             stream.println(<span class="jxr_string">"      Unable to get data"</span>);
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>         }
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>     }
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> 
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">     * Returns the name of the physical unit in which images are represented.</em>
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">     * @return the standard name of the physical unit in which the image is expressed, e.g. &lt;code&gt;"Jy beam^{-1}"&lt;/code&gt;.</em>
-<a class="jxr_linenumber" name="L227" href="#L227">227</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>     @Override
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>     <strong class="jxr_keyword">public</strong> String getBUnit() {
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBUnit();
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>     }
-<a class="jxr_linenumber" name="L232" href="#L232">232</a> 
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L234" href="#L234">234</a> <em class="jxr_javadoccomment">     * Returns the integer value that signifies blank (missing or &lt;code&gt;null&lt;/code&gt;) data in an integer image.</em>
-<a class="jxr_linenumber" name="L235" href="#L235">235</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">     * @return               the integer value used for identifying blank / missing data in integer images.</em>
-<a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     * @throws FitsException if the header does not specify a blanking value or if it is not appropriate for the type of</em>
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     *                           imge (that is not an integer type image)</em>
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>     @Override
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">long</strong> getBlankValue() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>         <strong class="jxr_keyword">if</strong> (getBitpix().getHeaderValue() &lt; 0) {
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"No integer blanking value in floating-point images."</span>);
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>         }
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBlankValue();
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>     }
-<a class="jxr_linenumber" name="L248" href="#L248">248</a> 
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">     * Returns the floating-point increment between adjacent integer values in the image. Strictly speaking, only</em>
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">     * integer-type images should define a quantization scaling, but there is no harm in having this value in</em>
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_javadoccomment">     * floating-point images also -- which may be interpreted as a hint for quantization, perhaps.</em>
-<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> <em class="jxr_javadoccomment">     * @return the floating-point quantum that corresponds to the increment of 1 in the integer data representation.</em>
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> <em class="jxr_javadoccomment">     * @see    #getBZero()</em>
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>     @Override
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> getBScale() {
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBScale();
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>     }
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> 
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> <em class="jxr_javadoccomment">     * Returns the floating-point value that corresponds to an 0 integer value in the image. Strictly speaking, only</em>
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> <em class="jxr_javadoccomment">     * integer-type images should define a quantization offset, but there is no harm in having this value in</em>
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> <em class="jxr_javadoccomment">     * floating-point images also -- which may be interpreted as a hint for quantization, perhaps.</em>
-<a class="jxr_linenumber" name="L267" href="#L267">267</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> <em class="jxr_javadoccomment">     * @return the floating point value that correspond to the integer 0 in the image data.</em>
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">     * @see    #getBScale()</em>
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L272" href="#L272">272</a>     @Override
-<a class="jxr_linenumber" name="L273" href="#L273">273</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> getBZero() {
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBZero();
-<a class="jxr_linenumber" name="L275" href="#L275">275</a>     }
-<a class="jxr_linenumber" name="L276" href="#L276">276</a> 
-<a class="jxr_linenumber" name="L277" href="#L277">277</a> }
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>     @Deprecated
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>     <strong class="jxr_keyword">public</strong> <a name="ImageHDU" href="../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a>(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> h, <a name="ImageData" href="../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a> d) {
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>         <strong class="jxr_keyword">super</strong>(h, d);
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>     }
+<a class="jxr_linenumber" name="L182" href="#L182">182</a> 
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> <em class="jxr_javadoccomment">     * Returns the class that can be used to divide this image into tiles that may be processed separately (and in</em>
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> <em class="jxr_javadoccomment">     * parallel).</em>
+<a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     * @return image tiler for this image instance.</em>
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     * @see    ImageData#getTiler()</em>
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>     <strong class="jxr_keyword">public</strong> <a name="StandardImageTiler" href="../../../nom/tam/image/StandardImageTiler.html#StandardImageTiler">StandardImageTiler</a> getTiler() {
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>         <strong class="jxr_keyword">return</strong> myData.getTiler();
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>     }
+<a class="jxr_linenumber" name="L194" href="#L194">194</a> 
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>     @Override
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> info(PrintStream stream) {
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>         <strong class="jxr_keyword">if</strong> (isHeader(myHeader)) {
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>             stream.println(<span class="jxr_string">"  Image"</span>);
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>             stream.println(<span class="jxr_string">"  Image (bad header)"</span>);
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>         }
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> 
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>         stream.println(<span class="jxr_string">"      Header Information:"</span>);
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>         stream.println(<span class="jxr_string">"         BITPIX="</span> + myHeader.getIntValue(BITPIX, -1));
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>         <strong class="jxr_keyword">int</strong> naxis = myHeader.getIntValue(NAXIS, -1);
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>         stream.println(<span class="jxr_string">"         NAXIS="</span> + naxis);
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= naxis; i++) {
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>             stream.println(<span class="jxr_string">"         NAXIS"</span> + i + <span class="jxr_string">"="</span> + myHeader.getIntValue(NAXISn.n(i), -1));
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>         }
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> 
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>         stream.println(<span class="jxr_string">"      Data information:"</span>);
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>             <strong class="jxr_keyword">if</strong> (myData.getData() == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>                 stream.println(<span class="jxr_string">"        No Data"</span>);
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>                 stream.println(<span class="jxr_string">"         "</span> + ArrayFuncs.arrayDescription(myData.getData()));
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>             }
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>             LOG.log(Level.SEVERE, <span class="jxr_string">"Unable to get image data"</span>, e);
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>             stream.println(<span class="jxr_string">"      Unable to get data"</span>);
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>         }
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>     }
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     * Returns the name of the physical unit in which images are represented.</em>
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> <em class="jxr_javadoccomment">     * @return the standard name of the physical unit in which the image is expressed, e.g. &lt;code&gt;"Jy beam^{-1}"&lt;/code&gt;.</em>
+<a class="jxr_linenumber" name="L228" href="#L228">228</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>     @Override
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>     <strong class="jxr_keyword">public</strong> String getBUnit() {
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBUnit();
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>     }
+<a class="jxr_linenumber" name="L233" href="#L233">233</a> 
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L235" href="#L235">235</a> <em class="jxr_javadoccomment">     * Returns the integer value that signifies blank (missing or &lt;code&gt;null&lt;/code&gt;) data in an integer image.</em>
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">     * @return               the integer value used for identifying blank / missing data in integer images.</em>
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     * @throws FitsException if the header does not specify a blanking value or if it is not appropriate for the type of</em>
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     *                           imge (that is not an integer type image)</em>
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>     @Override
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">long</strong> getBlankValue() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>         <strong class="jxr_keyword">if</strong> (getBitpix().getHeaderValue() &lt; 0) {
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"No integer blanking value in floating-point images."</span>);
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>         }
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBlankValue();
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>     }
+<a class="jxr_linenumber" name="L249" href="#L249">249</a> 
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">     * Returns the floating-point increment between adjacent integer values in the image. Strictly speaking, only</em>
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_javadoccomment">     * integer-type images should define a quantization scaling, but there is no harm in having this value in</em>
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">     * floating-point images also -- which may be interpreted as a hint for quantization, perhaps.</em>
+<a class="jxr_linenumber" name="L254" href="#L254">254</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> <em class="jxr_javadoccomment">     * @return the floating-point quantum that corresponds to the increment of 1 in the integer data representation.</em>
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> <em class="jxr_javadoccomment">     * @see    #getBZero()</em>
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>     @Override
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> getBScale() {
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBScale();
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>     }
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> 
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> <em class="jxr_javadoccomment">     * Returns the floating-point value that corresponds to an 0 integer value in the image. Strictly speaking, only</em>
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> <em class="jxr_javadoccomment">     * integer-type images should define a quantization offset, but there is no harm in having this value in</em>
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> <em class="jxr_javadoccomment">     * floating-point images also -- which may be interpreted as a hint for quantization, perhaps.</em>
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> <em class="jxr_javadoccomment">     * @return the floating point value that correspond to the integer 0 in the image data.</em>
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">     * @see    #getBScale()</em>
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L273" href="#L273">273</a>     @Override
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> getBZero() {
+<a class="jxr_linenumber" name="L275" href="#L275">275</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBZero();
+<a class="jxr_linenumber" name="L276" href="#L276">276</a>     }
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> 
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> }
 </pre>
 <hr/>
-<div id="footer">© 1996–2025 nom-tam-fits</div>
+<div id="footer">© 1996–2026 nom-tam-fits</div>
 </body>
 </html>

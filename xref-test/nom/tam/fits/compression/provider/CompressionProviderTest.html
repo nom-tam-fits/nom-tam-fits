@@ -8,8 +8,8 @@
 <div id="overview"><a href="../../../../../../testapidocs/nom/tam/fits/compression/provider/CompressionProviderTest.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> nom.tam.fits.compression.provider;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.Assert;
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Assertions;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * #%L</em>
@@ -48,32 +48,33 @@
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.api.HeaderAccess;
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.api.ICompressParameters;
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="CompressionProviderTest" href="../../../../../nom/tam/fits/compression/provider/CompressionProviderTest.html#CompressionProviderTest">CompressionProviderTest</a> {
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>      @Test
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testNullOptions() {
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>          ICompressorControl compressor = CompressorProvider.findCompressorControl(<strong class="jxr_keyword">null</strong>, <span class="jxr_string">"GZIP_1"</span>, byte.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>          ICompressOption option = compressor.option();
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>          Assert.assertFalse(option.isLossyCompression());
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>          option.setParameters(<strong class="jxr_keyword">null</strong>); <em class="jxr_comment">// nothing should happen ;-)</em>
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>          Assert.assertNull(option.unwrap(String.<strong class="jxr_keyword">class</strong>));
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>          Assert.assertSame(option, option.unwrap(ICompressOption.<strong class="jxr_keyword">class</strong>));
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>      }
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>      @Test
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testNullParameters() <strong class="jxr_keyword">throws</strong> FitsException {
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          ICompressorControl compressor = CompressorProvider.findCompressorControl(<strong class="jxr_keyword">null</strong>, <span class="jxr_string">"GZIP_1"</span>, byte.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          ICompressOption option = compressor.option();
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>          ICompressParameters parameters = option.getCompressionParameters();
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          parameters.addColumnsToTable(<strong class="jxr_keyword">null</strong>);<em class="jxr_comment">// nothing should happen ;-)</em>
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>          Assert.assertSame(parameters, parameters.copy(option));
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          parameters.setValuesInColumn(10000);<em class="jxr_comment">// nothing should happen ;-)</em>
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          parameters.setValuesInHeader((HeaderAccess) <strong class="jxr_keyword">null</strong>);<em class="jxr_comment">// nothing should happen ;-)</em>
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>      }
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  }
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  @SuppressWarnings({<span class="jxr_string">"javadoc"</span>, <span class="jxr_string">"deprecation"</span>})
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> CompressionProviderTest {
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>      @Test
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testNullOptions() {
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>          ICompressorControl compressor = CompressorProvider.findCompressorControl(<strong class="jxr_keyword">null</strong>, <span class="jxr_string">"GZIP_1"</span>, byte.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>          ICompressOption option = compressor.option();
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          Assertions.assertFalse(option.isLossyCompression());
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          option.setParameters(<strong class="jxr_keyword">null</strong>); <em class="jxr_comment">// nothing should happen ;-)</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>          Assertions.assertNull(option.unwrap(String.<strong class="jxr_keyword">class</strong>));
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          Assertions.assertSame(option, option.unwrap(ICompressOption.<strong class="jxr_keyword">class</strong>));
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>      }
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>      @Test
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testNullParameters() <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          ICompressorControl compressor = CompressorProvider.findCompressorControl(<strong class="jxr_keyword">null</strong>, <span class="jxr_string">"GZIP_1"</span>, byte.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          ICompressOption option = compressor.option();
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          ICompressParameters parameters = option.getCompressionParameters();
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          parameters.addColumnsToTable(<strong class="jxr_keyword">null</strong>);<em class="jxr_comment">// nothing should happen ;-)</em>
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          Assertions.assertSame(parameters, parameters.copy(option));
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          parameters.setValuesInColumn(10000);<em class="jxr_comment">// nothing should happen ;-)</em>
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          parameters.setValuesInHeader((HeaderAccess) <strong class="jxr_keyword">null</strong>);<em class="jxr_comment">// nothing should happen ;-)</em>
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>      }
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  }
 </pre>
 <hr/>
-<div id="footer">© 1996–2025 nom-tam-fits</div>
+<div id="footer">© 1996–2026 nom-tam-fits</div>
 </body>
 </html>

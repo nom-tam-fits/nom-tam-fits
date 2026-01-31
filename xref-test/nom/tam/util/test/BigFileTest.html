@@ -39,31 +39,31 @@
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_comment"> * #L%</em>
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertEquals;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> java.io.FileInputStream;
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> java.io.FileInputStream;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.FitsFile;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.FitsInputStream;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Assertions;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.FitsFile;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.FitsInputStream;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="BigFileTest" href="../../../../nom/tam/util/test/BigFileTest.html#BigFileTest">BigFileTest</a> {
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>      @Test
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> test() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>          <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>              <em class="jxr_comment">// First create a 3 GB file.</em>
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>              String fname = System.getenv(<span class="jxr_string">"BIGFILETEST"</span>);
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>              <strong class="jxr_keyword">if</strong> (fname == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>                  System.out.println(<span class="jxr_string">"BIGFILETEST environment not set.  Returning without test"</span>);
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>                  <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>              }
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>              System.out.println(<span class="jxr_string">"Big file test.  Takes quite a while."</span>);
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>              byte[] buf = <strong class="jxr_keyword">new</strong> byte[100000000]; <em class="jxr_comment">// 100 MB</em>
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>              FitsFile bf = <strong class="jxr_keyword">new</strong> FitsFile(fname, <span class="jxr_string">"rw"</span>);
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>              byte sample = 13;
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>          <em class="jxr_comment">// First create a 3 GB file.</em>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>          String fname = System.getenv(<span class="jxr_string">"BIGFILETEST"</span>);
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>          <strong class="jxr_keyword">if</strong> (fname == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>              System.out.println(<span class="jxr_string">"BIGFILETEST environment not set.  Returning without test"</span>);
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>              <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>          }
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          System.out.println(<span class="jxr_string">"Big file test.  Takes quite a while."</span>);
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          byte[] buf = <strong class="jxr_keyword">new</strong> byte[100000000]; <em class="jxr_comment">// 100 MB</em>
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          byte sample = 13;
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          <strong class="jxr_keyword">try</strong> (FitsFile bf = <strong class="jxr_keyword">new</strong> FitsFile(fname, <span class="jxr_string">"rw"</span>)) {
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>              <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 30; i++) {
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>                  bf.write(buf); <em class="jxr_comment">// 30 x 100 MB = 3 GB.</em>
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>                  <strong class="jxr_keyword">if</strong> (i == 24) {
@@ -71,35 +71,31 @@
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>                  } <em class="jxr_comment">// Add a marker.</em>
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>              }
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>              bf.close();
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>              <em class="jxr_comment">// Now try to skip within the file.</em>
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>              bf = <strong class="jxr_keyword">new</strong> FitsFile(fname, <span class="jxr_string">"r"</span>);
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>              <strong class="jxr_keyword">long</strong> skip = 2500000000L; <em class="jxr_comment">// 2.5 G</em>
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>              <strong class="jxr_keyword">long</strong> val1 = bf.getFilePointer();
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>              bf.skipAllBytes(skip);
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>              val1 = bf.getFilePointer() - val1;
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>              <strong class="jxr_keyword">long</strong> val2 = bf.getFilePointer();
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>              <strong class="jxr_keyword">int</strong> val = bf.read();
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>              bf.close();
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>              assertEquals(<span class="jxr_string">"SkipResult"</span>, skip, val1);
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>              assertEquals(<span class="jxr_string">"SkipPos"</span>, skip, val2);
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>              assertEquals(<span class="jxr_string">"SkipVal"</span>, sample, val);
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          }
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          <strong class="jxr_keyword">long</strong> skip = 2500000000L; <em class="jxr_comment">// 2.5 G</em>
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          <em class="jxr_comment">// Now try to skip within the file.</em>
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          <strong class="jxr_keyword">try</strong> (FitsFile bf = <strong class="jxr_keyword">new</strong> FitsFile(fname, <span class="jxr_string">"r"</span>)) {
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>              Assertions.assertEquals(0L, bf.getFilePointer());
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>              bf.skipAllBytes(skip);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>              Assertions.assertEquals(skip, bf.getFilePointer());
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>              Assertions.assertEquals(sample, bf.read());
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>              bf.close();
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          }
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>              FitsInputStream bdis = <strong class="jxr_keyword">new</strong> FitsInputStream(<strong class="jxr_keyword">new</strong> FileInputStream(fname));
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>          <strong class="jxr_keyword">try</strong> (FitsInputStream bdis = <strong class="jxr_keyword">new</strong> FitsInputStream(<strong class="jxr_keyword">new</strong> FileInputStream(fname))) {
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>              bdis.skipAllBytes(skip);
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>              val = bdis.read();
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>              Assertions.assertEquals(sample, bdis.read());
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>              bdis.close();
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>              assertEquals(<span class="jxr_string">"SSkipVal"</span>, sample, val);
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>          } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>              e.printStackTrace(System.err);
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>              <strong class="jxr_keyword">throw</strong> e;
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>          }
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>      }
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  }
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>          }
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>      }
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  }
 </pre>
 <hr/>
-<div id="footer">© 1996–2025 nom-tam-fits</div>
+<div id="footer">© 1996–2026 nom-tam-fits</div>
 </body>
 </html>
