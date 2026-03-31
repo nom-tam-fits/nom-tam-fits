@@ -679,7 +679,7 @@ Maintenance release with bug fixes.
 
  - [#106] Remove redundant spaces in `HIERARCH` keys . (by @ritchieGitHub)
 
- - [#105] Fix integer overflow in case of negative values in combination with a defined blank value of `Integer.MIN_VANUE`. (by @ritchieGitHub)
+ - [#105] Fix integer overflow in case of negative values in combination with a defined blank value of `Integer.MIN_VALUE`. (by @ritchieGitHub)
 
  - [#104] make the worker threads deamons so they do not hold of a shutdown enhancement. (by @ritchieGitHub)
 
