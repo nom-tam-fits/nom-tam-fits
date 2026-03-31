@@ -150,7 +150,7 @@ Bug fix release.
 
 ### Deprecated
 
- - [#657] Deprecated the `CXCStclShareExt` enum. Not only its name was completely botched, its definitions are now included properly in the `CXCExt` and `STScIExt` dictionaries (without reduntant definitions). (by @attipaci)
+ - [#657] Deprecated the `CXCStclShareExt` enum. Not only its name was completely botched, its definitions are now included properly in the `CXCExt` and `STScIExt` dictionaries (without redundant definitions). (by @attipaci)
 
  - [#657] Deprecated a few extension keywords, which are either part of the standard or are recognised by HEASARC as commonly used keywords. The mentioned more common definitions should be used instead going forward. (by @attipaci)
 
