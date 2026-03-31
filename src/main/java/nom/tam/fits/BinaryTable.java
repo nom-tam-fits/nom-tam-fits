@@ -3366,7 +3366,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
     /**
      * Sets a table entry to the specified string value. Scalar column will attempt to parse the value, while
-     * <code>byte[]</code> and <coce>char[]</code> type columns will convert the string provided the string's length
+     * <code>byte[]</code> and <code>char[]</code> type columns will convert the string provided the string's length
      * does not exceed the entry size for these columns (the array elements will be padded with zeroes). Note, that
      * scalar <code>byte</code> columns will parse the string as a number (not as a single ASCII character).
      * 
@@ -3375,7 +3375,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @param  value                    the new boolean value
      * 
      * @throws ClassCastException       if the specified column is not a scalar type, and neither it is a
-     *                                      <code>byte[]</code> or <coce>char[]</code> column.
+     *                                      <code>byte[]</code> or <code>char[]</code> column.
      * @throws IllegalArgumentException if the String is too long to contain in the column.
      * @throws NumberFormatException    if the numerical value could not be parsed.
      * @throws FitsException            if the table element could not be altered
