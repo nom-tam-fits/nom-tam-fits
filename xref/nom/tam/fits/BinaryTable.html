@@ -3374,7 +3374,7 @@
 <a class="jxr_linenumber" name="L3366" href="#L3366">3366</a> 
 <a class="jxr_linenumber" name="L3367" href="#L3367">3367</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3368" href="#L3368">3368</a> <em class="jxr_javadoccomment">     * Sets a table entry to the specified string value. Scalar column will attempt to parse the value, while</em>
-<a class="jxr_linenumber" name="L3369" href="#L3369">3369</a> <em class="jxr_javadoccomment">     * &lt;code&gt;byte[]&lt;/code&gt; and &lt;coce&gt;char[]&lt;/code&gt; type columns will convert the string provided the string's length</em>
+<a class="jxr_linenumber" name="L3369" href="#L3369">3369</a> <em class="jxr_javadoccomment">     * &lt;code&gt;byte[]&lt;/code&gt; and &lt;code&gt;char[]&lt;/code&gt; type columns will convert the string provided the string's length</em>
 <a class="jxr_linenumber" name="L3370" href="#L3370">3370</a> <em class="jxr_javadoccomment">     * does not exceed the entry size for these columns (the array elements will be padded with zeroes). Note, that</em>
 <a class="jxr_linenumber" name="L3371" href="#L3371">3371</a> <em class="jxr_javadoccomment">     * scalar &lt;code&gt;byte&lt;/code&gt; columns will parse the string as a number (not as a single ASCII character).</em>
 <a class="jxr_linenumber" name="L3372" href="#L3372">3372</a> <em class="jxr_javadoccomment">     * </em>
@@ -3383,7 +3383,7 @@
 <a class="jxr_linenumber" name="L3375" href="#L3375">3375</a> <em class="jxr_javadoccomment">     * @param  value                    the new boolean value</em>
 <a class="jxr_linenumber" name="L3376" href="#L3376">3376</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L3377" href="#L3377">3377</a> <em class="jxr_javadoccomment">     * @throws ClassCastException       if the specified column is not a scalar type, and neither it is a</em>
-<a class="jxr_linenumber" name="L3378" href="#L3378">3378</a> <em class="jxr_javadoccomment">     *                                      &lt;code&gt;byte[]&lt;/code&gt; or &lt;coce&gt;char[]&lt;/code&gt; column.</em>
+<a class="jxr_linenumber" name="L3378" href="#L3378">3378</a> <em class="jxr_javadoccomment">     *                                      &lt;code&gt;byte[]&lt;/code&gt; or &lt;code&gt;char[]&lt;/code&gt; column.</em>
 <a class="jxr_linenumber" name="L3379" href="#L3379">3379</a> <em class="jxr_javadoccomment">     * @throws IllegalArgumentException if the String is too long to contain in the column.</em>
 <a class="jxr_linenumber" name="L3380" href="#L3380">3380</a> <em class="jxr_javadoccomment">     * @throws NumberFormatException    if the numerical value could not be parsed.</em>
 <a class="jxr_linenumber" name="L3381" href="#L3381">3381</a> <em class="jxr_javadoccomment">     * @throws FitsException            if the table element could not be altered</em>
