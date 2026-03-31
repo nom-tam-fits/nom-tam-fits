@@ -15,7 +15,7 @@ Maintenance release with version bump. No significant API changes, but a lot of 
 
 ### Deprecated
 
- - [#823] Classes and members that were already documented as deprecated, are now in fact annotated as such also. I.e., the compiler will warn by default when the deprecated API is used in your application code. You can disable the warnings at the compiler level (e.g. `-Xlint:-deprecation`), or else you can use the `@SuppressWarnings("deprecate")` annotation in your source code, on top of your classes / methods that reference the deprecated entities. (by @attipaci)
+ - [#823] Classes and members that were already documented as deprecated, are now in fact annotated as such also. I.e., the compiler will warn by default when the deprecated API is used in your application code. You can disable the warnings at the compiler level (e.g. `-Xlint:-deprecation`), or else you can use the `@SuppressWarnings("deprecation")` annotation in your source code, on top of your classes / methods that reference the deprecated entities. (by @attipaci)
  
  - [#823] Deprecated `MultiArrayIterator` class. Its generic type did not make sense, referring to both the array type and the element type at the same time. As such it was only really usable with raw types.
 
