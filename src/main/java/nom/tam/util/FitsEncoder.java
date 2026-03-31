@@ -192,7 +192,7 @@ public class FitsEncoder extends OutputEncoder {
      * {@link OutputBuffer#flush()} to ensure that everything is written to the output. Note, the this call may flush
      * the contents of the conversion buffer to the output if it needs more conversion space than what is avaiable.
      *
-     * @param  b           the Java array containing the values
+     * @param  c           the Java array containing the values
      * @param  start       the offset in the array from where to start converting values.
      * @param  length      the number of values to convert to FITS representation
      *
@@ -233,7 +233,7 @@ public class FitsEncoder extends OutputEncoder {
      * {@link OutputBuffer#flush()} to ensure that everything is written to the output. Note, the this call may flush
      * the contents of the conversion buffer to the output if it needs more conversion space than what is avaiable.
      *
-     * @param  b           the Java array containing the values
+     * @param  str         the Java array containing the values
      * @param  start       the offset in the array from where to start converting values.
      * @param  length      the number of values to convert to FITS representation
      *

@@ -2312,11 +2312,13 @@ public class Header implements FitsElement {
             LOG.warning("setNaxis ignored because axis less than 0");
             return;
         }
+
         if (axis == 1) {
             iter.setKey(NAXIS.key());
-        } else if (axis > 1) {
+        } else {
             iter.setKey(NAXISn.n(axis - 1).key());
         }
+
         if (iter.hasNext()) {
             iter.next();
         }
@@ -2670,7 +2672,7 @@ public class Header implements FitsElement {
         }
         HeaderCard card = iter.next();
         if (!card.getKey().equals(key)) {
-            throw new FitsException("Key " + key + " not found where expected." + "Found " + card.getKey());
+            throw new FitsException("Key " + key + " not found where expected. Found " + card.getKey());
         }
     }
 

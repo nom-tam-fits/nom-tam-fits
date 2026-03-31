@@ -1868,12 +1868,14 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * As of 1.18, the argument can be a boxed primitive for a coulmn containing a single scalar-valued entry (row).
      * </p>
      * 
-     * @see #addVariableSizeColumn(Object)
-     * @see #addComplexColumn(Object, Class)
-     * @see #addBitsColumn(Object)
-     * @see #convertToBits(int)
-     * @see #addStringColumn(String[])
-     * @see ColumnDesc#name(String)
+     * @param o column data array
+     * 
+     * @see     #addVariableSizeColumn(Object)
+     * @see     #addComplexColumn(Object, Class)
+     * @see     #addBitsColumn(Object)
+     * @see     #convertToBits(int)
+     * @see     #addStringColumn(String[])
+     * @see     ColumnDesc#name(String)
      */
     @Override
     public int addColumn(Object o) throws FitsException {
@@ -1899,8 +1901,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * affects how <code>boolean</code> arrays are stored (as logical bytes in compatibility mode, or as packed bits
      * otherwise).
      * 
-     * @param Whether to add the column in a back compatibility mode with versions prior to 1.18. If <code>true</code>
-     *                    <code>boolean</code> arrays will stored as logical bytes, otherwise as packed bits.
+     * @param o      The column data array
+     * @param compat Whether to add the column in a back compatibility mode with versions prior to 1.18. If
+     *                   <code>true</code> <code>boolean</code> arrays will stored as logical bytes, otherwise as packed
+     *                   bits.
      */
     private int addColumn(Object o, boolean compat) throws FitsException {
         o = ArrayFuncs.objectToArray(o, compat);
@@ -2838,6 +2842,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     public final double getDouble(int row, int col) throws FitsException, ClassCastException {
         Number n = getNumber(row, col);
 
+        if (n == null) {
+            return Double.NaN;
+        }
+
         if (!(n instanceof Float || n instanceof Double)) {
             Quantizer q = getDescriptor(col).getQuantizer();
             if (q != null) {
@@ -2845,7 +2853,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             }
         }
 
-        return n == null ? Double.NaN : n.doubleValue();
+        return n.doubleValue();
     }
 
     /**
@@ -3543,7 +3551,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @param  c             The column descriptor, specifying the data type
      * @param  o             The variable-length data
-     * @param  p             The heap pointer, where this element was stored on the heap before, or <code>null</code> if
+     * @param  oldPointer    The heap pointer, where this element was stored on the heap before, or <code>null</code> if
      *                           we aren't replacing an earlier entry.
      * 
      * @return               the heap pointer information, either <code>int[2]</code> or else a <code>long[2]</code>
@@ -3562,7 +3570,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @param  h             The heap object to use.
      * @param  c             The column descriptor, specifying the data type
      * @param  o             The variable-length data in Java form.
-     * @param  p             The heap pointer, where this element was stored on the heap before, or <code>null</code> if
+     * @param  oldPointer    The heap pointer, where this element was stored on the heap before, or <code>null</code> if
      *                           we aren't replacing an earlier entry.
      * 
      * @return               the heap pointer information, either <code>int[2]</code> or else a <code>long[2]</code>

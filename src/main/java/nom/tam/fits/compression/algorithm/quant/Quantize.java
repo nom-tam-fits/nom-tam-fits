@@ -142,11 +142,9 @@ public class Quantize {
      * flux(i-2) - flux(i+2))) The returned estimates are the median of the values that are computed for each row of the
      * image.
      * 
-     * @param arrayIn   2 dimensional tiledImageOperation of image pixels
-     * @param nx        number of pixels in each row of the image
-     * @param ny        number of rows in the image
-     * @param nullcheck check for null values, if true
-     * @param nullvalue value of null pixels, if nullcheck is true
+     * @param arrayIn 2 dimensional tiledImageOperation of image pixels
+     * @param nx      number of pixels in each row of the image
+     * @param ny      number of rows in the image
      */
     private void calculateNoise(double[] arrayIn, int nx, int ny) {
         DoubleArrayPointer array = new DoubleArrayPointer(arrayIn);

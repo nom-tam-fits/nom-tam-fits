@@ -531,8 +531,8 @@ public abstract class OutputEncoder {
          * Puts an array of 64-bit values into the conversion buffer, flushing the buffer intermittently as necessary to
          * make room as it goes.
          *
-         * @param  the         FITS element type of the the 1D array
-         * @param  src         a 1D array of values of the specified element type
+         * @param  e           FITS element type of the the 1D array
+         * @param  array       a 1D array of values of the specified element type
          * @param  start       the index of the first element to convert
          * @param  length      the number of elements to convert
          *
@@ -540,15 +540,15 @@ public abstract class OutputEncoder {
          *                         conversion.
          */
         @SuppressWarnings("unchecked")
-        private <B extends Buffer> void put(ElementType<B> e, Object dst, int from, int n)
+        private <B extends Buffer> void put(ElementType<B> e, Object array, int start, int length)
                 throws EOFException, IOException {
             int got = 0;
 
-            while (got < n) {
+            while (got < length) {
                 need(e.size());
                 assertView(e);
-                int m = Math.min(n - got, view.remaining());
-                e.putArray((B) view, dst, from + got, m);
+                int m = Math.min(length - got, view.remaining());
+                e.putArray((B) view, array, start + got, m);
                 buffer.position(buffer.position() + m * e.size());
                 got += m;
             }
