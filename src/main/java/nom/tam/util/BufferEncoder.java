@@ -114,7 +114,7 @@ public abstract class BufferEncoder extends FitsEncoder {
 
     @Deprecated
     @Override
-    protected void write(byte[] b, int from, int len) throws IOException {
+    protected synchronized void write(byte[] b, int from, int len) throws IOException {
         throw new UnsupportedOperationException(
                 "You need to override this with an implementation that writes to the desired output.");
     }

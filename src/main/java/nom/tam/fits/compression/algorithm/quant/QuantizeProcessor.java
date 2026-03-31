@@ -188,7 +188,7 @@ public class QuantizeProcessor {
         }
     }
 
-    private class NullFilter extends PixelFilter {
+    private static class NullFilter extends PixelFilter {
 
         private final double nullValue;
 
@@ -224,7 +224,7 @@ public class QuantizeProcessor {
         }
     }
 
-    private class PixelFilter {
+    private static class PixelFilter {
 
         private final PixelFilter next;
 
@@ -245,7 +245,7 @@ public class QuantizeProcessor {
         }
     }
 
-    private class ZeroFilter extends PixelFilter {
+    private static class ZeroFilter extends PixelFilter {
 
         ZeroFilter(PixelFilter next) {
             super(next);

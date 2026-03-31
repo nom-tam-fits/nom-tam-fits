@@ -44,7 +44,7 @@ import java.util.Arrays;
 public class Quantize {
 
     @Deprecated
-    class DoubleArrayPointer {
+    static class DoubleArrayPointer {
 
         private final double[] array;
 
@@ -169,7 +169,7 @@ public class Quantize {
         double[] diffs5 = new double[ny];
         /* loop over each row of the image */
         for (int jj = 0; jj < ny; jj++) {
-            rowpix = array.copy(jj * nx); /* point to first pixel in the row */
+            rowpix = array.copy((long) jj * nx); /* point to first pixel in the row */
             int ii = 0;
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ii);
             if (ii == nx) {

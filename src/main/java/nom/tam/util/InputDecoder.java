@@ -262,19 +262,19 @@ public abstract class InputDecoder {
             return buf.get((byte[]) o, 0, length);
         }
         if (o instanceof short[]) {
-            return buf.get((short[]) o, 0, length) * Short.BYTES;
+            return (long) buf.get((short[]) o, 0, length) * Short.BYTES;
         }
         if (o instanceof int[]) {
-            return buf.get((int[]) o, 0, length) * Integer.BYTES;
+            return (long) buf.get((int[]) o, 0, length) * Integer.BYTES;
         }
         if (o instanceof float[]) {
-            return buf.get((float[]) o, 0, length) * Float.BYTES;
+            return (long) buf.get((float[]) o, 0, length) * Float.BYTES;
         }
         if (o instanceof long[]) {
-            return buf.get((long[]) o, 0, length) * Long.BYTES;
+            return (long) buf.get((long[]) o, 0, length) * Long.BYTES;
         }
         if (o instanceof double[]) {
-            return buf.get((double[]) o, 0, length) * Double.BYTES;
+            return (long) buf.get((double[]) o, 0, length) * Double.BYTES;
         }
         if (!(o instanceof Object[])) {
             throw new IllegalArgumentException("Not a numerical image type: " + o.getClass().getName());

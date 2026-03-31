@@ -117,7 +117,7 @@ public abstract class BufferDecoder extends FitsDecoder {
 
     @Deprecated
     @Override
-    protected int read(byte[] buf, int offset, int length) throws IOException {
+    protected synchronized int read(byte[] buf, int offset, int length) throws IOException {
         throw new UnsupportedOperationException(
                 "You need to override this with an implementation that reads from the desired input.");
     }

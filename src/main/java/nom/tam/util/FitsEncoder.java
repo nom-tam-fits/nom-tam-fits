@@ -631,7 +631,7 @@ public class FitsEncoder extends OutputEncoder {
         }
 
         if (o instanceof ComplexValue) {
-            return 2 * (o instanceof ComplexValue.Float ? ElementType.FLOAT.size() : ElementType.DOUBLE.size());
+            return 2L * (o instanceof ComplexValue.Float ? ElementType.FLOAT.size() : ElementType.DOUBLE.size());
         }
 
         Class<?> type = o.getClass();
@@ -647,7 +647,7 @@ public class FitsEncoder extends OutputEncoder {
         }
 
         if (type.isArray()) {
-            return Array.getLength(o) * eType.size();
+            return (long) Array.getLength(o) * eType.size();
         }
 
         return eType.size();

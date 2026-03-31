@@ -589,7 +589,7 @@ public class HCompress {
          */
         nqx2 = (nqx + 1) / 2;
         nqy2 = (nqy + 1) / 2;
-        bmax = (nqx2 * nqy2 + 1) / 2;
+        bmax = ((long) nqx2 * nqy2 + 1) / 2;
         /*
          * We're indexing A as a 2-D tiledImageOperation with dimensions (nqx,nqy). Scratch is 2-D with dimensions
          * (nqx/2,nqy/2) rounded up. Buffer is used to store string of codes for output.
