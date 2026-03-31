@@ -806,7 +806,7 @@ full Image compression support
 
  - [#48] Added a [de]compression API supporting all compression methods in the proposed updates to the FITS standard. (by @ritchieGitHub)
 
- - [#72] The formatting of hierarch card keys can mow be be controlled. Two formats are provided. (by @ritchieGitHub)
+ - [#72] The formatting of hierarch card keys can now be controlled. Two formats are provided. (by @ritchieGitHub)
 
 
 ### Changed
