@@ -44,7 +44,7 @@ import java.util.Arrays;
 public class Quantize {
 
     @Deprecated
-    class DoubleArrayPointer {
+    static class DoubleArrayPointer {
 
         private final double[] array;
 
@@ -142,11 +142,9 @@ public class Quantize {
      * flux(i-2) - flux(i+2))) The returned estimates are the median of the values that are computed for each row of the
      * image.
      * 
-     * @param arrayIn   2 dimensional tiledImageOperation of image pixels
-     * @param nx        number of pixels in each row of the image
-     * @param ny        number of rows in the image
-     * @param nullcheck check for null values, if true
-     * @param nullvalue value of null pixels, if nullcheck is true
+     * @param arrayIn 2 dimensional tiledImageOperation of image pixels
+     * @param nx      number of pixels in each row of the image
+     * @param ny      number of rows in the image
      */
     private void calculateNoise(double[] arrayIn, int nx, int ny) {
         DoubleArrayPointer array = new DoubleArrayPointer(arrayIn);
@@ -171,7 +169,7 @@ public class Quantize {
         double[] diffs5 = new double[ny];
         /* loop over each row of the image */
         for (int jj = 0; jj < ny; jj++) {
-            rowpix = array.copy(jj * nx); /* point to first pixel in the row */
+            rowpix = array.copy((long) jj * nx); /* point to first pixel in the row */
             int ii = 0;
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ii);
             if (ii == nx) {

@@ -298,7 +298,7 @@ public final class FitsUtil {
      * trims trailing spaces but not leading ones.
      * 
      * @param  bytes      an array of ASCII bytes
-     * @param  offset     the array index at which the string begins
+     * @param  pos        the array index at which the string begins
      * @param  maxLen     the maximum number of bytes to extract from the position
      * @param  terminator the byte value that terminates the string, such as 0x00.
      * 
@@ -812,15 +812,14 @@ public final class FitsUtil {
      * Extracts strings from a packed delimited byte sequence. Strings start either immediately after the prior string
      * reached its maximum length, or else immediately after the specified delimiter byte value.
      * 
-     * @param  bytes  bytes containing the packed strings
-     * @param  maxlen the maximum length of individual string components
-     * @param  delim  the byte value that delimits strings shorter than the maximum length
+     * @param  bytes bytes containing the packed strings
+     * @param  delim the byte value that delimits strings shorter than the maximum length
      * 
-     * @return        An array of the extracted strings
+     * @return       An array of the extracted strings
      *
-     * @see           #stringsToDelimitedBytes(String[], int, byte)
+     * @see          #stringsToDelimitedBytes(String[], int, byte)
      * 
-     * @since         1.18
+     * @since        1.18
      */
     private static String[] delimitedBytesToStrings(byte[] bytes, byte delim) {
         ArrayList<String> s = new ArrayList<>();

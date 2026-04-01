@@ -1157,7 +1157,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
          * 
          * @param  from        the zero-based row index of the first column entry to write
          * @param  n           the number of consecutive rows to write
-         * @param  in          the output to write to
+         * @param  out         the output to write to
          * 
          * @throws IOException if the entry could not be written
          */

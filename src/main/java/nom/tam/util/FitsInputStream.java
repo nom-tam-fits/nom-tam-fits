@@ -101,7 +101,7 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     }
 
     @Override
-    public int read() throws IOException {
+    public synchronized int read() throws IOException {
         int i = super.read();
         if (i >= 0) {
             check.put((byte) i);
@@ -113,7 +113,7 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     }
 
     @Override
-    public int read(byte[] b, int from, int len) throws IOException {
+    public synchronized int read(byte[] b, int from, int len) throws IOException {
         int n = super.read(b, from, len);
         for (int i = 0; i < n;) {
             int l = Math.min(n - i, check.remaining());
@@ -218,7 +218,7 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     }
 
     @Override
-    public long skip(long n) throws IOException {
+    public synchronized long skip(long n) throws IOException {
         byte[] b = new byte[FitsFactory.FITS_BLOCK_SIZE];
 
         // Always read so we can checksum.
