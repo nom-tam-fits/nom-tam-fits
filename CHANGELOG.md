@@ -15,7 +15,7 @@ Maintenance release with version bump. No significant API changes, but a lot of 
 
 ### Deprecated
 
- - [#823] Classes and members that were already documented as deprecated, are now in fact annotated as such also. I.e., the compiler will warn by default when the deprecated API is used in your application code. You can disable the warnings at the compiler level (e.g. `-Xlint:-deprecation`), or else you can use the `@SuppressWarnings("deprecate")` annotation in your source code, on top of your classes / methods that reference the deprecated entities. (by @attipaci)
+ - [#823] Classes and members that were already documented as deprecated, are now in fact annotated as such also. I.e., the compiler will warn by default when the deprecated API is used in your application code. You can disable the warnings at the compiler level (e.g. `-Xlint:-deprecation`), or else you can use the `@SuppressWarnings("deprecation")` annotation in your source code, on top of your classes / methods that reference the deprecated entities. (by @attipaci)
  
  - [#823] Deprecated `MultiArrayIterator` class. Its generic type did not make sense, referring to both the array type and the element type at the same time. As such it was only really usable with raw types.
 
@@ -150,7 +150,7 @@ Bug fix release.
 
 ### Deprecated
 
- - [#657] Deprecated the `CXCStclShareExt` enum. Not only its name was completely botched, its definitions are now included properly in the `CXCExt` and `STScIExt` dictionaries (without reduntant definitions). (by @attipaci)
+ - [#657] Deprecated the `CXCStclShareExt` enum. Not only its name was completely botched, its definitions are now included properly in the `CXCExt` and `STScIExt` dictionaries (without redundant definitions). (by @attipaci)
 
  - [#657] Deprecated a few extension keywords, which are either part of the standard or are recognised by HEASARC as commonly used keywords. The mentioned more common definitions should be used instead going forward. (by @attipaci)
 
@@ -679,7 +679,7 @@ Maintenance release with bug fixes.
 
  - [#106] Remove redundant spaces in `HIERARCH` keys . (by @ritchieGitHub)
 
- - [#105] Fix integer overflow in case of negative values in combination with a defined blank value of `Integer.MIN_VANUE`. (by @ritchieGitHub)
+ - [#105] Fix integer overflow in case of negative values in combination with a defined blank value of `Integer.MIN_VALUE`. (by @ritchieGitHub)
 
  - [#104] make the worker threads deamons so they do not hold of a shutdown enhancement. (by @ritchieGitHub)
 
@@ -806,7 +806,7 @@ full Image compression support
 
  - [#48] Added a [de]compression API supporting all compression methods in the proposed updates to the FITS standard. (by @ritchieGitHub)
 
- - [#72] The formatting of hierarch card keys can mow be be controlled. Two formats are provided. (by @ritchieGitHub)
+ - [#72] The formatting of hierarch card keys can now be controlled. Two formats are provided. (by @ritchieGitHub)
 
 
 ### Changed
