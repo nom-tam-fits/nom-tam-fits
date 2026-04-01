@@ -5,6 +5,18 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+Upcoming maintenance release, possibly around June 15, 2026.
+
+### Changed
+
+ - [#840] Changelog typos fixed by AI.
+ 
+ - [#841] Various code quality fixes for issues spotted by Github's code scanning, such as missing synchronization in subclasses, 
+   widening integer arithmetics, making some inner classes static, and bad Javadoc `@param` tags.
+   
+
 ## [1.22.0] - 2026-03-31
 
 Maintenance release with version bump. No significant API changes, but a lot of the previously announced deprecations are now actually in effect. Other than that, this release is mainly just a lot of cleanup of the test suite, and javadoc warnings.
