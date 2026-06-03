@@ -18,7 +18,7 @@
   <organization>
     <name>nom-tam-fits</name>
   </organization>
-  <url>http://nom-tam-fits.github.io/nom-tam-fits</url>
+  <url>https://nom-tam-fits.github.io/nom-tam-fits</url>
   
   <developers>
   
@@ -32,7 +32,7 @@
         <role>Admin</role>
       </roles>
       <properties>
-        <picUrl>http://1.gravatar.com/avatar/cc5454473320275f87bcae3c13aec99d</picUrl>
+        <picUrl>https://1.gravatar.com/avatar/cc5454473320275f87bcae3c13aec99d</picUrl>
       </properties>
       <url>https://www.sigmyne.com/attila</url>
     </developer>
@@ -69,7 +69,7 @@
         <role>Admin</role>
       </roles>
       <properties>
-        <picUrl>http://www.gravatar.com/avatar/9e2c2e7aa94335b72952a4b2d56bfc89.png</picUrl>
+        <picUrl>https://www.gravatar.com/avatar/9e2c2e7aa94335b72952a4b2d56bfc89.png</picUrl>
       </properties>
     </developer>
   
@@ -82,7 +82,7 @@
         <role>Admin</role>
       </roles>
       <properties>
-        <picUrl>http://www.gravatar.com/avatar/6f82a608d349cc24f05604242422b1b8.png</picUrl>
+        <picUrl>https://www.gravatar.com/avatar/6f82a608d349cc24f05604242422b1b8.png</picUrl>
       </properties>
     </developer>
     
