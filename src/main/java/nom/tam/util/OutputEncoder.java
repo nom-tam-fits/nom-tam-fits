@@ -214,12 +214,12 @@ public abstract class OutputEncoder {
      * {@link #flush()} call to the output. The caller need not worry about space remaining in the buffer. As new data
      * is placed (put) into the buffer, the buffer will automatically flush the contents to the output to make space for
      * new elements as it goes. The caller only needs to call the final {@link #flush()}, to ensure that all elements
-     * bufferes so far are written to the output.
+     * buffered so far are written to the output.
      * </p>
      *
      * <pre>
      * short[] shortArray = new short[100];
-     * float[] floaTarray = new float[48];
+     * float[] floatTarray = new float[48];
      *
      * // populate the arrays with data...
      *
@@ -369,7 +369,7 @@ public abstract class OutputEncoder {
         }
 
         /**
-         * Puts an 4-byte single-precision floating point value into the conversion buffer, making space for it as
+         * Puts a 4-byte single-precision floating point value into the conversion buffer, making space for it as
          * needed by flushing the current buffer contents to the output as necessary.
          *
          * @param  f           the 32-bit single-precision floating point value

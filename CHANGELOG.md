@@ -11,7 +11,7 @@ Release candidate for the upcoming maintenance release, possibly around June 15,
 
 ## Fixed 
 
- - [#841] Various code quality fixes for issues spotted by Github's code scanning, such as missing synchronization in subclasses, widening integer arithmetics, making some inner classes static, and bad Javadoc `@param` tags. (by @attipaci)
+ - [#841] Various code quality fixes for issues spotted by GitHub's code scanning, such as missing synchronization in subclasses, widening integer arithmetics, making some inner classes static, and bad Javadoc `@param` tags. (by @attipaci)
    
 ## Changed
 
@@ -387,7 +387,7 @@ Feature release with compression fixes and many improvements.
 
  - [#377] Fixed use of `ZDITHER0` keyword to restore or record random generator seed when dithering is used in (de)compression. (by @attipaci)
 
- - [#349] Fixed tiled (de)compresssion of some quantized images via GZIP. (by @attipaci, @thanks to @bogdanni and @keastrid)
+ - [#349] Fixed tiled (de)compression of some quantized images via GZIP. (by @attipaci, thanks to @bogdanni and @keastrid)
 
  - [#436] Fixed incorrect handling of `CONTINUE` keywords with no quoted string value (a regression since 1.16). (by @attipaci)
 
@@ -412,7 +412,7 @@ Feature release with compression fixes and many improvements.
 
  - [#335] Added `NullDataHDU` for more intuitive support for header only HDUs with no associated data. (by @attipaci)
 
- - [#352] Added support for alternative `RandomAccess` immplementations. (by @at88mph)
+ - [#352] Added support for alternative `RandomAccess` implementations. (by @at88mph)
 
  - [#183] Added support for `ComplexValue`-based column in `BinaryTable` (by @attipaci)
 
@@ -554,7 +554,7 @@ Improved image compression, checksum support, and incremental writing
 
  - [#323] `Fits.setChecksum()` will now checksum all HDUs, including those not already loaded from disk -- keeping data in deferred read mode if possible. (by @attipaci)
 
- - [#311] Duplicate header keys, during parsing, are repoted though separate logger instance from Header's, with verbosity controlled via `Header.setParserWarningsEnabled(boolean)`. (by @attipaci)
+ - [#311] Duplicate header keys, during parsing, are reported through separate logger instance from Header's, with verbosity controlled via `Header.setParserWarningsEnabled(boolean)`. (by @attipaci)
 
  - [#292] Suppress repeated duplicate keyword warnings when parsing and improve checks for FITS standard violations. Added `Header.getDuplicateKeySet()` method to check which keywords have duplicates. (by @attipaci)
 
