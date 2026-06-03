@@ -5,18 +5,23 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [1.22.1-rc1] - 2026-06-03
 
 Upcoming maintenance release, possibly around June 15, 2026.
 
-### Changed
+## Fixed 
+
+ - [#841] Various code quality fixes for issues spotted by Github's code scanning, such as missing synchronization in subclasses, widening integer arithmetics, making some inner classes static, and bad Javadoc `@param` tags. (by @attipaci)
+   
+## Changed
 
  - [#840] Changelog typos fixed by AI. (by @attipaci)
  
- - [#841] Various code quality fixes for issues spotted by Github's code scanning, such as missing synchronization in subclasses, widening integer arithmetics, making some inner classes static, and bad Javadoc `@param` tags. (by @attipaci)
-   
  - [#847] Improved handling of `NumberFormatException`, by throwing a `HeaderCardException` / `FitsException` instead when these result from string that do not conform to the FITS standard. (by @attipaci)
-   
+ 
+ - [#848] `Stokes.forCoordinateValue()` throws an `IndexOutOfBoundsException` instead of returning `null` when the argument is 0. (Stokes parameters are defined only
+   for the integer coordinate values [1:4] (single-ended) and [-1:-8] (cross-polarization), but undefined for the value 0 between the two sets.) (by @attipaci)   
+
 
 ## [1.22.0] - 2026-03-31
 
