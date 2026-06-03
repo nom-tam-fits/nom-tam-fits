@@ -11,10 +11,11 @@ Upcoming maintenance release, possibly around June 15, 2026.
 
 ### Changed
 
- - [#840] Changelog typos fixed by AI.
+ - [#840] Changelog typos fixed by AI. (by @attipaci)
  
- - [#841] Various code quality fixes for issues spotted by Github's code scanning, such as missing synchronization in subclasses, 
-   widening integer arithmetics, making some inner classes static, and bad Javadoc `@param` tags.
+ - [#841] Various code quality fixes for issues spotted by Github's code scanning, such as missing synchronization in subclasses, widening integer arithmetics, making some inner classes static, and bad Javadoc `@param` tags. (by @attipaci)
+   
+ - [#847] Improved handling of `NumberFormatException`, by throwing a `HeaderCardException` / `FitsException` instead when these result from string that do not conform to the FITS standard. (by @attipaci)
    
 
 ## [1.22.0] - 2026-03-31
