@@ -222,12 +222,12 @@
 <a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">     * {@link #flush()} call to the output. The caller need not worry about space remaining in the buffer. As new data</em>
 <a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">     * is placed (put) into the buffer, the buffer will automatically flush the contents to the output to make space for</em>
 <a class="jxr_linenumber" name="L216" href="#L216">216</a> <em class="jxr_javadoccomment">     * new elements as it goes. The caller only needs to call the final {@link #flush()}, to ensure that all elements</em>
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">     * bufferes so far are written to the output.</em>
+<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">     * buffered so far are written to the output.</em>
 <a class="jxr_linenumber" name="L218" href="#L218">218</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L219" href="#L219">219</a> <em class="jxr_javadoccomment">     *</em>
 <a class="jxr_linenumber" name="L220" href="#L220">220</a> <em class="jxr_javadoccomment">     * &lt;pre&gt;</em>
 <a class="jxr_linenumber" name="L221" href="#L221">221</a> <em class="jxr_javadoccomment">     * short[] shortArray = new short[100];</em>
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> <em class="jxr_javadoccomment">     * float[] floaTarray = new float[48];</em>
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> <em class="jxr_javadoccomment">     * float[] floatTarray = new float[48];</em>
 <a class="jxr_linenumber" name="L223" href="#L223">223</a> <em class="jxr_javadoccomment">     *</em>
 <a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">     * // populate the arrays with data...</em>
 <a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     *</em>
@@ -377,7 +377,7 @@
 <a class="jxr_linenumber" name="L369" href="#L369">369</a>         }
 <a class="jxr_linenumber" name="L370" href="#L370">370</a> 
 <a class="jxr_linenumber" name="L371" href="#L371">371</a>         <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L372" href="#L372">372</a> <em class="jxr_javadoccomment">         * Puts an 4-byte single-precision floating point value into the conversion buffer, making space for it as</em>
+<a class="jxr_linenumber" name="L372" href="#L372">372</a> <em class="jxr_javadoccomment">         * Puts a 4-byte single-precision floating point value into the conversion buffer, making space for it as</em>
 <a class="jxr_linenumber" name="L373" href="#L373">373</a> <em class="jxr_javadoccomment">         * needed by flushing the current buffer contents to the output as necessary.</em>
 <a class="jxr_linenumber" name="L374" href="#L374">374</a> <em class="jxr_javadoccomment">         *</em>
 <a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">         * @param  f           the 32-bit single-precision floating point value</em>

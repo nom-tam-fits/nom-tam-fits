@@ -84,7 +84,7 @@
 </li>
       <li><a href="index.html">nom.tam.fits</a><span class="divider">/</span></li>
     <li class="active">Changelog</li>
-      <li id="projectVersion" class="pull-right">Version: 1.22.1-rc1</li>
+      <li id="projectVersion" class="pull-right">Version: 1.22.1-SNAPSHOT</li>
           </ul>
         </div>
       </header>
@@ -127,7 +127,7 @@
 <h2>Fixed</h2>
 <ul>
 
-<li>[#841] Various code quality fixes for issues spotted by Github's code scanning, such as missing synchronization in subclasses, widening integer arithmetics, making some inner classes static, and bad Javadoc <code>@param</code> tags. (by @attipaci)</li>
+<li>[#841] Various code quality fixes for issues spotted by GitHub's code scanning, such as missing synchronization in subclasses, widening integer arithmetics, making some inner classes static, and bad Javadoc <code>@param</code> tags. (by @attipaci)</li>
 </ul></section><section><a id="Changed"></a>
 <h2>Changed</h2>
 <ul>
@@ -138,6 +138,8 @@
 <p>[#847] Improved handling of <code>NumberFormatException</code>, by throwing a <code>HeaderCardException</code> / <code>FitsException</code> instead when these result from string that do not conform to the FITS standard. (by @attipaci)</p></li>
 <li>
 <p>[#848] <code>Stokes.forCoordinateValue()</code> throws an <code>IndexOutOfBoundsException</code> instead of returning <code>null</code> when the argument is 0. (Stokes parameters are defined only for the integer coordinate values [1:4] (single-ended) and [-1:-8] (cross-polarization), but undefined for the value 0 between the two sets.) (by @attipaci)</p></li>
+<li>
+<p>Using the latest Maven dependencies.</p></li>
 </ul></section><section><a id="a.5B1.22.0.5D_-_2026-03-31"></a>
 <h2>[1.22.0] - 2026-03-31</h2>
 <p>Maintenance release with version bump. No significant API changes, but a lot of the previously announced deprecations are now actually in effect. Other than that, this release is mainly just a lot of cleanup of the test suite, and javadoc warnings.</p><section><a id="Fixed_1"></a>
@@ -501,7 +503,7 @@
 <li>
 <p>[#377] Fixed use of <code>ZDITHER0</code> keyword to restore or record random generator seed when dithering is used in (de)compression. (by @attipaci)</p></li>
 <li>
-<p>[#349] Fixed tiled (de)compresssion of some quantized images via GZIP. (by @attipaci, @thanks to @bogdanni and @keastrid)</p></li>
+<p>[#349] Fixed tiled (de)compression of some quantized images via GZIP. (by @attipaci, thanks to @bogdanni and @keastrid)</p></li>
 <li>
 <p>[#436] Fixed incorrect handling of <code>CONTINUE</code> keywords with no quoted string value (a regression since 1.16). (by @attipaci)</p></li>
 <li>
@@ -527,7 +529,7 @@
 <li>
 <p>[#335] Added <code>NullDataHDU</code> for more intuitive support for header only HDUs with no associated data. (by @attipaci)</p></li>
 <li>
-<p>[#352] Added support for alternative <code>RandomAccess</code> immplementations. (by @at88mph)</p></li>
+<p>[#352] Added support for alternative <code>RandomAccess</code> implementations. (by @at88mph)</p></li>
 <li>
 <p>[#183] Added support for <code>ComplexValue</code>-based column in <code>BinaryTable</code> (by @attipaci)</p></li>
 <li>
@@ -669,7 +671,7 @@
 <li>
 <p>[#323] <code>Fits.setChecksum()</code> will now checksum all HDUs, including those not already loaded from disk &#x2013; keeping data in deferred read mode if possible. (by @attipaci)</p></li>
 <li>
-<p>[#311] Duplicate header keys, during parsing, are repoted though separate logger instance from Header's, with verbosity controlled via <code>Header.setParserWarningsEnabled(boolean)</code>. (by @attipaci)</p></li>
+<p>[#311] Duplicate header keys, during parsing, are reported through separate logger instance from Header's, with verbosity controlled via <code>Header.setParserWarningsEnabled(boolean)</code>. (by @attipaci)</p></li>
 <li>
 <p>[#292] Suppress repeated duplicate keyword warnings when parsing and improve checks for FITS standard violations. Added <code>Header.getDuplicateKeySet()</code> method to check which keywords have duplicates. (by @attipaci)</p></li>
 <li>
