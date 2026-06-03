@@ -209,7 +209,12 @@ public class AsciiTable extends AbstractTableData {
             if (s.indexOf('.') > 0) {
                 s = s.substring(0, s.indexOf('.'));
             }
-            lengths[i] = Integer.parseInt(s);
+
+            try {
+                lengths[i] = Integer.parseInt(s);
+            } catch (NumberFormatException e) {
+                throw new HeaderCardException("Invalid " + TFORMn.n(i + 1).key() + " value: '" + s + "'");
+            }
 
             switch (c) {
             case 'A':

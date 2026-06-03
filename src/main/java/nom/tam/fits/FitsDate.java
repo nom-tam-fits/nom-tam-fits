@@ -176,30 +176,35 @@ public class FitsDate implements Comparable<FitsDate> {
         if (dStr == null || dStr.isEmpty()) {
             return;
         }
-        Matcher match = FitsDate.NORMAL_REGEX.matcher(dStr);
-        if (match.matches()) {
-            year = getInt(match, FitsDate.NEW_FORMAT_YEAR_GROUP);
-            month = getInt(match, FitsDate.NEW_FORMAT_MONTH_GROUP);
-            mday = getInt(match, FitsDate.NEW_FORMAT_DAY_OF_MONTH_GROUP);
-            hour = getInt(match, FitsDate.NEW_FORMAT_HOUR_GROUP);
-            minute = getInt(match, FitsDate.NEW_FORMAT_MINUTE_GROUP);
-            second = getInt(match, FitsDate.NEW_FORMAT_SECOND_GROUP);
-            millisecond = getMilliseconds(match, FitsDate.NEW_FORMAT_MILLISECOND_GROUP);
-        } else {
-            match = FitsDate.OLD_REGEX.matcher(dStr);
-            if (!match.matches()) {
-                if (dStr.trim().isEmpty()) {
-                    return;
+
+        try {
+            Matcher match = FitsDate.NORMAL_REGEX.matcher(dStr);
+            if (match.matches()) {
+                year = getInt(match, FitsDate.NEW_FORMAT_YEAR_GROUP);
+                month = getInt(match, FitsDate.NEW_FORMAT_MONTH_GROUP);
+                mday = getInt(match, FitsDate.NEW_FORMAT_DAY_OF_MONTH_GROUP);
+                hour = getInt(match, FitsDate.NEW_FORMAT_HOUR_GROUP);
+                minute = getInt(match, FitsDate.NEW_FORMAT_MINUTE_GROUP);
+                second = getInt(match, FitsDate.NEW_FORMAT_SECOND_GROUP);
+                millisecond = getMilliseconds(match, FitsDate.NEW_FORMAT_MILLISECOND_GROUP);
+            } else {
+                match = FitsDate.OLD_REGEX.matcher(dStr);
+                if (!match.matches()) {
+                    if (dStr.trim().isEmpty()) {
+                        return;
+                    }
+                    throw new FitsException("Bad FITS date string \"" + dStr + '"');
                 }
-                throw new FitsException("Bad FITS date string \"" + dStr + '"');
+                year = getInt(match, FitsDate.OLD_FORMAT_YEAR_GROUP) + FitsDate.YEAR_OFFSET;
+                month = getInt(match, FitsDate.OLD_FORMAT_MONTH_GROUP);
+                mday = getInt(match, FitsDate.OLD_FORMAT_DAY_OF_MONTH_GROUP);
             }
-            year = getInt(match, FitsDate.OLD_FORMAT_YEAR_GROUP) + FitsDate.YEAR_OFFSET;
-            month = getInt(match, FitsDate.OLD_FORMAT_MONTH_GROUP);
-            mday = getInt(match, FitsDate.OLD_FORMAT_DAY_OF_MONTH_GROUP);
+        } catch (NumberFormatException e) {
+            throw new FitsException("Invalid FITS date string: '" + dStr + "'");
         }
     }
 
-    private static int getInt(Matcher match, int groupIndex) {
+    private static int getInt(Matcher match, int groupIndex) throws NumberFormatException {
         String value = match.group(groupIndex);
         if (value != null) {
             return Integer.parseInt(value);
@@ -207,7 +212,7 @@ public class FitsDate implements Comparable<FitsDate> {
         return -1;
     }
 
-    private static int getMilliseconds(Matcher match, int groupIndex) {
+    private static int getMilliseconds(Matcher match, int groupIndex) throws NumberFormatException {
         String value = match.group(groupIndex);
         if (value != null) {
             value = String.format("%-3s", value).replace(' ', '0');

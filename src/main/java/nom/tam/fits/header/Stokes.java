@@ -569,10 +569,14 @@ public enum Stokes {
                             + header.getDoubleValue(WCS.nCRPXn.n(i, column)) + ", expected 1");
                 }
 
-                Parameters p = forCoords(header.getDoubleValue(WCS.nCRVLn.n(i, column), 0.0),
-                        header.getDoubleValue(WCS.nCDLTn.n(i, column), 1.0), Integer.parseInt(d));
-
-                return new AbstractMap.SimpleImmutableEntry(n - i, p);
+                try {
+                    Parameters p = forCoords(header.getDoubleValue(WCS.nCRVLn.n(i, column), 0.0),
+                            header.getDoubleValue(WCS.nCDLTn.n(i, column), 1.0), Integer.parseInt(d));
+                    return new AbstractMap.SimpleImmutableEntry(n - i, p);
+                } catch (NumberFormatException e) {
+                    throw new FitsException("Invalid " + Standard.TDIMn.n(column).key() + " value: '" + dims
+                            + "' (component: '" + d + "')");
+                }
             }
         }
 

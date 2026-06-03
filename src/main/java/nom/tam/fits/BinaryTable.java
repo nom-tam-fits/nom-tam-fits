@@ -1692,7 +1692,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         if (dim > 0) {
             int[] dims = new int[dim];
             for (int i = dim; --i >= 0;) {
-                dims[i] = Integer.parseInt(st.nextToken().trim());
+                try {
+                    dims[i] = Integer.parseInt(st.nextToken().trim());
+                } catch (NumberFormatException e) {
+                    throw new HeaderCardException("Invalid TDIMn value: '" + tdims + "'");
+                }
             }
             return dims;
         }
