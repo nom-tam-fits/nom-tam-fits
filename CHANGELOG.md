@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [1.22.1-rc1] - 2026-06-03
 
-Upcoming maintenance release, possibly around June 15, 2026.
+Release candidate for the upcoming maintenance release, possibly around June 15, 2026.
 
 ## Fixed 
 
