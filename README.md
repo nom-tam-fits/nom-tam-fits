@@ -10,7 +10,7 @@
 # User's guide
 
 <a href="https://doi.org/10.5281/zenodo.15004889">
- <img src="resources/zenodo.15004889.svg" alt="DOI: 10.5281/zenodo.15004889"/>
+ <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.15004889.svg" alt="DOI: 10.5281/zenodo.15004889"/>
 </a>
 
 __nom.tam.fits__ is a full-featured, fast, 100% pure Java 8+ library for reading, writing, and modifying
