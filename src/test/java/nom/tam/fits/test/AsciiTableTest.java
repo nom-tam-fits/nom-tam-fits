@@ -897,6 +897,22 @@ public class AsciiTableTest {
     }
 
     @Test
+    public void testInvalidTFORM() throws Exception {
+        Header hdr = new Header();
+        hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
+                .card(Standard.NAXIS1).value(1)//
+                .card(Standard.NAXIS2).value(1)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(4)//
+                .card(Standard.TFORMn.n(1)).value("Iz");
+
+        Assertions.assertThrows(FitsException.class, () -> new AsciiTable(hdr));
+
+        hdr.addValue(Standard.TFORMn.n(1), "I-1");
+        Assertions.assertThrows(FitsException.class, () -> new AsciiTable(hdr));
+    }
+
+    @Test
     public void testI10() throws Exception {
         // Test configurable edge case of ASCII table with format I10 columns;
         // there are pros and cons for interpreting these as int or long,

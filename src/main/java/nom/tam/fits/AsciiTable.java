@@ -216,6 +216,10 @@ public class AsciiTable extends AbstractTableData {
                 throw new HeaderCardException("Invalid " + TFORMn.n(i + 1).key() + " value: '" + s + "'");
             }
 
+            if (lengths[i] < 0) {
+                throw new HeaderCardException("Invalid " + TFORMn.n(i + 1).key() + " value: '" + s + "'");
+            }
+
             switch (c) {
             case 'A':
                 types[i] = String.class;

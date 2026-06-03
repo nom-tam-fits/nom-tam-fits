@@ -63,6 +63,10 @@ public class StokesTest {
 
     @Test
     public void testForCoordinateValues() throws Exception {
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> Stokes.forCoordinateValue(0), "0");
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> Stokes.forCoordinateValue(5), "5");
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> Stokes.forCoordinateValue(-9), "-9");
+
         Assertions.assertEquals(Stokes.I, Stokes.forCoordinateValue(1));
         Assertions.assertEquals(Stokes.Q, Stokes.forCoordinateValue(2));
         Assertions.assertEquals(Stokes.U, Stokes.forCoordinateValue(3));
