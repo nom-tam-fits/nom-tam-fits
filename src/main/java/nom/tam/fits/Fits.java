@@ -153,7 +153,7 @@ import static nom.tam.fits.header.Standard.EXTVER;
  * 
  * @see     FitsFactory
  *
- * @version 1.21
+ * @version 1.22
  */
 @SuppressWarnings("deprecation")
 public class Fits implements Closeable {

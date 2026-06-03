@@ -1348,6 +1348,12 @@ public class BinaryTableNewTest {
     }
 
     @Test
+    public void testParseTDimsException() throws Exception {
+        Assertions.assertThrows(HeaderCardException.class, () -> BinaryTable.parseTDims("(1,z,3)"), "non-integer");
+        Assertions.assertThrows(HeaderCardException.class, () -> BinaryTable.parseTDims("(1,-2,3)"), "negative value");
+    }
+
+    @Test
     public void testParseTDimsEmpty() throws Exception {
         Assertions.assertNull(BinaryTable.parseTDims("()"));
     }

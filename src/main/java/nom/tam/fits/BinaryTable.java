@@ -1659,17 +1659,19 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * @deprecated       (<i>for internal use</i>) It may be reduced to private visibility in the future. Parse the
-     *                       TDIMS value. If the TDIMS value cannot be deciphered a one-d array with the size given in
-     *                       arrsiz is returned.
+     * @deprecated                     (<i>for internal use</i>) It may be reduced to private visibility in the future.
+     *                                     Parse the TDIMS value. If the TDIMS value cannot be deciphered a one-d array
+     *                                     with the size given in arrsiz is returned.
      *
-     * @param      tdims The value of the TDIMSn card.
+     * @param      tdims               The value of the TDIMSn card.
      *
-     * @return           An int array of the desired dimensions. Note that the order of the tdims is the inverse of the
-     *                       order in the TDIMS key.
+     * @return                         An int array of the desired dimensions. Note that the order of the tdims is the
+     *                                     inverse of the order in the TDIMS key.
+     * 
+     * @throws     HeaderCardException if the argument does not confirm to the FITS specification for the TDIMn keyword.
      */
     @Deprecated
-    public static int[] parseTDims(String tdims) {
+    public static int[] parseTDims(String tdims) throws HeaderCardException {
         if (tdims == null) {
             return null;
         }
@@ -1695,6 +1697,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 try {
                     dims[i] = Integer.parseInt(st.nextToken().trim());
                 } catch (NumberFormatException e) {
+                    throw new HeaderCardException("Invalid TDIMn value: '" + tdims + "'");
+                }
+
+                if (dims[i] < 0) {
                     throw new HeaderCardException("Invalid TDIMn value: '" + tdims + "'");
                 }
             }
