@@ -306,7 +306,7 @@
 <a class="jxr_linenumber" name="L298" href="#L298">298</a> <em class="jxr_javadoccomment">     * trims trailing spaces but not leading ones.</em>
 <a class="jxr_linenumber" name="L299" href="#L299">299</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L300" href="#L300">300</a> <em class="jxr_javadoccomment">     * @param  bytes      an array of ASCII bytes</em>
-<a class="jxr_linenumber" name="L301" href="#L301">301</a> <em class="jxr_javadoccomment">     * @param  offset     the array index at which the string begins</em>
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> <em class="jxr_javadoccomment">     * @param  pos        the array index at which the string begins</em>
 <a class="jxr_linenumber" name="L302" href="#L302">302</a> <em class="jxr_javadoccomment">     * @param  maxLen     the maximum number of bytes to extract from the position</em>
 <a class="jxr_linenumber" name="L303" href="#L303">303</a> <em class="jxr_javadoccomment">     * @param  terminator the byte value that terminates the string, such as 0x00.</em>
 <a class="jxr_linenumber" name="L304" href="#L304">304</a> <em class="jxr_javadoccomment">     * </em>
@@ -820,55 +820,54 @@
 <a class="jxr_linenumber" name="L812" href="#L812">812</a> <em class="jxr_javadoccomment">     * Extracts strings from a packed delimited byte sequence. Strings start either immediately after the prior string</em>
 <a class="jxr_linenumber" name="L813" href="#L813">813</a> <em class="jxr_javadoccomment">     * reached its maximum length, or else immediately after the specified delimiter byte value.</em>
 <a class="jxr_linenumber" name="L814" href="#L814">814</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L815" href="#L815">815</a> <em class="jxr_javadoccomment">     * @param  bytes  bytes containing the packed strings</em>
-<a class="jxr_linenumber" name="L816" href="#L816">816</a> <em class="jxr_javadoccomment">     * @param  maxlen the maximum length of individual string components</em>
-<a class="jxr_linenumber" name="L817" href="#L817">817</a> <em class="jxr_javadoccomment">     * @param  delim  the byte value that delimits strings shorter than the maximum length</em>
-<a class="jxr_linenumber" name="L818" href="#L818">818</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L819" href="#L819">819</a> <em class="jxr_javadoccomment">     * @return        An array of the extracted strings</em>
-<a class="jxr_linenumber" name="L820" href="#L820">820</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L821" href="#L821">821</a> <em class="jxr_javadoccomment">     * @see           #stringsToDelimitedBytes(String[], int, byte)</em>
-<a class="jxr_linenumber" name="L822" href="#L822">822</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L823" href="#L823">823</a> <em class="jxr_javadoccomment">     * @since         1.18</em>
-<a class="jxr_linenumber" name="L824" href="#L824">824</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L825" href="#L825">825</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String[] delimitedBytesToStrings(byte[] bytes, byte delim) {
-<a class="jxr_linenumber" name="L826" href="#L826">826</a>         ArrayList&lt;String&gt; s = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L827" href="#L827">827</a>         ParsePosition pos = <strong class="jxr_keyword">new</strong> ParsePosition(0);
-<a class="jxr_linenumber" name="L828" href="#L828">828</a>         <strong class="jxr_keyword">while</strong> (pos.getIndex() &lt; bytes.length) {
-<a class="jxr_linenumber" name="L829" href="#L829">829</a>             s.add(extractString(bytes, pos, bytes.length, delim));
-<a class="jxr_linenumber" name="L830" href="#L830">830</a>         }
-<a class="jxr_linenumber" name="L831" href="#L831">831</a>         String[] a = <strong class="jxr_keyword">new</strong> String[s.size()];
-<a class="jxr_linenumber" name="L832" href="#L832">832</a>         s.toArray(a);
-<a class="jxr_linenumber" name="L833" href="#L833">833</a>         <strong class="jxr_keyword">return</strong> a;
-<a class="jxr_linenumber" name="L834" href="#L834">834</a>     }
-<a class="jxr_linenumber" name="L835" href="#L835">835</a> 
-<a class="jxr_linenumber" name="L836" href="#L836">836</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L837" href="#L837">837</a> <em class="jxr_javadoccomment">     * Extracts strings from a packed delimited byte sequence. Strings start either immediately after the prior string</em>
-<a class="jxr_linenumber" name="L838" href="#L838">838</a> <em class="jxr_javadoccomment">     * reached its maximum length, or else immediately after the specified delimiter byte value.</em>
-<a class="jxr_linenumber" name="L839" href="#L839">839</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L840" href="#L840">840</a> <em class="jxr_javadoccomment">     * @param  bytes  bytes containing the packed strings</em>
-<a class="jxr_linenumber" name="L841" href="#L841">841</a> <em class="jxr_javadoccomment">     * @param  maxlen the maximum length of individual string components</em>
-<a class="jxr_linenumber" name="L842" href="#L842">842</a> <em class="jxr_javadoccomment">     * @param  delim  the byte value that delimits strings shorter than the maximum length</em>
-<a class="jxr_linenumber" name="L843" href="#L843">843</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L844" href="#L844">844</a> <em class="jxr_javadoccomment">     * @return        An array of the extracted strings</em>
-<a class="jxr_linenumber" name="L845" href="#L845">845</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L846" href="#L846">846</a> <em class="jxr_javadoccomment">     * @see           #stringsToDelimitedBytes(String[], int, byte)</em>
-<a class="jxr_linenumber" name="L847" href="#L847">847</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L848" href="#L848">848</a> <em class="jxr_javadoccomment">     * @since         1.18</em>
-<a class="jxr_linenumber" name="L849" href="#L849">849</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L850" href="#L850">850</a>     <strong class="jxr_keyword">static</strong> String[] delimitedBytesToStrings(byte[] bytes, <strong class="jxr_keyword">int</strong> maxlen, byte delim) {
-<a class="jxr_linenumber" name="L851" href="#L851">851</a>         <strong class="jxr_keyword">if</strong> (maxlen &lt;= 0) {
-<a class="jxr_linenumber" name="L852" href="#L852">852</a>             <strong class="jxr_keyword">return</strong> delimitedBytesToStrings(bytes, delim);
-<a class="jxr_linenumber" name="L853" href="#L853">853</a>         }
-<a class="jxr_linenumber" name="L854" href="#L854">854</a> 
-<a class="jxr_linenumber" name="L855" href="#L855">855</a>         String[] res = <strong class="jxr_keyword">new</strong> String[(bytes.length + maxlen - 1) / maxlen];
-<a class="jxr_linenumber" name="L856" href="#L856">856</a>         ParsePosition pos = <strong class="jxr_keyword">new</strong> ParsePosition(0);
-<a class="jxr_linenumber" name="L857" href="#L857">857</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; res.length; i++) {
-<a class="jxr_linenumber" name="L858" href="#L858">858</a>             res[i] = extractString(bytes, pos, maxlen, delim);
-<a class="jxr_linenumber" name="L859" href="#L859">859</a>         }
-<a class="jxr_linenumber" name="L860" href="#L860">860</a>         <strong class="jxr_keyword">return</strong> res;
-<a class="jxr_linenumber" name="L861" href="#L861">861</a>     }
-<a class="jxr_linenumber" name="L862" href="#L862">862</a> 
-<a class="jxr_linenumber" name="L863" href="#L863">863</a> }
+<a class="jxr_linenumber" name="L815" href="#L815">815</a> <em class="jxr_javadoccomment">     * @param  bytes bytes containing the packed strings</em>
+<a class="jxr_linenumber" name="L816" href="#L816">816</a> <em class="jxr_javadoccomment">     * @param  delim the byte value that delimits strings shorter than the maximum length</em>
+<a class="jxr_linenumber" name="L817" href="#L817">817</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L818" href="#L818">818</a> <em class="jxr_javadoccomment">     * @return       An array of the extracted strings</em>
+<a class="jxr_linenumber" name="L819" href="#L819">819</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L820" href="#L820">820</a> <em class="jxr_javadoccomment">     * @see          #stringsToDelimitedBytes(String[], int, byte)</em>
+<a class="jxr_linenumber" name="L821" href="#L821">821</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L822" href="#L822">822</a> <em class="jxr_javadoccomment">     * @since        1.18</em>
+<a class="jxr_linenumber" name="L823" href="#L823">823</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L824" href="#L824">824</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String[] delimitedBytesToStrings(byte[] bytes, byte delim) {
+<a class="jxr_linenumber" name="L825" href="#L825">825</a>         ArrayList&lt;String&gt; s = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L826" href="#L826">826</a>         ParsePosition pos = <strong class="jxr_keyword">new</strong> ParsePosition(0);
+<a class="jxr_linenumber" name="L827" href="#L827">827</a>         <strong class="jxr_keyword">while</strong> (pos.getIndex() &lt; bytes.length) {
+<a class="jxr_linenumber" name="L828" href="#L828">828</a>             s.add(extractString(bytes, pos, bytes.length, delim));
+<a class="jxr_linenumber" name="L829" href="#L829">829</a>         }
+<a class="jxr_linenumber" name="L830" href="#L830">830</a>         String[] a = <strong class="jxr_keyword">new</strong> String[s.size()];
+<a class="jxr_linenumber" name="L831" href="#L831">831</a>         s.toArray(a);
+<a class="jxr_linenumber" name="L832" href="#L832">832</a>         <strong class="jxr_keyword">return</strong> a;
+<a class="jxr_linenumber" name="L833" href="#L833">833</a>     }
+<a class="jxr_linenumber" name="L834" href="#L834">834</a> 
+<a class="jxr_linenumber" name="L835" href="#L835">835</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L836" href="#L836">836</a> <em class="jxr_javadoccomment">     * Extracts strings from a packed delimited byte sequence. Strings start either immediately after the prior string</em>
+<a class="jxr_linenumber" name="L837" href="#L837">837</a> <em class="jxr_javadoccomment">     * reached its maximum length, or else immediately after the specified delimiter byte value.</em>
+<a class="jxr_linenumber" name="L838" href="#L838">838</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L839" href="#L839">839</a> <em class="jxr_javadoccomment">     * @param  bytes  bytes containing the packed strings</em>
+<a class="jxr_linenumber" name="L840" href="#L840">840</a> <em class="jxr_javadoccomment">     * @param  maxlen the maximum length of individual string components</em>
+<a class="jxr_linenumber" name="L841" href="#L841">841</a> <em class="jxr_javadoccomment">     * @param  delim  the byte value that delimits strings shorter than the maximum length</em>
+<a class="jxr_linenumber" name="L842" href="#L842">842</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L843" href="#L843">843</a> <em class="jxr_javadoccomment">     * @return        An array of the extracted strings</em>
+<a class="jxr_linenumber" name="L844" href="#L844">844</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L845" href="#L845">845</a> <em class="jxr_javadoccomment">     * @see           #stringsToDelimitedBytes(String[], int, byte)</em>
+<a class="jxr_linenumber" name="L846" href="#L846">846</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L847" href="#L847">847</a> <em class="jxr_javadoccomment">     * @since         1.18</em>
+<a class="jxr_linenumber" name="L848" href="#L848">848</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L849" href="#L849">849</a>     <strong class="jxr_keyword">static</strong> String[] delimitedBytesToStrings(byte[] bytes, <strong class="jxr_keyword">int</strong> maxlen, byte delim) {
+<a class="jxr_linenumber" name="L850" href="#L850">850</a>         <strong class="jxr_keyword">if</strong> (maxlen &lt;= 0) {
+<a class="jxr_linenumber" name="L851" href="#L851">851</a>             <strong class="jxr_keyword">return</strong> delimitedBytesToStrings(bytes, delim);
+<a class="jxr_linenumber" name="L852" href="#L852">852</a>         }
+<a class="jxr_linenumber" name="L853" href="#L853">853</a> 
+<a class="jxr_linenumber" name="L854" href="#L854">854</a>         String[] res = <strong class="jxr_keyword">new</strong> String[(bytes.length + maxlen - 1) / maxlen];
+<a class="jxr_linenumber" name="L855" href="#L855">855</a>         ParsePosition pos = <strong class="jxr_keyword">new</strong> ParsePosition(0);
+<a class="jxr_linenumber" name="L856" href="#L856">856</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; res.length; i++) {
+<a class="jxr_linenumber" name="L857" href="#L857">857</a>             res[i] = extractString(bytes, pos, maxlen, delim);
+<a class="jxr_linenumber" name="L858" href="#L858">858</a>         }
+<a class="jxr_linenumber" name="L859" href="#L859">859</a>         <strong class="jxr_keyword">return</strong> res;
+<a class="jxr_linenumber" name="L860" href="#L860">860</a>     }
+<a class="jxr_linenumber" name="L861" href="#L861">861</a> 
+<a class="jxr_linenumber" name="L862" href="#L862">862</a> }
 </pre>
 <hr/>
 <div id="footer">© 1996–2026 nom-tam-fits</div>

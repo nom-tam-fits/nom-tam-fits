@@ -597,7 +597,7 @@
 <a class="jxr_linenumber" name="L589" href="#L589">589</a> <em class="jxr_comment">         */</em>
 <a class="jxr_linenumber" name="L590" href="#L590">590</a>         nqx2 = (nqx + 1) / 2;
 <a class="jxr_linenumber" name="L591" href="#L591">591</a>         nqy2 = (nqy + 1) / 2;
-<a class="jxr_linenumber" name="L592" href="#L592">592</a>         bmax = (nqx2 * nqy2 + 1) / 2;
+<a class="jxr_linenumber" name="L592" href="#L592">592</a>         bmax = ((<strong class="jxr_keyword">long</strong>) nqx2 * nqy2 + 1) / 2;
 <a class="jxr_linenumber" name="L593" href="#L593">593</a>         <em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L594" href="#L594">594</a> <em class="jxr_comment">         * We're indexing A as a 2-D tiledImageOperation with dimensions (nqx,nqy). Scratch is 2-D with dimensions</em>
 <a class="jxr_linenumber" name="L595" href="#L595">595</a> <em class="jxr_comment">         * (nqx/2,nqy/2) rounded up. Buffer is used to store string of codes for output.</em>

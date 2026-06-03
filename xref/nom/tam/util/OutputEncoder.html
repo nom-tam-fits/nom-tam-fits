@@ -539,8 +539,8 @@
 <a class="jxr_linenumber" name="L531" href="#L531">531</a> <em class="jxr_javadoccomment">         * Puts an array of 64-bit values into the conversion buffer, flushing the buffer intermittently as necessary to</em>
 <a class="jxr_linenumber" name="L532" href="#L532">532</a> <em class="jxr_javadoccomment">         * make room as it goes.</em>
 <a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">         *</em>
-<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">         * @param  the         FITS element type of the the 1D array</em>
-<a class="jxr_linenumber" name="L535" href="#L535">535</a> <em class="jxr_javadoccomment">         * @param  src         a 1D array of values of the specified element type</em>
+<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">         * @param  e           FITS element type of the the 1D array</em>
+<a class="jxr_linenumber" name="L535" href="#L535">535</a> <em class="jxr_javadoccomment">         * @param  array       a 1D array of values of the specified element type</em>
 <a class="jxr_linenumber" name="L536" href="#L536">536</a> <em class="jxr_javadoccomment">         * @param  start       the index of the first element to convert</em>
 <a class="jxr_linenumber" name="L537" href="#L537">537</a> <em class="jxr_javadoccomment">         * @param  length      the number of elements to convert</em>
 <a class="jxr_linenumber" name="L538" href="#L538">538</a> <em class="jxr_javadoccomment">         *</em>
@@ -548,15 +548,15 @@
 <a class="jxr_linenumber" name="L540" href="#L540">540</a> <em class="jxr_javadoccomment">         *                         conversion.</em>
 <a class="jxr_linenumber" name="L541" href="#L541">541</a> <em class="jxr_javadoccomment">         */</em>
 <a class="jxr_linenumber" name="L542" href="#L542">542</a>         @SuppressWarnings(<span class="jxr_string">"unchecked"</span>)
-<a class="jxr_linenumber" name="L543" href="#L543">543</a>         <strong class="jxr_keyword">private</strong> &lt;B <strong class="jxr_keyword">extends</strong> Buffer&gt; <strong class="jxr_keyword">void</strong> put(ElementType&lt;B&gt; e, Object dst, <strong class="jxr_keyword">int</strong> from, <strong class="jxr_keyword">int</strong> n)
+<a class="jxr_linenumber" name="L543" href="#L543">543</a>         <strong class="jxr_keyword">private</strong> &lt;B <strong class="jxr_keyword">extends</strong> Buffer&gt; <strong class="jxr_keyword">void</strong> put(ElementType&lt;B&gt; e, Object array, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length)
 <a class="jxr_linenumber" name="L544" href="#L544">544</a>                 <strong class="jxr_keyword">throws</strong> EOFException, IOException {
 <a class="jxr_linenumber" name="L545" href="#L545">545</a>             <strong class="jxr_keyword">int</strong> got = 0;
 <a class="jxr_linenumber" name="L546" href="#L546">546</a> 
-<a class="jxr_linenumber" name="L547" href="#L547">547</a>             <strong class="jxr_keyword">while</strong> (got &lt; n) {
+<a class="jxr_linenumber" name="L547" href="#L547">547</a>             <strong class="jxr_keyword">while</strong> (got &lt; length) {
 <a class="jxr_linenumber" name="L548" href="#L548">548</a>                 need(e.size());
 <a class="jxr_linenumber" name="L549" href="#L549">549</a>                 assertView(e);
-<a class="jxr_linenumber" name="L550" href="#L550">550</a>                 <strong class="jxr_keyword">int</strong> m = Math.min(n - got, view.remaining());
-<a class="jxr_linenumber" name="L551" href="#L551">551</a>                 e.putArray((B) view, dst, from + got, m);
+<a class="jxr_linenumber" name="L550" href="#L550">550</a>                 <strong class="jxr_keyword">int</strong> m = Math.min(length - got, view.remaining());
+<a class="jxr_linenumber" name="L551" href="#L551">551</a>                 e.putArray((B) view, array, start + got, m);
 <a class="jxr_linenumber" name="L552" href="#L552">552</a>                 buffer.position(buffer.position() + m * e.size());
 <a class="jxr_linenumber" name="L553" href="#L553">553</a>                 got += m;
 <a class="jxr_linenumber" name="L554" href="#L554">554</a>             }

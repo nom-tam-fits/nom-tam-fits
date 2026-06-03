@@ -200,7 +200,7 @@
 <a class="jxr_linenumber" name="L192" href="#L192">192</a> <em class="jxr_javadoccomment">     * {@link OutputBuffer#flush()} to ensure that everything is written to the output. Note, the this call may flush</em>
 <a class="jxr_linenumber" name="L193" href="#L193">193</a> <em class="jxr_javadoccomment">     * the contents of the conversion buffer to the output if it needs more conversion space than what is avaiable.</em>
 <a class="jxr_linenumber" name="L194" href="#L194">194</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_javadoccomment">     * @param  b           the Java array containing the values</em>
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_javadoccomment">     * @param  c           the Java array containing the values</em>
 <a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">     * @param  start       the offset in the array from where to start converting values.</em>
 <a class="jxr_linenumber" name="L197" href="#L197">197</a> <em class="jxr_javadoccomment">     * @param  length      the number of values to convert to FITS representation</em>
 <a class="jxr_linenumber" name="L198" href="#L198">198</a> <em class="jxr_javadoccomment">     *</em>
@@ -241,7 +241,7 @@
 <a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_javadoccomment">     * {@link OutputBuffer#flush()} to ensure that everything is written to the output. Note, the this call may flush</em>
 <a class="jxr_linenumber" name="L234" href="#L234">234</a> <em class="jxr_javadoccomment">     * the contents of the conversion buffer to the output if it needs more conversion space than what is avaiable.</em>
 <a class="jxr_linenumber" name="L235" href="#L235">235</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">     * @param  b           the Java array containing the values</em>
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">     * @param  str         the Java array containing the values</em>
 <a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">     * @param  start       the offset in the array from where to start converting values.</em>
 <a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     * @param  length      the number of values to convert to FITS representation</em>
 <a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     *</em>
@@ -639,7 +639,7 @@
 <a class="jxr_linenumber" name="L631" href="#L631">631</a>         }
 <a class="jxr_linenumber" name="L632" href="#L632">632</a> 
 <a class="jxr_linenumber" name="L633" href="#L633">633</a>         <strong class="jxr_keyword">if</strong> (o instanceof <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a>) {
-<a class="jxr_linenumber" name="L634" href="#L634">634</a>             <strong class="jxr_keyword">return</strong> 2 * (o instanceof ComplexValue.Float ? ElementType.FLOAT.size() : ElementType.DOUBLE.size());
+<a class="jxr_linenumber" name="L634" href="#L634">634</a>             <strong class="jxr_keyword">return</strong> 2L * (o instanceof ComplexValue.Float ? ElementType.FLOAT.size() : ElementType.DOUBLE.size());
 <a class="jxr_linenumber" name="L635" href="#L635">635</a>         }
 <a class="jxr_linenumber" name="L636" href="#L636">636</a> 
 <a class="jxr_linenumber" name="L637" href="#L637">637</a>         Class&lt;?&gt; type = o.getClass();
@@ -655,7 +655,7 @@
 <a class="jxr_linenumber" name="L647" href="#L647">647</a>         }
 <a class="jxr_linenumber" name="L648" href="#L648">648</a> 
 <a class="jxr_linenumber" name="L649" href="#L649">649</a>         <strong class="jxr_keyword">if</strong> (type.isArray()) {
-<a class="jxr_linenumber" name="L650" href="#L650">650</a>             <strong class="jxr_keyword">return</strong> Array.getLength(o) * eType.size();
+<a class="jxr_linenumber" name="L650" href="#L650">650</a>             <strong class="jxr_keyword">return</strong> (<strong class="jxr_keyword">long</strong>) Array.getLength(o) * eType.size();
 <a class="jxr_linenumber" name="L651" href="#L651">651</a>         }
 <a class="jxr_linenumber" name="L652" href="#L652">652</a> 
 <a class="jxr_linenumber" name="L653" href="#L653">653</a>         <strong class="jxr_keyword">return</strong> eType.size();
