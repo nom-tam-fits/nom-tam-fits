@@ -59,6 +59,9 @@ public class ByteArrayIO implements ReadWriteAccess {
     /** The current end of the buffer, that is the total number of bytes available for reading from the buffer */
     private int end;
 
+    /** For thread synchronization */
+    private Object lock = new Object();
+
     /**
      * Instantiates a new byte array with an IO interface, with a fixed-size buffer using the specified array as its
      * backing storage.
@@ -93,14 +96,16 @@ public class ByteArrayIO implements ReadWriteAccess {
      *
      * @return a deep copy of this byte array with an IO interface instance.
      */
-    public synchronized ByteArrayIO copy() {
-        ByteArrayIO copy = new ByteArrayIO(Arrays.copyOf(buf, buf.length));
-        synchronized (copy) {
-            copy.isGrowable = isGrowable;
-            copy.pos = pos;
-            copy.end = end;
+    public ByteArrayIO copy() {
+        synchronized (lock) {
+            ByteArrayIO copy = new ByteArrayIO(Arrays.copyOf(buf, buf.length));
+            synchronized (copy) {
+                copy.isGrowable = isGrowable;
+                copy.pos = pos;
+                copy.end = end;
+            }
+            return copy;
         }
-        return copy;
     }
 
     /**
@@ -108,8 +113,10 @@ public class ByteArrayIO implements ReadWriteAccess {
      *
      * @return the backing array of this buffer.
      */
-    public synchronized byte[] getBuffer() {
-        return buf;
+    public byte[] getBuffer() {
+        synchronized (lock) {
+            return buf;
+        }
     }
 
     /**
@@ -118,13 +125,17 @@ public class ByteArrayIO implements ReadWriteAccess {
      *
      * @return the current size of the backing array.
      */
-    public final synchronized int capacity() {
-        return buf.length;
+    public final int capacity() {
+        synchronized (lock) {
+            return buf.length;
+        }
     }
 
     @Override
-    public final synchronized long length() {
-        return end;
+    public final long length() {
+        synchronized (lock) {
+            return end;
+        }
     }
 
     /**
@@ -132,31 +143,37 @@ public class ByteArrayIO implements ReadWriteAccess {
      *
      * @return the number of bytes that can be read from this buffer from the current position.
      */
-    public final synchronized int getRemaining() {
-        if (pos >= end) {
-            return 0;
+    public final int getRemaining() {
+        synchronized (lock) {
+            if (pos >= end) {
+                return 0;
+            }
+            return end - pos;
         }
-        return end - pos;
     }
 
     @Override
-    public final synchronized long position() {
-        return pos;
+    public final long position() {
+        synchronized (lock) {
+            return pos;
+        }
     }
 
     @Override
-    public synchronized void position(long offset) throws IOException {
+    public void position(long offset) throws IOException {
         if (offset < 0) {
             throw new EOFException("Negative buffer index: " + offset);
         }
 
-        if (offset > buf.length) {
-            if (!isGrowable) {
-                throw new EOFException("Position " + offset + " beyond fixed buffer size " + buf.length);
+        synchronized (lock) {
+            if (offset > buf.length) {
+                if (!isGrowable) {
+                    throw new EOFException("Position " + offset + " beyond fixed buffer size " + buf.length);
+                }
             }
-        }
 
-        pos = (int) offset;
+            pos = (int) offset;
+        }
     }
 
     /**
@@ -175,23 +192,25 @@ public class ByteArrayIO implements ReadWriteAccess {
      * @see                             #length()
      * @see                             #capacity()
      */
-    public synchronized void setLength(int length) throws IllegalArgumentException {
+    public void setLength(int length) throws IllegalArgumentException {
         if (length < 0) {
             throw new IllegalArgumentException("Buffer set to negative length: " + length);
         }
 
-        if (length > capacity()) {
-            if (!isGrowable) {
-                throw new IllegalArgumentException(
-                        "the new length " + length + " is larger than the fixed capacity " + capacity());
+        synchronized (lock) {
+            if (length > capacity()) {
+                if (!isGrowable) {
+                    throw new IllegalArgumentException(
+                            "the new length " + length + " is larger than the fixed capacity " + capacity());
+                }
+                grow(length - capacity());
             }
-            grow(length - capacity());
-        }
-        end = length;
+            end = length;
 
-        // If the pointer is beyond the new size, move it back to the new end...
-        if (pos > end) {
-            pos = end;
+            // If the pointer is beyond the new size, move it back to the new end...
+            if (pos > end) {
+                pos = end;
+            }
         }
     }
 
@@ -201,79 +220,90 @@ public class ByteArrayIO implements ReadWriteAccess {
      *
      * @param need the minimum number of extra bytes needed beyond the current capacity.
      */
-    private synchronized void grow(int need) {
-        long size = capacity() + need;
-        long below = Long.highestOneBit(size);
-        if (below != size) {
-            size = below << 1;
-        }
-        byte[] newbuf = new byte[(int) Math.min(size, Integer.MAX_VALUE)];
-        System.arraycopy(buf, 0, newbuf, 0, buf.length);
-        buf = newbuf;
-    }
-
-    @Override
-    public final synchronized void write(int b) throws IOException {
-        if (pos + 1 > buf.length) {
-            if (!isGrowable) {
-                throw new EOFException("buffer is full (size=" + length() + ")");
+    private void grow(int need) {
+        synchronized (lock) {
+            long size = capacity() + need;
+            long below = Long.highestOneBit(size);
+            if (below != size) {
+                size = below << 1;
             }
-            grow(pos + 1 - buf.length);
-        }
-        buf[pos++] = (byte) b;
-        if (pos > end) {
-            end = pos;
+            byte[] newbuf = new byte[(int) Math.min(size, Integer.MAX_VALUE)];
+            System.arraycopy(buf, 0, newbuf, 0, buf.length);
+            buf = newbuf;
         }
     }
 
     @Override
-    public final synchronized void write(byte[] b, int from, int length) throws IOException {
+    public final void write(int b) throws IOException {
+        synchronized (lock) {
+            if (pos + 1 > buf.length) {
+                if (!isGrowable) {
+                    throw new EOFException("buffer is full (size=" + length() + ")");
+                }
+                grow(pos + 1 - buf.length);
+            }
+            buf[pos++] = (byte) b;
+            if (pos > end) {
+                end = pos;
+            }
+        }
+    }
+
+    @Override
+    public final void write(byte[] b, int from, int length) throws IOException {
         if (length <= 0) {
             return;
         }
 
-        if (pos > buf.length || (isGrowable && pos + length > buf.length)) {
-            // This may only happen in a growable buffer...
-            grow(buf.length + length - pos);
-        }
+        synchronized (lock) {
+            if (pos > buf.length || (isGrowable && pos + length > buf.length)) {
+                // This may only happen in a growable buffer...
+                grow(buf.length + length - pos);
+            }
 
-        int l = Math.min(length, buf.length - pos);
+            int l = Math.min(length, buf.length - pos);
 
-        System.arraycopy(b, from, buf, pos, l);
-        pos += l;
-        if (pos > end) {
-            end = pos;
-        }
+            System.arraycopy(b, from, buf, pos, l);
+            pos += l;
+            if (pos > end) {
+                end = pos;
+            }
 
-        if (l < length) {
-            throw new EOFException("Incomplete write of " + l + " of " + length + " bytes in buffer of size " + length());
+            if (l < length) {
+                throw new EOFException(
+                        "Incomplete write of " + l + " of " + length + " bytes in buffer of size " + length());
+            }
         }
     }
 
     @Override
-    public final synchronized int read() throws IOException {
-        if (getRemaining() <= 0) {
-            return -1;
+    public final int read() throws IOException {
+        synchronized (lock) {
+            if (getRemaining() <= 0) {
+                return -1;
+            }
+            return buf[pos++] & BYTE_MASK;
         }
-        return buf[pos++] & BYTE_MASK;
     }
 
     @Override
-    public final synchronized int read(byte[] b, int from, int length) {
+    public final int read(byte[] b, int from, int length) {
         if (length <= 0) {
             return 0;
         }
 
-        int remaining = getRemaining();
+        synchronized (lock) {
+            int remaining = getRemaining();
 
-        if (remaining <= 0) {
-            return -1;
+            if (remaining <= 0) {
+                return -1;
+            }
+
+            int n = Math.min(remaining, length);
+            System.arraycopy(buf, pos, b, from, n);
+            pos += n;
+
+            return n;
         }
-
-        int n = Math.min(remaining, length);
-        System.arraycopy(buf, pos, b, from, n);
-        pos += n;
-
-        return n;
     }
 }

@@ -105,7 +105,7 @@ public class FitsEncoder extends OutputEncoder {
      * @throws     IOException if there was an IO error writing to the output.
      */
     @Deprecated
-    protected synchronized void writeBoolean(Boolean b) throws IOException {
+    protected void writeBoolean(Boolean b) throws IOException {
         write(byteForBoolean(b));
     }
 
@@ -118,7 +118,7 @@ public class FitsEncoder extends OutputEncoder {
      * @throws     IOException if there was an IO error writing to the output.
      */
     @Deprecated
-    protected synchronized void writeChar(int c) throws IOException {
+    protected void writeChar(int c) throws IOException {
         if (FitsFactory.isUseUnicodeChars()) {
             writeShort((short) c);
         } else {
@@ -281,9 +281,11 @@ public class FitsEncoder extends OutputEncoder {
      *
      * @throws IOException if there was an IO error writing to the output
      */
-    protected synchronized void write(boolean[] b, int start, int length) throws IOException {
-        put(b, start, length);
-        flush();
+    protected void write(boolean[] b, int start, int length) throws IOException {
+        synchronized (lock) {
+            put(b, start, length);
+            flush();
+        }
     }
 
     /**
@@ -297,9 +299,11 @@ public class FitsEncoder extends OutputEncoder {
      *
      * @throws IOException if there was an IO error writing to the output
      */
-    protected synchronized void write(Boolean[] b, int start, int length) throws IOException {
-        put(b, start, length);
-        flush();
+    protected void write(Boolean[] b, int start, int length) throws IOException {
+        synchronized (lock) {
+            put(b, start, length);
+            flush();
+        }
     }
 
     /**
@@ -311,7 +315,7 @@ public class FitsEncoder extends OutputEncoder {
      * @throws     IOException if there was an IO error writing to the output.
      */
     @Deprecated
-    protected synchronized void writeByte(int b) throws IOException {
+    protected void writeByte(int b) throws IOException {
         write(b);
     }
 
@@ -324,9 +328,11 @@ public class FitsEncoder extends OutputEncoder {
      * @throws     IOException if there was an IO error writing to the output.
      */
     @Deprecated
-    protected synchronized void writeShort(int s) throws IOException {
-        getOutputBuffer().putShort((short) s);
-        flush();
+    protected void writeShort(int s) throws IOException {
+        synchronized (lock) {
+            getOutputBuffer().putShort((short) s);
+            flush();
+        }
     }
 
     /**
@@ -338,9 +344,11 @@ public class FitsEncoder extends OutputEncoder {
      * @throws     IOException if there was an IO error writing to the output.
      */
     @Deprecated
-    protected synchronized void writeInt(int i) throws IOException {
-        getOutputBuffer().putInt(i);
-        flush();
+    protected void writeInt(int i) throws IOException {
+        synchronized (lock) {
+            getOutputBuffer().putInt(i);
+            flush();
+        }
     }
 
     /**
@@ -352,9 +360,11 @@ public class FitsEncoder extends OutputEncoder {
      * @throws     IOException if there was an IO error writing to the output.
      */
     @Deprecated
-    protected synchronized void writeLong(long l) throws IOException {
-        getOutputBuffer().putLong(l);
-        flush();
+    protected void writeLong(long l) throws IOException {
+        synchronized (lock) {
+            getOutputBuffer().putLong(l);
+            flush();
+        }
     }
 
     /**
@@ -366,9 +376,11 @@ public class FitsEncoder extends OutputEncoder {
      * @throws     IOException if there was an IO error writing to the output.
      */
     @Deprecated
-    protected synchronized void writeFloat(float f) throws IOException {
-        getOutputBuffer().putFloat(f);
-        flush();
+    protected void writeFloat(float f) throws IOException {
+        synchronized (lock) {
+            getOutputBuffer().putFloat(f);
+            flush();
+        }
     }
 
     /**
@@ -380,9 +392,11 @@ public class FitsEncoder extends OutputEncoder {
      * @throws     IOException if there was an IO error writing to the output.
      */
     @Deprecated
-    protected synchronized void writeDouble(double d) throws IOException {
-        getOutputBuffer().putDouble(d);
-        flush();
+    protected void writeDouble(double d) throws IOException {
+        synchronized (lock) {
+            getOutputBuffer().putDouble(d);
+            flush();
+        }
     }
 
     /**
@@ -395,9 +409,11 @@ public class FitsEncoder extends OutputEncoder {
      *
      * @see                #writeChars(String)
      */
-    protected synchronized void writeBytes(String s) throws IOException {
-        put(s);
-        flush();
+    protected void writeBytes(String s) throws IOException {
+        synchronized (lock) {
+            put(s);
+            flush();
+        }
     }
 
     /**
@@ -413,17 +429,18 @@ public class FitsEncoder extends OutputEncoder {
      * @see                #writeBytes(String)
      * @see                FitsFactory#setUseUnicodeChars(boolean)
      */
-    protected synchronized void writeChars(String s) throws IOException {
+    protected void writeChars(String s) throws IOException {
         if (ElementType.CHAR.size() == 1) {
             writeBytes(s);
         } else {
-            OutputBuffer out = getOutputBuffer();
-            for (int i = 0; i < s.length(); i++) {
-                out.putShort((short) s.charAt(i));
+            synchronized (lock) {
+                OutputBuffer out = getOutputBuffer();
+                for (int i = 0; i < s.length(); i++) {
+                    out.putShort((short) s.charAt(i));
+                }
+                flush();
             }
-            flush();
         }
-
     }
 
     /**
@@ -441,9 +458,11 @@ public class FitsEncoder extends OutputEncoder {
      *
      * @see                FitsFactory#setUseUnicodeChars(boolean)
      */
-    protected synchronized void write(char[] c, int start, int length) throws IOException {
-        put(c, start, length);
-        flush();
+    protected void write(char[] c, int start, int length) throws IOException {
+        synchronized (lock) {
+            put(c, start, length);
+            flush();
+        }
     }
 
     /**
@@ -455,9 +474,11 @@ public class FitsEncoder extends OutputEncoder {
      *
      * @throws IOException if there was an IO error writing to the output
      */
-    protected synchronized void write(short[] s, int start, int length) throws IOException {
-        getOutputBuffer().put(s, start, length);
-        flush();
+    protected void write(short[] s, int start, int length) throws IOException {
+        synchronized (lock) {
+            getOutputBuffer().put(s, start, length);
+            flush();
+        }
     }
 
     /**
@@ -469,9 +490,11 @@ public class FitsEncoder extends OutputEncoder {
      *
      * @throws IOException if there was an IO error writing to the output
      */
-    protected synchronized void write(int[] i, int start, int length) throws IOException {
-        getOutputBuffer().put(i, start, length);
-        flush();
+    protected void write(int[] i, int start, int length) throws IOException {
+        synchronized (lock) {
+            getOutputBuffer().put(i, start, length);
+            flush();
+        }
     }
 
     /**
@@ -483,9 +506,11 @@ public class FitsEncoder extends OutputEncoder {
      *
      * @throws IOException if there was an IO error writing to the output
      */
-    protected synchronized void write(long[] l, int start, int length) throws IOException {
-        getOutputBuffer().put(l, start, length);
-        flush();
+    protected void write(long[] l, int start, int length) throws IOException {
+        synchronized (lock) {
+            getOutputBuffer().put(l, start, length);
+            flush();
+        }
     }
 
     /**
@@ -497,9 +522,11 @@ public class FitsEncoder extends OutputEncoder {
      *
      * @throws IOException if there was an IO error writing to the output
      */
-    protected synchronized void write(float[] f, int start, int length) throws IOException {
-        getOutputBuffer().put(f, start, length);
-        flush();
+    protected void write(float[] f, int start, int length) throws IOException {
+        synchronized (lock) {
+            getOutputBuffer().put(f, start, length);
+            flush();
+        }
     }
 
     /**
@@ -511,9 +538,11 @@ public class FitsEncoder extends OutputEncoder {
      *
      * @throws IOException if there was an IO error writing to the output
      */
-    protected synchronized void write(double[] d, int start, int length) throws IOException {
-        getOutputBuffer().put(d, start, length);
-        flush();
+    protected void write(double[] d, int start, int length) throws IOException {
+        synchronized (lock) {
+            getOutputBuffer().put(d, start, length);
+            flush();
+        }
     }
 
     /**
@@ -525,17 +554,21 @@ public class FitsEncoder extends OutputEncoder {
      *
      * @throws IOException if there was an IO error writing to the output
      */
-    protected synchronized void write(String[] str, int start, int length) throws IOException {
+    protected void write(String[] str, int start, int length) throws IOException {
         length += start;
-        while (start < length) {
-            writeBytes(str[start++]);
+        synchronized (lock) {
+            while (start < length) {
+                writeBytes(str[start++]);
+            }
         }
     }
 
     @Override
-    public synchronized void writeArray(Object o) throws IOException, IllegalArgumentException {
-        putArray(o);
-        flush();
+    public void writeArray(Object o) throws IOException, IllegalArgumentException {
+        synchronized (lock) {
+            putArray(o);
+            flush();
+        }
     }
 
     /**
@@ -546,9 +579,9 @@ public class FitsEncoder extends OutputEncoder {
      * </p>
      * <p>
      * The caller may put multiple data object into the conversion buffer before eventually calling
-     * {@link nom.tam.util.OutputEncoder.OutputBuffer#flush()} to ensure that everything is written to the output. Note,
-     * the this call may flush the contents of the conversion buffer to the output if it needs more conversion space
-     * than what is avaiable.
+     * {@link nom.tam.util.OutputEncoder#flush()} to ensure that everything is written to the output. Note, the this
+     * call may flush the contents of the conversion buffer to the output if it needs more conversion space than what is
+     * avaiable.
      * </p>
      *
      * @param  o                        A Java array, including multi-dimensional arrays and heterogeneous arrays of

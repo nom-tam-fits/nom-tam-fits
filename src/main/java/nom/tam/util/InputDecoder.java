@@ -71,6 +71,9 @@ public abstract class InputDecoder {
     /** the conversion buffer */
     private InputBuffer buf;
 
+    /** For thread synchronization */
+    protected Object lock = new Object();
+
     /**
      * Instantiates a new decoder of binary input to Java arrays. To be used by subclass constructors only.
      *
@@ -140,7 +143,7 @@ public abstract class InputDecoder {
      *
      * @throws IOException if an IO error, other than the end-of-file prevented the read.
      */
-    protected synchronized int read() throws IOException {
+    protected int read() throws IOException {
         return in.read();
     }
 
@@ -155,7 +158,7 @@ public abstract class InputDecoder {
      *
      * @throws IOException if an IO error, other than the end-of-file prevented the read.
      */
-    protected synchronized int read(byte[] b, int start, int length) throws IOException {
+    protected int read(byte[] b, int start, int length) throws IOException {
         return in.read(b, start, length);
     }
 

@@ -74,6 +74,9 @@ public class CompressedTableData extends BinaryTable {
 
     private String[] colAlgorithm;
 
+    /** For thread synchronization */
+    private Object lock = new Object();
+
     /**
      * Creates a new empty compressed table data to be initialized at a later point
      */
@@ -115,14 +118,16 @@ public class CompressedTableData extends BinaryTable {
     }
 
     @Override
-    public synchronized long defragment() throws FitsException {
-        if (orig != null && orig.containsHeap()) {
-            // Don't defragment if the original had VLAs, since these are stored on the heap
-            // with a dual-set of descriptors, includeing compressed ones on the heap itself
-            // which are not trivial to de-fragment.
-            return 0L;
+    public long defragment() throws FitsException {
+        synchronized (lock) {
+            if (orig != null && orig.containsHeap()) {
+                // Don't defragment if the original had VLAs, since these are stored on the heap
+                // with a dual-set of descriptors, includeing compressed ones on the heap itself
+                // which are not trivial to de-fragment.
+                return 0L;
+            }
+            return super.defragment();
         }
-        return super.defragment();
     }
 
     @Override
@@ -306,8 +311,10 @@ public class CompressedTableData extends BinaryTable {
      * 
      * @return the number of table rows compressed together as a block.
      */
-    protected final synchronized int getRowsPerTile() {
-        return rowsPerTile;
+    protected final int getRowsPerTile() {
+        synchronized (lock) {
+            return rowsPerTile;
+        }
     }
 
     private String getAlgorithm(int column) {
@@ -349,8 +356,10 @@ public class CompressedTableData extends BinaryTable {
      * {@link CompressedTableHDU}.
      */
     @SuppressWarnings("javadoc")
-    protected synchronized CompressedTableData setRowsPerTile(int value) {
-        rowsPerTile = value;
-        return this;
+    protected CompressedTableData setRowsPerTile(int value) {
+        synchronized (lock) {
+            rowsPerTile = value;
+            return this;
+        }
     }
 }

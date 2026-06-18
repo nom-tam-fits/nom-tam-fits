@@ -108,6 +108,9 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
 
     private ImageNullPixelMask imageNullPixelMask;
 
+    /** For thread synchronization */
+    private Object lock = new Object();
+
     private static void addColumnToTable(BinaryTableHDU hdu, Object column, String columnName) throws FitsException {
         if (column != null) {
             hdu.setColumnName(hdu.addColumn(column) - 1, columnName, null);
@@ -141,18 +144,20 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     }
 
     @Override
-    public synchronized ICompressOption compressOptions() {
-        if (compressorControl == null) {
-            getCompressorControl();
-            compressOptions = compressorControl.option();
-            if (quantAlgorithm != null) {
-                Header h = new Header();
-                h.addLine(HeaderCard.create(ZQUANTIZ, quantAlgorithm));
-                compressOptions.getCompressionParameters().getValuesFromHeader(h);
+    public ICompressOption compressOptions() {
+        synchronized (lock) {
+            if (compressorControl == null) {
+                getCompressorControl();
+                compressOptions = compressorControl.option();
+                if (quantAlgorithm != null) {
+                    Header h = new Header();
+                    h.addLine(HeaderCard.create(ZQUANTIZ, quantAlgorithm));
+                    compressOptions.getCompressionParameters().getValuesFromHeader(h);
+                }
+                compressOptions.getCompressionParameters().initializeColumns(getNumberOfTileOperations());
             }
-            compressOptions.getCompressionParameters().initializeColumns(getNumberOfTileOperations());
+            return compressOptions;
         }
-        return compressOptions;
     }
 
     public Buffer decompress() {
@@ -180,27 +185,31 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     }
 
     @Override
-    public synchronized ICompressorControl getCompressorControl() {
-        if (compressorControl == null) {
-            compressorControl = CompressorProvider.findCompressorControl(quantAlgorithm, compressAlgorithm,
-                    getBaseType().primitiveClass());
+    public ICompressorControl getCompressorControl() {
+        synchronized (lock) {
             if (compressorControl == null) {
-                throw new IllegalStateException(
-                        "Found no compressor control for compression algorithm:" + compressAlgorithm + //
-                                " (quantize algorithm = " + quantAlgorithm + ", base type = "
-                                + getBaseType().primitiveClass() + ")");
+                compressorControl = CompressorProvider.findCompressorControl(quantAlgorithm, compressAlgorithm,
+                        getBaseType().primitiveClass());
+                if (compressorControl == null) {
+                    throw new IllegalStateException(
+                            "Found no compressor control for compression algorithm:" + compressAlgorithm + //
+                                    " (quantize algorithm = " + quantAlgorithm + ", base type = "
+                                    + getBaseType().primitiveClass() + ")");
+                }
             }
+            return compressorControl;
         }
-        return compressorControl;
     }
 
     @Override
-    public synchronized ICompressorControl getGzipCompressorControl() {
-        if (gzipCompressorControl == null) {
-            gzipCompressorControl = CompressorProvider.findCompressorControl(null, ZCMPTYPE_GZIP_1,
-                    getBaseType().primitiveClass());
+    public ICompressorControl getGzipCompressorControl() {
+        synchronized (lock) {
+            if (gzipCompressorControl == null) {
+                gzipCompressorControl = CompressorProvider.findCompressorControl(null, ZCMPTYPE_GZIP_1,
+                        getBaseType().primitiveClass());
+            }
+            return gzipCompressorControl;
         }
-        return gzipCompressorControl;
     }
 
     public TiledImageCompressionOperation prepareUncompressedData(final Buffer buffer) throws FitsException {
@@ -227,33 +236,35 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         return imageNullPixelMask;
     }
 
-    private synchronized void setQuantAlgorithm(final Header header) {
-        setQuantAlgorithm(header.getCard(ZQUANTIZ));
+    private void setQuantAlgorithm(final Header header) {
+        synchronized (lock) {
+            setQuantAlgorithm(header.getCard(ZQUANTIZ));
 
-        if (quantAlgorithm != null) {
-            return;
-        }
-
-        // AK: If no ZQUANTIZ keyword, but has ZSCALE and ZZERO columns, then use NO_DITHER quantiz...
-        boolean hasScale = false;
-        boolean hasZero = false;
-
-        int nFields = header.getIntValue(TFIELDS);
-
-        for (int i = 1; i <= nFields; i++) {
-            String type = header.getStringValue(TTYPEn.n(i));
-
-            if (ZSCALE_COLUMN.equals(type)) {
-                hasScale = true;
-            } else if (ZZERO_COLUMN.equals(type)) {
-                hasZero = true;
-            } else {
-                continue;
+            if (quantAlgorithm != null) {
+                return;
             }
 
-            if (hasScale && hasZero) {
-                setQuantAlgorithm(HeaderCard.create(ZQUANTIZ, Compression.ZQUANTIZ_NO_DITHER));
-                break;
+            // AK: If no ZQUANTIZ keyword, but has ZSCALE and ZZERO columns, then use NO_DITHER quantiz...
+            boolean hasScale = false;
+            boolean hasZero = false;
+
+            int nFields = header.getIntValue(TFIELDS);
+
+            for (int i = 1; i <= nFields; i++) {
+                String type = header.getStringValue(TTYPEn.n(i));
+
+                if (ZSCALE_COLUMN.equals(type)) {
+                    hasScale = true;
+                } else if (ZZERO_COLUMN.equals(type)) {
+                    hasZero = true;
+                } else {
+                    continue;
+                }
+
+                if (hasScale && hasZero) {
+                    setQuantAlgorithm(HeaderCard.create(ZQUANTIZ, Compression.ZQUANTIZ_NO_DITHER));
+                    break;
+                }
             }
         }
     }
@@ -334,23 +345,25 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      * @see                       #getQuantAlgorithm()
      * @see                       #setCompressAlgorithm(HeaderCard)
      */
-    public synchronized TiledImageCompressionOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
-        quantAlgorithm = null;
+    public TiledImageCompressionOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
+        synchronized (lock) {
+            quantAlgorithm = null;
 
-        if (quantAlgorithmCard == null) {
+            if (quantAlgorithmCard == null) {
+                return this;
+            }
+
+            String algo = quantAlgorithmCard.getValue().toUpperCase();
+
+            if (algo.equals(Compression.ZQUANTIZ_NO_DITHER) || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
+                    || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)) {
+                quantAlgorithm = algo;
+            } else {
+                Logger.getLogger(HeaderCard.class.getName()).warning("Ignored invalid ZQUANTIZ value: " + algo);
+            }
+
             return this;
         }
-
-        String algo = quantAlgorithmCard.getValue().toUpperCase();
-
-        if (algo.equals(Compression.ZQUANTIZ_NO_DITHER) || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
-                || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)) {
-            quantAlgorithm = algo;
-        } else {
-            Logger.getLogger(HeaderCard.class.getName()).warning("Ignored invalid ZQUANTIZ value: " + algo);
-        }
-
-        return this;
     }
 
     /**
@@ -365,8 +378,10 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      *
      * @since  1.18
      */
-    public synchronized String getQuantAlgorithm() {
-        return quantAlgorithm;
+    public String getQuantAlgorithm() {
+        synchronized (lock) {
+            return quantAlgorithm;
+        }
     }
 
     /**
@@ -465,32 +480,37 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         return column;
     }
 
-    private synchronized void writeColumns(BinaryTableHDU hdu) throws FitsException {
+    private void writeColumns(BinaryTableHDU hdu) throws FitsException {
         Object compressedColumn = null;
         Object uncompressedColumn = null;
         Object gzipColumn = null;
-        for (TileCompressionOperation tileOperation : getTileOperations()) {
-            TileCompressionType compression = tileOperation.getCompressionType();
-            byte[] compressedData = tileOperation.getCompressedData();
 
-            compressedColumn = setInColumn(compressedColumn, compression == COMPRESSED, tileOperation, byte[].class,
-                    compressedData);
-            gzipColumn = setInColumn(gzipColumn, compression == GZIP_COMPRESSED, tileOperation, byte[].class,
-                    compressedData);
-            uncompressedColumn = setInColumn(uncompressedColumn, compression == UNCOMPRESSED, tileOperation, byte[].class,
-                    compressedData);
+        synchronized (lock) {
+            for (TileCompressionOperation tileOperation : getTileOperations()) {
+                TileCompressionType compression = tileOperation.getCompressionType();
+                byte[] compressedData = tileOperation.getCompressedData();
+
+                compressedColumn = setInColumn(compressedColumn, compression == COMPRESSED, tileOperation, byte[].class,
+                        compressedData);
+                gzipColumn = setInColumn(gzipColumn, compression == GZIP_COMPRESSED, tileOperation, byte[].class,
+                        compressedData);
+                uncompressedColumn = setInColumn(uncompressedColumn, compression == UNCOMPRESSED, tileOperation,
+                        byte[].class, compressedData);
+            }
+            setNullEntries(compressedColumn, new byte[0]);
+            setNullEntries(gzipColumn, new byte[0]);
+            setNullEntries(uncompressedColumn, new byte[0]);
+            addColumnToTable(hdu, compressedColumn, COMPRESSED_DATA_COLUMN);
+            addColumnToTable(hdu, gzipColumn, GZIP_COMPRESSED_DATA_COLUMN);
+            addColumnToTable(hdu, uncompressedColumn, UNCOMPRESSED_DATA_COLUMN);
+
+            if (imageNullPixelMask != null) {
+                addColumnToTable(hdu, imageNullPixelMask.getColumn(), NULL_PIXEL_MASK_COLUMN);
+            }
+            compressOptions.getCompressionParameters().addColumnsToTable(hdu);
+
+            hdu.getData().fillHeader(hdu.getHeader());
         }
-        setNullEntries(compressedColumn, new byte[0]);
-        setNullEntries(gzipColumn, new byte[0]);
-        setNullEntries(uncompressedColumn, new byte[0]);
-        addColumnToTable(hdu, compressedColumn, COMPRESSED_DATA_COLUMN);
-        addColumnToTable(hdu, gzipColumn, GZIP_COMPRESSED_DATA_COLUMN);
-        addColumnToTable(hdu, uncompressedColumn, UNCOMPRESSED_DATA_COLUMN);
-        if (imageNullPixelMask != null) {
-            addColumnToTable(hdu, imageNullPixelMask.getColumn(), NULL_PIXEL_MASK_COLUMN);
-        }
-        compressOptions.getCompressionParameters().addColumnsToTable(hdu);
-        hdu.getData().fillHeader(hdu.getHeader());
     }
 
     private void writeHeader(Header header) throws FitsException {

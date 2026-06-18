@@ -124,6 +124,7 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
             i += l;
         }
         return n;
+
     }
 
     private void aggregate() {
@@ -223,6 +224,7 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
 
         // Always read so we can checksum.
         long skipped = 0;
+
         while (skipped < n) {
             int got = read(b, 0, (int) Math.min(n - skipped, b.length));
             if (got < 0) {
@@ -230,6 +232,7 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
             }
             skipped += got;
         }
+
         return skipped;
     }
 

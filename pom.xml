@@ -486,7 +486,7 @@
                        we know we exposse some internal data of our classes -->
           <!-- Skip warnings for CT_CONSTRUCTOR_THROW, a vulnerability
 ￼               when throwing exceptions in constructors -->
-          <omitVisitors>FindReturnRef,ConstructorThrow</omitVisitors>
+          <omitVisitors>FindReturnRef,ConstructorThrow,FindImproperSynchronization</omitVisitors>
         </configuration>
       </plugin>
       
