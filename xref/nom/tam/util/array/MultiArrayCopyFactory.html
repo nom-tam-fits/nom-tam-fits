@@ -573,7 +573,7 @@
 <a class="jxr_linenumber" name="L565" href="#L565">565</a> <em class="jxr_javadoccomment">     * @return                    A suitable copier instance.</em>
 <a class="jxr_linenumber" name="L566" href="#L566">566</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L567" href="#L567">567</a>     @Deprecated
-<a class="jxr_linenumber" name="L568" href="#L568">568</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">synchronized</strong> MultiArrayCopyFactory&lt;?, ?&gt; select(Class&lt;?&gt; primitiveType, Class&lt;?&gt; primitiveType2) {
+<a class="jxr_linenumber" name="L568" href="#L568">568</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> MultiArrayCopyFactory&lt;?, ?&gt; select(Class&lt;?&gt; primitiveType, Class&lt;?&gt; primitiveType2) {
 <a class="jxr_linenumber" name="L569" href="#L569">569</a>         Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;?, ?&gt;&gt; from = MultiArrayCopyFactory.FACTORIES.get(primitiveType);
 <a class="jxr_linenumber" name="L570" href="#L570">570</a>         <strong class="jxr_keyword">if</strong> (from != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L571" href="#L571">571</a>             MultiArrayCopyFactory&lt;?, ?&gt; to = from.get(primitiveType2);
