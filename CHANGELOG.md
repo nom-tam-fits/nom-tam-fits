@@ -19,7 +19,11 @@ Release candidate for the upcoming maintenance release, possibly around June 15,
  
  - [#847] Improved handling of `NumberFormatException`, by throwing a `HeaderCardException` / `FitsException` instead when these result from string that do not conform to the FITS standard. (by @attipaci)
  
- - [#848] `Stokes.forCoordinateValue()` throws an `IndexOutOfBoundsException` instead of returning `null` when the argument is 0. (Stokes parameters are defined only for the integer coordinate values [1:4] (single-ended) and [-1:-8] (cross-polarization), but undefined for the value 0 between the two sets.) (by @attipaci)   
+ - [#848] `Stokes.forCoordinateValue()` throws an `IndexOutOfBoundsException` instead of returning `null` when the argument is 0. (Stokes parameters are defined only for the integer coordinate values [1:4] (single-ended) and [-1:-8] (cross-polarization), but undefined for the value 0 between the two sets.) (by @attipaci)
+ 
+ - [#856] Improve synchronization safety by using private (or protected) lock objects instead of synchronizing on the class instance itself. The change avoid deadlocks if external code synchronizes on the embedding class. We do however use protected locks still for synchronizing access to protected fields.
+ 
+ - [#856] More surgical SpotBugs exclusions.
 
  - Using the latest Maven dependencies.
  
