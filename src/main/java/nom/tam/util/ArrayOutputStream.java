@@ -115,7 +115,7 @@ public class ArrayOutputStream extends BufferedOutputStream implements OutputWri
      * @throws IOException
      *             if there was an IO error writing to the output.
      */
-    public synchronized void writeArray(Object o) throws IOException, IllegalArgumentException {
+    public void writeArray(Object o) throws IOException, IllegalArgumentException {
         try {
             encoder.writeArray(o);
         } catch (IllegalArgumentException e) {

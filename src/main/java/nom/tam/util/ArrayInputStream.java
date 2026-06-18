@@ -119,7 +119,7 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      *             if there was an IO error reading from the input
      * @see #readArrayFully(Object)
      */
-    public synchronized long readLArray(Object o) throws IOException, IllegalArgumentException {
+    public long readLArray(Object o) throws IOException, IllegalArgumentException {
         try {
             return decoder.readArray(o);
         } catch (IllegalArgumentException e) {
@@ -141,7 +141,7 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * @see #readLArray(Object)
      * @see #readImage(Object)
      */
-    public synchronized void readArrayFully(Object o) throws IOException, IllegalArgumentException {
+    public void readArrayFully(Object o) throws IOException, IllegalArgumentException {
         decoder.readArrayFully(o);
     }
 

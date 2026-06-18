@@ -73,13 +73,17 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
     }
 
     @Override
-    public synchronized T getColumnData() {
-        return column.getValues();
+    public T getColumnData() {
+        synchronized (column) {
+            return column.getValues();
+        }
     }
 
     @Override
-    public synchronized void setColumnData(Object columnValue, int sizeValue) {
-        column.create(columnValue, sizeValue);
+    public void setColumnData(Object columnValue, int sizeValue) {
+        synchronized (column) {
+            column.create(columnValue, sizeValue);
+        }
     }
 
     /**
@@ -92,11 +96,11 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
     private final class Data {
         private T values;
 
-        private synchronized T getValues() {
+        private T getValues() {
             return values;
         }
 
-        private synchronized void create(Object columnValue, int sizeValue) {
+        private void create(Object columnValue, int sizeValue) {
             if (sizeValue <= 0) {
                 values = null;
             } else {

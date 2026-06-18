@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- we know we expose some internal data of our classes, by design -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP" />
+    </Match>
+    
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP2" />
+    </Match>
+
+    <!-- Throwing exception from constructors. It's part of the API legacy. -->
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW" />
+    </Match>
+
+    <!-- Using protected locks for synchronized access to protected fields -->
+    <Match>
+        <Bug pattern="USO_UNSAFE_OBJECT_SYNCHRONIZATION" />
+    </Match>
+
+</FindBugsFilter>

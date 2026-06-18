@@ -74,6 +74,9 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
     /** Whether the current position is beyond the current ennd-of-file */
     private boolean writeAhead;
 
+    /** For thread synchronization */
+    protected Object lock = new Object();
+
     /**
      * Instantiates a new buffered random access file with the specified IO mode and buffer size. This class offers up
      * to 2+ orders of magnitude superior performance over {@link RandomAccessFile} when repeatedly reading or writing
@@ -116,33 +119,35 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * 
      * @throws IOException if the position is negative or cannot be set.
      */
-    public final synchronized void seek(long newPos) throws IOException {
-        // Check that the new position is valid
-        if (newPos < 0) {
-            throw new IllegalArgumentException("seek at " + newPos);
+    public final void seek(long newPos) throws IOException {
+        synchronized (lock) {
+            // Check that the new position is valid
+            if (newPos < 0) {
+                throw new IllegalArgumentException("seek at " + newPos);
+            }
+
+            if (newPos <= startOfBuf + end) {
+                // AK: Do not invoke checking length (costly) if not necessary
+                writeAhead = false;
+            } else {
+                writeAhead = newPos > length();
+            }
+
+            if (newPos < startOfBuf || newPos >= startOfBuf + end) {
+                // The new position is outside the currently buffered region.
+                // Write the current buffer back to the stream, and start anew.
+                flush();
+
+                // We'll start buffering at the new position next.
+                startOfBuf = newPos;
+                end = 0;
+            }
+
+            // Position within the new buffer...
+            offset = (int) (newPos - startOfBuf);
+
+            matchBufferPos();
         }
-
-        if (newPos <= startOfBuf + end) {
-            // AK: Do not invoke checking length (costly) if not necessary
-            writeAhead = false;
-        } else {
-            writeAhead = newPos > length();
-        }
-
-        if (newPos < startOfBuf || newPos >= startOfBuf + end) {
-            // The new position is outside the currently buffered region.
-            // Write the current buffer back to the stream, and start anew.
-            flush();
-
-            // We'll start buffering at the new position next.
-            startOfBuf = newPos;
-            end = 0;
-        }
-
-        // Position within the new buffer...
-        offset = (int) (newPos - startOfBuf);
-
-        matchBufferPos();
     }
 
     /**
@@ -174,8 +179,10 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @return the current byte offset from the beginning of the file.
      */
-    public final synchronized long getFilePointer() {
-        return startOfBuf + offset;
+    public final long getFilePointer() {
+        synchronized (lock) {
+            return startOfBuf + offset;
+        }
     }
 
     /**
@@ -185,9 +192,11 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @throws IOException if there was an IO error.
      */
-    private synchronized long getRemaining() throws IOException {
-        long n = file.length() - getFilePointer();
-        return n > 0 ? n : 0L;
+    private long getRemaining() throws IOException {
+        synchronized (lock) {
+            long n = file.length() - getFilePointer();
+            return n > 0 ? n : 0L;
+        }
     }
 
     /**
@@ -198,20 +207,22 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @throws IOException if there was an IO error accessing the file.
      */
-    private synchronized boolean makeAvailable() throws IOException {
-        if (offset < end) {
-            return true;
+    private boolean makeAvailable() throws IOException {
+        synchronized (lock) {
+            if (offset < end) {
+                return true;
+            }
+
+            if (getRemaining() <= 0) {
+                return false;
+            }
+
+            // Buffer as much as we can.
+            seek(getFilePointer());
+            end = file.read(buf, 0, buf.length);
+
+            return end > 0;
         }
-
-        if (getRemaining() <= 0) {
-            return false;
-        }
-
-        // Buffer as much as we can.
-        seek(getFilePointer());
-        end = file.read(buf, 0, buf.length);
-
-        return end > 0;
     }
 
     /**
@@ -224,11 +235,13 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @throws IOException if there was an IO error accessing the file.
      */
-    public final synchronized boolean hasAvailable(int need) throws IOException {
-        if (end >= offset + need) {
-            return true;
+    public final boolean hasAvailable(int need) throws IOException {
+        synchronized (lock) {
+            if (end >= offset + need) {
+                return true;
+            }
+            return file.length() >= getFilePointer() + need;
         }
-        return file.length() >= getFilePointer() + need;
     }
 
     /**
@@ -238,12 +251,14 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @throws IOException if the operation failed
      */
-    public final synchronized long length() throws IOException {
-        // It's either the file's length or that of the end of the (yet) unsynched buffer...
-        if (end > 0) {
-            return Math.max(file.length(), startOfBuf + end);
+    public final long length() throws IOException {
+        synchronized (lock) {
+            // It's either the file's length or that of the end of the (yet) unsynched buffer...
+            if (end > 0) {
+                return Math.max(file.length(), startOfBuf + end);
+            }
+            return file.length();
         }
-        return file.length();
     }
 
     /**
@@ -253,23 +268,25 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @throws IOException if the resizing of the underlying stream fails
      */
-    public synchronized void setLength(long newLength) throws IOException {
-        // Check if we can change the length inside the current buffer.
-        final long bufEnd = startOfBuf + end;
-        if (newLength >= startOfBuf && newLength < bufEnd) {
-            // If truncated in the buffered region, then truncate the buffer also...
-            end = (int) (newLength - startOfBuf);
-        } else {
-            flush();
-            end = 0;
-        }
+    public void setLength(long newLength) throws IOException {
+        synchronized (lock) {
+            // Check if we can change the length inside the current buffer.
+            final long bufEnd = startOfBuf + end;
+            if (newLength >= startOfBuf && newLength < bufEnd) {
+                // If truncated in the buffered region, then truncate the buffer also...
+                end = (int) (newLength - startOfBuf);
+            } else {
+                flush();
+                end = 0;
+            }
 
-        if (getFilePointer() > newLength) {
-            seek(newLength);
-        }
+            if (getFilePointer() > newLength) {
+                seek(newLength);
+            }
 
-        // Change the length of the file itself...
-        file.setLength(newLength);
+            // Change the length of the file itself...
+            file.setLength(newLength);
+        }
     }
 
     /**
@@ -277,8 +294,10 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @throws IOException if there was an IO error
      */
-    private synchronized void matchBufferPos() throws IOException {
-        file.position(getFilePointer());
+    private void matchBufferPos() throws IOException {
+        synchronized (lock) {
+            file.position(getFilePointer());
+        }
     }
 
     /**
@@ -286,17 +305,21 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @throws IOException if there was an IO error
      */
-    private synchronized void matchFilePos() throws IOException {
-        seek(file.position());
+    private void matchFilePos() throws IOException {
+        synchronized (lock) {
+            seek(file.position());
+        }
     }
 
     @Override
-    public synchronized void close() throws IOException {
-        flush();
-        file.close();
-        startOfBuf = 0;
-        offset = 0;
-        end = 0;
+    public void close() throws IOException {
+        synchronized (lock) {
+            flush();
+            file.close();
+            startOfBuf = 0;
+            offset = 0;
+            end = 0;
+        }
     }
 
     /**
@@ -304,126 +327,139 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @throws IOException if there was an IO error writing the prior data back to the file.
      */
-    private synchronized void moveBuffer() throws IOException {
-        seek(getFilePointer());
-    }
-
-    @Override
-    public synchronized void flush() throws IOException {
-        if (!isModified) {
-            return;
-        }
-
-        // the buffer was modified locally, so we need to write it back to the stream
-        if (end > 0) {
-            file.position(startOfBuf);
-            file.write(buf, 0, end);
-        }
-        isModified = false;
-    }
-
-    @Override
-    public final synchronized void write(int b) throws IOException {
-        if (writeAhead) {
-            setLength(getFilePointer());
-        }
-
-        if (offset >= buf.length) {
-            // The buffer is full, it's time to write it back to stream, and start anew
-            moveBuffer();
-        }
-
-        isModified = true;
-        buf[offset++] = (byte) b;
-
-        if (offset > end) {
-            // We are writing at the end of the file, and we need to grow the buffer with the file...
-            end = offset;
+    private void moveBuffer() throws IOException {
+        synchronized (lock) {
+            seek(getFilePointer());
         }
     }
 
     @Override
-    public final synchronized int read() throws IOException {
-        if (!makeAvailable()) {
-            // By contract of read(), it returns -1 at th end of file.
-            return -1;
-        }
+    public void flush() throws IOException {
+        synchronized (lock) {
+            if (!isModified) {
+                return;
+            }
 
-        // Return the unsigned(!) byte.
-        return buf[offset++] & BYTE_MASK;
+            // the buffer was modified locally, so we need to write it back to the stream
+            if (end > 0) {
+                file.position(startOfBuf);
+                file.write(buf, 0, end);
+            }
+            isModified = false;
+        }
     }
 
     @Override
-    public final synchronized void write(byte[] b, int from, int len) throws IOException {
-        if (len <= 0) {
-            return;
-        }
+    public final void write(int b) throws IOException {
+        synchronized (lock) {
 
-        if (writeAhead) {
-            setLength(getFilePointer());
-        }
+            if (writeAhead) {
+                setLength(getFilePointer());
+            }
 
-        if (len > 2 * buf.length) {
-            // Large direct write...
-            matchBufferPos();
-            file.write(b, from, len);
-            matchFilePos();
-            return;
-        }
-
-        while (len > 0) {
             if (offset >= buf.length) {
-                // The buffer is full, it's time to write it back to stream, and start anew.
+                // The buffer is full, it's time to write it back to stream, and start anew
                 moveBuffer();
             }
 
             isModified = true;
-            int n = Math.min(len, buf.length - offset);
-            System.arraycopy(b, from, buf, offset, n);
-
-            offset += n;
-            from += n;
-            len -= n;
+            buf[offset++] = (byte) b;
 
             if (offset > end) {
-                // We are growing the file, so grow the buffer also...
+                // We are writing at the end of the file, and we need to grow the buffer with the file...
                 end = offset;
             }
         }
     }
 
     @Override
-    public final synchronized int read(byte[] b, int from, int len) throws IOException {
+    public final int read() throws IOException {
+        synchronized (lock) {
+            if (!makeAvailable()) {
+                // By contract of read(), it returns -1 at th end of file.
+                return -1;
+            }
+
+            // Return the unsigned(!) byte.
+            return buf[offset++] & BYTE_MASK;
+        }
+    }
+
+    @Override
+    public final void write(byte[] b, int from, int len) throws IOException {
+        if (len <= 0) {
+            return;
+        }
+
+        synchronized (lock) {
+            if (writeAhead) {
+                setLength(getFilePointer());
+            }
+
+            if (len > 2 * buf.length) {
+                // Large direct write...
+                matchBufferPos();
+                file.write(b, from, len);
+                matchFilePos();
+                return;
+            }
+
+            while (len > 0) {
+                if (offset >= buf.length) {
+                    // The buffer is full, it's time to write it back to stream, and start anew.
+                    moveBuffer();
+                }
+
+                isModified = true;
+                int n = Math.min(len, buf.length - offset);
+                System.arraycopy(b, from, buf, offset, n);
+
+                offset += n;
+                from += n;
+                len -= n;
+
+                if (offset > end) {
+                    // We are growing the file, so grow the buffer also...
+                    end = offset;
+                }
+            }
+        }
+    }
+
+    @Override
+    public final int read(byte[] b, int from, int len) throws IOException {
         if (len <= 0) {
             // Nothing to do.
             return 0;
         }
 
-        if (len > 2 * buf.length) {
-            // Large direct read...
-            matchBufferPos();
-            int l = file.read(b, from, len);
-            matchFilePos();
-            return l;
-        }
-
-        int got = 0;
-
-        while (got < len) {
-            if (!makeAvailable()) {
-                return got > 0 ? got : -1;
+        synchronized (lock) {
+            if (len > 2 * buf.length) {
+                // Large direct read...
+                matchBufferPos();
+                int l = file.read(b, from, len);
+                matchFilePos();
+                return l;
             }
 
-            int n = Math.min(len - got, end - offset);
+            int got = 0;
 
-            System.arraycopy(buf, offset, b, from, n);
+            while (got < len) {
+                if (!makeAvailable()) {
+                    return got > 0 ? got : -1;
+                }
 
-            got += n;
-            offset += n;
-            from += n;
+                int n = Math.min(len - got, end - offset);
+
+                System.arraycopy(buf, offset, b, from, n);
+
+                got += n;
+                offset += n;
+                from += n;
+            }
+
+            return got;
         }
-
-        return got;
     }
 
     /**
@@ -435,8 +471,10 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * @throws EOFException if already at the end of file.
      * @throws IOException  if there was an IO error before the buffer could be fully populated.
      */
-    public final synchronized void readFully(byte[] b) throws EOFException, IOException {
-        readFully(b, 0, b.length);
+    public final void readFully(byte[] b) throws EOFException, IOException {
+        synchronized (lock) {
+            readFully(b, 0, b.length);
+        }
     }
 
     /**
@@ -451,14 +489,16 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * @throws EOFException if already at the end of file.
      * @throws IOException  if there was an IO error before the requested number of bytes could all be read.
      */
-    public synchronized void readFully(byte[] b, int off, int len) throws EOFException, IOException {
-        while (len > 0) {
-            int n = read(b, off, len);
-            if (n < 0) {
-                throw new EOFException();
+    public void readFully(byte[] b, int off, int len) throws EOFException, IOException {
+        synchronized (lock) {
+            while (len > 0) {
+                int n = read(b, off, len);
+                if (n < 0) {
+                    throw new EOFException();
+                }
+                off += n;
+                len -= n;
             }
-            off += n;
-            len -= n;
         }
     }
 
@@ -469,11 +509,13 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @throws IOException if there was an IO error while reading from the file.
      */
-    public final synchronized String readUTF() throws IOException {
-        matchBufferPos();
-        String s = file.readUTF();
-        matchFilePos();
-        return s;
+    public final String readUTF() throws IOException {
+        synchronized (lock) {
+            matchBufferPos();
+            String s = file.readUTF();
+            matchFilePos();
+            return s;
+        }
     }
 
     /**
@@ -483,10 +525,12 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @throws IOException if there was an IO error while writing to the file.
      */
-    public final synchronized void writeUTF(String s) throws IOException {
-        matchBufferPos();
-        file.writeUTF(s);
-        matchFilePos();
+    public final void writeUTF(String s) throws IOException {
+        synchronized (lock) {
+            matchBufferPos();
+            file.writeUTF(s);
+            matchFilePos();
+        }
     }
 
     /**
@@ -500,19 +544,21 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @throws IOException if there was an IO error.
      */
-    public final synchronized long skip(long n) throws IOException {
-        if (offset + n >= 0 && offset + n <= end) {
-            // Skip within the buffered region...
-            offset = (int) (offset + n);
+    public final long skip(long n) throws IOException {
+        synchronized (lock) {
+            if (offset + n >= 0 && offset + n <= end) {
+                // Skip within the buffered region...
+                offset = (int) (offset + n);
+                return n;
+            }
+
+            long pos = getFilePointer();
+
+            n = Math.max(n, -pos);
+
+            seek(pos + n);
             return n;
         }
-
-        long pos = getFilePointer();
-
-        n = Math.max(n, -pos);
-
-        seek(pos + n);
-        return n;
     }
 
     /**
@@ -525,8 +571,10 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @throws IOException if there was an IO error while reading, other than the end-of-file.
      */
-    public final synchronized int read(byte[] b) throws IOException {
-        return read(b, 0, b.length);
+    public final int read(byte[] b) throws IOException {
+        synchronized (lock) {
+            return read(b, 0, b.length);
+        }
     }
 
     /**
@@ -536,8 +584,10 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @throws IOException if there was an IO error while writing to the file...
      */
-    public final synchronized void write(byte[] b) throws IOException {
-        write(b, 0, b.length);
+    public final void write(byte[] b) throws IOException {
+        synchronized (lock) {
+            write(b, 0, b.length);
+        }
     }
 
     /**

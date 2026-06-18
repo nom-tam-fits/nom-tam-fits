@@ -565,7 +565,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
      * @return                    A suitable copier instance.
      */
     @Deprecated
-    public static synchronized MultiArrayCopyFactory<?, ?> select(Class<?> primitiveType, Class<?> primitiveType2) {
+    public static MultiArrayCopyFactory<?, ?> select(Class<?> primitiveType, Class<?> primitiveType2) {
         Map<Class<?>, MultiArrayCopyFactory<?, ?>> from = MultiArrayCopyFactory.FACTORIES.get(primitiveType);
         if (from != null) {
             MultiArrayCopyFactory<?, ?> to = from.get(primitiveType2);

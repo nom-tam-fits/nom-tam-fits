@@ -159,7 +159,7 @@ public class ArrayDataFile extends BufferedFileIO {
      * @see #readArrayFully(Object)
      * @see #readImage(Object)
      */
-    public synchronized long readLArray(Object o) throws IOException, IllegalArgumentException {
+    public long readLArray(Object o) throws IOException, IllegalArgumentException {
         return decoder.readArray(o);
     }
 
@@ -177,7 +177,7 @@ public class ArrayDataFile extends BufferedFileIO {
      * @see #readLArray(Object)
      * @see #readImage(Object)
      */
-    public synchronized void readArrayFully(Object o) throws IOException, IllegalArgumentException {
+    public void readArrayFully(Object o) throws IOException, IllegalArgumentException {
         decoder.readArrayFully(o);
     }
 
@@ -213,7 +213,7 @@ public class ArrayDataFile extends BufferedFileIO {
      * @throws IOException
      *             if there was an IO error writing to the output.
      */
-    public synchronized void writeArray(Object o) throws IOException, IllegalArgumentException {
+    public void writeArray(Object o) throws IOException, IllegalArgumentException {
         try {
             getEncoder().writeArray(o);
         } catch (IllegalArgumentException e) {

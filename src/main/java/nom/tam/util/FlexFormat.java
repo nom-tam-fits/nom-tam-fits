@@ -114,6 +114,9 @@ public class FlexFormat {
      */
     private int width = HeaderCard.FITS_HEADER_CARD_SIZE;
 
+    /** For thread synchronization */
+    private Object lock = new Object();
+
     private static final DecimalFormatSymbols SYMBOLS = DecimalFormatSymbols.getInstance(Locale.US);
 
     /**
@@ -143,8 +146,10 @@ public class FlexFormat {
      * @see #setWidth(int)
      * @see #format(Number)
      */
-    public synchronized FlexFormat setPrecision(int nDecimals) {
-        decimals = nDecimals < 0 ? AUTO_PRECISION : nDecimals;
+    public FlexFormat setPrecision(int nDecimals) {
+        synchronized (lock) {
+            decimals = nDecimals < 0 ? AUTO_PRECISION : nDecimals;
+        }
         return this;
     }
 
@@ -162,7 +167,7 @@ public class FlexFormat {
      * @see #setWidth(int)
      * @see #format(Number)
      */
-    public synchronized FlexFormat autoPrecision() {
+    public FlexFormat autoPrecision() {
         return setPrecision(AUTO_PRECISION);
     }
 
@@ -179,8 +184,10 @@ public class FlexFormat {
      * @see #autoPrecision()
      * @see #setWidth(int)
      */
-    public final synchronized int getPrecision() {
-        return decimals;
+    public final int getPrecision() {
+        synchronized (lock) {
+            return decimals;
+        }
     }
 
     /**
@@ -197,8 +204,10 @@ public class FlexFormat {
      * @see #setPrecision(int)
      * @see #format(Number)
      */
-    public synchronized FlexFormat setWidth(int nChars) {
-        width = nChars > 0 ? nChars : 0;
+    public FlexFormat setWidth(int nChars) {
+        synchronized (lock) {
+            width = nChars > 0 ? nChars : 0;
+        }
         return this;
     }
 
@@ -222,8 +231,10 @@ public class FlexFormat {
      * 
      * @return the maximum length for formatted values.
      */
-    public final synchronized int getWidth() {
-        return width;
+    public final int getWidth() {
+        synchronized (lock) {
+            return width;
+        }
     }
 
     /**
@@ -231,8 +242,8 @@ public class FlexFormat {
      * 
      * @param value
      *            the number to check
-     * @return <code>true</code> if the specified number is a decimal type
-     *         value, or else <code>false</code> if it is an integer type.
+     * @return <code>true</code> if the specified number is a decimal type value,
+     *         or else <code>false</code> if it is an integer type.
      */
     private static boolean isDecimal(Number value) {
         return value instanceof Float || value instanceof Double || value instanceof BigDecimal;
@@ -248,8 +259,8 @@ public class FlexFormat {
      * 
      * @param value
      *            the decimal value to print
-     * @return the string representing the value, or an empty string if the
-     *         value was <code>null</code>.
+     * @return the string representing the value, or an empty string if the value
+     *         was <code>null</code>.
      * @throws LongValueException
      *             if the decimal value cannot be represented in the alotted
      *             space with any precision
@@ -257,7 +268,7 @@ public class FlexFormat {
      * @see #setWidth(int)
      * @see #forCard(HeaderCard)
      */
-    public synchronized String format(Number value) throws LongValueException {
+    public String format(Number value) throws LongValueException {
 
         if (value == null) {
             return "";
@@ -266,46 +277,48 @@ public class FlexFormat {
         // The value in fixed notation...
         String fixed = null;
 
-        if (!isDecimal(value)) {
-            // For integer types, always consider the fixed format...
-            fixed = value.toString();
-            if (fixed.length() <= width) {
-                return fixed;
-            }
-            if (!(value instanceof BigInteger)) {
-                throw new LongValueException(width, fixed);
-            }
-            // We'll try exponential with reduced precision...
-            fixed = null;
-        } else if (decimals < 0) {
-            // Don"t do fixed format if precision is set explicitly
-            // (It's not really trivial to control the number of significant
-            // gigures in the fixed format...)
-            double a = Math.abs(value.doubleValue());
-            if (a >= MIN_FIXED && a < MAX_FIXED) {
-                // Fixed format only in a resonable data...
-                try {
-                    fixed = format(value, "0.#", AUTO_PRECISION, false);
-                } catch (LongValueException e) {
-                    // We'll try with exponential notation...
+        synchronized (lock) {
+            if (!isDecimal(value)) {
+                // For integer types, always consider the fixed format...
+                fixed = value.toString();
+                if (fixed.length() <= width) {
+                    return fixed;
+                }
+                if (!(value instanceof BigInteger)) {
+                    throw new LongValueException(width, fixed);
+                }
+                // We'll try exponential with reduced precision...
+                fixed = null;
+            } else if (decimals < 0) {
+                // Don"t do fixed format if precision is set explicitly
+                // (It's not really trivial to control the number of significant
+                // gigures in the fixed format...)
+                double a = Math.abs(value.doubleValue());
+                if (a >= MIN_FIXED && a < MAX_FIXED) {
+                    // Fixed format only in a resonable data...
+                    try {
+                        fixed = format(value, "0.#", AUTO_PRECISION, false);
+                    } catch (LongValueException e) {
+                        // We'll try with exponential notation...
+                    }
                 }
             }
-        }
 
-        // The value in exponential notation...
-        String exp = null;
+            // The value in exponential notation...
+            String exp = null;
 
-        try {
-            exp = format(value, "0.#E0", decimals, FitsFactory.isUseExponentD());
-            if (fixed == null) {
-                return exp;
-            }
-            // Go with whichever is more compact.
-            return exp.length() < fixed.length() ? exp : fixed;
+            try {
+                exp = format(value, "0.#E0", decimals, FitsFactory.isUseExponentD());
+                if (fixed == null) {
+                    return exp;
+                }
+                // Go with whichever is more compact.
+                return exp.length() < fixed.length() ? exp : fixed;
 
-        } catch (LongValueException e) {
-            if (fixed == null) {
-                throw e;
+            } catch (LongValueException e) {
+                if (fixed == null) {
+                    throw e;
+                }
             }
         }
 
@@ -335,52 +348,54 @@ public class FlexFormat {
      *             if the decimal value cannot be represented in the alotted
      *             space with the specified precision
      */
-    private synchronized String format(Number value, String fmt, int nDecimals, boolean allowUseD) throws LongValueException {
-        if (width < 1) {
-            throw new LongValueException(width);
-        }
-
-        DecimalFormat f = new DecimalFormat(fmt);
-        f.setDecimalFormatSymbols(SYMBOLS);
-        f.setDecimalSeparatorAlwaysShown(true);
-        f.setRoundingMode(RoundingMode.HALF_UP);
-
-        if (nDecimals < 0) {
-            // Determine precision based on the type.
-            if (value instanceof BigDecimal || value instanceof BigInteger) {
-                nDecimals = width;
-            } else if (value instanceof Double) {
-                nDecimals = DOUBLE_DECIMALS;
-            } else {
-                nDecimals = FLOAT_DECIMALS;
-            }
-        }
-
-        f.setMinimumFractionDigits(fmt.indexOf('E') < 0 ? 1 : 0);
-        f.setMaximumFractionDigits(nDecimals);
-
-        String text = f.format(value);
-
-        // Iterate to make sure we get where we want...
-        while (text.length() > width) {
-            int delta = text.length() - width;
-            nDecimals -= delta;
-
-            if ((value instanceof BigInteger && nDecimals < MIN_BIGINT_EFORM_DECIMALS) || (!(value instanceof BigInteger) && nDecimals < DOUBLE_DECIMALS)) {
-                // We cannot show enough decimals for big types...
-                throw new LongValueException(width, text);
+    private String format(Number value, String fmt, int nDecimals, boolean allowUseD) throws LongValueException {
+        synchronized (lock) {
+            if (width < 1) {
+                throw new LongValueException(width);
             }
 
+            DecimalFormat f = new DecimalFormat(fmt);
+            f.setDecimalFormatSymbols(SYMBOLS);
+            f.setDecimalSeparatorAlwaysShown(true);
+            f.setRoundingMode(RoundingMode.HALF_UP);
+
+            if (nDecimals < 0) {
+                // Determine precision based on the type.
+                if (value instanceof BigDecimal || value instanceof BigInteger) {
+                    nDecimals = width;
+                } else if (value instanceof Double) {
+                    nDecimals = DOUBLE_DECIMALS;
+                } else {
+                    nDecimals = FLOAT_DECIMALS;
+                }
+            }
+
+            f.setMinimumFractionDigits(fmt.indexOf('E') < 0 ? 1 : 0);
             f.setMaximumFractionDigits(nDecimals);
-            text = f.format(value);
-        }
 
-        if (allowUseD && nDecimals > FLOAT_DECIMALS) {
-            // If we want 'D' instead of 'E', just replace the letter in the
-            // result.
-            text = text.replace('E', 'D');
-        }
+            String text = f.format(value);
 
-        return text;
+            // Iterate to make sure we get where we want...
+            while (text.length() > width) {
+                int delta = text.length() - width;
+                nDecimals -= delta;
+
+                if ((value instanceof BigInteger && nDecimals < MIN_BIGINT_EFORM_DECIMALS) || (!(value instanceof BigInteger) && nDecimals < DOUBLE_DECIMALS)) {
+                    // We cannot show enough decimals for big types...
+                    throw new LongValueException(width, text);
+                }
+
+                f.setMaximumFractionDigits(nDecimals);
+                text = f.format(value);
+            }
+
+            if (allowUseD && nDecimals > FLOAT_DECIMALS) {
+                // If we want 'D' instead of 'E', just replace the letter in the
+                // result.
+                text = text.replace('E', 'D');
+            }
+
+            return text;
+        }
     }
 }

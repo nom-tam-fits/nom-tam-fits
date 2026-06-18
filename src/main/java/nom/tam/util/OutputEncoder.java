@@ -74,6 +74,9 @@ public abstract class OutputEncoder {
      */
     private OutputBuffer buf;
 
+    /** For thread synchronization */
+    protected Object lock = new Object();
+
     /**
      * Instantiates a new Java-to-binary encoder for arrays. To be used by subclass implementations only
      *
@@ -98,8 +101,10 @@ public abstract class OutputEncoder {
      *
      * @param o the new output to which encoded data is to be written.
      */
-    protected synchronized void setOutput(OutputWriter o) {
-        out = o;
+    protected void setOutput(OutputWriter o) {
+        synchronized (lock) {
+            out = o;
+        }
     }
 
     /**
@@ -110,13 +115,15 @@ public abstract class OutputEncoder {
      *
      * @see    RandomAccess#getFilePointer()
      */
-    public synchronized long getCount() {
-        return count + buf.buffer.position();
+    public long getCount() {
+        synchronized (lock) {
+            return count + buf.buffer.position();
+        }
     }
 
     /**
      * Returns the buffer that is used for conversion, which can be used to collate more elements for writing before
-     * bulk flushing data to the output (see {@link OutputBuffer#flush()}).
+     * bulk flushing data to the output (see {@link #flush()}).
      *
      * @return the conversion buffer used by this encoder.
      */
@@ -150,11 +157,13 @@ public abstract class OutputEncoder {
      *
      * @throws IOException if there was an IO error writing the contents of this buffer to the output.
      */
-    protected synchronized void flush() throws IOException {
-        int n = buf.buffer.position();
-        out.write(buf.data, 0, n);
-        count += n;
-        buf.rewind();
+    protected void flush() throws IOException {
+        synchronized (lock) {
+            int n = buf.buffer.position();
+            out.write(buf.data, 0, n);
+            count += n;
+            buf.rewind();
+        }
     }
 
     /**
@@ -167,9 +176,11 @@ public abstract class OutputEncoder {
      *
      * @see                java.io.DataOutputStream#write(int)
      */
-    protected synchronized void write(int b) throws IOException {
-        flush();
-        out.write(b);
+    protected void write(int b) throws IOException {
+        synchronized (lock) {
+            flush();
+            out.write(b);
+        }
     }
 
     /**
@@ -185,9 +196,11 @@ public abstract class OutputEncoder {
      *
      * @see                java.io.DataOutputStream#write(byte[], int, int)
      */
-    protected synchronized void write(byte[] b, int start, int length) throws IOException {
-        flush();
-        out.write(b, start, length);
+    protected void write(byte[] b, int start, int length) throws IOException {
+        synchronized (lock) {
+            flush();
+            out.write(b, start, length);
+        }
     }
 
     /**
@@ -369,8 +382,8 @@ public abstract class OutputEncoder {
         }
 
         /**
-         * Puts a 4-byte single-precision floating point value into the conversion buffer, making space for it as
-         * needed by flushing the current buffer contents to the output as necessary.
+         * Puts a 4-byte single-precision floating point value into the conversion buffer, making space for it as needed
+         * by flushing the current buffer contents to the output as necessary.
          *
          * @param  f           the 32-bit single-precision floating point value
          *

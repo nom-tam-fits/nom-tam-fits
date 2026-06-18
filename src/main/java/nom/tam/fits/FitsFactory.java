@@ -12,6 +12,8 @@ import nom.tam.image.compression.hdu.CompressedImageHDU;
 import nom.tam.image.compression.hdu.CompressedTableData;
 import nom.tam.image.compression.hdu.CompressedTableHDU;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -760,6 +762,7 @@ public final class FitsFactory {
         }
     }
 
+    @SuppressFBWarnings(value = "USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION", justification = "Lock is through a private static field.")
     private static void initializeThreadPool() {
         synchronized (GLOBAL_SETTINGS) {
             if (threadPool == null) {
