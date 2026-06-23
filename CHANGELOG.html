@@ -40,7 +40,7 @@
   "downloadURL": "https://github.com/nom-tam-fits/nom-tam-fits/releases",
   "releaseNotes": "https://github.com/nom-tam-fits/nom-tam-fits/releases",
   "softwareHelp": "https://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html",
-  "softwareVersion": "1.22.1",
+  "softwareVersion": "1.22.0",
   "author": [ "Thomas A. McGlynn", "Attila KovÃ¡cs", "Richard van Nieuwhoven" ],
   "maintainer": {
     "name": "Attila KovÃ¡cs",
@@ -84,7 +84,7 @@
 </li>
       <li><a href="index.html">nom.tam.fits</a><span class="divider">/</span></li>
     <li class="active">Changelog</li>
-      <li id="projectVersion" class="pull-right">Version: 1.22.1</li>
+      <li id="projectVersion" class="pull-right">Version: 1.22.1-rc2</li>
           </ul>
         </div>
       </header>
@@ -121,29 +121,29 @@
 <section><a id="Changelog"></a>
 <h1>Changelog</h1>
 <p>All notable changes to the nom.tam.fits library will be documented in this file.</p>
-<p>The format is based on <a href="https://keepachangelog.com/en/1.1.0/" class="externalLink">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html" class="externalLink">Semantic Versioning</a>.</p><section><a id="a.5B1.22.1.5D_-_2026-06-23"></a>
-<h2>[1.22.1] - 2026-06-23</h2>
-<p>Maintenance release with non-critical bug-fixes, and code quality improvements.</p><section><a id="Fixed"></a>
+<p>The format is based on <a href="https://keepachangelog.com/en/1.1.0/" class="externalLink">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html" class="externalLink">Semantic Versioning</a>.</p><section><a id="a.5B1.22.1-rc2.5D_-_2026-06-18"></a>
+<h2>[1.22.1-rc2] - 2026-06-18</h2>
+<p>Release candidate for the upcoming maintenance release, possibly around June 15, 2026.</p><section><a id="Fixed"></a>
 <h3>Fixed</h3>
 <ul>
 
-<li>[#841] Various code quality fixes for issues spotted by GitHub's code scanning tools, such as missing synchronization in subclasses, widening integer arithmetics, making some inner classes static, and bad Javadoc <code>@param</code> tags. (by @attipaci)</li>
+<li>[#841] Various code quality fixes for issues spotted by GitHub's code scanning, such as missing synchronization in subclasses, widening integer arithmetics, making some inner classes static, and bad Javadoc <code>@param</code> tags. (by @attipaci)</li>
 </ul></section><section><a id="Changed"></a>
 <h3>Changed</h3>
 <ul>
 
 <li>
-<p>[#840] Changelog typos fixed by Copilot AI. (by @attipaci)</p></li>
+<p>[#840] Changelog typos fixed by AI. (by @attipaci)</p></li>
 <li>
 <p>[#847] Improved handling of <code>NumberFormatException</code>, by throwing a <code>HeaderCardException</code> / <code>FitsException</code> instead when these result from string that do not conform to the FITS standard. (by @attipaci)</p></li>
 <li>
-<p>[#848] <code>Stokes.forCoordinateValue()</code> now throws an <code>IndexOutOfBoundsException</code> instead of returning <code>null</code> when the argument is 0 &#x2013; the same as for other invalid input values. (Stokes parameters are defined only for the integer coordinate values [1:4] (single-ended) and [-1:-8] (cross-polarization), but undefined for the value 0 between the two sets.) (by @attipaci)</p></li>
+<p>[#848] <code>Stokes.forCoordinateValue()</code> throws an <code>IndexOutOfBoundsException</code> instead of returning <code>null</code> when the argument is 0. (Stokes parameters are defined only for the integer coordinate values [1:4] (single-ended) and [-1:-8] (cross-polarization), but undefined for the value 0 between the two sets.) (by @attipaci)</p></li>
 <li>
-<p>[#856] Improved synchronization safety by using private (and protected) lock objects instead of synchronizing methods on the class instance itself. The change helps avoids undesired blocking if the external code synchronizes on the embedding class itself. In some cases, we do however rely on protected locks also for synchronizing access to protected fields. While these too can be locked externally, it much less trivial or likely under the typical usage scenarios of the library. (by @attipaci)</p></li>
+<p>[#856] Improve synchronization safety by using private (or protected) lock objects instead of synchronizing on the class instance itself. The change avoid deadlocks if external code synchronizes on the embedding class. We do however use protected locks still for synchronizing access to protected fields.</p></li>
 <li>
-<p>[#856] More surgical SpotBugs exclusions. (by @attipaci)</p></li>
+<p>[#856] More surgical SpotBugs exclusions.</p></li>
 <li>
-<p>Using the latest Maven dependencies. (by @attipaci)</p></li>
+<p>Using the latest Maven dependencies.</p></li>
 </ul></section></section><section><a id="a.5B1.22.0.5D_-_2026-03-31"></a>
 <h2>[1.22.0] - 2026-03-31</h2>
 <p>Maintenance release with version bump. No significant API changes, but a lot of the previously announced deprecations are now actually in effect. Other than that, this release is mainly just a lot of cleanup of the test suite, and javadoc warnings.</p><section><a id="Fixed_1"></a>
@@ -185,13 +185,13 @@
 <h3>Fixed</h3>
 <ul>
 
-<li>[#773] <code>ImageData.getTiler()</code> to return a default tiler even if the image is not associated to a random accessible input. The fix restores the behaviour previously present prior to the <strong>1.18</strong> release (by @attipaci, thanks to @sguzzo-dkist-nso).</li>
+<li>[#773] <code>ImageData.getTiler()</code> to return a default tiler even if the image is not associated to a random accessible input. The fix restores the behaviour previously present in prior to the <strong>1.18</strong> release (by @attipaci, thanks to @sguzzo-dkist-nso).</li>
 </ul></section><section><a id="Changed_2"></a>
 <h3>Changed</h3>
 <ul>
 
 <li>
-<p>[#770] Recognize <code>RICE_ONE</code> as an alias for <code>RICE_1</code>. Before it became part of the standard, <code>RICE_ONE</code> was sometimes used in preceding conventions for the <code>ZCMPTYPE</code> keyword. While this alias is explicitly <em>not</em> part of the FITS standard, we can however recognize it to facilitate reading older compressed files. If a compressed FITS header has <code>ZCMPTYPE= 'RICE_ONE'</code>, we will automatically &#x2018;repair&#x2019; it with the standard <code>RICE_1</code> value instead (provided that header repairs are allowed &#x2013; which is true by default), so that re-writing the FITS will contain the standard value after ingesting. The repair will be logged by the <code>Logger</code> of <code>HeaderCard</code> also. If header repairs are disabled (via <code>FitsFactory.setAllowHeaderRepairs(false)</code>), then <code>RICE_ONE</code> will throw a <code>FitsException</code>, like all other invalid values for the compression type. (by @attipaci, thanks to @zycxnanwang)</p></li>
+<p>[#770] Recognize <code>RICE_ONE</code> as an alias for <code>RICE_1</code>. Before it became part of the standard, <code>RICE_ONE</code> was sometimes used in preceding conventions for the <code>ZCMPTYPE</code> keyword. While this alias is explicitly <em>not</em> part of the FITS standard, we can however recognize it to facilitate the reading older compressed files. If a compressed FITS header has <code>ZCMPTYPE= 'RICE_ONE'</code>, we will automatically &#x2018;repair&#x2019; it with the standard <code>RICE_1</code> value instead (provided that header repairs are allowed &#x2013; which is true by default), so that re-writing the FITS will contain the standard value after ingesting. The repair will be logged by the <code>Logger</code> of <code>HeaderCard</code> also. If header repairs are disabled (via <code>FitsFactory.setAllowHeaderRepairs(false)</code>), then <code>RICE_ONE</code> will throw a <code>FitsException</code>, like all other invalid values for the compression type. (by @attipaci, thanks to @zycxnanwang)</p></li>
 <li>
 <p>[#770] Fail earlier, and with a more descriptive <code>FitsException</code> if the <code>ZCMPTYPE</code> compression type has an invalid value in the FITS header. (by @attipaci)</p></li>
 <li>
