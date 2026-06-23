@@ -5,27 +5,27 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [1.22.1-rc2] - 2026-06-18
+## [1.22.1] - 2026-06-23
 
-Release candidate for the upcoming maintenance release, possibly around June 15, 2026.
+Maintenance release with non-critical bug-fixes, and code quality improvements.
 
 ### Fixed 
 
- - [#841] Various code quality fixes for issues spotted by GitHub's code scanning, such as missing synchronization in subclasses, widening integer arithmetics, making some inner classes static, and bad Javadoc `@param` tags. (by @attipaci)
+ - [#841] Various code quality fixes for issues spotted by GitHub's code scanning tools, such as missing synchronization in subclasses, widening integer arithmetics, making some inner classes static, and bad Javadoc `@param` tags. (by @attipaci)
    
 ### Changed
 
- - [#840] Changelog typos fixed by AI. (by @attipaci)
+ - [#840] Changelog typos fixed by Copilot AI. (by @attipaci)
  
  - [#847] Improved handling of `NumberFormatException`, by throwing a `HeaderCardException` / `FitsException` instead when these result from string that do not conform to the FITS standard. (by @attipaci)
  
- - [#848] `Stokes.forCoordinateValue()` throws an `IndexOutOfBoundsException` instead of returning `null` when the argument is 0. (Stokes parameters are defined only for the integer coordinate values [1:4] (single-ended) and [-1:-8] (cross-polarization), but undefined for the value 0 between the two sets.) (by @attipaci)
+ - [#848] `Stokes.forCoordinateValue()` now throws an `IndexOutOfBoundsException` instead of returning `null` when the argument is 0 -- the same as for other invalid input values. (Stokes parameters are defined only for the integer coordinate values [1:4] (single-ended) and [-1:-8] (cross-polarization), but undefined for the value 0 between the two sets.) (by @attipaci)
  
- - [#856] Improve synchronization safety by using private (or protected) lock objects instead of synchronizing on the class instance itself. The change avoid deadlocks if external code synchronizes on the embedding class. We do however use protected locks still for synchronizing access to protected fields.
+ - [#856] Improved synchronization safety by using private (and protected) lock objects instead of synchronizing methods on the class instance itself. The change helps avoids undesired blocking if the external code synchronizes on the embedding class itself. In some cases, we do however rely on protected locks also for synchronizing access to protected fields. While these too can be locked externally, it much less trivial or likely under the typical usage scenarios of the library. (by @attipaci)
  
- - [#856] More surgical SpotBugs exclusions.
+ - [#856] More surgical SpotBugs exclusions. (by @attipaci)
 
- - Using the latest Maven dependencies.
+ - Using the latest Maven dependencies. (by @attipaci)
  
 
 ## [1.22.0] - 2026-03-31
@@ -67,11 +67,11 @@ Maintenance release, with minor improvements, and new Maven Central publishing p
 
 ### Fixed
 
- - [#773] `ImageData.getTiler()` to return a default tiler even if the image is not associated to a random accessible input. The fix restores the behaviour previously present in prior to the __1.18__ release (by @attipaci, thanks to @sguzzo-dkist-nso).
+ - [#773] `ImageData.getTiler()` to return a default tiler even if the image is not associated to a random accessible input. The fix restores the behaviour previously present prior to the __1.18__ release (by @attipaci, thanks to @sguzzo-dkist-nso).
 
 ### Changed
  
- - [#770] Recognize `RICE_ONE` as an alias for `RICE_1`. Before it became part of the standard, `RICE_ONE` was sometimes used in preceding conventions for the `ZCMPTYPE` keyword. While this alias is explicitly _not_ part of the FITS standard, we can however recognize it to facilitate the reading older compressed files. If a compressed FITS header has `ZCMPTYPE= 'RICE_ONE'`, we will automatically 'repair' it with the standard `RICE_1` value instead (provided that header repairs are allowed -- which is true by default), so that re-writing the FITS will contain the standard value after ingesting. The repair will be logged by the `Logger` of `HeaderCard` also. If header repairs are disabled (via `FitsFactory.setAllowHeaderRepairs(false)`), then `RICE_ONE` will throw a `FitsException`, like all other invalid values for the compression type. (by @attipaci, thanks to @zycxnanwang)
+ - [#770] Recognize `RICE_ONE` as an alias for `RICE_1`. Before it became part of the standard, `RICE_ONE` was sometimes used in preceding conventions for the `ZCMPTYPE` keyword. While this alias is explicitly _not_ part of the FITS standard, we can however recognize it to facilitate reading older compressed files. If a compressed FITS header has `ZCMPTYPE= 'RICE_ONE'`, we will automatically 'repair' it with the standard `RICE_1` value instead (provided that header repairs are allowed -- which is true by default), so that re-writing the FITS will contain the standard value after ingesting. The repair will be logged by the `Logger` of `HeaderCard` also. If header repairs are disabled (via `FitsFactory.setAllowHeaderRepairs(false)`), then `RICE_ONE` will throw a `FitsException`, like all other invalid values for the compression type. (by @attipaci, thanks to @zycxnanwang)
    
  - [#770] Fail earlier, and with a more descriptive `FitsException` if the `ZCMPTYPE` compression type has an invalid value in the FITS header. (by @attipaci)
 

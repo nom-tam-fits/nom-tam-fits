@@ -582,7 +582,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
      * @param src     the source array
      * @param srcPos  starting position in the source array
      * @param dest    the destination array
-     * @param destPos starting position in the destonation array
+     * @param destPos starting position in the destination array
      * @param length  the number of elements to copy
      */
     @Deprecated
