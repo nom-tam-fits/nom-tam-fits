@@ -1,0 +1,153 @@
+name: Maven
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/main/java/**'
+      - 'src/test/java/**'
+      - 'pom.xml'
+      - 'settings.xml'
+      - '.github/workflows/maven.yml'
+
+  pull_request:
+    paths:
+      - 'src/main/java/**'
+      - 'src/test/java/**'
+      - 'pom.xml'
+      - 'settings.xml'
+      - '.github/workflows/maven.yml'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        path: nom-tam-fits
+
+    - name: Set up JDK
+      uses: actions/setup-java@v5
+      with:
+        java-version: '21'
+        distribution: 'adopt'
+        cache: maven
+
+    - name: Compile
+      working-directory: ./nom-tam-fits
+      run: mvn clean compile
+
+  package:
+    name: Package
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        path: nom-tam-fits
+
+    - name: Check out blackbox images
+      uses: actions/checkout@v7
+      with:
+        repository: nom-tam-fits/blackbox-images
+        path: blackbox-images
+
+    - name: Set up JDK
+      uses: actions/setup-java@v5
+      with:
+        java-version: '21'
+        distribution: 'adopt'
+        cache: maven
+
+    - name: Build and run tests
+      working-directory: ./nom-tam-fits
+      run: mvn package
+
+  test:
+    name: Test
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        path: nom-tam-fits
+
+    - name: Check out blackbox images
+      uses: actions/checkout@v7
+      with:
+        repository: nom-tam-fits/blackbox-images
+        path: blackbox-images
+
+    - name: Set up JDK
+      uses: actions/setup-java@v5
+      with:
+        java-version: '21'
+        distribution: 'adopt'
+        cache: maven
+
+    - name: Build and run tests
+      working-directory: ./nom-tam-fits
+      run: mvn -B test jacoco:report --file pom.xml
+
+    - name: Log coverage percentage
+      continue-on-error: true
+      run: |
+        echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
+        echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
+
+    - name: Upload test coverage to Codecov.io
+      uses: codecov/codecov-action@v7
+      continue-on-error: true
+      with:
+        working-directory: ./nom-tam-fits
+        files: ./target/site/jacoco/jacoco.xml
+        fail_ci_if_error: false
+        flags: unittests
+        name: codecov
+        verbose: true
+        token: ${{ secrets.CODECOV_TOKEN }}
+
+    - name: Upload test coverage to Coveralls.io
+      working-directory: ./nom-tam-fits
+      continue-on-error: true
+      env:
+        COVERALLS_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      run: |
+        if [ "$COVERALLS_TOKEN" != "" ] ; then
+           mvn coveralls:report -DrepoToken=$COVERALLS_TOKEN
+        else
+           echo "WARNING! COVERALLS_REPO_TOKEN secret is undefined. Skipping Coveralls.io upload."
+        fi
+
+  central:
+    name: Publish to Maven Central
+    needs: test
+    runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'nom-tam-fits' && github.ref_name == 'master' }}
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Set up JDK
+      uses: actions/setup-java@v5
+      with:
+        java-version: '21'
+        distribution: 'adopt'
+        cache: maven
+
+    - name: Import GPG key
+      id: import_gpg
+      uses: crazy-max/ghaction-import-gpg@v7
+      with:
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+        passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        git_user_signingkey: true
+
+    - name: Publish package
+      env:
+        PORTAL_USERNAME: ${{ secrets.PORTAL_USERNAME }}
+        PORTAL_PASSWORD: ${{ secrets.PORTAL_PASSWORD }}
+      run: mvn -B deploy -DskipTests -Pcentral --settings settings.xml

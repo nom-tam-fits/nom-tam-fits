@@ -1,16 +1,14 @@
-name: GitHub Package
+name: Release
 on:
   release:
     types: [released]
-# push:
-#    paths:
-#      - '.github/workflows/gh-package.yml'
 
 jobs:
   publish:
+    name: GiutHub package
     runs-on: ubuntu-latest
     if: ${{ github.repository_owner == 'nom-tam-fits' }}
-    permissions: 
+    permissions:
       contents: read
       packages: write
 
