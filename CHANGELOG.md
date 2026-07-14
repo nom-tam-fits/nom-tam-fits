@@ -13,6 +13,10 @@ Upcoming bug-fix release, expected around 15 September 2026.
 
  - [#865] `CompressedImageTiler` to properly read headers in rather than try to adapt to specific algorithms during decompression (see `initCompressionOption()` method), and remove reverse traversal from row read in favour of `ZNAXIS` reverse read. (by @at88mph) 
 
+### Changed
+
+ - The latest build and runtime Maven dependencies. (by @attipaci)
+
 
 ## [1.22.1] - 2026-06-23
 
