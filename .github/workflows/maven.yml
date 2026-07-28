@@ -5,7 +5,7 @@ permissions:
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - 'src/main/java/**'
       - 'src/test/java/**'
@@ -125,7 +125,7 @@ jobs:
 
   central:
     name: Publish to Maven Central
-    needs: test
+    needs: package
     runs-on: ubuntu-latest
     if: ${{ github.repository_owner == 'nom-tam-fits' && github.ref_name == 'master' }}
     steps:
