@@ -238,17 +238,20 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
 
     private void setQuantAlgorithm(final Header header) {
         synchronized (lock) {
-            setQuantAlgorithm(header.getCard(ZQUANTIZ));
-
-            if (quantAlgorithm != null) {
-                return;
-            }
-
-            // AK: If no ZQUANTIZ keyword, but has ZSCALE and ZZERO columns, then use NO_DITHER quantiz...
+            // Quantization of floating-point data is signalled by the presence of the ZSCALE and ZZERO columns, which
+            // carry the per-tile scaling used to reconstruct the floating-point values from the stored integers. The
+            // ZQUANTIZ keyword only names the dithering method that was applied *if* the data was quantized; it is not
+            // by itself proof that quantization took place. A losslessly compressed floating-point image (e.g. GZIP_2)
+            // may still carry ZQUANTIZ='NO_DITHER' while storing the raw (byte-shuffled) floating-point values with no
+            // scale/zero columns, and must not be dequantized. Determine quantization from the columns, not the
+            // keyword.
             boolean hasScale = false;
             boolean hasZero = false;
 
             int nFields = header.getIntValue(TFIELDS);
+
+            // No quant algorithm unless ZZERO and ZSCALE columns exist.
+            quantAlgorithm = null;
 
             for (int i = 1; i <= nFields; i++) {
                 String type = header.getStringValue(TTYPEn.n(i));
@@ -257,13 +260,14 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
                     hasScale = true;
                 } else if (ZZERO_COLUMN.equals(type)) {
                     hasZero = true;
-                } else {
-                    continue;
                 }
 
                 if (hasScale && hasZero) {
-                    setQuantAlgorithm(HeaderCard.create(ZQUANTIZ, Compression.ZQUANTIZ_NO_DITHER));
-                    break;
+                    // Quantized floating-point data. Use the dithering method named by ZQUANTIZ, defaulting to
+                    // NO_DITHER if the keyword is missing or is an unrecognized value.
+                    quantAlgorithm = Compression.ZQUANTIZ_NO_DITHER;
+                    setQuantAlgorithm(header.getCard(ZQUANTIZ));
+                    return;
                 }
             }
         }
