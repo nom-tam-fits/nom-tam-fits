@@ -48,12 +48,15 @@ import java.util.zip.GZIPOutputStream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import nom.tam.fits.Fits;
+import nom.tam.fits.ImageHDU;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ByteGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.DoubleGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.FloatGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.IntGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ShortGZip2Compressor;
+import nom.tam.image.compression.hdu.CompressedImageHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ByteBufferInputStream;
 import nom.tam.util.ByteBufferOutputStream;
@@ -422,6 +425,27 @@ public class GZip2CompressTest {
             Assertions.assertArrayEquals(longArray, decompressedArray.array());
         } finally {
             SafeClose.close(file);
+        }
+    }
+
+    @Test
+    public void testGzipNoDither() throws Exception {
+        try (Fits fits = new Fits("../blackbox-images/gzip-zquantiz-test.fits.gz")) {
+            CompressedImageHDU cim = (CompressedImageHDU) fits.getHDU(1);
+
+            ImageHDU im = cim.asImageHDU();
+            double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
+            int[] axes = im.getAxes();
+            float[][] data = (float[][]) im.getKernel();
+            for (int i = 0; i < axes[0]; i++)
+                for (int j = 0; j < axes[1]; j++) {
+                    if (data[i][j] < min)
+                        min = data[i][j];
+                    if (data[i][j] > max)
+                        max = data[i][j];
+                }
+            Assertions.assertEquals(min, -22.197772979736328, 1e-6);
+            Assertions.assertEquals(max, 22279.822265625, 1e-6);
         }
     }
 }

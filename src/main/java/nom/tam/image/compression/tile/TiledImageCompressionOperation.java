@@ -243,11 +243,15 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
             // ZQUANTIZ keyword only names the dithering method that was applied *if* the data was quantized; it is not
             // by itself proof that quantization took place. A losslessly compressed floating-point image (e.g. GZIP_2)
             // may still carry ZQUANTIZ='NO_DITHER' while storing the raw (byte-shuffled) floating-point values with no
-            // scale/zero columns, and must not be dequantized. Determine quantization from the columns, not the keyword.
+            // scale/zero columns, and must not be dequantized. Determine quantization from the columns, not the
+            // keyword.
             boolean hasScale = false;
             boolean hasZero = false;
 
             int nFields = header.getIntValue(TFIELDS);
+
+            // No quant algorithm unless ZZERO and ZSCALE columns exist.
+            quantAlgorithm = null;
 
             for (int i = 1; i <= nFields; i++) {
                 String type = header.getStringValue(TTYPEn.n(i));
@@ -257,18 +261,14 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
                 } else if (ZZERO_COLUMN.equals(type)) {
                     hasZero = true;
                 }
-            }
 
-            if (hasScale && hasZero) {
-                // Quantized floating-point data. Use the dithering method named by ZQUANTIZ, defaulting to NO_DITHER
-                // when the keyword is missing or holds an unrecognized value.
-                setQuantAlgorithm(header.getCard(ZQUANTIZ));
-                if (quantAlgorithm == null) {
-                    setQuantAlgorithm(HeaderCard.create(ZQUANTIZ, Compression.ZQUANTIZ_NO_DITHER));
+                if (hasScale && hasZero) {
+                    // Quantized floating-point data. Use the dithering method named by ZQUANTIZ, defaulting to
+                    // NO_DITHER if the keyword is missing or is an unrecognized value.
+                    quantAlgorithm = Compression.ZQUANTIZ_NO_DITHER;
+                    setQuantAlgorithm(header.getCard(ZQUANTIZ));
+                    return;
                 }
-            } else {
-                // No scale/zero columns: the data is stored losslessly, so no dequantization must be applied.
-                setQuantAlgorithm((HeaderCard) null);
             }
         }
     }
