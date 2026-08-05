@@ -966,6 +966,63 @@ public class ReadWriteProvidedCompressedImageTest {
         }
     }
 
+    /**
+     * Tiles that are stored losslessly in the GZIP_COMPRESSED_DATA column and whose uncompressed size exceeds the
+     * 64 kB internal buffer of the GZIP decompressor. cfitsio produces this layout on its own whenever quantization
+     * fails for a tile, which is how such files reach the reader in practice. The pixel values are noise, so that
+     * gzip barely compresses them and the inflater delivers the tile in chunks that do not align with the 4-byte
+     * pixel boundaries.
+     */
+    @Test
+    public void writeRiceFloatWithForceNoLossTileLargerThanGzipBuffer() throws Exception {
+        Random random = new Random(42);
+        float[][] noise = new float[300][300];
+        for (float[] row : noise) {
+            for (int x = 0; x < row.length; x++) {
+                row[x] = random.nextFloat() * 1000.0f;
+            }
+        }
+        ImageData imageData = ImageHDU.encapsulate(noise);
+        ImageHDU noiseHdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
+
+        try (Fits f = new Fits()) {
+            // 300 x 150 tiles are 180000 bytes uncompressed, well past the 65536-byte gzip buffer.
+            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(noiseHdu, 300, 150);
+            compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
+                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+                    .forceNoLoss(0, 0, 300, 300)//
+                    .getCompressOption(QuantizeOption.class)//
+                    /**/.setQlevel(1.0)//
+                    .getCompressOption(RiceCompressOption.class)//
+                    /**/.setBlockSize(32);
+            compressedHdu.compress();
+            f.addHDU(compressedHdu);
+
+            try (FitsOutputStream bdos = new FitsOutputStream(
+                    new FileOutputStream("target/write_noise_own_noloss_large_tile.fits.fz"))) {
+                f.write(bdos);
+            }
+        }
+
+        try (Fits f = new Fits("target/write_noise_own_noloss_large_tile.fits.fz")) {
+            f.readHDU();
+            CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
+
+            int gzipColumn = hdu.findColumn(Compression.GZIP_COMPRESSED_DATA_COLUMN);
+            Assertions.assertTrue(gzipColumn >= 0, "expected a GZIP_COMPRESSED_DATA column");
+            for (int tile = 0; tile < hdu.getData().getNRows(); tile++) {
+                Assertions.assertTrue(((byte[]) hdu.getData().get(tile, gzipColumn)).length > 0,
+                        "tile " + tile + " should have been stored as gzipped floats");
+            }
+
+            // Losslessly stored tiles must be reconstructed exactly.
+            float[][] actual = (float[][]) hdu.asImageHDU().getData().getData();
+            for (int y = 0; y < noise.length; y++) {
+                Assertions.assertArrayEquals(noise[y], actual[y], 0.0f, "row " + y);
+            }
+        }
+    }
+
     @Test
     public void writeRiceDouble() throws Exception {
         double[][] m13_double_data = (double[][]) ArrayFuncs.convertArray(m13_data_real, double.class);
