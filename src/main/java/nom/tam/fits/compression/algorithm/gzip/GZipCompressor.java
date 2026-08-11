@@ -255,15 +255,31 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
     public void decompress(ByteBuffer compressed, T pixelData) {
         nioBuffer.rewind();
         TypeConversion<Buffer> typeConverter = getTypeConverter(compressed, pixelData.limit());
+
+        // The size of one element as it appears in the compressed stream, which is the element size of the
+        // pixel data unless the stream stores a narrower or wider type that needs converting.
+        int elementSize = typeConverter == null ? primitiveSize : typeConverter.from.size();
+
         try (GZIPInputStream zip = createGZipInputStream(compressed)) {
-            int count;
-            while ((count = zip.read(buffer)) >= 0) {
-                if (typeConverter != null) {
-                    count = typeConverter.copy(count);
-                }
+            int len = 0; // Number of bytes loaded into buffer
+            int nRead = 0; // Number of bytes read from input
+
+            while ((nRead = zip.read(buffer, len, buffer.length - len)) > 0) {
+                len += nRead;
+
+                // Convert only whole elements in buffer
+                int elementBytes = len - len % elementSize;
+                int converted = typeConverter == null ? elementBytes : typeConverter.copy(elementBytes);
+
                 nioBuffer.position(0);
-                nioBuffer.limit(count / primitiveSize);
+                nioBuffer.limit(converted / primitiveSize);
                 setPixel(pixelData, null);
+
+                len -= elementBytes; // unprocessed remainder bytes that were already loaded.
+                if (len > 0) {
+                    // Move unprocessed loaded remainder to front of the buffer
+                    System.arraycopy(buffer, elementBytes, buffer, 0, len);
+                }
             }
         } catch (IOException e) {
             throw new IllegalStateException("could not gunzip data", e);
