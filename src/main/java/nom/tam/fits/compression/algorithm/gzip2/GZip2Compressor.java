@@ -179,13 +179,9 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         int pixelDataLimit = pixelData.limit();
         byte[] pixelBytes = new byte[pixelDataLimit * primitiveSize];
         try (GZIPInputStream zip = createGZipInputStream(compressed)) {
-            int count = 0;
-            int offset = 0;
-            while (offset < pixelBytes.length && count >= 0) {
-                count = zip.read(pixelBytes, offset, pixelBytes.length - offset);
-                if (count >= 0) {
-                    offset = offset + count;
-                }
+            int len = 0, nRead = 0;
+            while ((nRead = zip.read(pixelBytes, len, pixelBytes.length - len)) > 0) {
+                len += nRead;
             }
         } catch (IOException e) {
             throw new IllegalStateException("could not gunzip data", e);

@@ -211,11 +211,6 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
             to.putArray(toBuffer, toArray);
             return byteCount * to.size() / from.size();
         }
-
-        /** The size in bytes of one element as stored in the compressed stream. */
-        int fromSize() {
-            return from.size();
-        }
     }
 
     private static final int DEFAULT_GZIP_BUFFER_SIZE = 65536;
@@ -263,26 +258,27 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
         // The size of one element as it appears in the compressed stream, which is the element size of the
         // pixel data unless the stream stores a narrower or wider type that needs converting.
-        int elementSize = typeConverter == null ? primitiveSize : typeConverter.fromSize();
+        int elementSize = typeConverter == null ? primitiveSize : typeConverter.from.size();
 
         try (GZIPInputStream zip = createGZipInputStream(compressed)) {
-            int pending = 0;
-            int count;
-            // GZIPInputStream.read() returns whatever the inflater has available, so a chunk may end in the
-            // middle of an element. Only whole elements can be handed on; the trailing bytes of a partial
-            // element are moved to the front of the buffer and completed by the next read.
-            while ((count = zip.read(buffer, pending, buffer.length - pending)) >= 0) {
-                int available = pending + count;
-                int whole = available - available % elementSize;
-                if (whole > 0) {
-                    int converted = typeConverter == null ? whole : typeConverter.copy(whole);
-                    nioBuffer.position(0);
-                    nioBuffer.limit(converted / primitiveSize);
-                    setPixel(pixelData, null);
-                }
-                pending = available - whole;
-                if (pending > 0) {
-                    System.arraycopy(buffer, whole, buffer, 0, pending);
+            int len = 0; // Number of bytes loaded into buffer
+            int nRead = 0; // Number of bytes read from input
+
+            while ((nRead = zip.read(buffer, len, buffer.length - len)) > 0) {
+                len += nRead;
+
+                // Convert only whole elements in buffer
+                int elementBytes = len - len % elementSize;
+                int converted = typeConverter == null ? elementBytes : typeConverter.copy(elementBytes);
+
+                nioBuffer.position(0);
+                nioBuffer.limit(converted / primitiveSize);
+                setPixel(pixelData, null);
+
+                len -= elementBytes; // unprocessed remainder bytes that were already loaded.
+                if (len > 0) {
+                    // Move unprocessed loaded remainder to front of the buffer
+                    System.arraycopy(buffer, elementBytes, buffer, 0, len);
                 }
             }
         } catch (IOException e) {
