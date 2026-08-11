@@ -5,6 +5,21 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+Upcoming bug fix release, likely around 15 September 2026.
+
+### Fixed
+
+ - [#879] Fixed GZIP HDU decompression so it properly handles unprocessed remainder data in the internal buffer between successive reads. (by @timj and @attipaci).
+
+### Changed
+
+ - [#879] Simplified GZIP2 decompression code. (by @attipaci)
+
+ - The latest build and runtime Maven dependencies. (by @attipaci)
+ 
+
 ## [1.22.2] - 2026-08-05
 
 Bug-fix release.
