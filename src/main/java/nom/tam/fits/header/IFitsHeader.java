@@ -3,6 +3,7 @@ package nom.tam.fits.header;
 import java.util.NoSuchElementException;
 
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 
 /*
  * #%L
@@ -251,13 +252,13 @@ public interface IFitsHeader {
      * @throws IndexOutOfBoundsException if the index is less than 0 or exceeds 999. (In truth we should throw an
      *                                       exception for 0 as well, but seems to be common not-quite-legal FITS usage
      *                                       with 0 indices. Hence we relax the condition).
-     * @throws IllegalStateException     if the resulting indexed keyword exceeds the maximum 8-bytes allowed for
+     * @throws HeaderCardException       if the resulting indexed keyword exceeds the maximum 8-bytes allowed for
      *                                       standard FITS keywords.
      * @throws NoSuchElementException    If more indices were supplied than can be filled for this keyword.
      * 
      * @see                              #extractIndices(String)
      */
-    default IFitsHeader n(int... numbers) throws IndexOutOfBoundsException, NoSuchElementException, IllegalStateException {
+    default IFitsHeader n(int... numbers) throws IndexOutOfBoundsException, NoSuchElementException, HeaderCardException {
         StringBuffer headerName = new StringBuffer(key());
         for (int number : numbers) {
             if (number < 0 || number > MAX_INDEX) {
@@ -274,7 +275,7 @@ public interface IFitsHeader {
         }
 
         if (headerName.length() > HeaderCard.MAX_KEYWORD_LENGTH) {
-            throw new IllegalStateException("indexed keyword " + headerName.toString() + " is too long.");
+            throw new HeaderCardException("indexed keyword " + headerName.toString() + " is too long.");
         }
 
         return new FitsKey(headerName.toString(), status(), hdu(), valueType(), comment());

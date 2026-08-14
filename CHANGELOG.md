@@ -13,9 +13,20 @@ Upcoming bug fix release, likely around 15 September 2026.
 
  - [#879] Fixed GZIP HDU decompression so it properly handles unprocessed remainder data in the internal buffer between successive reads. (by @timj and @attipaci).
 
+
+### Added
+
+ - [883] Added `TableHDU.getColumnMeta(int, IFitsHeader)` to support standard keyword enums beside the existing string keyword form. (by @attipaci)
+
 ### Changed
 
  - [#879] Simplified GZIP2 decompression code. (by @attipaci)
+ 
+ - [#882] `TableHDU.getColumnMeta()` changed to work with non-string values also, returning the string representation of the header value for all header value types. Also the method now throws an `IndexOutOfBoundsException` whenever the supplied zero-based column index is negative to exceeds the maximum value given the number of columns in the table. (by @attipaci)
+ 
+ - [#883] `IFitsHeader.n()` changed to throw the more specific `HeaderCardException` instead of the original `IllegalStateException` when the resulting indexed keyword is too long to be a standard FITS keyword. The change is backward compatible. The same applies downstream, e.g. for `TableHDU.setColumnMeta()` / `.getColumnMeta()`. (by @attipaci)
+ 
+ - [#883] `TableHDU.getColumnName()` no longer trims the string value stored in by the `TTYPEn` keyword, in line with the leading spaces being significant in the FITS standard. The caller may trim the result as necessary when it's not `null`. (by @attipaci)
 
  - The latest build and runtime Maven dependencies. (by @attipaci)
  
