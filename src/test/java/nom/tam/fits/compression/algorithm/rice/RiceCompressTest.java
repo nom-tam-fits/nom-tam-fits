@@ -418,7 +418,7 @@ public class RiceCompressTest {
     }
 
     @Test
-    public void testRiceQuantizeCompressIption() {
+    public void testRiceQuantizeCompressIption() throws Exception {
         RiceCompressOption c = new RiceCompressOption();
         RiceQuantizeCompressOption o = new RiceQuantizeCompressOption(c);
         Assertions.assertEquals(c, o.getRiceCompressOption());

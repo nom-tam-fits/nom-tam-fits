@@ -56,7 +56,7 @@ final class ZBlankParameter extends CompressHeaderParameter<QuantizeOption> {
 
         HeaderCard card = header.getCard(getName());
         if (card != null) {
-            getOption().setBNull(card.getValue(Integer.class, getOption().getBNull()));
+            getOption().setBNull(card.getValue(Integer.class, null));
         }
     }
 

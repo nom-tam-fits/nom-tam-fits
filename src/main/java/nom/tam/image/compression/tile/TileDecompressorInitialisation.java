@@ -82,6 +82,6 @@ final class TileDecompressorInitialisation implements ITileOperationInitialisati
     @Override
     public void tileCount(int tileCount) throws FitsException {
         imageTilesOperation.compressOptions().getCompressionParameters().initializeColumns(header,
-                imageTilesOperation.getBinaryTable(), tileCount);
+                imageTilesOperation.getBinaryTable(), 0);
     }
 }

@@ -92,14 +92,14 @@ public abstract class CompressParameters implements ICompressParameters, Cloneab
     public void initializeColumns(Header header, BinaryTable binaryTable, int size)
             throws HeaderCardException, FitsException {
         for (ICompressColumnParameter parameter : columnParameters()) {
-            parameter.setColumnData(getNullableColumn(header, binaryTable, parameter.getName()), size);
+            parameter.setColumnData(getNullableColumn(header, binaryTable, parameter.getName()));
         }
     }
 
     @Override
     public void initializeColumns(int size) {
         for (ICompressColumnParameter parameter : columnParameters()) {
-            parameter.setColumnData(null, size);
+            parameter.ensureColumnData(size);
         }
     }
 

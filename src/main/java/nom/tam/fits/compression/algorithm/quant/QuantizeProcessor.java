@@ -118,223 +118,18 @@ public class QuantizeProcessor {
         }
     }
 
-    private class BaseFilter extends PixelFilter {
-
-        BaseFilter() {
-            super(null);
-        }
-
-        @Override
-        protected void nextPixel() {
-        }
-
-        @Override
-        protected double toDouble(int pixel) {
-            return (pixel + ROUNDING_HALF) * bScale + bZero;
-        }
-
-        @Override
-        protected int toInt(double pixel) {
-            return nint((pixel - bZero) / bScale + ROUNDING_HALF);
-        }
-    }
-
-    private class DitherFilter extends PixelFilter {
-
-        private static final int RANDOM_MULTIPLICATOR = 500;
-
-        private int iseed = 0;
-
-        private int nextRandom = 0;
-
-        DitherFilter(long seed) {
-            super(null);
-            initialize(seed);
-        }
-
-        public void initialize(long ditherSeed) {
-            iseed = (int) ((ditherSeed - 1) % RandomSequence.length());
-            initI1();
-        }
-
-        private void initI1() {
-            nextRandom = (int) (RandomSequence.get(iseed) * RANDOM_MULTIPLICATOR);
-        }
-
-        public double nextRandom() {
-            return RandomSequence.get(nextRandom);
-        }
-
-        @Override
-        protected void nextPixel() {
-            nextRandom++;
-            if (nextRandom >= RandomSequence.length()) {
-                iseed++;
-                if (iseed >= RandomSequence.length()) {
-                    iseed = 0;
-                }
-                initI1();
-            }
-        }
-
-        @Override
-        protected double toDouble(int pixel) {
-            return (pixel - nextRandom() + ROUNDING_HALF) * bScale + bZero;
-        }
-
-        @Override
-        protected int toInt(double pixel) {
-            return nint((pixel - bZero) / bScale + nextRandom() - ROUNDING_HALF);
-        }
-    }
-
-    private static class NullFilter extends PixelFilter {
-
-        private final double nullValue;
-
-        private final boolean isNaN;
-
-        private final int nullValueIndicator;
-
-        NullFilter(double nullValue, int nullValueIndicator, PixelFilter next) {
-            super(next);
-            this.nullValue = nullValue;
-            isNaN = Double.isNaN(this.nullValue);
-            this.nullValueIndicator = nullValueIndicator;
-        }
-
-        public final boolean isNull(double pixel) {
-            return isNaN ? Double.isNaN(pixel) : nullValue == pixel;
-        }
-
-        @Override
-        protected double toDouble(int pixel) {
-            if (pixel == nullValueIndicator) {
-                return nullValue;
-            }
-            return super.toDouble(pixel);
-        }
-
-        @Override
-        protected int toInt(double pixel) {
-            if (isNull(pixel)) {
-                return nullValueIndicator;
-            }
-            return super.toInt(pixel);
-        }
-    }
-
-    private static class PixelFilter {
-
-        private final PixelFilter next;
-
-        protected PixelFilter(PixelFilter next) {
-            this.next = next;
-        }
-
-        protected void nextPixel() {
-            next.nextPixel();
-        }
-
-        protected double toDouble(int pixel) {
-            return next.toDouble(pixel);
-        }
-
-        protected int toInt(double pixel) {
-            return next.toInt(pixel);
-        }
-    }
-
-    private static class ZeroFilter extends PixelFilter {
-
-        ZeroFilter(PixelFilter next) {
-            super(next);
-        }
-
-        @Override
-        protected double toDouble(int pixel) {
-            if (pixel == ZERO_VALUE) {
-                return 0.0;
-            }
-            return super.toDouble(pixel);
-        }
-
-        @Override
-        protected int toInt(double pixel) {
-            if (pixel == 0.0) {
-                return ZERO_VALUE;
-            }
-            return super.toInt(pixel);
-        }
-    }
-
-    private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
-
-    /**
-     * number of reserved values, starting with
-     */
-    private static final long N_RESERVED_VALUES = 10;
-
-    private static final double ROUNDING_HALF = 0.5;
-
-    /**
-     * value used to represent zero-valued pixels
-     */
-    private static final int ZERO_VALUE = Integer.MIN_VALUE + 2;
-
-    private final boolean centerOnZero;
-
-    private final PixelFilter pixelFilter;
-
-    private double bScale;
-
-    private double bZero;
-
     private Quantize quantize;
 
     protected final QuantizeOption quantizeOption;
 
     public QuantizeProcessor(QuantizeOption quantizeOption) {
         this.quantizeOption = quantizeOption;
-        bScale = quantizeOption.getBScale();
-        bZero = quantizeOption.getBZero();
-        PixelFilter filter = null;
-        boolean localCenterOnZero = quantizeOption.isCenterOnZero();
+
         if (quantizeOption.isDither2()) {
-            filter = new DitherFilter(quantizeOption.getSeed() + quantizeOption.getTileIndex());
-            localCenterOnZero = true;
+            quantizeOption.setCenterOnZero(true);
             quantizeOption.setCheckZero(true);
-        } else if (quantizeOption.isDither()) {
-            filter = new DitherFilter(quantizeOption.getSeed() + quantizeOption.getTileIndex());
-        } else {
-            filter = new BaseFilter();
         }
-        if (quantizeOption.isCheckZero()) {
-            filter = new ZeroFilter(filter);
-        }
-        if (quantizeOption.isCheckNull()) {
-            final NullFilter nullFilter = new NullFilter(quantizeOption.getNullValue(), quantizeOption.getBNull(), filter);
-            filter = nullFilter;
-            quantize = new Quantize(quantizeOption) {
-
-                @Override
-                protected int findNextValidPixelWithNullCheck(int nx, DoubleArrayPointer rowpix, int ii) {
-                    while (ii < nx && nullFilter.isNull(rowpix.get(ii))) {
-                        ii++;
-                    }
-                    return ii;
-                }
-
-                @Override
-                protected boolean isNull(double d) {
-                    return nullFilter.isNull(d);
-                }
-            };
-        } else {
-            quantize = new Quantize(quantizeOption);
-        }
-        pixelFilter = filter;
-        centerOnZero = localCenterOnZero;
+        quantize = new Quantize(quantizeOption);
     }
 
     public Quantize getQuantize() {
@@ -343,65 +138,24 @@ public class QuantizeProcessor {
 
     public boolean quantize(double[] doubles, IntBuffer quants) {
         boolean success = quantize.quantize(doubles, quantizeOption.getTileWidth(), quantizeOption.getTileHeight());
-        if (success) {
-            calculateBZeroAndBscale();
+        if (quants != null) {
             quantize(DoubleBuffer.wrap(doubles, 0, quantizeOption.getTileWidth() * quantizeOption.getTileHeight()), quants);
         }
         return success;
     }
 
     public void quantize(final DoubleBuffer fdata, final IntBuffer intData) {
+        quantizeOption.initDither();
         while (fdata.hasRemaining()) {
-            intData.put(pixelFilter.toInt(fdata.get()));
-            pixelFilter.nextPixel();
+            intData.put(quantizeOption.toInt(fdata.get()));
         }
     }
 
     public void unquantize(final IntBuffer intData, final DoubleBuffer fdata) {
+        quantizeOption.initDither();
         while (fdata.hasRemaining()) {
-            fdata.put(pixelFilter.toDouble(intData.get()));
-            pixelFilter.nextPixel();
+            fdata.put(quantizeOption.toDouble(intData.get()));
         }
     }
 
-    private void calculateBZeroAndBscale() {
-        bScale = quantizeOption.getBScale();
-        bZero = zeroCenter();
-        quantizeOption.setIntMinValue(nint((quantizeOption.getMinValue() - bZero) / bScale));
-        quantizeOption.setIntMaxValue(nint((quantizeOption.getMaxValue() - bZero) / bScale));
-        quantizeOption.setBZero(bZero);
-    }
-
-    private int nint(double x) {
-        return x >= 0. ? (int) (x + ROUNDING_HALF) : (int) (x - ROUNDING_HALF);
-    }
-
-    private double zeroCenter() {
-        final double minValue = quantizeOption.getMinValue();
-        final double maxValue = quantizeOption.getMaxValue();
-        double evaluatedBZero;
-        if (!quantizeOption.isCheckNull() && !centerOnZero) {
-            // don't have to check for nulls
-            // return all positive values, if possible since some compression
-            // algorithms either only work for positive integers, or are more
-            // efficient.
-            if ((maxValue - minValue) / bScale < MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
-                evaluatedBZero = minValue;
-                // fudge the zero point so it is an integer multiple of bScale
-                // This helps to ensure the same scaling will be performed if
-                // the file undergoes multiple fpack/funpack cycles
-                long iqfactor = (long) (evaluatedBZero / bScale + ROUNDING_HALF);
-                evaluatedBZero = iqfactor * bScale;
-            } else {
-                /* center the quantized levels around zero */
-                evaluatedBZero = (minValue + maxValue) / 2.;
-            }
-        } else {
-            // data contains null values or has be forced to center on zero
-            // shift the range to be close to the value used to represent null
-            // values
-            evaluatedBZero = minValue - bScale * (Integer.MIN_VALUE + N_RESERVED_VALUES + 1);
-        }
-        return evaluatedBZero;
-    }
 }

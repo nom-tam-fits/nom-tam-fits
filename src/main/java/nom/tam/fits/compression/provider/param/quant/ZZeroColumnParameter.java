@@ -60,4 +60,9 @@ final class ZZeroColumnParameter extends CompressColumnParameter<double[], Quant
         }
     }
 
+    @Override
+    protected Double getInitValue() {
+        return 0.0;
+    }
+
 }

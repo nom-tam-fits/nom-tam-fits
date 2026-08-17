@@ -32,8 +32,6 @@ package nom.tam.fits.compression.algorithm.quant;
  */
 
 import java.io.RandomAccessFile;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
@@ -93,11 +91,13 @@ public class QuantizeTest {
     private void checkRequantedValues(QuantizeProcessor quantize, IntBuffer buffer, double[] doubles, QuantizeOption option,
             boolean check) {
         double[] output = new double[option.getTileWidth() * option.getTileHeight()];
+
         quantize.unquantize(buffer, DoubleBuffer.wrap(output));
         if (check) {
             double[] expected = new double[output.length];
             System.arraycopy(doubles, 0, expected, 0, expected.length);
-            Assertions.assertArrayEquals(expected, output, option.getBScale() * 1.5);
+            Assertions.assertArrayEquals(expected, output,
+                    Double.isNaN(option.getBScale()) ? 1e-10 : option.getBScale() * 1.5);
         }
     }
 
@@ -113,48 +113,9 @@ public class QuantizeTest {
     public void manyDifferentNullCases() {
         final int xsize = 12;
         final int ysize = 2;
-        double[] matrix;
-        int[][] expectedData = {
-                {-2147483646, -2139144306, -2130805810, -2122468981, -2114134654, -2105803661, -2097476837, -2089155012,
-                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
-                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
-                        -1965491708, -1957362476},
-                {-2147483637, -2139144306, -2130805810, -2122468981, -2114134654, -2105803661, -2097476837, -2147483647,
-                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
-                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
-                        -1965491708, -1957362476},
-                {-2147483646, -2139144306, -2130805810, -2122468981, -2114134654, -2105803661, -2147483647, -2147483647,
-                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
-                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
-                        -1965491708, -1957362476},
-                {-2147483637, -2139144306, -2130805810, -2122468981, -2114134654, -2147483647, -2147483647, -2147483647,
-                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
-                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
-                        -1965491708, -1957362476},
-                {-2147483646, -2139144306, -2130805810, -2122468981, -2147483647, -2147483647, -2147483647, -2147483647,
-                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
-                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
-                        -1965491708, -1957362476},
-                {-2147483637, -2139144306, -2130805810, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
-                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
-                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
-                        -1965491708, -1957362476},
-                {-2147483646, -2139144306, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
-                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
-                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
-                        -1965491708, -1957362476},
-                {-2147483637, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
-                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
-                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
-                        -1965491708, -1957362476}};
-        int expectedIndex = 0;
+
         for (int index = 8; index > 0; index--) {
-            // quantize =
-            // new Quantize(nullCheckValue().set(IDither.class, (index % 2 == 1
-            // ? new SubtractiveDither(3942L) : new
-            // SubtractiveDither2(3942L))).set(
-            // quantizeParameter.setQLevel(4)));
-            matrix = initMatrix();
+            double[] matrix = initMatrix();
             Arrays.fill(matrix, index, xsize, NULL_VALUE);
 
             QuantizeOption option;
@@ -171,18 +132,14 @@ public class QuantizeTest {
             quantProcessor.quantize(matrix, quants);
             quants.rewind();
 
-            checkRequantedValues(quantProcessor, quants, matrix, option, false);
+            for (int i = 0; i < xsize; i++) {
+                int q = quants.get();
+                if (matrix[i] == NULL_VALUE) {
+                    Assertions.assertEquals(option.getNullValueIndicator(), q, "index " + index + "," + i);
+                }
+            }
 
-            // Assertions.assertions.assertTrue(quantize.quantize(matrix, xsize, ysize));
-            Assertions.assertArrayEquals(expectedData[expectedIndex], quants.array());
-
-            Assertions.assertEquals(1.19911703788955035348e-06, option.getBScale(), 1e-20);
-            Assertions.assertEquals(2.57508421771571829595e+03, option.getBZero(), 1e-20);
             Assertions.assertEquals(-2147483637, option.getIntMinValue());
-            Assertions.assertEquals(-1957362476, option.getIntMaxValue());
-            // checkRequantedValues(quantize, matrix);
-
-            expectedIndex++;
         }
     }
 
@@ -263,16 +220,15 @@ public class QuantizeTest {
 
         checkRequantedValues(quantProcessor, quants, matrix, option, false);
 
-        Assertions.assertArrayEquals(new int[] {-2147483646, -2147483634, -2147483632, -2147483629, -2147483627,
-                -2147483625, -2147483622, -2147483619, -2147483617, -2147483615, -2147483612, -2147483609, -2147483607,
-                -2147483604, -2147483602, -2147483599, -2147483597, -2147483595, -2147483593, -2147483590, -2147483587,
-                -2147483585, -2147483582, -2147483580
+        Assertions.assertArrayEquals(new int[] {-2147483646, -2147483637, -2147483634, -2147483632, -2147483629,
+                -2147483627, -2147483625, -2147483622, -2147483619, -2147483617, -2147483615, -2147483612, -2147483609,
+                -2147483607, -2147483604, -2147483602, -2147483599, -2147483597, -2147483595, -2147483593, -2147483590,
+                -2147483587, -2147483585, -2147483582}, quants.array());
 
-        }, quants.array());
         Assertions.assertEquals(4.000000e+00, option.getBScale(), 1e-20);
-        Assertions.assertEquals(8.589934548e+09, option.getBZero(), 1e-20);
+        Assertions.assertEquals(8.589934557999833E9, option.getBZero(), 1e-20);
         Assertions.assertEquals(-2147483637, option.getIntMinValue());
-        Assertions.assertEquals(-2147483580, option.getIntMaxValue());
+        Assertions.assertEquals(-2147483582, option.getIntMaxValue());
     }
 
     @Test
@@ -297,10 +253,10 @@ public class QuantizeTest {
 
         checkRequantedValues(quantProcessor, quants, matrix, option, false);
 
-        Assertions.assertEquals(6.01121812296506193330e-07, option.getBScale(), 1e-20);
-        Assertions.assertEquals(1.29089925575053234752e+03, option.getBZero(), 1e-20);
+        Assertions.assertEquals(9.18810439811682E-7, option.getBScale(), 1e-20);
+        Assertions.assertEquals(1983.130218334527, option.getBZero(), 1e-10);
         Assertions.assertEquals(-2147483637, option.getIntMinValue());
-        Assertions.assertEquals(-1866039268, option.getIntMaxValue());
+        Assertions.assertEquals(-1974235153, option.getIntMaxValue());
     }
 
     @Test
@@ -322,6 +278,7 @@ public class QuantizeTest {
                 .setTileWidth(xsize)//
                 .setTileHeight(ysize));
         IntBuffer quants = IntBuffer.wrap(new int[xsize * ysize]);
+
         quantProcessor.quantize(matrix, quants);
         quants.rewind();
 
@@ -330,9 +287,9 @@ public class QuantizeTest {
         Assertions.assertEquals(xsize * ysize, quants.limit());
 
         Assertions.assertEquals(8.11574856349585578526e-07, option.getBScale(), 1e-20);
-        Assertions.assertEquals(1.74284372421136049525e+03, option.getBZero(), 1e-20);
+        Assertions.assertEquals(1.74284372421136049525e+03, option.getBZero(), 1e-10);
         Assertions.assertEquals(-2147483637, option.getIntMinValue());
-        Assertions.assertEquals(-1866576064, option.getIntMaxValue());
+        Assertions.assertEquals(-1866576063, option.getIntMaxValue());
     }
 
     @Test
@@ -359,9 +316,9 @@ public class QuantizeTest {
         checkRequantedValues(quantProcessor, quants, matrix, option, false);
 
         Assertions.assertEquals(8.11574856349585578526e-07, option.getBScale(), 1e-20);
-        Assertions.assertEquals(1.74284372421136049525e+03, option.getBZero(), 1e-20);
+        Assertions.assertEquals(1.74284372421136049525e+03, option.getBZero(), 1e-10);
         Assertions.assertEquals(-2147483637, option.getIntMinValue());
-        Assertions.assertEquals(-1866576064, option.getIntMaxValue());
+        Assertions.assertEquals(-1866576063, option.getIntMaxValue());
     }
 
     @Test
@@ -382,22 +339,21 @@ public class QuantizeTest {
                 .setTileWidth(xsize)//
                 .setTileHeight(ysize));
         IntBuffer quants = IntBuffer.wrap(new int[xsize * ysize]);
+
         quantProcessor.quantize(matrix, quants);
         quants.rewind();
 
+        Assertions.assertArrayEquals(new int[] {-2147483648, -2147483648, -2147483648, -2147483648, -2147483648,
+                -2147483648, -2147483648, -2147483648, -2147483648, -2147483648, -2147483648, -2147483648, -2147483648,
+                -2147483648, -2147483648, -2147483648, -2147483648, -2147483648, -2147483648, -2147483648, -2147483648,
+                -2147483648, -2147483648, -2147483648}, quants.array());
+
+        Assertions.assertEquals(1.0, option.getBScale(), 1e-15);
+        Assertions.assertEquals(0.0, option.getBZero(), 1e-20);
+        Assertions.assertEquals(0, option.getIntMinValue());
+        Assertions.assertEquals(0, option.getIntMaxValue());
+
         checkRequantedValues(quantProcessor, quants, matrix, option, true);
-
-        Assertions.assertArrayEquals(new int[] {-2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
-                -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
-                -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
-                -2147483647, -2147483647, -2147483647
-
-        }, quants.array());
-        Assertions.assertEquals(2.50000000000000000000e-01, option.getBScale(), 1e-20);
-        Assertions.assertEquals(5.36870909250000000000e+08, option.getBZero(), 1e-20);
-        Assertions.assertEquals(-2147483637, option.getIntMinValue());
-        Assertions.assertEquals(-2147483633, option.getIntMaxValue());
-
     }
 
     @Test
@@ -465,7 +421,7 @@ public class QuantizeTest {
             Assertions.assertEquals(2412784644004.5762, option.getBScale(), 1e-19);
             Assertions.assertEquals(0d, option.getBZero(), 1e-19);
             Assertions.assertEquals(0, option.getIntMinValue());
-            Assertions.assertEquals(1911354, option.getIntMaxValue());
+            Assertions.assertEquals(1911355, option.getIntMaxValue());
         } finally {
             SafeClose.close(file);
         }
@@ -549,7 +505,7 @@ public class QuantizeTest {
         BinaryTableHDU hdu = (BinaryTableHDU) FitsFactory.hduFactory(new Object[] {new int[2], new int[2][2]});
         base.addColumnsToTable(hdu);
         int[] column = (int[]) hdu.getColumn(Compression.ZBLANK_COLUMN);
-        Assertions.assertArrayEquals(new int[] {99, 0}, column);
+        Assertions.assertArrayEquals(new int[] {99, Integer.MIN_VALUE}, column);
 
         baseOption.setDither(false);
         base.setValuesInHeader(new HeaderAccess(hdu.getHeader()));
@@ -560,38 +516,6 @@ public class QuantizeTest {
         base.setValuesInHeader(new HeaderAccess(hdu.getHeader()));
         Assertions.assertEquals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1,
                 hdu.getHeader().getStringValue(Compression.ZQUANTIZ));
-    }
-
-    @Test
-    public void testQuantProcessor() throws Exception {
-        QuantizeOption baseOption = new QuantizeOption();
-        baseOption.setDither(true);
-        baseOption.setDither2(false);
-
-        QuantizeProcessor processor = new QuantizeProcessor(baseOption);
-        Field declaredField = QuantizeProcessor.class.getDeclaredField("pixelFilter");
-        declaredField.setAccessible(true);
-        Object filter = declaredField.get(processor);
-        Method nextPixel = filter.getClass().getDeclaredMethod("nextPixel");
-
-        declaredField = filter.getClass().getDeclaredField("iseed");
-        declaredField.setAccessible(true);
-        declaredField.set(filter, 10000);
-
-        declaredField = filter.getClass().getDeclaredField("nextRandom");
-        declaredField.setAccessible(true);
-        declaredField.set(filter, 10000);
-
-        nextPixel.invoke(filter);
-
-        declaredField = filter.getClass().getDeclaredField("iseed");
-        declaredField.setAccessible(true);
-        Assertions.assertEquals(Integer.valueOf(0), declaredField.get(filter));
-
-        declaredField = filter.getClass().getDeclaredField("nextRandom");
-        declaredField.setAccessible(true);
-        Assertions.assertEquals(Integer.valueOf(0), declaredField.get(filter));
-
     }
 
     @Test
@@ -714,6 +638,7 @@ public class QuantizeTest {
         Assertions.assertEquals(1.0, o.getBScale(), 1e-6);
         Assertions.assertEquals(0.0, o.getBZero(), 1e-6);
 
+        p.initializeColumns(10);
         p.setValuesInColumn(0);
         p.setValueInColumn(0); // deprecated old form...
     }
@@ -730,8 +655,8 @@ public class QuantizeTest {
         ZBlankColumnParameter p = new ZBlankColumnParameter(o);
 
         p.column(null, 10);
-        Assertions.assertEquals(10, ((int[]) p.column()).length);
         Assertions.assertEquals(10, ((int[]) p.initializedColumn()).length);
+        Assertions.assertEquals(10, ((int[]) p.column()).length);
 
         o.setBNull(-999);
         p.setValueFromColumn(0);

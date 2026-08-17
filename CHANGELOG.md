@@ -7,16 +7,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-Upcoming bug fix release, likely around 15 September 2026.
+Upcoming feature release, likely around 15 September 2026.
 
 ### Fixed
 
  - [#879] Fixed GZIP HDU decompression so it properly handles unprocessed remainder data in the internal buffer between successive reads. (by @timj and @attipaci).
-
+ 
+ - [#884] Fixed header `ZBLANK` value not being used in decompression, when the compressed FITS does not provide per-tile blanking values in a column otherwise. (by @attipaci, thanks to @robyww).
+ 
+ - [#884] `QuantizeProcessor` had extraneous rounding by half, and sometimes in the wrong direction. Fixed to conform to the FITS specification more completely. (by @attipaci)
+ 
+ - [#884] `QuantizeProcessor` integer min/max ranges to use floor / ceil to accomodate dither. (by @attipaci)
 
 ### Added
 
- - [883] Added `TableHDU.getColumnMeta(int, IFitsHeader)` to support standard keyword enums beside the existing string keyword form. (by @attipaci)
+ - [#883] Added `TableHDU.getColumnMeta(int, IFitsHeader)` to support standard keyword enums beside the existing string keyword form. (by @attipaci)
+ 
+ - [#884] Added `setColumnData(Object)`, `createColumnData(int), and `ensureColumnData(int)` methods to `ICompressColumnParameter`. (by @attipaci)
 
 ### Changed
 
@@ -28,7 +35,21 @@ Upcoming bug fix release, likely around 15 September 2026.
  
  - [#883] `TableHDU.getColumnName()` no longer trims the string value stored in by the `TTYPEn` keyword, in line with the leading spaces being significant in the FITS standard. The caller may trim the result as necessary when it's not `null`. (by @attipaci)
 
+ - [#884] Quantization in HDU compression has been overhauled, and much simplified. Many strenuous internal classes have been eliminated in favor of simpler, easier to follow, logic. (by @attipaci)
+ 
+ - [#884] `QuantizeProcessor` defaults to `ZSCALE` 1.0 and `ZZERO` 0.0 if there are no quantizable valid data (only null or explicit zero values). (by @attipaci)
+ 
+ - [#884] `Quantize.calculateNoise()` changed to use only regular data, excluding special values like NaNs, infinities, null and zero indicators. (by @attipaci)
+ 
+ - [#884] `Quantize.quantize()` changed to set default values (`ZSCALE` -> 1.0, `ZZERO` -> 0.0, int min/max -> 0) when there is no valid data to quantize. (by @attipaci)
+ 
+ - [#884] The default null-value indicator in compressed HDUs is changed to -2147483648, as recommended by the FITS standard. (by @attipaci)
+
  - The latest build and runtime Maven dependencies. (by @attipaci)
+ 
+### Deprecated
+
+ - [#884] Deprecated `ICompressColumnParameter.setColumnData(Object, int)`. Its dual functionality has been split into separate `.setColumnData(Object)`, `createColumnData(int)` and `ensureColumnData(int)` methods. (by @attipaci)
  
 
 ## [1.22.2] - 2026-08-05
