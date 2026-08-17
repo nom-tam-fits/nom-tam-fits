@@ -1,7 +1,10 @@
 package nom.tam.fits;
 
+import java.util.NoSuchElementException;
+
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.Standard;
 
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.TFIELDS;
@@ -343,51 +346,99 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Get the FITS type of a column in the table.
      *
-     * @param  index         The 0-based index of the column.
+     * @param  index0        The 0-based index of the column.
      *
      * @return               The FITS type.
      *
-     * @throws FitsException if an invalid index was requested.
+     * @throws FitsException if the index is less than 0 or greater than or equals to the number of columns in the
+     *                           table.
      */
-    public String getColumnFormat(int index) throws FitsException {
-        int flds = myHeader.getIntValue(TFIELDS, 0);
-        if (index < 0 || index >= flds) {
-            throw new FitsException("Bad column index " + index + " (only " + flds + " columns)");
+    public String getColumnFormat(int index0) throws FitsException {
+        if (index0 < 0 || index0 >= getNCols()) {
+            throw new FitsException("Bad column index " + index0 + " (only " + getNCols() + " columns)");
         }
 
-        return myHeader.getStringValue(TFORMn.n(index + 1)).trim();
+        return myHeader.getStringValue(TFORMn.n(index0 + 1)).trim();
     }
 
     /**
-     * Convenience method for getting column data. Note that this works only for metadata that returns a string value.
-     * This is equivalent to getStringValue(type+index);
+     * Convenience method for getting column metadata, as a string. Note, that the return value is always a string even
+     * if the underlying metadata is some other type in the FITS header. For accessing column descriptions specified via
+     * standard FITS keywords, you should prefer using `{@link #getColumnMeta(int, IFitsHeader)}. And, to get metadata
+     * of known other types (e.g. integers), you may use one of the type-specific getter methods of {@link Header}, such
+     * as <code>getHeader().getIntValue(...)</code>.
      *
-     * @return       meta data string value
+     * @param  index0                    zero-based index index of the colum
+     * @param  keyBase                   the base header keyword of the descriptor, without the column index, e.g.
+     *                                       `"TTYPE"`.
      *
-     * @param  index index of the colum
-     * @param  type  the key type to get
+     * @return                           column meta data as a string, or <code>null</code> if there is no such metadata
+     *                                       in the header.
+     * 
+     * @throws IndexOutOfBoundsException if the index is less than 0 or greater than or equals to the number of columns
+     *                                       in the table.
+     *
+     * @see                              #getColumnMeta(int, IFitsHeader)
+     * @see                              #getHeader()
      */
-    public String getColumnMeta(int index, String type) {
-        return myHeader.getStringValue(type + (index + 1));
+    public String getColumnMeta(int index0, String keyBase) throws IndexOutOfBoundsException {
+        if (index0 < 0 || index0 >= getNCols()) {
+            throw new IndexOutOfBoundsException("Zero-based column index " + index0 + " is out of range");
+        }
+
+        HeaderCard c = myHeader.getCard(keyBase + (index0 + 1));
+        return c == null ? null : c.getValue();
+    }
+
+    /**
+     * Convenience method for getting column metadata, as a string. Note, that the return value is always a string even
+     * if the underlying metadata is some other type@throws IndexOutOfBoundsException if the index is less than 0 or
+     * greater than or equals to the number of columns in the table. in the FITS header. To get metadata of known other
+     * types (e.g. integers), you may use one of the type-specific getter methods of {@link Header}, such as
+     * <code>getHeader().getIntValue(...)</code>.
+     * 
+     * @param  index0                    zero-based index index of the colum
+     * @param  keyBase                   the standard FITS key to get, without the column indexing, e.g.
+     *                                       `Standard.TTYPEn`.
+     * 
+     * @return                           column meta data as a string, or <code>null</code> if there is no such metadata
+     *                                       in the header.
+     * 
+     * @throws IndexOutOfBoundsException if the index is less than 0, or greater than or equals to the number of columns
+     *                                       in the table.
+     * @throws HeaderCardException       if the resulting indexed keyword exceeds the maximum 8-bytes allowed for
+     *                                       standard FITS keywords.
+     * @throws NoSuchElementException    If more indices were supplied than can be filled for this keyword.
+     * 
+     * @since                            1.22.3
+     * 
+     * @see                              #getHeader()
+     */
+    public String getColumnMeta(int index0, IFitsHeader keyBase)
+            throws IndexOutOfBoundsException, HeaderCardException, NoSuchElementException {
+        if (index0 < 0 || index0 >= getNCols()) {
+            throw new IndexOutOfBoundsException("Zero-based column index " + index0 + " is out of range");
+        }
+
+        HeaderCard c = myHeader.getCard(keyBase.n(index0 + 1));
+        return c == null ? null : c.getValue();
     }
 
     /**
      * Gets the name of a column in the table, as it appears in this HDU's header. It may differ from a more currently
      * assigned name of the binary table data column after the HDU creation or reading.
      *
-     * @param  index The 0-based column index.
+     * @param  index0                    The 0-based column index.
      *
-     * @return       The column name.
+     * @return                           The column name, or <code>null</code> if it was undefined.
+     *
+     * @throws IndexOutOfBoundsException if the index is less than 0, or greater than or equals to the number of columns
+     *                                       in the table.
      * 
-     * @see          BinaryTable.ColumnDesc#name()
+     * @see                              BinaryTable.ColumnDesc#name()
      */
-    public String getColumnName(int index) {
-
-        String ttype = myHeader.getStringValue(TTYPEn.n(index + 1));
-        if (ttype != null) {
-            ttype = ttype.trim();
-        }
-        return ttype;
+    public String getColumnName(int index0) throws IndexOutOfBoundsException {
+        return getColumnMeta(index0, Standard.TTYPEn);
     }
 
     /**
@@ -502,193 +553,236 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
      * be organized together.
      *
-     * @param  index               The 0-based index of the column
-     * @param  key                 The column key. I.e., the keyword will be key+(index+1)
-     * @param  value               The value to be placed in the header.
-     * @param  comment             The comment for the header
-     * @param  after               Should the header card be after the current column metadata block
-     *                                 (<code>true</code>), or immediately before the TFORM card (<code>false</code>).
+     * @param  index0                    The 0-based index of the column
+     * @param  key                       The column key. I.e., the keyword will be key+(index+1)
+     * @param  value                     The value to be placed in the header.
+     * @param  comment                   The comment for the header
+     * @param  after                     Should the header card be after the current column metadata block
+     *                                       (<code>true</code>), or immediately before the TFORM card
+     *                                       (<code>false</code>).
      *
-     * @throws HeaderCardException if the header could not be updated
+     * @throws HeaderCardException       if the header could not be updated, or if the indexed FITS keyword is too long
+     *                                       (exceeds the maximum 8 bytes allowed by the FITS standard).
+     * @throws IndexOutOfBoundsException if the index is less than 0 or greater than or equals to the number of columns
+     *                                       in t@throws IndexOutOfBoundsException if the index is less than 0 or
+     *                                       greater than or equals to the number of columns in the table.
      */
-    public void setColumnMeta(int index, IFitsHeader key, String value, String comment, boolean after)
-            throws HeaderCardException {
-        setCurrentColumn(index, after);
-        myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));
+    public void setColumnMeta(int index0, IFitsHeader key, String value, String comment, boolean after)
+            throws IndexOutOfBoundsException, HeaderCardException {
+        setCurrentColumn(index0, after);
+        myHeader.addLine(new HeaderCard(key.n(index0 + 1).key(), value, comment));
     }
 
     /**
      * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
      * be organized together.
      *
-     * @param  index               The 0-based index of the column
-     * @param  key                 The column key. I.e., the keyword will be key+(index+1)
-     * @param  value               The value to be placed in the header.
-     * @param  comment             The comment for the header
-     * @param  after               Should the header card be after the current column metadata block
-     *                                 (<code>true</code>), or immediately before the TFORM card (<code>false</code>).
+     * @param  index0                    The 0-based index of the column
+     * @param  key                       The column key. I.e., the keyword will be key+(index+1)
+     * @param  value                     The value to be placed in the header.
+     * @param  comment                   The comment for the header
+     * @param  after                     Should the header card be after the current column metadata block
+     *                                       (<code>true</code>), or immediately before the TFORM card
+     *                                       (<code>false</code>).
      *
-     * @throws HeaderCardException if the header could not be updated
+     * @throws HeaderCardException       if the header could not be updated, or if the indexed FITS keyword is too long
+     *                                       (exceeds the maximum 8 bytes allowed by the FITS standard).
+     * @throws IndexOutOfBoundsException if the index is less than 0 or greater than or equals to the number of columns
+     *                                       in t@throws IndexOutOfBoundsException if the index is less than 0 or
+     *                                       greater than or equals to the number of columns in the table.
      *
-     * @since                      1.16
+     * @since                            1.16
      */
-    public void setColumnMeta(int index, IFitsHeader key, Number value, String comment, boolean after)
-            throws HeaderCardException {
-        setCurrentColumn(index, after);
-        myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));
+    public void setColumnMeta(int index0, IFitsHeader key, Number value, String comment, boolean after)
+            throws IndexOutOfBoundsException, HeaderCardException {
+        setCurrentColumn(index0, after);
+        myHeader.addLine(new HeaderCard(key.n(index0 + 1).key(), value, comment));
     }
 
     /**
      * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
      * be organized together.
      *
-     * @param  index               The 0-based index of the column
-     * @param  key                 The column key. I.e., the keyword will be key+(index+1)
-     * @param  value               The value to be placed in the header.
-     * @param  comment             The comment for the header
-     * @param  after               Should the header card be after the current column metadata block
-     *                                 (<code>true</code>), or immediately before the TFORM card (<code>false</code>).
+     * @param  index0                    The 0-based index of the column
+     * @param  key                       The column key. I.e., the keyword will be key+(index+1)
+     * @param  value                     The value to be placed in the header.
+     * @param  comment                   The comment for the header
+     * @param  after                     Should the header card be after the current column metadata block
+     *                                       (<code>true</code>), or immediately before the TFORM card
+     *                                       (<code>false</code>).
      *
-     * @throws HeaderCardException if the header could not be updated
+     * @throws HeaderCardException       if the header could not be updated, or if the indexed FITS keyword is too long
+     *                                       (exceeds the maximum 8 bytes allowed by the FITS standard).
+     * @throws IndexOutOfBoundsException if the index is less than 0 or greater than or equals to the number of columns
+     *                                       in t@throws IndexOutOfBoundsException if the index is less than 0 or
+     *                                       greater than or equals to the number of columns in the table.
      */
-    public void setColumnMeta(int index, String key, Boolean value, String comment, boolean after)
-            throws HeaderCardException {
-        setCurrentColumn(index, after);
-        myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
+    public void setColumnMeta(int index0, String key, Boolean value, String comment, boolean after)
+            throws IndexOutOfBoundsException, HeaderCardException {
+        setCurrentColumn(index0, after);
+        myHeader.addLine(new HeaderCard(key + (index0 + 1), value, comment));
     }
 
     /**
      * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
      * be organized together.
      *
-     * @param  index               The 0-based index of the column
-     * @param  key                 The column key. I.e., the keyword will be key+(index+1)
-     * @param  value               The value to be placed in the header.
-     * @param  comment             The comment for the header
-     * @param  after               Should the header card be after the current column metadata block
-     *                                 (<code>true</code>), or immediately before the TFORM card (<code>false</code>).
+     * @param  index0                    The 0-based index of the column
+     * @param  key                       The column key. I.e., the keyword will be key+(index+1)
+     * @param  value                     The value to be placed in the header.
+     * @param  comment                   The comment for the header
+     * @param  after                     Should the header card be after the current column metadata block
+     *                                       (<code>true</code>), or immediately before the TFORM card
+     *                                       (<code>false</code>).
      *
-     * @throws HeaderCardException if the header could not be updated
+     * @throws HeaderCardException       if the header could not be updated, or if the indexed FITS keyword is too long
+     *                                       (exceeds the maximum 8 bytes allowed by the FITS standard).
+     * @throws IndexOutOfBoundsException if the index is less than 0 or greater than or equals to the number of columns
+     *                                       in t@throws IndexOutOfBoundsException if the index is less than 0 or
+     *                                       greater than or equals to the number of columns in the table.
      */
-    public void setColumnMeta(int index, String key, Number value, String comment, boolean after)
-            throws HeaderCardException {
-        setCurrentColumn(index, after);
-        myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
+    public void setColumnMeta(int index0, String key, Number value, String comment, boolean after)
+            throws IndexOutOfBoundsException, HeaderCardException {
+        setCurrentColumn(index0, after);
+        myHeader.addLine(new HeaderCard(key + (index0 + 1), value, comment));
     }
 
     /**
      * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
      * be organized together.
      *
-     * @param  index               The 0-based index of the column
-     * @param  key                 The column key. I.e., the keyword will be key+(index+1)
-     * @param  value               The value to be placed in the header.
-     * @param  precision           The maximum number of decimal places to show after the leading figure. (Trailing
-     *                                 zeroes will be ommitted.)
-     * @param  comment             The comment for the header
-     * @param  after               Should the header card be after the current column metadata block
-     *                                 (<code>true</code>), or immediately before the TFORM card (<code>false</code>).
+     * @param  index0                    The 0-based index of the column
+     * @param  key                       The column key. I.e., the keyword will be key+(index+1)
+     * @param  value                     The value to be placed in the header.
+     * @param  precision                 The maximum number of decimal places to show after the leading figure.
+     *                                       (Trailing zeroes will be ommitted.)
+     * @param  comment                   The comment for the header
+     * @param  after                     Should the header card be after the current column metadata block
+     *                                       (<code>true</code>), or immediately before the TFORM card
+     *                                       (<code>false</code>).
      *
-     * @throws HeaderCardException if the header could not be updated
+     * @throws HeaderCardException       if the header could not be updated, or if the indexed FITS keyword is too long
+     *                                       (exceeds the maximum 8 bytes allowed by the FITS standard).
+     * @throws IndexOutOfBoundsException if the index is less than 0 or greater than or equals to the number of columns
+     *                                       in t@throws IndexOutOfBoundsException if the index is less than 0 or
+     *                                       greater than or equals to the number of columns in the table.
      */
-    public void setColumnMeta(int index, String key, Number value, int precision, String comment, boolean after)
-            throws HeaderCardException {
-        setCurrentColumn(index, after);
-        myHeader.addLine(new HeaderCard(key + (index + 1), value, precision, comment));
+    public void setColumnMeta(int index0, String key, Number value, int precision, String comment, boolean after)
+            throws IndexOutOfBoundsException, HeaderCardException {
+        setCurrentColumn(index0, after);
+        myHeader.addLine(new HeaderCard(key + (index0 + 1), value, precision, comment));
     }
 
     /**
      * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
      * be organized together.
      *
-     * @param  index               The 0-based index of the column
-     * @param  key                 The column key. I.e., the keyword will be key+(index+1)
-     * @param  value               The value to be placed in the header.
-     * @param  comment             The comment for the header
+     * @param  index0                    The 0-based index of the column
+     * @param  key                       The column key. I.e., the keyword will be key+(index+1)
+     * @param  value                     The value to be placed in the header.
+     * @param  comment                   The comment for the header
      *
-     * @throws HeaderCardException if the header could not be updated
+     * @throws HeaderCardException       if the header could not be updated, or if the indexed FITS keyword is too long
+     *                                       (exceeds the maximum 8 bytes allowed by the FITS standard).
+     * @throws IndexOutOfBoundsException if the index is less than 0 or greater than or equals to the number of columns
+     *                                       in t@throws IndexOutOfBoundsException if the index is less than 0 or
+     *                                       greater than or equals to the number of columns in the table.
      */
-    public void setColumnMeta(int index, String key, String value, String comment) throws HeaderCardException {
-        setColumnMeta(index, key, value, comment, true);
+    public void setColumnMeta(int index0, String key, String value, String comment)
+            throws IndexOutOfBoundsException, HeaderCardException {
+        setColumnMeta(index0, key, value, comment, true);
     }
 
     /**
      * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
      * be organized together.
      *
-     * @param      index               The 0-based index of the column
-     * @param      key                 The column key. I.e., the keyword will be key+(index+1)
-     * @param      value               The value to be placed in the header.
-     * @param      comment             The comment for the header
-     * @param      after               Should the header card be after the current column metadata block (true), or
-     *                                     immediately before the TFORM card (false). @throws FitsException if the
-     *                                     operation failed
+     * @param      index0                    The 0-based index of the column
+     * @param      key                       The column key. I.e., the keyword will be key+(index+1)
+     * @param      value                     The value to be placed in the header.
+     * @param      comment                   The comment for the header
+     * @param      after                     Should the header card be after the current column metadata block (true),
+     *                                           or immediately before the TFORM card (false). @throws FitsException if
+     *                                           the operation failed
      *
-     * @throws     HeaderCardException if the header could not be updated
+     * @throws     HeaderCardException       if the header could not be updated, or if the indexed FITS keyword is too
+     *                                           long (exceeds the maximum 8 bytes allowed by the FITS standard).
+     * @throws     IndexOutOfBoundsException if the index is less than 0 or greater than or equals to the number of
+     *                                           columns in t@throws IndexOutOfBoundsException if the index is less than
+     *                                           0 or greater than or equals to the number of columns in the table.
      *
-     * @deprecated                     use {@link #setColumnMeta(int, IFitsHeader, String, String, boolean)}
+     * @deprecated                           use {@link #setColumnMeta(int, IFitsHeader, String, String, boolean)}
      */
     @Deprecated
-    public void setColumnMeta(int index, String key, String value, String comment, boolean after)
-            throws HeaderCardException {
-        setCurrentColumn(index, after);
-        myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
+    public void setColumnMeta(int index0, String key, String value, String comment, boolean after)
+            throws IndexOutOfBoundsException, HeaderCardException {
+        setCurrentColumn(index0, after);
+        myHeader.addLine(new HeaderCard(key + (index0 + 1), value, comment));
     }
 
     /**
      * Sets the name / ID of a specific column in this table. Naming columns is generally a good idea so that people can
      * figure out what sort of data actually appears in specific table columns.
      * 
-     * @param  index                     the column index
+     * @param  index0                    the 0-based column index
      * @param  name                      the name or ID we want to assing to the column
      * @param  comment                   Any additional comment we would like to store alongside in the FITS header.
      *                                       (The comment may be truncated or even ommitted, depending on space
      *                                       constraints in the FITS header.
      * 
-     * @throws IndexOutOfBoundsException if the table has no column matching the index
      * @throws HeaderCardException       if there was a problem wil adding the associated descriptive FITS header
      *                                       keywords to this table's header.
+     * @throws IndexOutOfBoundsException if the table has no column matching the index
      * 
      * @see                              #getColumnName(int)
      * @see                              #getDefaultColumnName(int)
      */
-    public void setColumnName(int index, String name, String comment)
+    public void setColumnName(int index0, String name, String comment)
             throws IndexOutOfBoundsException, HeaderCardException {
-        if (index < 0 || index >= getNCols()) {
-            throw new IndexOutOfBoundsException(
-                    "column index " + index + " is out of bounds for table with " + getNCols() + " columns");
-        }
-        setColumnMeta(index, TTYPEn, name, comment, true);
+        setColumnMeta(index0, TTYPEn, name, comment, true);
     }
 
     /**
      * Set the cursor in the header to point after the metadata for the specified column
      *
-     * @param      col The 0-based index of the column
+     * @param      col                       The 0-based index of the column
      * 
-     * @deprecated     (<i>for internal use</i>) Will be removed int the future (no longer used).
+     * @throws     IndexOutOfBoundsException if the index is less than 0 or greater than or equals to the number of
+     *                                           columns in t@throws IndexOutOfBoundsException if the index is less than
+     *                                           0 or greater than or equals to the number of columns in the table.
+     * 
+     * @deprecated                           (<i>for internal use</i>) Will be removed int the future (no longer used).
      */
     @Deprecated
-    public void setCurrentColumn(int col) {
+    public void setCurrentColumn(int col) throws IndexOutOfBoundsException {
         setCurrentColumn(col, true);
     }
 
     /**
      * Set the cursor in the header to point either before the TFORMn value or after the column metadata
      *
-     * @param      col   The 0-based index of the column
-     * @param      after True if the cursor should be placed after the existing column metadata or false if the cursor
-     *                       is to be placed before the TFORM value. If no corresponding TFORM is found, the cursor will
-     *                       be placed at the end of current header.
+     * @param      col0                      The 0-based index of the column
+     * @param      after                     True if the cursor should be placed after the existing column metadata or
+     *                                           false if the cursor is to be placed before the TFORM value. If no
+     *                                           corresponding TFORM is found, the cursor will be placed at the end of
+     *                                           current header.
      * 
-     * @deprecated       (<i>for internal use</i>) Will have private access in the future.
+     * @throws     IndexOutOfBoundsException if the index is less than 0 or greater than or equals to the number of
+     *                                           columns in t@throws IndexOutOfBoundsException if the index is less than
+     *                                           0 or greater than or equals to the number of columns in the table.
+     * 
+     * @deprecated                           (<i>for internal use</i>) Will have private access in the future.
      */
     @Deprecated
-    public void setCurrentColumn(int col, boolean after) {
+    public void setCurrentColumn(int col0, boolean after) throws IndexOutOfBoundsException {
+        if (col0 < 0 || col0 >= getNCols()) {
+            throw new IndexOutOfBoundsException("Zero-based column index " + col0 + " is out of range");
+        }
+
         if (after) {
-            myHeader.positionAfterIndex(TFORMn, col + 1);
+            myHeader.positionAfterIndex(TFORMn, col0 + 1);
         } else {
-            myHeader.findCard(TFORMn.n(col + 1));
+            myHeader.findCard(TFORMn.n(col0 + 1));
         }
     }
 

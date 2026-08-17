@@ -590,6 +590,7 @@ public class AsciiTableTest {
             AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
             Assertions.assertEquals("I10", hdu.getColumnFormat(1));
             Assertions.assertEquals("I10", hdu.getColumnMeta(1, "TFORM"));
+            Assertions.assertEquals("I10", hdu.getColumnMeta(1, Standard.TFORMn));
             Assertions.assertEquals(TableHDU.getDefaultColumnName(1), hdu.getColumnName(1));
 
             hdu.setColumnMeta(1, "TTYPE", "TATA", null);

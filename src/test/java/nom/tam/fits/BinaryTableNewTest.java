@@ -37,6 +37,7 @@ import java.io.FileInputStream;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -2133,5 +2134,46 @@ public class BinaryTableNewTest {
     public void addVariableSizeColumnException() throws Exception {
         BinaryTable bt = new BinaryTable();
         Assertions.assertThrows(TableException.class, () -> bt.addVariableSizeColumn(true));
+    }
+
+    @Test
+    public void getColumnFormatTestException() throws Exception {
+        BinaryTable bt = new BinaryTable();
+        bt.addColumn(BinaryTable.ColumnDesc.createForScalars(boolean.class));
+        BinaryTableHDU hdu = bt.toHDU();
+
+        Assertions.assertThrows(FitsException.class, () -> hdu.getColumnFormat(-1), "-1");
+        Assertions.assertThrows(FitsException.class, () -> hdu.getColumnFormat(1), "big");
+    }
+
+    @Test
+    public void getColumnMetaTest() throws Exception {
+        BinaryTable bt = new BinaryTable();
+        bt.addColumn(BinaryTable.ColumnDesc.createForScalars(boolean.class));
+        BinaryTableHDU hdu = bt.toHDU();
+        hdu.setColumnMeta(0, "TZERO", 3, "quantization offset", true);
+
+        Assertions.assertEquals(hdu.getColumnMeta(0, "TZERO"), "3");
+        Assertions.assertEquals(hdu.getColumnMeta(0, Standard.TZEROn), "3");
+
+        Assertions.assertNull(hdu.getColumnMeta(0, "TBLAH"), "blah");
+        Assertions.assertNull(hdu.getColumnMeta(0, Standard.TSCALn), "TSCALn");
+    }
+
+    @Test
+    public void getColumnMetaTestException() throws Exception {
+        BinaryTable bt = new BinaryTable();
+        bt.addColumn(BinaryTable.ColumnDesc.createForScalars(boolean.class));
+        BinaryTableHDU hdu = bt.toHDU();
+        hdu.setColumnMeta(0, "TZERO", 3, "quantization offset", true);
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> hdu.getColumnMeta(-1, "TZERO"), "-1");
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> hdu.getColumnMeta(-1, Standard.TZEROn), "-1");
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> hdu.getColumnMeta(1, "TZERO"), "big");
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> hdu.getColumnMeta(1, Standard.TZEROn), "big");
+
+        Assertions.assertThrows(NoSuchElementException.class, () -> hdu.getColumnMeta(0, Standard.BZERO),
+                "too many indices");
     }
 }
