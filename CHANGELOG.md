@@ -24,6 +24,8 @@ Upcoming feature release, likely around 15 September 2026.
  - [#883] Added `TableHDU.getColumnMeta(int, IFitsHeader)` to support standard keyword enums beside the existing string keyword form. (by @attipaci)
  
  - [#884] Added `setColumnData(Object)`, `createColumnData(int), and `ensureColumnData(int)` methods to `ICompressColumnParameter`. (by @attipaci)
+ 
+ - [#884] Added `CompressParameters.activeHeaderParameters()` / `.activeColumnParameters()` to selectively return only those parameters that are necessary for describing the tile compression.
 
 ### Changed
 
@@ -37,13 +39,17 @@ Upcoming feature release, likely around 15 September 2026.
 
  - [#884] Quantization in HDU compression has been overhauled, and much simplified. Many strenuous internal classes have been eliminated in favor of simpler, easier to follow, logic. (by @attipaci)
  
- - [#884] `QuantizeProcessor` defaults to `ZSCALE` 1.0 and `ZZERO` 0.0 if there are no quantizable valid data (only null or explicit zero values). (by @attipaci)
+ - [#884] `QuantizeProcessor` defaults to `ZSCALE` 1.0 and `ZZERO` 0.0 if there are no quantizable valid data (such as only null or explicit zero values). (by @attipaci)
  
  - [#884] `Quantize.calculateNoise()` changed to use only regular data, excluding special values like NaNs, infinities, null and zero indicators. (by @attipaci)
  
  - [#884] `Quantize.quantize()` changed to set default values (`ZSCALE` -> 1.0, `ZZERO` -> 0.0, int min/max -> 0) when there is no valid data to quantize. (by @attipaci)
  
  - [#884] The default null-value indicator in compressed HDUs is changed to -2147483648, as recommended by the FITS standard. (by @attipaci)
+ 
+ - [#884] Fully disentangled initialization of compression quantization column data for compression (where prior data may not exist) and decompression (where existing data must be provided). (by @attipaci)
+ 
+ - [#884] Quantized compression to either add `ZBLANK` header value or per-tile column data, but not both, and possibly neither -- as necessary. (by @attipaci)
 
  - The latest build and runtime Maven dependencies. (by @attipaci)
  

@@ -60,16 +60,36 @@ public final class ZBlankColumnParameter extends CompressColumnParameter<int[], 
 
     @Override
     public void setValueInColumn(int index) {
-        Integer blankValue = Integer.MIN_VALUE;
-
-        if (getOption().getBNull() != null) {
-            blankValue = getOption().getBNull();
-        }
-
         int[] col = getColumnData();
         if (col != null) {
-            col[index] = blankValue;
+            Integer blankValue = getOption().getBNull();
+            col[index] = blankValue == null ? getInitValue() : blankValue;
         }
+    }
+
+    /**
+     * Checks if any of the column entries differs from the specified 'standard' value.
+     * 
+     * @param  value the 'standard' value
+     * 
+     * @return       <code>true</code> if any column entry differs from the specified value. Otherwise
+     *                   <code>false</code>.
+     * 
+     * @since        1.23
+     */
+    boolean differsFrom(Integer value) {
+        int[] col = getColumnData();
+        if (col != null) {
+            if (value == null) {
+                return true;
+            }
+            for (int entry : col) {
+                if (entry != value) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override

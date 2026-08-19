@@ -102,7 +102,7 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
     }
 
     @Override
-    public void ensureColumnData(int size) {
+    public void setColumnSize(int size) {
         T data = getColumnData();
 
         if (data == null) {

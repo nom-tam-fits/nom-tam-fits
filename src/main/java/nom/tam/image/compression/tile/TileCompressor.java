@@ -89,6 +89,7 @@ public class TileCompressor extends TileCompressionOperation {
     private void compress() {
         synchronized (lock) {
             initTileOptions();
+            getTiledImageOperation().ensureColumnParameters();
 
             compressedData.limit(getTileBuffer().getPixelSize() * getBaseType().size());
             compressionType = TileCompressionType.COMPRESSED;

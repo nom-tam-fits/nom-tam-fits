@@ -95,7 +95,7 @@ public interface ICompressColumnParameter extends ICompressParameter {
      * @see               #getColumnData()
      * 
      * @deprecated        Use {@link #setColumnData(Object)} or {@link #createColumnData(int)} or
-     *                        {@link #ensureColumnData(int)} instead.
+     *                        {@link #setColumnSize(int)} instead.
      */
     @Deprecated
     void setColumnData(Object column, int size);
@@ -114,12 +114,12 @@ public interface ICompressColumnParameter extends ICompressParameter {
 
     /**
      * Creates new data for this column parameter. All parameters in the new column data will be initialized to its
-     * default value.
+     * default value, and all previously defined column parameters will be discarded.
      *
      * @param size The number of compressed rows in the table. It it is zero or negative, any prior column data will be
      *                 discarded and <code>null</code> will be set.
      * 
-     * @see        #ensureColumnData(int)
+     * @see        #setColumnSize(int)
      * @see        #getColumnData()
      * 
      * @since      1.23
@@ -139,7 +139,7 @@ public interface ICompressColumnParameter extends ICompressParameter {
      * 
      * @since      1.23
      */
-    void ensureColumnData(int size);
+    void setColumnSize(int size);
 
     /**
      * @deprecated        Provided for back compatibility only. Use {@link #setColumnData(Object, int)} instead.

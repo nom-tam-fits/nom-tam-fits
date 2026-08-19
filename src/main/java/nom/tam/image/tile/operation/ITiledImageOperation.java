@@ -47,11 +47,18 @@ import nom.tam.util.type.ElementType;
  */
 public interface ITiledImageOperation {
     /**
-     * Retuers the tile compression options to use for tile compressing or uncompressing images.
+     * Returns the tile compression options to use for tile compressing or uncompressing images.
      * 
      * @return the tile compression options
      */
     ICompressOption compressOptions();
+
+    /**
+     * Ensure that per-tile compression parameters exists, and contain reasonable data for every tile.
+     * 
+     * @since 1.23
+     */
+    void ensureColumnParameters();
 
     /**
      * Returns the element type of the image (and hence tile).

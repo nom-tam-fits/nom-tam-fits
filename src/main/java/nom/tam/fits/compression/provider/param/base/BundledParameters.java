@@ -129,6 +129,33 @@ public class BundledParameters extends CompressParameters {
     }
 
     @Override
+    protected ICompressColumnParameter[] activeColumnParameters() {
+        ArrayList<ICompressColumnParameter> list = new ArrayList<>();
+
+        for (ICompressParameters parms : bundle) {
+            for (ICompressColumnParameter p : ((CompressParameters) parms).activeColumnParameters()) {
+                list.add(p);
+            }
+        }
+
+        ICompressColumnParameter[] array = new ICompressColumnParameter[list.size()];
+        return list.toArray(array);
+    }
+
+    @Override
+    protected ICompressHeaderParameter[] activeHeaderParameters() {
+        ArrayList<ICompressHeaderParameter> list = new ArrayList<>();
+        for (ICompressParameters parms : bundle) {
+            for (ICompressHeaderParameter p : ((CompressParameters) parms).activeHeaderParameters()) {
+                list.add(p);
+            }
+        }
+
+        ICompressHeaderParameter[] array = new ICompressHeaderParameter[list.size()];
+        return list.toArray(array);
+    }
+
+    @Override
     public void setTileIndex(int index) {
         for (ICompressParameters parms : bundle) {
             parms.setTileIndex(index);

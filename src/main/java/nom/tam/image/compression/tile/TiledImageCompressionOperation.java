@@ -154,10 +154,14 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
                     h.addLine(HeaderCard.create(ZQUANTIZ, quantAlgorithm));
                     compressOptions.getCompressionParameters().getValuesFromHeader(h);
                 }
-                compressOptions.getCompressionParameters().initializeColumns(getNumberOfTileOperations());
             }
             return compressOptions;
         }
+    }
+
+    @Override
+    public void ensureColumnParameters() {
+        compressOptions.getCompressionParameters().initializeColumns(getNumberOfTileOperations());
     }
 
     public Buffer decompress() {
