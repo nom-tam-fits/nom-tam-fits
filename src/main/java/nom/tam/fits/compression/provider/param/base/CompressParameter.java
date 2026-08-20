@@ -53,7 +53,8 @@ public class CompressParameter<OPTION> implements Cloneable {
      * be linked with.
      * 
      * @param name   the FITS header keyword or binary table column name that records this parameter in the FITS.
-     * @param option the compression option instance that this parameter is linked to.
+     * @param option the compression option instance that this parameter is linked to. It should not be
+     *                   <code>null</code>.
      */
     protected CompressParameter(String name, OPTION option) {
         this.name = name;

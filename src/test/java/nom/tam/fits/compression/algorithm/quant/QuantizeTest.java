@@ -71,7 +71,6 @@ public class QuantizeTest {
 
         public QuantizeTestParameters(QuantizeOption option) {
             super(option);
-
         }
 
         @Override
@@ -594,23 +593,6 @@ public class QuantizeTest {
     }
 
     @Test
-    public void testHeaderBlankParameterNoOption() throws Exception {
-        QuantizeParameters q = new QuantizeParameters(null);
-        Header h = new Header();
-
-        h.addValue(Compression.ZQUANTIZ, "UNKNOWN");
-        h.addValue(Compression.ZBLANK, -999);
-
-        q.getValuesFromHeader(new HeaderAccess(h));
-
-        Header h2 = new Header();
-        q.setValuesInHeader(new HeaderAccess(h2));
-
-        Assertions.assertEquals(null, h2.getStringValue(Compression.ZQUANTIZ));
-        Assertions.assertEquals(0, h2.getIntValue(Compression.ZBLANK));
-    }
-
-    @Test
     public void testColumnParameterCreateData() throws Exception {
         QuantizeOption o = new QuantizeOption();
         ZBlankColumnParameter p = new ZBlankColumnParameter(o);
@@ -718,5 +700,193 @@ public class QuantizeTest {
         final double LAST_RANDOM_VALUE = 1043618065.0 / Integer.MAX_VALUE;
 
         Assertions.assertEquals(RandomSequence.get(RandomSequence.length() - 1), LAST_RANDOM_VALUE, 0.1);
+    }
+
+    @Test
+    public void testSetNullValue() throws Exception {
+        QuantizeOption o = new QuantizeOption();
+
+        Assertions.assertFalse(o.isCheckNull());
+        Assertions.assertNull(o.getBNull());
+
+        o.setCheckNull(false);
+        Assertions.assertNull(o.getBNull());
+
+        o.setCheckNull(true);
+        Assertions.assertTrue(o.isCheckNull());
+        Assertions.assertNotNull(o.getBNull());
+
+        o.setCheckNull(true);
+        Assertions.assertTrue(o.isCheckNull());
+        Assertions.assertNotNull(o.getBNull());
+
+        o.setCheckNull(false);
+        Assertions.assertFalse(o.isCheckNull());
+        Assertions.assertNotNull(o.getBNull());
+
+        o.setCheckNull(false);
+        Assertions.assertFalse(o.isCheckNull());
+        Assertions.assertNotNull(o.getBNull());
+    }
+
+    @Test
+    public void testAutoBNull() throws Exception {
+        QuantizeOption o = new QuantizeOption();
+        Assertions.assertNull(o.getBNull());
+        Assertions.assertEquals(Integer.MIN_VALUE, o.toInt(Double.NaN));
+        Assertions.assertNotNull(o.getBNull());
+    }
+
+    @Test
+    public void testInitDither() throws Exception {
+        QuantizeOption o = new QuantizeOption();
+        o.setBScale(1.0);
+        o.setBZero(0.0);
+        Assertions.assertEquals(0, o.toInt(0.0));
+        Assertions.assertEquals(1, o.toInt(0.5));
+        Assertions.assertEquals(0.0, o.toDouble(0), 0.5);
+        Assertions.assertEquals(0.5, o.toDouble(1), 0.5);
+
+        o.initDither();
+        Assertions.assertEquals(0, o.toInt(0.0));
+        Assertions.assertEquals(1, o.toInt(0.5));
+        Assertions.assertEquals(0.0, o.toDouble(0), 0.5);
+        Assertions.assertEquals(0.5, o.toDouble(1), 0.5);
+
+        o.setDither(true);
+        o.initDither();
+        Assertions.assertEquals(0, o.toInt(0.0));
+        Assertions.assertEquals(0, o.toInt(0.5));
+        Assertions.assertEquals(0.0, o.toDouble(0), 0.5);
+        Assertions.assertEquals(0.5, o.toDouble(0), 0.5);
+
+        o.setDither2(true);
+        o.initDither();
+        Assertions.assertEquals(0, o.toInt(0.0));
+        Assertions.assertEquals(0, o.toInt(0.5));
+        Assertions.assertEquals(0.0, o.toDouble(0), 0.5);
+        Assertions.assertEquals(0.5, o.toDouble(0), 0.5);
+
+        o.setDither(false);
+        o.initDither();
+        Assertions.assertEquals(0, o.toInt(0.0));
+        Assertions.assertEquals(0, o.toInt(0.5));
+        Assertions.assertEquals(0.0, o.toDouble(0), 0.5);
+        Assertions.assertEquals(0.5, o.toDouble(0), 0.5);
+
+        o.setDither2(false);
+        o.initDither();
+        Assertions.assertEquals(0, o.toInt(0.0));
+        Assertions.assertEquals(1, o.toInt(0.5));
+        Assertions.assertEquals(0.0, o.toDouble(0), 0.5);
+        Assertions.assertEquals(0.5, o.toDouble(1), 0.5);
+    }
+
+    @Test
+    public void testDindBero() throws Exception {
+        QuantizeOption o = new QuantizeOption();
+        o.setBScale(1.0);
+        o.setBZero(0.0);
+
+        Assertions.assertFalse(o.isCheckNull());
+        Assertions.assertFalse(o.isCenterOnZero());
+
+        o.setMaxValue(1000.0);
+        o.setMinValue(0.0);
+        Assertions.assertEquals(0.0, o.findBZero(), 1e-6);
+
+        o.setMaxValue(Integer.MAX_VALUE);
+        Assertions.assertEquals(0.5 * Integer.MAX_VALUE, o.findBZero(), 1e-6);
+
+        o.setCheckNull(true);
+        Assertions.assertEquals(2.147483637E9, o.findBZero(), 1e-6);
+    }
+
+    @Test
+    public void testSeedWrap() throws Exception {
+        QuantizeOption o = new QuantizeOption();
+        o.setTileIndex(1);
+        o.setDither(true);
+        o.initDither();
+
+        double d0 = o.toDouble(0);
+
+        o.setSeed(RandomSequence.length());
+        o.initDither();
+        Assertions.assertEquals(d0, o.toDouble(0));
+    }
+
+    @Test
+    public void testGetSetOptions() throws Exception {
+        QuantizeOption o = new QuantizeOption();
+
+        o.setTileIndex(11);
+        Assertions.assertEquals(11, o.getTileIndex());
+
+        o.setTileHeight(14);
+        Assertions.assertEquals(14, o.getTileHeight());
+
+        o.setTileWidth(42);
+        Assertions.assertEquals(42, o.getTileWidth());
+
+        o.setBNull(null);
+        Assertions.assertNull(o.getBNull());
+        Assertions.assertFalse(o.isCheckNull());
+
+        o.setBNull(-999);
+        Assertions.assertEquals(-999, o.getBNull());
+        Assertions.assertTrue(o.isCheckNull());
+
+        o.setBScale(3.3);
+        Assertions.assertEquals(3.3, o.getBScale());
+
+        o.setBZero(-1.2);
+        Assertions.assertEquals(-1.2, o.getBZero());
+
+        o.setCheckNull(false);
+        Assertions.assertFalse(o.isCheckNull());
+        o.setCheckNull(true);
+        Assertions.assertTrue(o.isCheckNull());
+
+        o.setCheckZero(false);
+        Assertions.assertFalse(o.isCheckZero());
+        o.setCheckZero(true);
+        Assertions.assertTrue(o.isCheckZero());
+
+        o.setCenterOnZero(false);
+        Assertions.assertFalse(o.isCenterOnZero());
+        o.setCenterOnZero(true);
+        Assertions.assertTrue(o.isCenterOnZero());
+
+        o.setDither(false);
+        Assertions.assertFalse(o.isDither());
+        o.setDither(true);
+        Assertions.assertTrue(o.isDither());
+
+        o.setDither2(false);
+        Assertions.assertFalse(o.isDither2());
+        o.setDither2(true);
+        Assertions.assertTrue(o.isDither2());
+
+        o.setIntMinValue(-999);
+        Assertions.assertEquals(-999, o.getIntMinValue());
+
+        o.setIntMaxValue(-101);
+        Assertions.assertEquals(-101, o.getIntMaxValue());
+
+        o.setMinValue(-999.0);
+        Assertions.assertEquals(-999.0, o.getMinValue(), 1e-12);
+
+        o.setMaxValue(-101.0);
+        Assertions.assertEquals(-101.0, o.getMaxValue(), 1e-12);
+
+        o.setNullValue(0.33);
+        Assertions.assertEquals(0.33, o.getNullValue());
+
+        o.setSeed(33);
+        Assertions.assertEquals(33, o.getSeed());
+
+        o.setQlevel(3.5);
+        Assertions.assertEquals(3.5, o.getQLevel(), 1e-12);
     }
 }

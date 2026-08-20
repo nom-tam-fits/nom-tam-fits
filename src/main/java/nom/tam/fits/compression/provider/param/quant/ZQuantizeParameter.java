@@ -50,10 +50,6 @@ final class ZQuantizeParameter extends CompressHeaderParameter<QuantizeOption> {
 
     @Override
     public void getValueFromHeader(Header header) throws HeaderCardException {
-        if (getOption() == null) {
-            return;
-        }
-
         HeaderCard card = header.getCard(getName());
         String value = card != null ? card.getValue() : null;
 
@@ -70,10 +66,6 @@ final class ZQuantizeParameter extends CompressHeaderParameter<QuantizeOption> {
 
     @Override
     public void setValueInHeader(Header header) throws HeaderCardException {
-        if (getOption() == null) {
-            return;
-        }
-
         String value;
 
         if (getOption().isDither2()) {

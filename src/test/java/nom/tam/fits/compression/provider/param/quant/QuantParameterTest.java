@@ -1,5 +1,12 @@
 package nom.tam.fits.compression.provider.param.quant;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import nom.tam.fits.Header;
+import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
+import nom.tam.fits.header.Compression;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -31,33 +38,22 @@ package nom.tam.fits.compression.provider.param.quant;
  * #L%
  */
 
-import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
-import nom.tam.fits.compression.provider.param.base.CompressColumnParameter;
-import nom.tam.fits.header.Compression;
+@SuppressWarnings("javadoc")
+public class QuantParameterTest {
 
-/**
- * (<i>for internal use</i>) The quantization scale value as recorded in a FITS compressed table column.
- */
-final class ZScaleColumnParameter extends CompressColumnParameter<double[], QuantizeOption> {
+    @Test
+    public void testZBlank() {
+        QuantizeOption o = new QuantizeOption(null);
+        ZBlankParameter blank = new ZBlankParameter(o);
+        Header h = new Header();
 
-    ZScaleColumnParameter(QuantizeOption quantizeOption) {
-        super(Compression.ZSCALE_COLUMN, quantizeOption, double[].class);
+        o.setBNull(null);
+        blank.setValueInHeader(h);
+        Assertions.assertFalse(h.containsKey(Compression.ZBLANK));
+
+        o.setBNull(-999);
+        blank.setValueInHeader(h);
+        Assertions.assertEquals(-999, h.getIntValue(Compression.ZBLANK));
     }
 
-    @Override
-    public void getValueFromColumn(int index) {
-        getOption().setBScale(getColumnData() == null ? 1.0 : getColumnData()[index]);
-    }
-
-    @Override
-    public void setValueInColumn(int index) {
-        if (!Double.isNaN(getOption().getBScale())) {
-            getColumnData()[index] = getOption().getBScale();
-        }
-    }
-
-    @Override
-    protected Double getInitValue() {
-        return Double.NaN;
-    }
 }

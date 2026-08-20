@@ -78,7 +78,7 @@ public class QuantizeParameters extends CompressParameters {
     }
 
     private Integer getCurrentZBlank() {
-        return options == null ? null : options.getBNull();
+        return options.getBNull();
     }
 
     @Override

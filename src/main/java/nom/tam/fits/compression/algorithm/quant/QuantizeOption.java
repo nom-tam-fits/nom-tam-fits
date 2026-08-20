@@ -764,10 +764,7 @@ public class QuantizeOption implements ICompressOption {
         nextRandom++;
 
         if (nextRandom >= RandomSequence.length()) {
-            iseed++;
-            if (iseed >= RandomSequence.length()) {
-                iseed = 0;
-            }
+            iseed = (iseed + 1) % RandomSequence.length();
             initI1();
         }
 

@@ -50,7 +50,8 @@ import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
  * @author          Attila Kovacs
  *
  * @param  <T>      The generic array type that contains the individual parameters for each tile as a table column.
- * @param  <OPTION> The generic type of compression option that is associated with these parameters
+ * @param  <OPTION> The generic type of compression option that is associated with these parameters. It should not be
+ *                      <code>null</code>.
  */
 public abstract class CompressColumnParameter<T, OPTION> extends CompressParameter<OPTION>
         implements ICompressColumnParameter {
@@ -63,7 +64,7 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
      * Creates a new compression parameter, which stores a per-tile value for a compression option in a table column.
      * 
      * @param name   the FITS parameter name, that is the column name which stores the values
-     * @param option the compression option that uses the parameter value
+     * @param option the compression option that uses the parameter value. It should not be <code>null</code>.
      * @param type   the Java class of the parameter, such as {@link java.lang.Integer} or {@link java.lang.String}.
      */
     protected CompressColumnParameter(String name, OPTION option, Class<T> type) {

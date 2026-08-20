@@ -257,12 +257,14 @@ public class Quantize {
                 if (isNull(array.get(index))) {
                     continue;
                 }
+
                 if (array.get(index) < xminval) {
                     xminval = array.get(index);
                 }
                 if (array.get(index) > xmaxval) {
                     xmaxval = array.get(index);
                 }
+
                 ngoodpix++;
             }
             setNoiseResult(ngoodpix);
@@ -321,7 +323,7 @@ public class Quantize {
 
     @Deprecated
     protected boolean isNull(double d) {
-        return false;
+        return !parameter.isRegular(d);
     }
 
     /**

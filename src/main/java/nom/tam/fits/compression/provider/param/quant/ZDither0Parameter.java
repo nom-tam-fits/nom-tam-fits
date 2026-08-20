@@ -84,20 +84,12 @@ final class ZDither0Parameter extends CompressHeaderParameter<QuantizeOption> {
 
     @Override
     public void getValueFromHeader(Header header) throws HeaderCardException {
-        if (getOption() == null) {
-            return;
-        }
-
         HeaderCard card = header.getCard(Compression.ZDITHER0);
         getOption().setSeed(card == null ? 1L : card.getValue(Long.class, 1L));
     }
 
     @Override
     public void setValueInHeader(Header header) throws HeaderCardException {
-        if (getOption() == null) {
-            return;
-        }
-
         header.addValue(Compression.ZDITHER0, (int) getOption().getSeed());
     }
 

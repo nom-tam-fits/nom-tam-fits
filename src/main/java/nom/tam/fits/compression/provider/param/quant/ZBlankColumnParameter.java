@@ -59,7 +59,7 @@ public final class ZBlankColumnParameter extends CompressColumnParameter<int[], 
     }
 
     @Override
-    public void setValueInColumn(int index) {
+    public void setValueInColumn(int index) throws IndexOutOfBoundsException {
         int[] col = getColumnData();
         if (col != null) {
             Integer blankValue = getOption().getBNull();
