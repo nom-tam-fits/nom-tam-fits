@@ -1,5 +1,9 @@
 package nom.tam.fits.compression.algorithm.quant;
 
+import java.nio.Buffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -42,31 +46,6 @@ import java.util.Arrays;
 @Deprecated
 @SuppressWarnings("javadoc")
 public class Quantize {
-
-    @Deprecated
-    static class DoubleArrayPointer {
-
-        private final double[] array;
-
-        private int startIndex;
-
-        @Deprecated
-        DoubleArrayPointer(double[] arrayIn) {
-            array = arrayIn;
-        }
-
-        @Deprecated
-        public DoubleArrayPointer copy(long l) {
-            DoubleArrayPointer result = new DoubleArrayPointer(array);
-            result.startIndex = (int) l;
-            return result;
-        }
-
-        @Deprecated
-        public double get(int ii) {
-            return array[ii + startIndex];
-        }
-    }
 
     private static final double DEFAULT_QUANT_LEVEL = 4.;
 
@@ -142,21 +121,28 @@ public class Quantize {
      * flux(i-2) - flux(i+2))) The returned estimates are the median of the values that are computed for each row of the
      * image.
      * 
-     * @param arrayIn 2 dimensional tiledImageOperation of image pixels
-     * @param nx      number of pixels in each row of the image
-     * @param ny      number of rows in the image
+     * @param  in                       a FloatBuffer or a DoubleBuffer instance. It is rewinded at return.
+     * 
+     * @throws IllegalArgumentException if the input buffer is not a FloatBuffer or DoubleBuffer instance.
      */
-    private void calculateNoise(double[] arrayIn, int nx, int ny) {
-        DoubleArrayPointer array = new DoubleArrayPointer(arrayIn);
+    @SuppressWarnings("null")
+    private void calculateNoise(Buffer in) throws IllegalArgumentException {
+        int origPos = in.position();
         initializeNoise();
 
-        if (nx < MINIMUM_PIXEL_WIDTH) {
-            // treat entire tiledImageOperation as an image with a single row
-            nx = nx * ny;
-            ny = 1;
-        }
-        if (calculateNoiseShortRow(array, nx, ny)) {
+        int nx = parameter.getTileWidth();
+        int ny = parameter.getTileHeight();
+
+        if (nx * ny < MINIMUM_PIXEL_WIDTH) {
+            calculateNoiseShortRow(in);
             return;
+        }
+
+        FloatBuffer fin = (in instanceof FloatBuffer) ? (FloatBuffer) in : null;
+        DoubleBuffer din = (in instanceof DoubleBuffer) ? (DoubleBuffer) in : null;
+
+        if (fin == null && din == null) {
+            throw new IllegalArgumentException("input buffer of type " + in.getClass().getName() + " is unsupported.");
         }
 
         int nrows = 0, nrows2 = 0;
@@ -172,13 +158,12 @@ public class Quantize {
 
         /* loop over each row of the image */
         for (int jj = 0; jj < ny; jj++) {
-            double[] v = new double[9];
-            DoubleArrayPointer rowpix = array.copy((long) jj * nx); /* point to first pixel in the row */
             int nvals = 0;
             int nvals2 = 0;
+            double[] v = new double[9];
 
             for (int ii = 0, k = 0; ii < nx; ii++) {
-                v[k] = rowpix.get(ii);
+                v[k] = fin == null ? din.get() : fin.get();
 
                 if (!parameter.isRegular(v[k])) {
                     continue;
@@ -245,32 +230,45 @@ public class Quantize {
             nrows++;
         } /* end of loop over rows */
 
+        in.position(origPos);
+
         computeMedianOfValuesEachRow(nrows, nrows2, diffs2, diffs3, diffs5);
         setNoiseResult(ngoodpix);
     }
 
-    private boolean calculateNoiseShortRow(DoubleArrayPointer array, int nx, int ny) {
-        /* rows must have at least 9 pixels */
-        if (nx < MINIMUM_PIXEL_WIDTH) {
-            int ngoodpix = 0;
-            for (int index = 0; index < nx; index++) {
-                if (isNull(array.get(index))) {
-                    continue;
-                }
+    @SuppressWarnings("null")
+    private void calculateNoiseShortRow(Buffer in) throws IllegalArgumentException {
+        int origPos = in.position();
 
-                if (array.get(index) < xminval) {
-                    xminval = array.get(index);
-                }
-                if (array.get(index) > xmaxval) {
-                    xmaxval = array.get(index);
-                }
+        FloatBuffer fin = (in instanceof FloatBuffer) ? (FloatBuffer) in : null;
+        DoubleBuffer din = (in instanceof DoubleBuffer) ? (DoubleBuffer) in : null;
 
-                ngoodpix++;
-            }
-            setNoiseResult(ngoodpix);
-            return true;
+        if (fin == null && din == null) {
+            throw new IllegalArgumentException("input buffer of type " + in.getClass().getName() + " is unsupported.");
         }
-        return false;
+
+        int n = parameter.getTileWidth() * parameter.getTileHeight();
+        int ngoodpix = 0;
+        for (int index = 0; index < n; index++) {
+            double x = fin == null ? din.get() : fin.get();
+
+            if (isNull(x)) {
+                continue;
+            }
+
+            if (x < xminval) {
+                xminval = x;
+            }
+            if (x > xmaxval) {
+                xmaxval = x;
+            }
+
+            ngoodpix++;
+        }
+
+        in.position(origPos);
+
+        setNoiseResult(ngoodpix);
     }
 
     @Deprecated
@@ -349,13 +347,31 @@ public class Quantize {
      * </p>
      * 
      * @param  fdata the data to quantinize
-     * @param  nxpix the image width
-     * @param  nypix the image hight
+     * @param  nxpix (unused) the image width -- the tile width of the initializing option is used instead.
+     * @param  nypix (unused) the image hight -- the tile height of the initializing option is used instead.
      * 
      * @return       true if the quantification was possible
      */
     @Deprecated
     public boolean quantize(double[] fdata, int nxpix, int nypix) {
+        DoubleBuffer buf = DoubleBuffer.wrap(fdata);
+        return guessQuantization(buf);
+    }
+
+    /**
+     * Guesses the quantization scaling and zero offset parameters based on the noise distribution in the data.
+     * 
+     * @param  fdata                    Input FloatBuffer or DoubleBuffer instance containing the floating-point data.
+     *                                      On return the buffer is restored to its initial position.
+     * 
+     * @return                          <code>true</code> if the quantization was successful, otherwise
+     *                                      <code>false</code>.
+     * 
+     * @throws IllegalArgumentException if the input buffer is not a FloatBuffer or DoubleBuffer instance.
+     * 
+     * @since                           1.23
+     */
+    boolean guessQuantization(Buffer fdata) throws IllegalArgumentException {
         // MAD 2nd, 3rd, and 5th order noise values
         double stdev;
         double bScale; /* bscale, 1 in intdata = delta in fdata */
@@ -364,13 +380,13 @@ public class Quantize {
         parameter.setBScale(1.);
         parameter.setBZero(0.);
 
-        long nx = (long) nxpix * (long) nypix;
+        long nx = (long) parameter.getTileWidth() * (long) parameter.getTileHeight();
         if (nx <= 1L) {
             return false;
         }
         if (parameter.getQLevel() >= 0.) {
             /* estimate background noise using MAD pixel differences */
-            calculateNoise(fdata, nxpix, nypix);
+            calculateNoise(fdata);
             // special case of an image filled with Nulls
             if (ngood == 0) {
                 /* set parameters to dummy values, which are not used */
@@ -401,7 +417,7 @@ public class Quantize {
             /* negative value represents the absolute quantization level */
             bScale = -parameter.getQLevel();
             /* only need to calculate the min and max values */
-            calculateNoise(fdata, nxpix, nypix);
+            calculateNoise(fdata);
         }
         /* check that the range of quantized levels is not > range of int */
         if ((maxValue - minValue) / bScale > 2. * MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
@@ -491,10 +507,10 @@ public class Quantize {
         noise5 = NOISE_5_MULTIPLICATOR * xnoise5;
     }
 
-    private void swapElements(double[] array, int one, int second) {
-        double value = array[one];
-        array[one] = array[second];
-        array[second] = value;
+    private void swapElements(double[] array, int i, int j) {
+        double value = array[i];
+        array[i] = array[j];
+        array[j] = value;
     }
 
 }

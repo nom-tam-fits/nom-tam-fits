@@ -32,6 +32,7 @@ package nom.tam.fits.compression.algorithm.quant;
  */
 
 import java.io.RandomAccessFile;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
@@ -474,8 +475,8 @@ public class QuantizeTest {
     public void testQuant1FloatFail() throws Exception {
         QuantizeOption quantizeOption = new QuantizeOption();
         FloatQuantCompressor floatQuantCompressor = new FloatQuantCompressor(quantizeOption, null);
-        Assertions
-                .assertFalse(floatQuantCompressor.compress(FloatBuffer.wrap(new float[4]), ByteBuffer.wrap(new byte[100])));
+        Assertions.assertThrows(BufferOverflowException.class,
+                () -> floatQuantCompressor.compress(FloatBuffer.wrap(new float[4]), ByteBuffer.wrap(new byte[100])));
     }
 
     @Test
@@ -889,4 +890,56 @@ public class QuantizeTest {
         o.setQlevel(3.5);
         Assertions.assertEquals(3.5, o.getQLevel(), 1e-12);
     }
+
+    @Test
+    public void testQuantizeTypes() throws Exception {
+        QuantizeOption o = new QuantizeOption();
+        Quantize q = new Quantize(o);
+
+        FloatBuffer fdata = FloatBuffer.wrap(new float[100]);
+        DoubleBuffer ddata = DoubleBuffer.wrap(new double[100]);
+
+        o.setTileWidth(8);
+        o.setTileHeight(1);
+        Assertions.assertTrue(q.guessQuantization(fdata));
+        Assertions.assertTrue(q.guessQuantization(ddata));
+
+        o.setTileWidth(16);
+        o.setTileHeight(6);
+        Assertions.assertTrue(q.guessQuantization(fdata));
+        Assertions.assertTrue(q.guessQuantization(ddata));
+    }
+
+    @Test
+    public void testQuantizeDeprecated() throws Exception {
+        QuantizeOption o = new QuantizeOption();
+        Quantize q = new Quantize(o);
+
+        double[] doubles = new double[100];
+
+        o.setTileWidth(8);
+        o.setTileHeight(1);
+        Assertions.assertTrue(q.quantize(doubles, 0, 0));
+
+        o.setTileWidth(16);
+        o.setTileHeight(5);
+        Assertions.assertTrue(q.quantize(doubles, 0, 0));
+    }
+
+    @Test
+    public void testQuantizeExceptions() throws Exception {
+        QuantizeOption o = new QuantizeOption();
+        Quantize q = new Quantize(o);
+
+        IntBuffer ints = IntBuffer.wrap(new int[10]);
+
+        o.setTileWidth(8);
+        o.setTileHeight(1);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> q.guessQuantization(ints));
+
+        o.setTileWidth(16);
+        o.setTileHeight(6);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> q.guessQuantization(ints));
+    }
+
 }

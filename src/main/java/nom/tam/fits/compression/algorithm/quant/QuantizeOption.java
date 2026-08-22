@@ -836,8 +836,7 @@ public class QuantizeOption implements ICompressOption {
             d -= nextDither();
         }
 
-        return d * bScale + bZero;
-
+        return Math.fma(d, bScale, bZero);
     }
 
     void updateBZeroAndIntLimits() {

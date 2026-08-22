@@ -458,8 +458,7 @@ public class BufferedFileTest {
             for (int i = 0; i < iter; i++) {
                 f.readLArray(fl2);
             }
-            System.out.println(
-                    "  BDS\"Bool error at \" + i Flt read:  " + (1e-6 * Float.BYTES * dim * iter / deltaTime()) + " MB/s");
+            System.out.println("  BDS Flt read:  " + (1e-6 * Float.BYTES * dim * iter / deltaTime()) + " MB/s");
             for (int i = 0; i < iter; i++) {
                 f.readLArray(in2);
             }

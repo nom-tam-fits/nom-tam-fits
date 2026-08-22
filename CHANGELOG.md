@@ -21,9 +21,11 @@ Upcoming feature release, likely around 15 September 2026.
 
  - [#883] Added `TableHDU.getColumnMeta(int, IFitsHeader)` to support standard keyword enums beside the existing string keyword form. (by @attipaci)
  
- - [#884] Added `setColumnData(Object)`, `createColumnData(int), and `setColumnSize(int)` methods to `ICompressColumnParameter`. (by @attipaci)
+ - [#884] Added `setColumnData(Object)`, `createColumnData(int)`, and `setColumnSize(int)` methods to `ICompressColumnParameter`. (by @attipaci)
  
  - [#884] Added `CompressParameters.activeHeaderParameters()` / `.activeColumnParameters()` to selectively return only those parameters that are necessary for describing the tile compression. (by @attipaci)
+ 
+ - [#885] Added `QuantizeOption.toInt(double)` and `.toDouble(int)` methods which actually perform the conversion. The `.toDouble()` method now uses `Math.fma()` to match cfistion / funpack more closely (thanks to @keastrid). (by @attipaci)
 
 ### Changed
 
@@ -52,6 +54,10 @@ Upcoming feature release, likely around 15 September 2026.
  - [#885] The default null-value indicator in compressed HDUs is changed to -2147483648, as recommended by the FITS standard. (by @attipaci)
  
  - [#885] Removed `null` options checks from compression parameter methods, and instead commented on the constructors that the parameters should not be instantiated with `null` option parameter. Under the normal behavior of the library the parameters are always created with valid option arguments, so it would take a deliberate effort by the user to do otherwise. (by @attipaci)
+ 
+ - [#885] Speed up compression / decompression by eliminating extraneous arrays / buffers from the processing. (by @attipaci, thanks to @keastrid)
+ 
+ - [#885] `QuantizeOption.toDouble()` method now uses `Math.fma()` to match cfistio / funpack more closely. (by @attipaci, thanks to @keastrid)
 
  - The latest build and runtime Maven dependencies. (by @attipaci)
  
