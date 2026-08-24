@@ -16,6 +16,8 @@ Upcoming feature release, likely around 15 September 2026.
  - [#884] Fixed header `ZBLANK` value not being used in decompression, when the compressed FITS does not provide per-tile blanking values in a column otherwise. (by @attipaci, thanks to @robyww).
  
  - [#885] `QuantizeProcessor` had extraneous rounding by half, and sometimes in the wrong direction. Fixed to conform to the FITS specification more completely. (by @attipaci)
+ 
+ - [#887] Fixed PLIO decompression of 32-bit integer data to restore the upper 2 bytes also.
 
 ### Added
 
@@ -26,8 +28,6 @@ Upcoming feature release, likely around 15 September 2026.
  - [#884] Added `CompressParameters.activeHeaderParameters()` / `.activeColumnParameters()` to selectively return only those parameters that are necessary for describing the tile compression. (by @attipaci)
  
  - [#885] Added `QuantizeOption.toInt(double)` and `.toDouble(int)` methods which actually perform the conversion. The `.toDouble()` method now uses `Math.fma()` to match cfistion / funpack more closely (thanks to @keastrid). (by @attipaci)
- 
- - [#887] Fixed PLIO decompression of 32-bit integer data to restore the upper 2 bytes also.
 
 ### Changed
 
