@@ -413,7 +413,7 @@ public final class FitsCheckSum {
      *
      * @param  checksum The calculated 32-bit (unsigned) checksum
      * @param  compl    If <code>true</code> the complement of the specified value will be encoded. Otherwise, the value
-     *                      as is will be encoded. (FITS normally uses the complemenyed value).
+     *                      as is will be encoded. (FITS normally uses the complemented value).
      *
      * @return          The encoded checksum, suitably encoded for use with the CHECKSUM header
      *

@@ -26,6 +26,8 @@ Upcoming feature release, likely around 15 September 2026.
  - [#884] Added `CompressParameters.activeHeaderParameters()` / `.activeColumnParameters()` to selectively return only those parameters that are necessary for describing the tile compression. (by @attipaci)
  
  - [#885] Added `QuantizeOption.toInt(double)` and `.toDouble(int)` methods which actually perform the conversion. The `.toDouble()` method now uses `Math.fma()` to match cfistion / funpack more closely (thanks to @keastrid). (by @attipaci)
+ 
+ - [#887] Fixed PLIO decompression of 32-bit integer data to restore the upper 2 bytes also.
 
 ### Changed
 
