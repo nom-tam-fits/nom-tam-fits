@@ -28,6 +28,9 @@ Upcoming feature release, likely around 15 September 2026.
  - [#884] Added `CompressParameters.activeHeaderParameters()` / `.activeColumnParameters()` to selectively return only those parameters that are necessary for describing the tile compression. (by @attipaci)
  
  - [#885] Added `QuantizeOption.toInt(double)` and `.toDouble(int)` methods which actually perform the conversion. The `.toDouble()` method now uses `Math.fma()` to match cfistion / funpack more closely (thanks to @keastrid). (by @attipaci)
+ 
+  - [#885] `QuantizeOption.useFMA()` method can select whether `Math.fma()` should be used instead of regular arithmetics (default) when converting quantized integers back to their floating-point values. The use of `fma()` matches cfistio / funpack and astropy more closely, but may be very slow on platforms without hardware support. (by @attipaci, thanks to @keastrid)
+
 
 ### Changed
 
@@ -59,8 +62,6 @@ Upcoming feature release, likely around 15 September 2026.
  
  - [#885] Speed up compression / decompression by eliminating extraneous arrays / buffers from the processing. (by @attipaci, thanks to @keastrid)
  
- - [#885] `QuantizeOption.toDouble()` method now uses `Math.fma()` to match cfistio / funpack more closely. (by @attipaci, thanks to @keastrid)
-
  - The latest build and runtime Maven dependencies. (by @attipaci)
  
 ### Deprecated

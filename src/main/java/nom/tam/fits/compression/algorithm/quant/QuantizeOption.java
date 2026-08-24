@@ -55,6 +55,8 @@ public class QuantizeOption implements ICompressOption {
      */
     private static final int NULL_VALUE = Integer.MIN_VALUE;
 
+    private static boolean useFMA = false;
+
     /** Shared configuration across copies */
     private Config config;
 
@@ -836,7 +838,7 @@ public class QuantizeOption implements ICompressOption {
             d -= nextDither();
         }
 
-        return d * bScale + bZero;
+        return useFMA ? Math.fma(d, bScale, bZero) : d * bScale + bZero;
     }
 
     void updateBZeroAndIntLimits() {
@@ -867,6 +869,34 @@ public class QuantizeOption implements ICompressOption {
         // shift the range to be close to the value used to represent null
         // values
         return minValue - bScale * (Integer.MIN_VALUE + N_RESERVED_VALUES + 1);
+    }
+
+    /**
+     * Selects whether {@link Math#fma(double, double, double)} should be used when converting quantized integers back
+     * to doubles. Othwerwise normal arithmetic is used, which is the default. CFITSIO and astropy both rely on
+     * <code>fma()</code>, which has better precision, but is not supported on some (older) architectures. When hardware
+     * support is lacking, you may expect a significant performance hit from the software implementation.
+     * 
+     * @param value <code>true</code> to use <code>fma()</code>, or else <code>false</code> to use regular arithmetics.
+     * 
+     * @see         #isUseFMA()
+     * 
+     * @since       1.23
+     */
+    public static void useFMA(boolean value) {
+        useFMA = value;
+    }
+
+    /**
+     * Checks whether {@link Math#fma(double, double, double)} is used for converting quantized integers back to
+     * doubles.
+     * 
+     * @return <code>true</code> if using <code>fma()</code>, or else <code>false</code> is using regular arithmetics.
+     * 
+     * @since  1.23
+     */
+    public static final boolean isUseFMA() {
+        return useFMA;
     }
 
     /**
