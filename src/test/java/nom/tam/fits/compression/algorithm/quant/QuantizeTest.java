@@ -942,4 +942,22 @@ public class QuantizeTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> q.guessQuantization(ints));
     }
 
+    @Test
+    public void testUseFMA() throws Exception {
+        QuantizeOption o = new QuantizeOption();
+
+        o.setBScale(1e6);
+        o.setBZero(1e-3);
+
+        QuantizeOption.useFMA(true);
+        Assertions.assertTrue(QuantizeOption.isUseFMA());
+        double fma = o.toDouble(123456);
+
+        QuantizeOption.useFMA(false);
+        Assertions.assertFalse(QuantizeOption.isUseFMA());
+        double base = o.toDouble(123456);
+
+        Assertions.assertEquals(fma, base, 1e-15);
+    }
+
 }
