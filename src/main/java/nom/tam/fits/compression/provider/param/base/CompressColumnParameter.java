@@ -50,20 +50,21 @@ import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
  * @author          Attila Kovacs
  *
  * @param  <T>      The generic array type that contains the individual parameters for each tile as a table column.
- * @param  <OPTION> The generic type of compression option that is associated with these parameters
+ * @param  <OPTION> The generic type of compression option that is associated with these parameters. It should not be
+ *                      <code>null</code>.
  */
 public abstract class CompressColumnParameter<T, OPTION> extends CompressParameter<OPTION>
         implements ICompressColumnParameter {
 
     private Data column;
-
+    private Object lock = new Object();
     private final Class<T> type;
 
     /**
      * Creates a new compression parameter, which stores a per-tile value for a compression option in a table column.
      * 
      * @param name   the FITS parameter name, that is the column name which stores the values
-     * @param option the compression option that uses the parameter value
+     * @param option the compression option that uses the parameter value. It should not be <code>null</code>.
      * @param type   the Java class of the parameter, such as {@link java.lang.Integer} or {@link java.lang.String}.
      */
     protected CompressColumnParameter(String name, OPTION option, Class<T> type) {
@@ -74,17 +75,60 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
 
     @Override
     public T getColumnData() {
-        synchronized (column) {
+        synchronized (lock) {
             return column.getValues();
         }
     }
 
     @Override
+    @Deprecated
     public void setColumnData(Object columnValue, int sizeValue) {
-        synchronized (column) {
-            column.create(columnValue, sizeValue);
+        synchronized (lock) {
+            if (columnValue != null) {
+                setColumnData(columnValue);
+            } else {
+                createColumnData(sizeValue);
+            }
         }
     }
+
+    @Override
+    public void setColumnData(Object data) {
+        column.set(data);
+    }
+
+    @Override
+    public void createColumnData(int size) {
+        column.create(size);
+    }
+
+    @Override
+    public void setColumnSize(int size) {
+        T data = getColumnData();
+
+        if (data == null) {
+            column.create(size);
+        } else if (Array.getLength(data) != size) {
+            T next = column.create(size);
+
+            // Copy over the existing elements...
+            int to = Math.min(Array.getLength(data), size);
+            for (int i = 0; i < to; i++) {
+                Array.set(next, i, Array.get(data, i));
+            }
+        }
+    }
+
+    /**
+     * The default value that new column data should be initialized with.
+     * 
+     * @return the default value for this parameter, until specified otherwise.
+     * 
+     * @since  1.23
+     * 
+     * @see    #createColumnData(int)
+     */
+    protected abstract Object getInitValue();
 
     /**
      * The shared column data across all copies and the original column parameter.
@@ -100,15 +144,20 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
             return values;
         }
 
-        private void create(Object columnValue, int sizeValue) {
-            if (sizeValue <= 0) {
-                values = null;
-            } else {
-                if (columnValue == null) {
-                    columnValue = Array.newInstance(type.getComponentType(), sizeValue);
+        private void set(Object columnValue) {
+            values = type.cast(columnValue);
+        }
+
+        private T create(int size) {
+            if (size > 0) {
+                values = type.cast(Array.newInstance(type.getComponentType(), size));
+                for (int i = 0; i < size; i++) {
+                    Array.set(values, i, getInitValue());
                 }
-                values = type.cast(columnValue);
+            } else {
+                values = null;
             }
+            return values;
         }
     }
 }

@@ -133,7 +133,7 @@ public abstract class PLIOCompress {
 
         @Override
         protected void put(int index, int pixel) {
-            pixelData.put(index, (short) pixel);
+            pixelData.put(index, pixel);
         }
     }
 

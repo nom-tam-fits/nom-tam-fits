@@ -58,6 +58,8 @@ public class QuantizeParameters extends CompressParameters {
 
     private ZScaleColumnParameter scale;
 
+    private QuantizeOption options;
+
     /**
      * Creates a set of compression parameters used for quantization of floating point data. Quantization is the process
      * of representing floating-point values by integers.
@@ -66,12 +68,17 @@ public class QuantizeParameters extends CompressParameters {
      */
     @SuppressWarnings("deprecation")
     public QuantizeParameters(QuantizeOption option) {
+        options = option;
         quantz = new ZQuantizeParameter(option);
         blank = new ZBlankParameter(option);
         seed = new ZDither0Parameter(option);
         blankColumn = new ZBlankColumnParameter(option);
         zero = new ZZeroColumnParameter(option);
         scale = new ZScaleColumnParameter(option);
+    }
+
+    private Integer getCurrentZBlank() {
+        return options.getBNull();
     }
 
     @Override
@@ -81,6 +88,26 @@ public class QuantizeParameters extends CompressParameters {
 
     @Override
     protected ICompressHeaderParameter[] headerParameters() {
+        return new ICompressHeaderParameter[] {quantz, blank, seed};
+    }
+
+    @Override
+    protected ICompressColumnParameter[] activeColumnParameters() {
+        if (blankColumn.differsFrom(getCurrentZBlank())) {
+            // We have per-tile blanking values
+            return new ICompressColumnParameter[] {blankColumn, zero, scale};
+        }
+        return new ICompressColumnParameter[] {zero, scale};
+    }
+
+    @Override
+    protected ICompressHeaderParameter[] activeHeaderParameters() {
+        Integer zblank = getCurrentZBlank();
+
+        if (zblank == null || blankColumn.differsFrom(zblank)) {
+            // We have per-tile blanking values
+            return new ICompressHeaderParameter[] {quantz, seed};
+        }
         return new ICompressHeaderParameter[] {quantz, blank, seed};
     }
 

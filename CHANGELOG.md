@@ -7,16 +7,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-Upcoming bug fix release, likely around 15 September 2026.
+Upcoming feature release, likely around 15 September 2026.
 
 ### Fixed
 
  - [#879] Fixed GZIP HDU decompression so it properly handles unprocessed remainder data in the internal buffer between successive reads. (by @timj and @attipaci).
-
+ 
+ - [#884] Fixed header `ZBLANK` value not being used in decompression, when the compressed FITS does not provide per-tile blanking values in a column otherwise. (by @attipaci, thanks to @robyww).
+ 
+ - [#885] `QuantizeProcessor` had extraneous rounding by half, and sometimes in the wrong direction. Fixed to conform to the FITS specification more completely. (by @attipaci)
+ 
+ - [#887] Fixed PLIO decompression of 32-bit integer data to restore the upper 2 bytes also.
 
 ### Added
 
- - [883] Added `TableHDU.getColumnMeta(int, IFitsHeader)` to support standard keyword enums beside the existing string keyword form. (by @attipaci)
+ - [#883] Added `TableHDU.getColumnMeta(int, IFitsHeader)` to support standard keyword enums beside the existing string keyword form. (by @attipaci)
+ 
+ - [#884] Added `setColumnData(Object)`, `createColumnData(int)`, and `setColumnSize(int)` methods to `ICompressColumnParameter`. (by @attipaci)
+ 
+ - [#884] Added `CompressParameters.activeHeaderParameters()` / `.activeColumnParameters()` to selectively return only those parameters that are necessary for describing the tile compression. (by @attipaci)
+ 
+ - [#885] Added `QuantizeOption.toInt(double)` and `.toDouble(int)` methods which actually perform the conversion. The `.toDouble()` method now uses `Math.fma()` to match cfistion / funpack more closely (thanks to @keastrid). (by @attipaci)
+ 
+  - [#885] `QuantizeOption.useFMA()` method can select whether `Math.fma()` should be used instead of regular arithmetics (default) when converting quantized integers back to their floating-point values. The use of `fma()` matches cfistio / funpack and astropy more closely, but may be very slow on platforms without hardware support. (by @attipaci, thanks to @keastrid)
+
 
 ### Changed
 
@@ -28,7 +42,31 @@ Upcoming bug fix release, likely around 15 September 2026.
  
  - [#883] `TableHDU.getColumnName()` no longer trims the string value stored in by the `TTYPEn` keyword, in line with the leading spaces being significant in the FITS standard. The caller may trim the result as necessary when it's not `null`. (by @attipaci)
 
+ - [#884] Fully disentangled initialization of compression quantization column data for compression (where prior data may not exist) and decompression (where existing data must be provided). (by @attipaci)
+ 
+ - [#884] Quantized compression to either add `ZBLANK` header value or per-tile column data, but not both, and possibly neither -- as necessary. (by @attipaci)
+
+ - [#885] Quantization in HDU compression has been overhauled, and much simplified. Many strenuous internal classes have been eliminated in favor of simpler, easier to follow, logic. (by @attipaci)
+  
+ - [#885] `QuantizeProcessor` integer min/max ranges to use floor / ceil to accommodate dither. (by @attipaci)
+ 
+ - [#885] `QuantizeProcessor` defaults to `ZSCALE` 1.0 and `ZZERO` 0.0 if there are no quantizable valid data (such as only null or explicit zero values). (by @attipaci)
+ 
+ - [#885] `Quantize.calculateNoise()` changed to use only regular data, excluding special values like NaNs, infinities, null and zero indicators. (by @attipaci)
+ 
+ - [#885] `Quantize.quantize()` changed to set default values (`ZSCALE` -> 1.0, `ZZERO` -> 0.0, int min/max -> 0) when there is no valid data to quantize. (by @attipaci)
+ 
+ - [#885] The default null-value indicator in compressed HDUs is changed to -2147483648, as recommended by the FITS standard. (by @attipaci)
+ 
+ - [#885] Removed `null` options checks from compression parameter methods, and instead commented on the constructors that the parameters should not be instantiated with `null` option parameter. Under the normal behavior of the library the parameters are always created with valid option arguments, so it would take a deliberate effort by the user to do otherwise. (by @attipaci)
+ 
+ - [#885] Speed up compression / decompression by eliminating extraneous arrays / buffers from the processing. (by @attipaci, thanks to @keastrid)
+ 
  - The latest build and runtime Maven dependencies. (by @attipaci)
+ 
+### Deprecated
+
+ - [#884] Deprecated `ICompressColumnParameter.setColumnData(Object, int)`. Its dual functionality has been split into separate `.setColumnData(Object)`, `createColumnData(int)` and `ensureColumnData(int)` methods. (by @attipaci)
  
 
 ## [1.22.2] - 2026-08-05

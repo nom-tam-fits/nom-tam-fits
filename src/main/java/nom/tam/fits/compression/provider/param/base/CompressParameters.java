@@ -53,7 +53,7 @@ public abstract class CompressParameters implements ICompressParameters, Cloneab
 
     @Override
     public void addColumnsToTable(BinaryTableHDU hdu) throws FitsException {
-        for (ICompressColumnParameter parameter : columnParameters()) {
+        for (ICompressColumnParameter parameter : activeColumnParameters()) {
             Object column = parameter.getColumnData();
             if (column != null) {
                 hdu.setColumnName(hdu.addColumn(column) - 1, parameter.getName(), null);
@@ -92,14 +92,14 @@ public abstract class CompressParameters implements ICompressParameters, Cloneab
     public void initializeColumns(Header header, BinaryTable binaryTable, int size)
             throws HeaderCardException, FitsException {
         for (ICompressColumnParameter parameter : columnParameters()) {
-            parameter.setColumnData(getNullableColumn(header, binaryTable, parameter.getName()), size);
+            parameter.setColumnData(getNullableColumn(header, binaryTable, parameter.getName()));
         }
     }
 
     @Override
     public void initializeColumns(int size) {
         for (ICompressColumnParameter parameter : columnParameters()) {
-            parameter.setColumnData(null, size);
+            parameter.setColumnSize(size);
         }
     }
 
@@ -112,7 +112,7 @@ public abstract class CompressParameters implements ICompressParameters, Cloneab
 
     @Override
     public void setValuesInHeader(Header header) throws HeaderCardException {
-        for (ICompressHeaderParameter parameter : headerParameters()) {
+        for (ICompressHeaderParameter parameter : activeHeaderParameters()) {
             parameter.setValueInHeader(header);
         }
     }
@@ -131,11 +131,12 @@ public abstract class CompressParameters implements ICompressParameters, Cloneab
     }
 
     /**
-     * Retuens the subset of parameters from within, which are recorded in compressed table columns along with the
-     * compressed data.
+     * Returns the complete subset of parameters from within, which are recorded in compressed table columns along with
+     * the compressed data.
      * 
      * @return the subset of parameters that are recorded in compressed table columns.
      * 
+     * @see    #activeColumnParameters()
      * @see    #headerParameters()
      */
     protected ICompressColumnParameter[] columnParameters() {
@@ -143,11 +144,42 @@ public abstract class CompressParameters implements ICompressParameters, Cloneab
     }
 
     /**
-     * Returns the subset of parameters from within, which are recorded in the header of the compressed HDU.
+     * Returns the complete subset of parameters from within, which are recorded in the header of the compressed HDU.
      * 
      * @return the subset of parameters that are recorded in the compressed HDU's header.
      * 
+     * @see    #activeHeaderParameters()
      * @see    #columnParameters()
      */
     protected abstract ICompressHeaderParameter[] headerParameters();
+
+    /**
+     * Returns the subset of active parameters from within, which should be recorded in compressed table columns along
+     * with the compressed data.
+     * 
+     * @return the subset of parameters that are recorded in compressed table columns.
+     * 
+     * @see    #columnParameters()
+     * @see    #activeHeaderParameters()
+     * 
+     * @since  1.23
+     */
+    protected ICompressColumnParameter[] activeColumnParameters() {
+        return columnParameters();
+    }
+
+    /**
+     * Returns the subset of active parameters from within, which should be recorded in the header of the compressed
+     * HDU.
+     * 
+     * @return the subset of parameters that are recorded in the compressed HDU's header.
+     * 
+     * @see    #headerParameters()
+     * @see    #activeColumnParameters()
+     * 
+     * @since  1.23
+     */
+    protected ICompressHeaderParameter[] activeHeaderParameters() {
+        return headerParameters();
+    }
 }

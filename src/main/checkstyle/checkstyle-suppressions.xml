@@ -11,4 +11,6 @@
 	<suppress checks="FileLength" files="nom.tam.fits.header[\\/]" />
 	<!-- backward compatibility for two methods -->
 	<suppress checks="MethodName" files="nom.tam.fits.FitsFactory" />
+	<!-- we want explicit indexed array access over 9 elements -->
+	<suppress checks="MagicNumber" files="nom.tam.fits.compression.algorithm.quant.Quantize" />
 </suppressions>

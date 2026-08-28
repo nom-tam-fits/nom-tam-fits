@@ -69,9 +69,12 @@ public interface ICompressColumnParameter extends ICompressParameter {
     }
 
     /**
-     * @deprecated Provided for back compatibility only. Use {@link #getColumnData()} instead.
-     *
-     * @return     The array that contains the data for each compressed row.
+     * @deprecated Provided for back compatibility only. Use {@link #getColumnData()} instead. Returns the existing
+     *                 columm data for this parameter, or if there is no data specified yet, it returns the freshly
+     *                 created column data initialized to the default value of this parameters.
+     * 
+     * @return     a valid instance of the column data, either as previously specified, or initialized with the default
+     *                 values.
      */
     @Deprecated
     default Object initializedColumn() {
@@ -83,15 +86,60 @@ public interface ICompressColumnParameter extends ICompressParameter {
      * compressed table. To discard prior column data with no replacement, you can call this as
      * <code>setColumnData(null, 0)</code>.
      *
-     * @param column The array that contains the data for each compressed row. If not <code>null</code> the
-     *                   <code>size</code> parameter is ignored, and the size of the array is used instead.
-     * @param size   The number of compressed rows in the table, if the <code>column</code> argument is
-     *                   <code>null</code>. If <code>size</code> is zero or negative, any prior column data will be
-     *                   discarded and <code>null</code> will be set.
-     *
-     * @see          #getColumnData()
+     * @param      column The array that contains the data for each compressed row. If not <code>null</code> the
+     *                        <code>size</code> parameter is ignored, and the size of the array is used instead.
+     * @param      size   The number of compressed rows in the table, if the <code>column</code> argument is
+     *                        <code>null</code>. If <code>size</code> is zero or negative, any prior column data will be
+     *                        discarded and <code>null</code> will be set.
+     * 
+     * @see               #getColumnData()
+     * 
+     * @deprecated        Use {@link #setColumnData(Object)} or {@link #createColumnData(int)} or
+     *                        {@link #setColumnSize(int)} instead.
      */
+    @Deprecated
     void setColumnData(Object column, int size);
+
+    /**
+     * Sets new parameter data for each compressed row to be stored along as a separate parameter column in the
+     * compressed table.
+     *
+     * @param data The array that contains the data for each compressed row or <code>null</code> to discard prior data.
+     * 
+     * @see        #getColumnData()
+     * 
+     * @since      1.23
+     */
+    void setColumnData(Object data);
+
+    /**
+     * Creates new data for this column parameter. All parameters in the new column data will be initialized to its
+     * default value, and all previously defined column parameters will be discarded.
+     *
+     * @param size The number of compressed rows in the table. It it is zero or negative, any prior column data will be
+     *                 discarded and <code>null</code> will be set.
+     * 
+     * @see        #setColumnSize(int)
+     * @see        #getColumnData()
+     * 
+     * @since      1.23
+     */
+    void createColumnData(int size);
+
+    /**
+     * Ensures that the column has the right number of parameters, creating new data or resizing the existing data as
+     * necessary. If the column data is resized, the existing elements will be preserved up to the new size. Any
+     * parameters that were not previously present will be initialized to their default value.
+     *
+     * @param size The number of compressed rows in the table. It it is zero or negative, any prior column data will be
+     *                 discarded and <code>null</code> will be set.
+     * 
+     * @see        #createColumnData(int)
+     * @see        #getColumnData()
+     * 
+     * @since      1.23
+     */
+    void setColumnSize(int size);
 
     /**
      * @deprecated        Provided for back compatibility only. Use {@link #setColumnData(Object, int)} instead.

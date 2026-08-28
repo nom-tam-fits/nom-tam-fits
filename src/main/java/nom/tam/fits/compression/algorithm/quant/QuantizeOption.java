@@ -53,7 +53,9 @@ public class QuantizeOption implements ICompressOption {
      * for the compressed values to slightly exceed the range of the actual (lossless) values so we must reserve a
      * little more space value used to represent undefined pixels
      */
-    private static final int NULL_VALUE = Integer.MIN_VALUE + 1;
+    private static final int NULL_VALUE = Integer.MIN_VALUE;
+
+    private static boolean useFMA = false;
 
     /** Shared configuration across copies */
     private Config config;
@@ -86,6 +88,28 @@ public class QuantizeOption implements ICompressOption {
     private int tileHeight;
 
     private int tileWidth;
+
+    private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
+
+    /** Quantization constant */
+    private static final int RANDOM_MULTIPLICATOR = 500;
+
+    private static final double DITHER_HALF = 0.5;
+
+    /**
+     * number of reserved values, starting with
+     */
+    private static final long N_RESERVED_VALUES = 10;
+
+    /**
+     * Dither random seed value
+     */
+    private int iseed;
+
+    /**
+     * Next random dither value
+     */
+    private int nextRandom;
 
     QuantizeOption() {
         this(null);
@@ -484,7 +508,7 @@ public class QuantizeOption implements ICompressOption {
     @Deprecated
     public QuantizeOption setCheckNull(boolean value) {
         checkNull = value;
-        if (nullValueIndicator == null) {
+        if (value && nullValueIndicator == null) {
             nullValueIndicator = NULL_VALUE;
         }
         return this;
@@ -716,6 +740,163 @@ public class QuantizeOption implements ICompressOption {
             }
         }
         return null;
+    }
+
+    /**
+     * value used to represent zero-valued pixels
+     */
+    private static final int ZERO_VALUE = Integer.MIN_VALUE + 2;
+
+    /**
+     * Re-initialize the dither sequence.
+     */
+    void initDither() {
+        if (isDither() || isDither2()) {
+            iseed = (int) ((getSeed() + tileIndex - 1) % RandomSequence.length());
+            initI1();
+        }
+    }
+
+    private void initI1() {
+        nextRandom = (int) (RandomSequence.get(iseed) * RANDOM_MULTIPLICATOR);
+    }
+
+    private double nextDither() {
+        double d = RandomSequence.get(nextRandom) - DITHER_HALF;
+        nextRandom++;
+
+        if (nextRandom >= RandomSequence.length()) {
+            iseed = (iseed + 1) % RandomSequence.length();
+            initI1();
+        }
+
+        return d;
+    }
+
+    boolean isRegular(double x) {
+        if (!Double.isFinite(x)) {
+            return false;
+        }
+        if (checkNull && x == nullValue) {
+            return false;
+        }
+        if (isCheckZero() && x == 0.0) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Converts a floating point value to a quantized integer
+     * 
+     * @param  d a floating point value
+     * 
+     * @return   the equivalent quantized integer representation
+     * 
+     * @since    1.23
+     */
+    int toInt(double d) {
+        if (Double.isNaN(d) || (checkNull && d == nullValue)) {
+            if (nullValueIndicator == null) {
+                nullValueIndicator = NULL_VALUE;
+            }
+            return nullValueIndicator;
+        }
+
+        if (isCheckZero() && d == 0.0) {
+            return ZERO_VALUE;
+        }
+
+        d -= bZero;
+        d /= bScale;
+        if (isDither() || isDither2()) {
+            d += nextDither();
+        }
+        return (int) Math.round(d);
+    }
+
+    /**
+     * Converts a quantized integer value back to it's floating-point equivalent
+     * 
+     * @param  i a quantized integer value
+     * 
+     * @return   the equivalent floating point value
+     * 
+     * @since    1.23
+     */
+    double toDouble(int i) {
+        if (isCheckZero() && i == ZERO_VALUE) {
+            return 0.0;
+        }
+
+        if (checkNull && i == nullValueIndicator) {
+            return nullValue;
+        }
+
+        double d = i;
+        if (isDither() || isDither2()) {
+            d -= nextDither();
+        }
+
+        return useFMA ? Math.fma(d, bScale, bZero) : d * bScale + bZero;
+    }
+
+    void updateBZeroAndIntLimits() {
+        setBZero(findBZero());
+        setIntMinValue((int) Math.floor((minValue - bZero) / bScale));
+        setIntMaxValue((int) Math.ceil((maxValue - bZero) / bScale));
+    }
+
+    double findBZero() {
+        if (!checkNull && !isCenterOnZero()) {
+            // don't have to check for nulls
+            // return all positive values, if possible since some compression
+            // algorithms either only work for positive integers, or are more
+            // efficient.
+            if ((maxValue - minValue) / bScale < MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
+                // fudge the zero point so it is an integer multiple of bScale
+                // This helps to ensure the same scaling will be performed if
+                // the file undergoes multiple fpack/funpack cycles
+                // AK: round to multiple of bScale.
+                return minValue - Math.IEEEremainder(minValue, bScale);
+            }
+
+            /* center the quantized levels around zero */
+            return (minValue + maxValue) / 2.;
+        }
+
+        // data contains null values or has be forced to center on zero
+        // shift the range to be close to the value used to represent null
+        // values
+        return minValue - bScale * (Integer.MIN_VALUE + N_RESERVED_VALUES + 1);
+    }
+
+    /**
+     * Selects whether {@link Math#fma(double, double, double)} should be used when converting quantized integers back
+     * to doubles. Othwerwise normal arithmetic is used, which is the default. CFITSIO and astropy both rely on
+     * <code>fma()</code>, which has better precision, but is not supported on some (older) architectures. When hardware
+     * support is lacking, you may expect a significant performance hit from the software implementation.
+     * 
+     * @param value <code>true</code> to use <code>fma()</code>, or else <code>false</code> to use regular arithmetics.
+     * 
+     * @see         #isUseFMA()
+     * 
+     * @since       1.23
+     */
+    public static void useFMA(boolean value) {
+        useFMA = value;
+    }
+
+    /**
+     * Checks whether {@link Math#fma(double, double, double)} is used for converting quantized integers back to
+     * doubles.
+     * 
+     * @return <code>true</code> if using <code>fma()</code>, or else <code>false</code> is using regular arithmetics.
+     * 
+     * @since  1.23
+     */
+    public static final boolean isUseFMA() {
+        return useFMA;
     }
 
     /**

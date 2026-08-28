@@ -49,6 +49,12 @@ import static nom.tam.fits.header.Compression.ZVALn;
 public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<OPTION>
         implements ICompressHeaderParameter {
 
+    /**
+     * Instantiates a new compression parameter associated to a header value.
+     * 
+     * @param name   the FITS parameter name, that is the column name which stores the values
+     * @param option the compression option that uses the parameter value. It should not be <code>null</code>.
+     */
     protected CompressHeaderParameter(String name, OPTION option) {
         super(name, option);
     }

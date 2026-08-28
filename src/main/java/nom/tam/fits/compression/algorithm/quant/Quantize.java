@@ -1,5 +1,9 @@
 package nom.tam.fits.compression.algorithm.quant;
 
+import java.nio.Buffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -42,31 +46,6 @@ import java.util.Arrays;
 @Deprecated
 @SuppressWarnings("javadoc")
 public class Quantize {
-
-    @Deprecated
-    static class DoubleArrayPointer {
-
-        private final double[] array;
-
-        private int startIndex;
-
-        @Deprecated
-        DoubleArrayPointer(double[] arrayIn) {
-            array = arrayIn;
-        }
-
-        @Deprecated
-        public DoubleArrayPointer copy(long l) {
-            DoubleArrayPointer result = new DoubleArrayPointer(array);
-            result.startIndex = (int) l;
-            return result;
-        }
-
-        @Deprecated
-        public double get(int ii) {
-            return array[ii + startIndex];
-        }
-    }
 
     private static final double DEFAULT_QUANT_LEVEL = 4.;
 
@@ -119,9 +98,9 @@ public class Quantize {
     /* returned 5th order MAD of all non-null pixels */
     private double noise5;
 
-    private double xmaxval;
+    private double xmaxval = Double.NEGATIVE_INFINITY;
 
-    private double xminval;
+    private double xminval = Double.POSITIVE_INFINITY;
 
     private double xnoise2;
 
@@ -142,24 +121,33 @@ public class Quantize {
      * flux(i-2) - flux(i+2))) The returned estimates are the median of the values that are computed for each row of the
      * image.
      * 
-     * @param arrayIn 2 dimensional tiledImageOperation of image pixels
-     * @param nx      number of pixels in each row of the image
-     * @param ny      number of rows in the image
+     * @param  in                       a FloatBuffer or a DoubleBuffer instance. It is rewinded at return.
+     * 
+     * @throws IllegalArgumentException if the input buffer is not a FloatBuffer or DoubleBuffer instance.
      */
-    private void calculateNoise(double[] arrayIn, int nx, int ny) {
-        DoubleArrayPointer array = new DoubleArrayPointer(arrayIn);
+    @SuppressWarnings("null")
+    private void calculateNoise(Buffer in) throws IllegalArgumentException {
+        int origPos = in.position();
         initializeNoise();
-        if (nx < MINIMUM_PIXEL_WIDTH) {
-            // treat entire tiledImageOperation as an image with a single row
-            nx = nx * ny;
-            ny = 1;
-        }
-        if (calculateNoiseShortRow(array, nx, ny)) {
+
+        int nx = parameter.getTileWidth();
+        int ny = parameter.getTileHeight();
+
+        if (nx * ny < MINIMUM_PIXEL_WIDTH) {
+            calculateNoiseShortRow(in);
             return;
         }
-        DoubleArrayPointer rowpix;
+
+        FloatBuffer fin = (in instanceof FloatBuffer) ? (FloatBuffer) in : null;
+        DoubleBuffer din = (in instanceof DoubleBuffer) ? (DoubleBuffer) in : null;
+
+        if (fin == null && din == null) {
+            throw new IllegalArgumentException("input buffer of type " + in.getClass().getName() + " is unsupported.");
+        }
+
         int nrows = 0, nrows2 = 0;
         long ngoodpix = 0;
+
         /* allocate arrays used to compute the median and noise estimates */
         double[] differences2 = new double[nx];
         double[] differences3 = new double[nx];
@@ -167,97 +155,61 @@ public class Quantize {
         double[] diffs2 = new double[ny];
         double[] diffs3 = new double[ny];
         double[] diffs5 = new double[ny];
+
         /* loop over each row of the image */
         for (int jj = 0; jj < ny; jj++) {
-            rowpix = array.copy((long) jj * nx); /* point to first pixel in the row */
-            int ii = 0;
-            ii = findNextValidPixelWithNullCheck(nx, rowpix, ii);
-            if (ii == nx) {
-                continue; /* hit end of row */
-            }
-            double v1 = getNextPixelAndCheckMinMax(rowpix, ii);
-            ngoodpix++;
-            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
-            if (ii == nx) {
-                continue; /* hit end of row */
-            }
-            double v2 = getNextPixelAndCheckMinMax(rowpix, ii);
-            ngoodpix++;
-            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
-            if (ii == nx) {
-                continue; /* hit end of row */
-            }
-            double v3 = getNextPixelAndCheckMinMax(rowpix, ii);
-            ngoodpix++;
-            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
-            if (ii == nx) {
-                continue; /* hit end of row */
-            }
-            double v4 = getNextPixelAndCheckMinMax(rowpix, ii);
-            ngoodpix++;
-            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
-            if (ii == nx) {
-                continue; /* hit end of row */
-            }
-            double v5 = getNextPixelAndCheckMinMax(rowpix, ii);
-            ngoodpix++;
-            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
-            if (ii == nx) {
-                continue; /* hit end of row */
-            }
-            double v6 = getNextPixelAndCheckMinMax(rowpix, ii);
-            ngoodpix++;
-            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
-            if (ii == nx) {
-                continue; /* hit end of row */
-            }
-            double v7 = getNextPixelAndCheckMinMax(rowpix, ii);
-            ngoodpix++;
-            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
-            if (ii == nx) {
-                continue; /* hit end of row */
-            }
-            double v8 = getNextPixelAndCheckMinMax(rowpix, ii);
-            ngoodpix++;
-            // now populate the differences arrays for the remaining pixels in
-            // the row */
             int nvals = 0;
             int nvals2 = 0;
-            for (ii++; ii < nx; ii++) {
-                ii = findNextValidPixelWithNullCheck(nx, rowpix, ii);
-                if (ii == nx) {
-                    continue; /* hit end of row */
+            double[] v = new double[9];
+
+            for (int ii = 0, k = 0; ii < nx; ii++) {
+                v[k] = fin == null ? din.get() : fin.get();
+
+                if (!parameter.isRegular(v[k])) {
+                    continue;
                 }
-                double v9 = getNextPixelAndCheckMinMax(rowpix, ii);
+
+                if (v[k] < xminval) {
+                    xminval = v[k];
+                }
+
+                if (v[k] > xmaxval) {
+                    xmaxval = v[k];
+                }
+
+                ngoodpix++;
+
+                if (k + 1 < v.length) {
+                    k++;
+                    continue; // Wait until first 8 elements are filled before processing...
+                }
+
                 /* construct tiledImageOperation of absolute differences */
-                if (!(v5 == v6 && v6 == v7)) {
-                    differences2[nvals2] = Math.abs(v5 - v7);
+                if (!(v[4] == v[5] && v[5] == v[6])) {
+                    differences2[nvals2] = Math.abs(v[4] - v[6]);
                     nvals2++;
                 }
-                if (!(v3 == v4 && v4 == v5 && v5 == v6 && v6 == v7)) {
-                    differences3[nvals] = Math.abs(2 * v5 - v3 - v7);
-                    differences5[nvals] = Math.abs(N6 * v5 - N4 * v3 - N4 * v7 + v1 + v9);
+                if (!(v[2] == v[3] && v[3] == v[4] && v[4] == v[5] && v[5] == v[6])) {
+                    differences3[nvals] = Math.abs(2 * v[4] - v[2] - v[6]);
+                    differences5[nvals] = Math.abs(N6 * v[4] - N4 * v[2] - N4 * v[6] + v[0] + v[8]);
                     nvals++;
                 } else {
                     /* ignore constant background regions */
                     ngoodpix++;
                 }
+
                 /* shift over 1 pixel */
-                v1 = v2;
-                v2 = v3;
-                v3 = v4;
-                v4 = v5;
-                v5 = v6;
-                v6 = v7;
-                v7 = v8;
-                v8 = v9;
+                System.arraycopy(v, 1, v, 0, v.length - 1);
             } /* end of loop over pixels in the row */
+
             // compute the median diffs Note that there are 8 more pixel values
             // than there are diffs values.
             ngoodpix += nvals;
+
             if (nvals == 0) {
                 continue; /* cannot compute medians on this row */
             }
+
             if (nvals == 1) {
                 if (nvals2 == 1) {
                     diffs2[nrows2] = differences2[0];
@@ -274,32 +226,49 @@ public class Quantize {
                 diffs3[nrows] = quickSelect(differences3, nvals);
                 diffs5[nrows] = quickSelect(differences5, nvals);
             }
+
             nrows++;
         } /* end of loop over rows */
+
+        in.position(origPos);
+
         computeMedianOfValuesEachRow(nrows, nrows2, diffs2, diffs3, diffs5);
         setNoiseResult(ngoodpix);
     }
 
-    private boolean calculateNoiseShortRow(DoubleArrayPointer array, int nx, int ny) {
-        /* rows must have at least 9 pixels */
-        if (nx < MINIMUM_PIXEL_WIDTH) {
-            int ngoodpix = 0;
-            for (int index = 0; index < nx; index++) {
-                if (isNull(array.get(index))) {
-                    continue;
-                }
-                if (array.get(index) < xminval) {
-                    xminval = array.get(index);
-                }
-                if (array.get(index) > xmaxval) {
-                    xmaxval = array.get(index);
-                }
-                ngoodpix++;
-            }
-            setNoiseResult(ngoodpix);
-            return true;
+    @SuppressWarnings("null")
+    private void calculateNoiseShortRow(Buffer in) throws IllegalArgumentException {
+        int origPos = in.position();
+
+        FloatBuffer fin = (in instanceof FloatBuffer) ? (FloatBuffer) in : null;
+        DoubleBuffer din = (in instanceof DoubleBuffer) ? (DoubleBuffer) in : null;
+
+        if (fin == null && din == null) {
+            throw new IllegalArgumentException("input buffer of type " + in.getClass().getName() + " is unsupported.");
         }
-        return false;
+
+        int n = parameter.getTileWidth() * parameter.getTileHeight();
+        int ngoodpix = 0;
+        for (int index = 0; index < n; index++) {
+            double x = fin == null ? din.get() : fin.get();
+
+            if (isNull(x)) {
+                continue;
+            }
+
+            if (x < xminval) {
+                xminval = x;
+            }
+            if (x > xmaxval) {
+                xmaxval = x;
+            }
+
+            ngoodpix++;
+        }
+
+        in.position(origPos);
+
+        setNoiseResult(ngoodpix);
     }
 
     @Deprecated
@@ -328,22 +297,6 @@ public class Quantize {
     }
 
     @Deprecated
-    protected int findNextValidPixelWithNullCheck(int nx, DoubleArrayPointer rowpix, int ii) {
-        return ii;
-    }
-
-    private double getNextPixelAndCheckMinMax(DoubleArrayPointer rowpix, int ii) {
-        double pixelValue = rowpix.get(ii); /* store the good pixel value */
-        if (pixelValue < xminval) {
-            xminval = pixelValue;
-        }
-        if (pixelValue > xmaxval) {
-            xmaxval = pixelValue;
-        }
-        return pixelValue;
-    }
-
-    @Deprecated
     protected double getNoise2() {
         return noise2;
     }
@@ -362,13 +315,13 @@ public class Quantize {
         xnoise2 = 0;
         xnoise3 = 0;
         xnoise5 = 0;
-        xminval = Double.MAX_VALUE;
-        xmaxval = Double.MIN_VALUE;
+        xminval = Double.POSITIVE_INFINITY;
+        xmaxval = Double.NEGATIVE_INFINITY;
     }
 
     @Deprecated
     protected boolean isNull(double d) {
-        return false;
+        return !parameter.isRegular(d);
     }
 
     /**
@@ -394,43 +347,64 @@ public class Quantize {
      * </p>
      * 
      * @param  fdata the data to quantinize
-     * @param  nxpix the image width
-     * @param  nypix the image hight
+     * @param  nxpix (unused) the image width -- the tile width of the initializing option is used instead.
+     * @param  nypix (unused) the image hight -- the tile height of the initializing option is used instead.
      * 
      * @return       true if the quantification was possible
      */
     @Deprecated
     public boolean quantize(double[] fdata, int nxpix, int nypix) {
+        DoubleBuffer buf = DoubleBuffer.wrap(fdata);
+        return guessQuantization(buf);
+    }
+
+    /**
+     * Guesses the quantization scaling and zero offset parameters based on the noise distribution in the data.
+     * 
+     * @param  fdata                    Input FloatBuffer or DoubleBuffer instance containing the floating-point data.
+     *                                      On return the buffer is restored to its initial position.
+     * 
+     * @return                          <code>true</code> if the quantization was successful, otherwise
+     *                                      <code>false</code>.
+     * 
+     * @throws IllegalArgumentException if the input buffer is not a FloatBuffer or DoubleBuffer instance.
+     * 
+     * @since                           1.23
+     */
+    boolean guessQuantization(Buffer fdata) throws IllegalArgumentException {
         // MAD 2nd, 3rd, and 5th order noise values
         double stdev;
         double bScale; /* bscale, 1 in intdata = delta in fdata */
 
-        long nx = (long) nxpix * (long) nypix;
+        // AK: defaults
+        parameter.setBScale(1.);
+        parameter.setBZero(0.);
+
+        long nx = (long) parameter.getTileWidth() * (long) parameter.getTileHeight();
         if (nx <= 1L) {
-            parameter.setBScale(1.);
-            parameter.setBZero(0.);
             return false;
         }
         if (parameter.getQLevel() >= 0.) {
             /* estimate background noise using MAD pixel differences */
-            calculateNoise(fdata, nxpix, nypix);
+            calculateNoise(fdata);
             // special case of an image filled with Nulls
-            if (parameter.isCheckNull() && ngood == 0) {
+            if (ngood == 0) {
                 /* set parameters to dummy values, which are not used */
-                minValue = 0.;
-                maxValue = 1.;
-                stdev = 1;
-            } else {
-                // use the minimum of noise2, noise3, and noise5 as the best
-                // noise value
-                stdev = noise3;
-                if (noise2 != 0. && noise2 < stdev) {
-                    stdev = noise2;
-                }
-                if (noise5 != 0. && noise5 < stdev) {
-                    stdev = noise5;
-                }
+                parameter.setMinValue(0.0);
+                parameter.setMaxValue(1.0);
+                return false;
             }
+
+            // use the minimum of noise2, noise3, and noise5 as the best
+            // noise value
+            stdev = noise3;
+            if (noise2 != 0. && noise2 < stdev) {
+                stdev = noise2;
+            }
+            if (noise5 != 0. && noise5 < stdev) {
+                stdev = noise5;
+            }
+
             if (parameter.getQLevel() == 0.) {
                 bScale = stdev / DEFAULT_QUANT_LEVEL; /* default quantization */
             } else {
@@ -442,8 +416,8 @@ public class Quantize {
         } else {
             /* negative value represents the absolute quantization level */
             bScale = -parameter.getQLevel();
-            /* only nned to calculate the min and max values */
-            calculateNoise(fdata, nxpix, nypix);
+            /* only need to calculate the min and max values */
+            calculateNoise(fdata);
         }
         /* check that the range of quantized levels is not > range of int */
         if ((maxValue - minValue) / bScale > 2. * MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
@@ -453,7 +427,8 @@ public class Quantize {
         parameter.setBScale(bScale);
         parameter.setMinValue(minValue);
         parameter.setMaxValue(maxValue);
-        parameter.setCheckNull(parameter.isCheckNull() && ngood != nx);
+        parameter.updateBZeroAndIntLimits();
+
         return true; /* yes, data have been quantized */
     }
 
@@ -524,18 +499,18 @@ public class Quantize {
     }
 
     private void setNoiseResult(long ngoodpix) {
-        minValue = xminval;
-        maxValue = xmaxval;
+        minValue = Double.isFinite(xminval) ? xminval : 0.0;
+        maxValue = Double.isFinite(xmaxval) ? xmaxval : 0.0;
         ngood = ngoodpix;
         noise2 = NOISE_2_MULTIPLICATOR * xnoise2;
         noise3 = NOISE_3_MULTIPLICATOR * xnoise3;
         noise5 = NOISE_5_MULTIPLICATOR * xnoise5;
     }
 
-    private void swapElements(double[] array, int one, int second) {
-        double value = array[one];
-        array[one] = array[second];
-        array[second] = value;
+    private void swapElements(double[] array, int i, int j) {
+        double value = array[i];
+        array[i] = array[j];
+        array[j] = value;
     }
 
 }
