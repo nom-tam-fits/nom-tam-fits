@@ -66,55 +66,82 @@
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">private</strong> <a name="ZScaleColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZScaleColumnParameter.html#ZScaleColumnParameter">ZScaleColumnParameter</a> scale;
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment">     * Creates a set of compression parameters used for quantization of floating point data. Quantization is the process</em>
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment">     * of representing floating-point values by integers.</em>
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">     * @param option The compression option that is configured with the particular parameter values of this object.</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>      @SuppressWarnings(<span class="jxr_string">"deprecation"</span>)
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>      <strong class="jxr_keyword">public</strong> <a name="QuantizeParameters" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/QuantizeParameters.html#QuantizeParameters">QuantizeParameters</a>(<a name="QuantizeOption" href="../../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> option) {
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          quantz = <strong class="jxr_keyword">new</strong> <a name="ZQuantizeParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZQuantizeParameter.html#ZQuantizeParameter">ZQuantizeParameter</a>(option);
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          blank = <strong class="jxr_keyword">new</strong> <a name="ZBlankParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZBlankParameter.html#ZBlankParameter">ZBlankParameter</a>(option);
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>          seed = <strong class="jxr_keyword">new</strong> <a name="ZDither0Parameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZDither0Parameter.html#ZDither0Parameter">ZDither0Parameter</a>(option);
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          blankColumn = <strong class="jxr_keyword">new</strong> <a name="ZBlankColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZBlankColumnParameter.html#ZBlankColumnParameter">ZBlankColumnParameter</a>(option);
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          zero = <strong class="jxr_keyword">new</strong> <a name="ZZeroColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZZeroColumnParameter.html#ZZeroColumnParameter">ZZeroColumnParameter</a>(option);
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          scale = <strong class="jxr_keyword">new</strong> <a name="ZScaleColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZScaleColumnParameter.html#ZScaleColumnParameter">ZScaleColumnParameter</a>(option);
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>      }
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>      @Override
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>      <strong class="jxr_keyword">protected</strong> <a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a>[] columnParameters() {
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a>[] {blankColumn, zero, scale};
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>      }
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>  
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>      @Override
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>      <strong class="jxr_keyword">protected</strong> <a name="ICompressHeaderParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressHeaderParameter.html#ICompressHeaderParameter">ICompressHeaderParameter</a>[] headerParameters() {
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ICompressHeaderParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressHeaderParameter.html#ICompressHeaderParameter">ICompressHeaderParameter</a>[] {quantz, blank, seed};
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>      }
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>  
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>      @Override
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setTileIndex(<strong class="jxr_keyword">int</strong> index) {
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>          seed.setTileIndex(index);
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>      }
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>      @Override
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>      <strong class="jxr_keyword">public</strong> <a name="QuantizeParameters" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/QuantizeParameters.html#QuantizeParameters">QuantizeParameters</a> copy(<a name="ICompressOption" href="../../../../../../../nom/tam/fits/compression/algorithm/api/ICompressOption.html#ICompressOption">ICompressOption</a> option) {
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>          <strong class="jxr_keyword">if</strong> (option instanceof <a name="QuantizeOption" href="../../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a>) {
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>              <a name="QuantizeOption" href="../../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> qo = (<a name="QuantizeOption" href="../../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a>) option;
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>              <a name="QuantizeParameters" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/QuantizeParameters.html#QuantizeParameters">QuantizeParameters</a> p = (<a name="QuantizeParameters" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/QuantizeParameters.html#QuantizeParameters">QuantizeParameters</a>) <strong class="jxr_keyword">super</strong>.clone();
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>              p.quantz = (<a name="ZQuantizeParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZQuantizeParameter.html#ZQuantizeParameter">ZQuantizeParameter</a>) quantz.copy(qo);
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>              p.blank = (<a name="ZBlankParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZBlankParameter.html#ZBlankParameter">ZBlankParameter</a>) blank.copy(qo);
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>             p.seed = (<a name="ZDither0Parameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZDither0Parameter.html#ZDither0Parameter">ZDither0Parameter</a>) seed.copy(qo);
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>             p.blankColumn = (<a name="ZBlankColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZBlankColumnParameter.html#ZBlankColumnParameter">ZBlankColumnParameter</a>) blankColumn.copy(qo);
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>             p.zero = (<a name="ZZeroColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZZeroColumnParameter.html#ZZeroColumnParameter">ZZeroColumnParameter</a>) zero.copy(qo);
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>             p.scale = (<a name="ZScaleColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZScaleColumnParameter.html#ZScaleColumnParameter">ZScaleColumnParameter</a>) scale.copy(qo);
-<a class="jxr_linenumber" name="L104" href="#L104">104</a> 
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>             <strong class="jxr_keyword">return</strong> p;
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>         }
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L108" href="#L108">108</a>     }
-<a class="jxr_linenumber" name="L109" href="#L109">109</a> }
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>      <strong class="jxr_keyword">private</strong> <a name="QuantizeOption" href="../../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> options;
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">     * Creates a set of compression parameters used for quantization of floating point data. Quantization is the process</em>
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">     * of representing floating-point values by integers.</em>
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">     * @param option The compression option that is configured with the particular parameter values of this object.</em>
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>      @SuppressWarnings(<span class="jxr_string">"deprecation"</span>)
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>      <strong class="jxr_keyword">public</strong> <a name="QuantizeParameters" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/QuantizeParameters.html#QuantizeParameters">QuantizeParameters</a>(<a name="QuantizeOption" href="../../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> option) {
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          options = option;
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          quantz = <strong class="jxr_keyword">new</strong> <a name="ZQuantizeParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZQuantizeParameter.html#ZQuantizeParameter">ZQuantizeParameter</a>(option);
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          blank = <strong class="jxr_keyword">new</strong> <a name="ZBlankParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZBlankParameter.html#ZBlankParameter">ZBlankParameter</a>(option);
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>          seed = <strong class="jxr_keyword">new</strong> <a name="ZDither0Parameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZDither0Parameter.html#ZDither0Parameter">ZDither0Parameter</a>(option);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>          blankColumn = <strong class="jxr_keyword">new</strong> <a name="ZBlankColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZBlankColumnParameter.html#ZBlankColumnParameter">ZBlankColumnParameter</a>(option);
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          zero = <strong class="jxr_keyword">new</strong> <a name="ZZeroColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZZeroColumnParameter.html#ZZeroColumnParameter">ZZeroColumnParameter</a>(option);
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          scale = <strong class="jxr_keyword">new</strong> <a name="ZScaleColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZScaleColumnParameter.html#ZScaleColumnParameter">ZScaleColumnParameter</a>(option);
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>      }
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>      <strong class="jxr_keyword">private</strong> Integer getCurrentZBlank() {
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>          <strong class="jxr_keyword">return</strong> options.getBNull();
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>      }
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>      @Override
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>      <strong class="jxr_keyword">protected</strong> <a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a>[] columnParameters() {
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a>[] {blankColumn, zero, scale};
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>      }
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>      @Override
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>      <strong class="jxr_keyword">protected</strong> <a name="ICompressHeaderParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressHeaderParameter.html#ICompressHeaderParameter">ICompressHeaderParameter</a>[] headerParameters() {
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ICompressHeaderParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressHeaderParameter.html#ICompressHeaderParameter">ICompressHeaderParameter</a>[] {quantz, blank, seed};
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>      }
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>      @Override
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>      <strong class="jxr_keyword">protected</strong> <a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a>[] activeColumnParameters() {
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>          <strong class="jxr_keyword">if</strong> (blankColumn.differsFrom(getCurrentZBlank())) {
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>              <em class="jxr_comment">// We have per-tile blanking values</em>
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>              <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a>[] {blankColumn, zero, scale};
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>          }
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a>[] {zero, scale};
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>     }
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> 
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>     @Override
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <strong class="jxr_keyword">protected</strong> <a name="ICompressHeaderParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressHeaderParameter.html#ICompressHeaderParameter">ICompressHeaderParameter</a>[] activeHeaderParameters() {
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>         Integer zblank = getCurrentZBlank();
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> 
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>         <strong class="jxr_keyword">if</strong> (zblank == <strong class="jxr_keyword">null</strong> || blankColumn.differsFrom(zblank)) {
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>             <em class="jxr_comment">// We have per-tile blanking values</em>
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ICompressHeaderParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressHeaderParameter.html#ICompressHeaderParameter">ICompressHeaderParameter</a>[] {quantz, seed};
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>         }
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ICompressHeaderParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressHeaderParameter.html#ICompressHeaderParameter">ICompressHeaderParameter</a>[] {quantz, blank, seed};
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>     }
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> 
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>     @Override
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setTileIndex(<strong class="jxr_keyword">int</strong> index) {
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>         seed.setTileIndex(index);
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>     }
+<a class="jxr_linenumber" name="L118" href="#L118">118</a> 
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>     @Override
+<a class="jxr_linenumber" name="L120" href="#L120">120</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeParameters" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/QuantizeParameters.html#QuantizeParameters">QuantizeParameters</a> copy(<a name="ICompressOption" href="../../../../../../../nom/tam/fits/compression/algorithm/api/ICompressOption.html#ICompressOption">ICompressOption</a> option) {
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>         <strong class="jxr_keyword">if</strong> (option instanceof <a name="QuantizeOption" href="../../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a>) {
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>             <a name="QuantizeOption" href="../../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> qo = (<a name="QuantizeOption" href="../../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a>) option;
+<a class="jxr_linenumber" name="L123" href="#L123">123</a> 
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>             <a name="QuantizeParameters" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/QuantizeParameters.html#QuantizeParameters">QuantizeParameters</a> p = (<a name="QuantizeParameters" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/QuantizeParameters.html#QuantizeParameters">QuantizeParameters</a>) <strong class="jxr_keyword">super</strong>.clone();
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>             p.quantz = (<a name="ZQuantizeParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZQuantizeParameter.html#ZQuantizeParameter">ZQuantizeParameter</a>) quantz.copy(qo);
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>             p.blank = (<a name="ZBlankParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZBlankParameter.html#ZBlankParameter">ZBlankParameter</a>) blank.copy(qo);
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>             p.seed = (<a name="ZDither0Parameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZDither0Parameter.html#ZDither0Parameter">ZDither0Parameter</a>) seed.copy(qo);
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>             p.blankColumn = (<a name="ZBlankColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZBlankColumnParameter.html#ZBlankColumnParameter">ZBlankColumnParameter</a>) blankColumn.copy(qo);
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>             p.zero = (<a name="ZZeroColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZZeroColumnParameter.html#ZZeroColumnParameter">ZZeroColumnParameter</a>) zero.copy(qo);
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>             p.scale = (<a name="ZScaleColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZScaleColumnParameter.html#ZScaleColumnParameter">ZScaleColumnParameter</a>) scale.copy(qo);
+<a class="jxr_linenumber" name="L131" href="#L131">131</a> 
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>             <strong class="jxr_keyword">return</strong> p;
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>         }
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>     }
+<a class="jxr_linenumber" name="L136" href="#L136">136</a> }
 </pre>
 <hr/>
 <div id="footer">© 1996–2026 nom-tam-fits</div>

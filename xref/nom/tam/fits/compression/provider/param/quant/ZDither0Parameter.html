@@ -92,36 +92,28 @@
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>      @Override
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> getValueFromHeader(<a name="Header" href="../../../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../../../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>          <strong class="jxr_keyword">if</strong> (getOption() == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>              <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>          }
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>          <a name="HeaderCard" href="../../../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = header.getCard(Compression.ZDITHER0);
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>          getOption().setSeed(card == <strong class="jxr_keyword">null</strong> ? 1L : card.getValue(Long.<strong class="jxr_keyword">class</strong>, 1L));
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>      }
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>          <a name="HeaderCard" href="../../../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = header.getCard(Compression.ZDITHER0);
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>          getOption().setSeed(card == <strong class="jxr_keyword">null</strong> ? 1L : card.getValue(Long.<strong class="jxr_keyword">class</strong>, 1L));
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>      }
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>      @Override
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setValueInHeader(<a name="Header" href="../../../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../../../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>          <strong class="jxr_keyword">if</strong> (getOption() == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>              <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>          }
-<a class="jxr_linenumber" name="L100" href="#L100">100</a> 
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>         header.addValue(Compression.ZDITHER0, (<strong class="jxr_keyword">int</strong>) getOption().getSeed());
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>     }
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> 
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     * Seeds the random generator for the specific tile</em>
-<a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     * @param  index                the 0-based tile index.</em>
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     * @throws NullPointerException if the parameter is no linked to a {@link QuantizeOption} instance (that is</em>
-<a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">     *                                  &lt;code&gt;null&lt;/code&gt; was specified in the constructor).</em>
-<a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>     <strong class="jxr_keyword">void</strong> setTileIndex(<strong class="jxr_keyword">int</strong> index) <strong class="jxr_keyword">throws</strong> NullPointerException {
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>         getOption().setTileIndex(index);
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>     }
-<a class="jxr_linenumber" name="L115" href="#L115">115</a> 
-<a class="jxr_linenumber" name="L116" href="#L116">116</a> }
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>      @Override
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setValueInHeader(<a name="Header" href="../../../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../../../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>          header.addValue(Compression.ZDITHER0, (<strong class="jxr_keyword">int</strong>) getOption().getSeed());
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>      }
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>  
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  <em class="jxr_javadoccomment">     * Seeds the random generator for the specific tile</em>
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  <em class="jxr_javadoccomment">     * @param  index                the 0-based tile index.</em>
+<a class="jxr_linenumber" name="L100" href="#L100">100</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">     * @throws NullPointerException if the parameter is no linked to a {@link QuantizeOption} instance (that is</em>
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">     *                                  &lt;code&gt;null&lt;/code&gt; was specified in the constructor).</em>
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <strong class="jxr_keyword">void</strong> setTileIndex(<strong class="jxr_keyword">int</strong> index) <strong class="jxr_keyword">throws</strong> NullPointerException {
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>         getOption().setTileIndex(index);
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>     }
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> 
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> }
 </pre>
 <hr/>
 <div id="footer">© 1996–2026 nom-tam-fits</div>

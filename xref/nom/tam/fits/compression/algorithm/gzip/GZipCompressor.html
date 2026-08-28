@@ -263,64 +263,80 @@
 <a class="jxr_linenumber" name="L255" href="#L255">255</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> decompress(ByteBuffer compressed, T pixelData) {
 <a class="jxr_linenumber" name="L256" href="#L256">256</a>         nioBuffer.rewind();
 <a class="jxr_linenumber" name="L257" href="#L257">257</a>         TypeConversion&lt;Buffer&gt; typeConverter = getTypeConverter(compressed, pixelData.limit());
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>         <strong class="jxr_keyword">try</strong> (GZIPInputStream zip = createGZipInputStream(compressed)) {
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>             <strong class="jxr_keyword">int</strong> count;
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>             <strong class="jxr_keyword">while</strong> ((count = zip.read(buffer)) &gt;= 0) {
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>                 <strong class="jxr_keyword">if</strong> (typeConverter != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>                     count = typeConverter.copy(count);
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>                 }
-<a class="jxr_linenumber" name="L264" href="#L264">264</a>                 nioBuffer.position(0);
-<a class="jxr_linenumber" name="L265" href="#L265">265</a>                 nioBuffer.limit(count / primitiveSize);
-<a class="jxr_linenumber" name="L266" href="#L266">266</a>                 setPixel(pixelData, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>             }
-<a class="jxr_linenumber" name="L268" href="#L268">268</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"could not gunzip data"</span>, e);
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>         }
-<a class="jxr_linenumber" name="L271" href="#L271">271</a>     }
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> 
-<a class="jxr_linenumber" name="L273" href="#L273">273</a>     @SuppressWarnings(<span class="jxr_string">"unchecked"</span>)
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>     <strong class="jxr_keyword">private</strong> &lt;B <strong class="jxr_keyword">extends</strong> Buffer&gt; ElementType&lt;B&gt; getElementType(<strong class="jxr_keyword">int</strong> size) {
-<a class="jxr_linenumber" name="L275" href="#L275">275</a>         <strong class="jxr_keyword">return</strong> (ElementType&lt;B&gt;) ElementType.forBitpix(size * FitsIO.BITS_OF_1_BYTE);
-<a class="jxr_linenumber" name="L276" href="#L276">276</a>     }
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> 
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>         <em class="jxr_comment">// The size of one element as it appears in the compressed stream, which is the element size of the</em>
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>         <em class="jxr_comment">// pixel data unless the stream stores a narrower or wider type that needs converting.</em>
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>         <strong class="jxr_keyword">int</strong> elementSize = typeConverter == <strong class="jxr_keyword">null</strong> ? primitiveSize : typeConverter.from.size();
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> 
+<a class="jxr_linenumber" name="L263" href="#L263">263</a>         <strong class="jxr_keyword">try</strong> (GZIPInputStream zip = createGZipInputStream(compressed)) {
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>             <strong class="jxr_keyword">int</strong> len = 0; <em class="jxr_comment">// Number of bytes loaded into buffer</em>
+<a class="jxr_linenumber" name="L265" href="#L265">265</a>             <strong class="jxr_keyword">int</strong> nRead = 0; <em class="jxr_comment">// Number of bytes read from input</em>
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> 
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>             <strong class="jxr_keyword">while</strong> ((nRead = zip.read(buffer, len, buffer.length - len)) &gt; 0) {
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>                 len += nRead;
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> 
+<a class="jxr_linenumber" name="L270" href="#L270">270</a>                 <em class="jxr_comment">// Convert only whole elements in buffer</em>
+<a class="jxr_linenumber" name="L271" href="#L271">271</a>                 <strong class="jxr_keyword">int</strong> elementBytes = len - len % elementSize;
+<a class="jxr_linenumber" name="L272" href="#L272">272</a>                 <strong class="jxr_keyword">int</strong> converted = typeConverter == <strong class="jxr_keyword">null</strong> ? elementBytes : typeConverter.copy(elementBytes);
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> 
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>                 nioBuffer.position(0);
+<a class="jxr_linenumber" name="L275" href="#L275">275</a>                 nioBuffer.limit(converted / primitiveSize);
+<a class="jxr_linenumber" name="L276" href="#L276">276</a>                 setPixel(pixelData, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L277" href="#L277">277</a> 
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>     <strong class="jxr_keyword">private</strong> TypeConversion&lt;Buffer&gt; getTypeConverter(ByteBuffer compressed, <strong class="jxr_keyword">int</strong> nrOfPrimitiveElements) {
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>         <strong class="jxr_keyword">if</strong> (compressed.limit() &gt; FitsIO.BYTES_IN_INTEGER) {
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>             <strong class="jxr_keyword">int</strong> oldPosition = compressed.position();
-<a class="jxr_linenumber" name="L281" href="#L281">281</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>                 compressed.position(compressed.limit() - sizeArray.length);
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>                 compressed.get(sizeArray);
-<a class="jxr_linenumber" name="L284" href="#L284">284</a>                 <strong class="jxr_keyword">int</strong> uncompressedSize = sizeBuffer.get(0);
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>                 <strong class="jxr_keyword">if</strong> (uncompressedSize &gt; 0) {
-<a class="jxr_linenumber" name="L286" href="#L286">286</a>                     compressed.position(oldPosition);
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>                     <strong class="jxr_keyword">if</strong> (uncompressedSize % nrOfPrimitiveElements == 0) {
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>                         <strong class="jxr_keyword">int</strong> compressedPrimitiveSize = uncompressedSize / nrOfPrimitiveElements;
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>                         <strong class="jxr_keyword">if</strong> (compressedPrimitiveSize != primitiveSize) {
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>                             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TypeConversion&lt;&gt;(getElementType(compressedPrimitiveSize));
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>                         }
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>                     }
-<a class="jxr_linenumber" name="L293" href="#L293">293</a>                 }
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>             } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>                 compressed.position(oldPosition);
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>             }
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>         }
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>     }
-<a class="jxr_linenumber" name="L300" href="#L300">300</a> 
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>     <strong class="jxr_keyword">protected</strong> GZIPInputStream createGZipInputStream(ByteBuffer compressed) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> GZIPInputStream(<strong class="jxr_keyword">new</strong> <a name="ByteBufferInputStream" href="../../../../../../nom/tam/util/ByteBufferInputStream.html#ByteBufferInputStream">ByteBufferInputStream</a>(compressed),
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>                 Math.min(compressed.limit() * 2, DEFAULT_GZIP_BUFFER_SIZE));
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>     }
-<a class="jxr_linenumber" name="L305" href="#L305">305</a> 
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>     <strong class="jxr_keyword">protected</strong> GZIPOutputStream createGZipOutputStream(<strong class="jxr_keyword">int</strong> length, ByteBuffer compressed) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L307" href="#L307">307</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> GZIPOutputStream(<strong class="jxr_keyword">new</strong> <a name="ByteBufferOutputStream" href="../../../../../../nom/tam/util/ByteBufferOutputStream.html#ByteBufferOutputStream">ByteBufferOutputStream</a>(compressed),
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>                 Math.min(Math.max(length * 2, MINIMAL_GZIP_BUFFER_SIZE), DEFAULT_GZIP_BUFFER_SIZE));
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>     }
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> 
-<a class="jxr_linenumber" name="L311" href="#L311">311</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> getPixel(T pixelData, byte[] pixelBytes);
-<a class="jxr_linenumber" name="L312" href="#L312">312</a> 
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> setPixel(T pixelData, byte[] pixelBytes);
-<a class="jxr_linenumber" name="L314" href="#L314">314</a> 
-<a class="jxr_linenumber" name="L315" href="#L315">315</a> }
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>                 len -= elementBytes; <em class="jxr_comment">// unprocessed remainder bytes that were already loaded.</em>
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>                 <strong class="jxr_keyword">if</strong> (len &gt; 0) {
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>                     <em class="jxr_comment">// Move unprocessed loaded remainder to front of the buffer</em>
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>                     System.arraycopy(buffer, elementBytes, buffer, 0, len);
+<a class="jxr_linenumber" name="L282" href="#L282">282</a>                 }
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>             }
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"could not gunzip data"</span>, e);
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>         }
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>     }
+<a class="jxr_linenumber" name="L288" href="#L288">288</a> 
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>     @SuppressWarnings(<span class="jxr_string">"unchecked"</span>)
+<a class="jxr_linenumber" name="L290" href="#L290">290</a>     <strong class="jxr_keyword">private</strong> &lt;B <strong class="jxr_keyword">extends</strong> Buffer&gt; ElementType&lt;B&gt; getElementType(<strong class="jxr_keyword">int</strong> size) {
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>         <strong class="jxr_keyword">return</strong> (ElementType&lt;B&gt;) ElementType.forBitpix(size * FitsIO.BITS_OF_1_BYTE);
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>     }
+<a class="jxr_linenumber" name="L293" href="#L293">293</a> 
+<a class="jxr_linenumber" name="L294" href="#L294">294</a>     <strong class="jxr_keyword">private</strong> TypeConversion&lt;Buffer&gt; getTypeConverter(ByteBuffer compressed, <strong class="jxr_keyword">int</strong> nrOfPrimitiveElements) {
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>         <strong class="jxr_keyword">if</strong> (compressed.limit() &gt; FitsIO.BYTES_IN_INTEGER) {
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>             <strong class="jxr_keyword">int</strong> oldPosition = compressed.position();
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>                 compressed.position(compressed.limit() - sizeArray.length);
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>                 compressed.get(sizeArray);
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>                 <strong class="jxr_keyword">int</strong> uncompressedSize = sizeBuffer.get(0);
+<a class="jxr_linenumber" name="L301" href="#L301">301</a>                 <strong class="jxr_keyword">if</strong> (uncompressedSize &gt; 0) {
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>                     compressed.position(oldPosition);
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>                     <strong class="jxr_keyword">if</strong> (uncompressedSize % nrOfPrimitiveElements == 0) {
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>                         <strong class="jxr_keyword">int</strong> compressedPrimitiveSize = uncompressedSize / nrOfPrimitiveElements;
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>                         <strong class="jxr_keyword">if</strong> (compressedPrimitiveSize != primitiveSize) {
+<a class="jxr_linenumber" name="L306" href="#L306">306</a>                             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TypeConversion&lt;&gt;(getElementType(compressedPrimitiveSize));
+<a class="jxr_linenumber" name="L307" href="#L307">307</a>                         }
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>                     }
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>                 }
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>             } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>                 compressed.position(oldPosition);
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>             }
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>         }
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L315" href="#L315">315</a>     }
+<a class="jxr_linenumber" name="L316" href="#L316">316</a> 
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>     <strong class="jxr_keyword">protected</strong> GZIPInputStream createGZipInputStream(ByteBuffer compressed) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> GZIPInputStream(<strong class="jxr_keyword">new</strong> <a name="ByteBufferInputStream" href="../../../../../../nom/tam/util/ByteBufferInputStream.html#ByteBufferInputStream">ByteBufferInputStream</a>(compressed),
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>                 Math.min(compressed.limit() * 2, DEFAULT_GZIP_BUFFER_SIZE));
+<a class="jxr_linenumber" name="L320" href="#L320">320</a>     }
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> 
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>     <strong class="jxr_keyword">protected</strong> GZIPOutputStream createGZipOutputStream(<strong class="jxr_keyword">int</strong> length, ByteBuffer compressed) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L323" href="#L323">323</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> GZIPOutputStream(<strong class="jxr_keyword">new</strong> <a name="ByteBufferOutputStream" href="../../../../../../nom/tam/util/ByteBufferOutputStream.html#ByteBufferOutputStream">ByteBufferOutputStream</a>(compressed),
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>                 Math.min(Math.max(length * 2, MINIMAL_GZIP_BUFFER_SIZE), DEFAULT_GZIP_BUFFER_SIZE));
+<a class="jxr_linenumber" name="L325" href="#L325">325</a>     }
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> 
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> getPixel(T pixelData, byte[] pixelBytes);
+<a class="jxr_linenumber" name="L328" href="#L328">328</a> 
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> setPixel(T pixelData, byte[] pixelBytes);
+<a class="jxr_linenumber" name="L330" href="#L330">330</a> 
+<a class="jxr_linenumber" name="L331" href="#L331">331</a> }
 </pre>
 <hr/>
 <div id="footer">© 1996–2026 nom-tam-fits</div>

@@ -61,7 +61,7 @@
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>      @Override
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addColumnsToTable(<a name="BinaryTableHDU" href="../../../../../../../nom/tam/fits/BinaryTableHDU.html#BinaryTableHDU">BinaryTableHDU</a> hdu) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          <strong class="jxr_keyword">for</strong> (<a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a> parameter : columnParameters()) {
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          <strong class="jxr_keyword">for</strong> (<a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a> parameter : activeColumnParameters()) {
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>              Object column = parameter.getColumnData();
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>              <strong class="jxr_keyword">if</strong> (column != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>                  hdu.setColumnName(hdu.addColumn(column) - 1, parameter.getName(), <strong class="jxr_keyword">null</strong>);
@@ -100,14 +100,14 @@
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> initializeColumns(<a name="Header" href="../../../../../../../nom/tam/fits/Header.html#Header">Header</a> header, <a name="BinaryTable" href="../../../../../../../nom/tam/fits/BinaryTable.html#BinaryTable">BinaryTable</a> binaryTable, <strong class="jxr_keyword">int</strong> size)
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>              <strong class="jxr_keyword">throws</strong> HeaderCardException, <a name="FitsException" href="../../../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>          <strong class="jxr_keyword">for</strong> (<a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a> parameter : columnParameters()) {
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>              parameter.setColumnData(getNullableColumn(header, binaryTable, parameter.getName()), size);
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>              parameter.setColumnData(getNullableColumn(header, binaryTable, parameter.getName()));
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>          }
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>      }
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>      @Override
 <a class="jxr_linenumber" name="L100" href="#L100">100</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> initializeColumns(<strong class="jxr_keyword">int</strong> size) {
 <a class="jxr_linenumber" name="L101" href="#L101">101</a>         <strong class="jxr_keyword">for</strong> (<a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a> parameter : columnParameters()) {
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>             parameter.setColumnData(<strong class="jxr_keyword">null</strong>, size);
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>             parameter.setColumnSize(size);
 <a class="jxr_linenumber" name="L103" href="#L103">103</a>         }
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>     }
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> 
@@ -120,7 +120,7 @@
 <a class="jxr_linenumber" name="L112" href="#L112">112</a> 
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>     @Override
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setValuesInHeader(<a name="Header" href="../../../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../../../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>         <strong class="jxr_keyword">for</strong> (<a name="ICompressHeaderParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressHeaderParameter.html#ICompressHeaderParameter">ICompressHeaderParameter</a> parameter : headerParameters()) {
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>         <strong class="jxr_keyword">for</strong> (<a name="ICompressHeaderParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressHeaderParameter.html#ICompressHeaderParameter">ICompressHeaderParameter</a> parameter : activeHeaderParameters()) {
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>             parameter.setValueInHeader(header);
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>         }
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>     }
@@ -139,26 +139,58 @@
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>     }
 <a class="jxr_linenumber" name="L132" href="#L132">132</a> 
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L134" href="#L134">134</a> <em class="jxr_javadoccomment">     * Retuens the subset of parameters from within, which are recorded in compressed table columns along with the</em>
-<a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_javadoccomment">     * compressed data.</em>
+<a class="jxr_linenumber" name="L134" href="#L134">134</a> <em class="jxr_javadoccomment">     * Returns the complete subset of parameters from within, which are recorded in compressed table columns along with</em>
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_javadoccomment">     * the compressed data.</em>
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">     * @return the subset of parameters that are recorded in compressed table columns.</em>
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     * @see    #headerParameters()</em>
-<a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>     <strong class="jxr_keyword">protected</strong> <a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a>[] columnParameters() {
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a>[0];
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>     }
-<a class="jxr_linenumber" name="L144" href="#L144">144</a> 
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L146" href="#L146">146</a> <em class="jxr_javadoccomment">     * Returns the subset of parameters from within, which are recorded in the header of the compressed HDU.</em>
-<a class="jxr_linenumber" name="L147" href="#L147">147</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">     * @return the subset of parameters that are recorded in the compressed HDU's header.</em>
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     * @see    #columnParameters()</em>
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <a name="ICompressHeaderParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressHeaderParameter.html#ICompressHeaderParameter">ICompressHeaderParameter</a>[] headerParameters();
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> }
+<a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     * @see    #activeColumnParameters()</em>
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     * @see    #headerParameters()</em>
+<a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>     <strong class="jxr_keyword">protected</strong> <a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a>[] columnParameters() {
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a>[0];
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>     }
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> 
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> <em class="jxr_javadoccomment">     * Returns the complete subset of parameters from within, which are recorded in the header of the compressed HDU.</em>
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     * @return the subset of parameters that are recorded in the compressed HDU's header.</em>
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     * @see    #activeHeaderParameters()</em>
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_javadoccomment">     * @see    #columnParameters()</em>
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <a name="ICompressHeaderParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressHeaderParameter.html#ICompressHeaderParameter">ICompressHeaderParameter</a>[] headerParameters();
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> 
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L157" href="#L157">157</a> <em class="jxr_javadoccomment">     * Returns the subset of active parameters from within, which should be recorded in compressed table columns along</em>
+<a class="jxr_linenumber" name="L158" href="#L158">158</a> <em class="jxr_javadoccomment">     * with the compressed data.</em>
+<a class="jxr_linenumber" name="L159" href="#L159">159</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">     * @return the subset of parameters that are recorded in compressed table columns.</em>
+<a class="jxr_linenumber" name="L161" href="#L161">161</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> <em class="jxr_javadoccomment">     * @see    #columnParameters()</em>
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> <em class="jxr_javadoccomment">     * @see    #activeHeaderParameters()</em>
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> <em class="jxr_javadoccomment">     * @since  1.23</em>
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>     <strong class="jxr_keyword">protected</strong> <a name="ICompressColumnParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.html#ICompressColumnParameter">ICompressColumnParameter</a>[] activeColumnParameters() {
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>         <strong class="jxr_keyword">return</strong> columnParameters();
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>     }
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> 
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L172" href="#L172">172</a> <em class="jxr_javadoccomment">     * Returns the subset of active parameters from within, which should be recorded in the header of the compressed</em>
+<a class="jxr_linenumber" name="L173" href="#L173">173</a> <em class="jxr_javadoccomment">     * HDU.</em>
+<a class="jxr_linenumber" name="L174" href="#L174">174</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">     * @return the subset of parameters that are recorded in the compressed HDU's header.</em>
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">     * @see    #headerParameters()</em>
+<a class="jxr_linenumber" name="L178" href="#L178">178</a> <em class="jxr_javadoccomment">     * @see    #activeColumnParameters()</em>
+<a class="jxr_linenumber" name="L179" href="#L179">179</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L180" href="#L180">180</a> <em class="jxr_javadoccomment">     * @since  1.23</em>
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>     <strong class="jxr_keyword">protected</strong> <a name="ICompressHeaderParameter" href="../../../../../../../nom/tam/fits/compression/provider/param/api/ICompressHeaderParameter.html#ICompressHeaderParameter">ICompressHeaderParameter</a>[] activeHeaderParameters() {
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>         <strong class="jxr_keyword">return</strong> headerParameters();
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>     }
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> }
 </pre>
 <hr/>
 <div id="footer">© 1996–2026 nom-tam-fits</div>
