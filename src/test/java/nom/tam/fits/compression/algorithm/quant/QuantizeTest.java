@@ -220,7 +220,7 @@ public class QuantizeTest {
 
         checkRequantedValues(quantProcessor, quants, matrix, option, false);
 
-        Assertions.assertArrayEquals(new int[] {-2147483646, -2147483637, -2147483634, -2147483632, -2147483629,
+        Assertions.assertArrayEquals(new int[] {-2147483647, -2147483637, -2147483634, -2147483632, -2147483629,
                 -2147483627, -2147483625, -2147483622, -2147483619, -2147483617, -2147483615, -2147483612, -2147483609,
                 -2147483607, -2147483604, -2147483602, -2147483599, -2147483597, -2147483595, -2147483593, -2147483590,
                 -2147483587, -2147483585, -2147483582}, quants.array());
@@ -763,15 +763,15 @@ public class QuantizeTest {
 
         o.setDither2(true);
         o.initDither();
-        Assertions.assertEquals(0, o.toInt(0.0));
+        Assertions.assertEquals(-2147483647, o.toInt(0.0)); // special marker for 0.0
         Assertions.assertEquals(0, o.toInt(0.5));
-        Assertions.assertEquals(0.0, o.toDouble(0), 0.5);
+        Assertions.assertEquals(0.0, o.toDouble(-2147483647), 0.5);
         Assertions.assertEquals(0.5, o.toDouble(0), 0.5);
 
         o.setDither(false);
         o.initDither();
         Assertions.assertEquals(0, o.toInt(0.0));
-        Assertions.assertEquals(0, o.toInt(0.5));
+        Assertions.assertEquals(1, o.toInt(0.5));
         Assertions.assertEquals(0.0, o.toDouble(0), 0.5);
         Assertions.assertEquals(0.5, o.toDouble(0), 0.5);
 

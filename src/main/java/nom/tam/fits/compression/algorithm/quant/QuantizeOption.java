@@ -379,18 +379,21 @@ public class QuantizeOption implements ICompressOption {
     }
 
     /**
-     * Whether automatic quantization treats 0.0 as a special value. Normally values within the `BSCALE` quantization
-     * level around 0.0 will be assigned the same integer quanta, and will become indistinguishable in the quantized
-     * data. Some software may, in their misguided ways, assign exact zero values a special meaning (such as no data) in
-     * which case we may want to distinguish these as we apply quantization. However, it is generally not a good idea to
-     * use 0 as a special value.
+     * Whether automatic quantization treats 0.0 as a special value. The special treatment of 0.0 values is the
+     * distinguishing feature of dither method 2 over method 1.
      * 
-     * @return <code>true</code> to treat 0.0 (exact) as a special value, or <code>false</code> to treat is as any other
-     *             measured value (recommended).
+     * @deprecated Use {@link #isDither2()} instead. The special treatent of ero values is the distinghuishing feature
+     *                 of the <code>SUBTRACTIVE_DITHER_2</code> method, which is otherwise the same as
+     *                 <code>SUBTRACTIVE_DITHER_1</code>.
      * 
-     * @see    #setCheckZero(boolean)
-     * @see    #getBScale()
+     * @return     <code>true</code> to treat 0.0 (exact) as a special value, or <code>false</code> to treat is as any
+     *                 other measured value (recommended).
+     * 
+     * @see        #isDither2()
+     * @see        #setDither2(boolean)
+     * @see        #getBScale()
      */
+    @Deprecated
     public boolean isCheckZero() {
         return config.checkZero;
     }
@@ -408,7 +411,7 @@ public class QuantizeOption implements ICompressOption {
     }
 
     /**
-     * Whether dither method 2 is used.
+     * Whether dither method 2 is used which treats 0.0 values as special.
      * 
      * @return <code>true</code> if dither method 2 is used, or else <code>false</code>
      * 
@@ -416,7 +419,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #isDither()
      */
     public boolean isDither2() {
-        return config.dither2;
+        return config.dither && config.checkZero;
     }
 
     @Override
@@ -515,27 +518,25 @@ public class QuantizeOption implements ICompressOption {
     }
 
     /**
-     * Sets whether automatic quantization is to treat 0.0 as a special value. Normally values within the `BSCALE`
-     * quantization level around 0.0 will be assigned the same integer quanta, and will become indistinguishable in the
-     * quantized data. However some software may assign exact zero values a special meaning (such as no data) in which
-     * case we may want to distinguish these as we apply qunatization. However, it is generally not a good idea to use 0
-     * as a special value. To mark missing data, the FITS standard recognises only NaN as a special value -- while all
-     * other values should constitute valid measurements.
+     * Sets whether automatic quantization is to treat 0.0 as a special value. This is the same as
+     * {@link #setDither2(boolean)}. When enabled and dithering is used, then 0.0 values will be denoted with the
+     * special value −2147483647 in the quantized representation.
      * 
-     * @deprecated       It is strongly discouraged to treat 0.0 values as special. FITS only recognises NaN as a
-     *                       special floating-point value marking missing data. All other floating point values are
-     *                       considered valid measurements.
+     * @deprecated       Use {@link #setDither2(boolean)} instead if you want zero values to be special encoded. The
+     *                       representation of true zero values is the unique feature of the
+     *                       <code>SUBTRACTIVE_DITHER_2</code> method that sets it apart from
+     *                       <code>SUBTRACTIVE_DITHER_1</code>.
      * 
-     * @param      value whether to treat values around 0.0 as special.
+     * @param      value (unused) value whether to treat values around 0.0 as special.
      * 
      * @return           itself
      * 
-     * @see              #isCheckZero()
+     * @see              #setDither2(boolean)
+     * @see              #isDither2()
      */
     @Deprecated
     public QuantizeOption setCheckZero(boolean value) {
-        config.checkZero = value;
-        return this;
+        return setDither2(value);
     }
 
     /**
@@ -554,7 +555,10 @@ public class QuantizeOption implements ICompressOption {
     }
 
     /**
-     * Sets whether dithering is to use method 2.
+     * Sets whether dithering is to use method 2, when dithering is enabled. It does not actually enable or disable
+     * dithering itself -- for that you must call {@link #setDither(boolean)}. When dither method 2 is used, then 0.0
+     * values will be denoted with the special value −2147483647 in the quantized representation, whereas dither method
+     * 1 treats 0.0 just like any other decomal value.
      * 
      * @param  value <code>true</code> to use dither method 2, or else <code>false</code> for method 1.
      * 
@@ -564,7 +568,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setDither(boolean)
      */
     public QuantizeOption setDither2(boolean value) {
-        config.dither2 = value;
+        config.checkZero = value;
         return this;
     }
 
@@ -745,7 +749,7 @@ public class QuantizeOption implements ICompressOption {
     /**
      * value used to represent zero-valued pixels
      */
-    private static final int ZERO_VALUE = Integer.MIN_VALUE + 2;
+    private static final int ZERO_VALUE = Integer.MIN_VALUE + 1;
 
     /**
      * Re-initialize the dither sequence.
@@ -803,13 +807,13 @@ public class QuantizeOption implements ICompressOption {
             return nullValueIndicator;
         }
 
-        if (isCheckZero() && d == 0.0) {
+        if (isDither2() && d == 0.0) {
             return ZERO_VALUE;
         }
 
         d -= bZero;
         d /= bScale;
-        if (isDither() || isDither2()) {
+        if (isDither()) {
             d += nextDither();
         }
         return (int) Math.round(d);
@@ -825,7 +829,7 @@ public class QuantizeOption implements ICompressOption {
      * @since    1.23
      */
     double toDouble(int i) {
-        if (isCheckZero() && i == ZERO_VALUE) {
+        if (isDither2() && i == ZERO_VALUE) {
             return 0.0;
         }
 
@@ -834,7 +838,7 @@ public class QuantizeOption implements ICompressOption {
         }
 
         double d = i;
-        if (isDither() || isDither2()) {
+        if (isDither()) {
             d -= nextDither();
         }
 
@@ -910,11 +914,9 @@ public class QuantizeOption implements ICompressOption {
 
         private boolean centerOnZero;
 
-        private boolean checkZero;
-
         private boolean dither;
 
-        private boolean dither2;
+        private boolean checkZero;
 
         private double qlevel = Double.NaN;
 
