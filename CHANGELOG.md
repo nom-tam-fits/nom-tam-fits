@@ -71,6 +71,8 @@ Upcoming feature release, likely around 15 September 2026. Many fixes and improv
  
  - [#891] `QuantizeOption.setCenterOnZero()` did not produce the advertised behavior of keeping ZZERO at 0.0. Changed implementation to match the contract of this method. As such when `ZZERO` is not forced to be 0.0, it will be chosen to try quantize with positive integers only, which can make compression more efficient in some cases. (by @attipaci)
  
+ - [#891] Automatic quantization for the compression of floating-point data as integers (via `Quantize.quantize()`) returned `false` (failure to quantize) in more cases than needed. Quantized representation is not possible only if the quantized range exceeds the 32-bit integer data range available, exclusing the special values). The change improves the compression of data. (by @attipaci) 
+ 
  - The latest build and runtime Maven dependencies. (by @attipaci)
  
 ### Deprecated

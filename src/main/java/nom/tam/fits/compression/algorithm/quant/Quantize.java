@@ -88,7 +88,9 @@ public class Quantize {
      */
     private double noise3;
 
-    /* returned 5th order MAD of all non-null pixels */
+    /**
+     * returned 5th order MAD of all non-null pixels
+     */
     private double noise5;
 
     private double xmaxval = Double.NEGATIVE_INFINITY;
@@ -104,6 +106,48 @@ public class Quantize {
     @Deprecated
     public Quantize(QuantizeOption quantizeOption) {
         parameter = quantizeOption;
+    }
+
+    private void checkDataRange(Buffer in) throws IllegalArgumentException {
+        int n = parameter.getTileWidth() * parameter.getTileHeight();
+        int origpos = in.position();
+
+        xminval = Double.POSITIVE_INFINITY;
+        xmaxval = Double.NEGATIVE_INFINITY;
+        xnoise2 = 0.0;
+        xnoise3 = 0.0;
+        xnoise5 = 0.0;
+
+        int nval = 0;
+
+        FloatBuffer fin = (in instanceof FloatBuffer) ? (FloatBuffer) in : null;
+        DoubleBuffer din = (in instanceof DoubleBuffer) ? (DoubleBuffer) in : null;
+
+        if (fin == null && din == null) {
+            throw new IllegalArgumentException("input buffer of type " + in.getClass().getName() + " is unsupported.");
+        }
+
+        for (int i = 0; i < n; i++) {
+            double x = fin == null ? din.get() : fin.get();
+
+            if (!parameter.isRegular(x)) {
+                continue;
+            }
+
+            if (x < xminval) {
+                xminval = x;
+            }
+
+            if (x > xmaxval) {
+                xmaxval = x;
+            }
+
+            nval++;
+        }
+
+        in.position(origpos);
+
+        setNoiseResult(nval);
     }
 
     /**
@@ -352,6 +396,19 @@ public class Quantize {
         return guessQuantization(buf);
     }
 
+    private double getCharacteristicRMS() {
+        // use the minimum of noise2, noise3, and noise5 as the best
+        // noise value
+        double stdev = noise3;
+        if (noise2 != 0.0 && noise2 < stdev) {
+            stdev = noise2;
+        }
+        if (noise5 != 0.0 && noise5 < stdev) {
+            stdev = noise5;
+        }
+        return stdev;
+    }
+
     /**
      * Guesses the quantization scaling and zero offset parameters based on the noise distribution in the data.
      * 
@@ -366,63 +423,40 @@ public class Quantize {
      * @since                           1.23
      */
     boolean guessQuantization(Buffer fdata) throws IllegalArgumentException {
-        // MAD 2nd, 3rd, and 5th order noise values
-        double stdev;
-        double bScale; /* bscale, 1 in intdata = delta in fdata */
 
         // AK: defaults
-        parameter.setBScale(1.);
-        parameter.setBZero(0.);
+        parameter.setBScale(1.0);
+        parameter.setBZero(0.0);
 
-        long nx = (long) parameter.getTileWidth() * (long) parameter.getTileHeight();
-        if (nx <= 1L) {
-            return false;
+        // estimate background noise using MAD pixel differences
+        if (parameter.getQLevel() >= 0.0) {
+            calculateNoise(fdata);
+        } else {
+            checkDataRange(fdata);
         }
 
-        if (parameter.getQLevel() >= 0.) {
-            /* estimate background noise using MAD pixel differences */
-            calculateNoise(fdata);
-            // special case of an image filled with Nulls
-            if (ngood == 0) {
-                /* set parameters to dummy values, which are not used */
-                parameter.setMinValue(0.0);
-                parameter.setMaxValue(1.0);
-                return false;
-            }
-
-            // use the minimum of noise2, noise3, and noise5 as the best
-            // noise value
-            stdev = noise3;
-            if (noise2 != 0. && noise2 < stdev) {
-                stdev = noise2;
-            }
-            if (noise5 != 0. && noise5 < stdev) {
-                stdev = noise5;
-            }
-
-            if (parameter.getQLevel() == 0.) {
-                bScale = stdev / DEFAULT_QUANT_LEVEL; /* default quantization */
+        if (ngood > 0) {
+            if (parameter.getQLevel() >= 0.0) {
+                parameter.setBScale(getCharacteristicRMS()
+                        / (parameter.getQLevel() == 0.0 ? DEFAULT_QUANT_LEVEL : parameter.getQLevel()));
             } else {
-                bScale = stdev / parameter.getQLevel();
+                // negative Q value represents the absolute quantization level
+                parameter.setBScale(-parameter.getQLevel());
             }
-            if (bScale == 0.) {
-                return false; /* don't quantize */
-            }
+
+            parameter.setMinValue(minValue);
+            parameter.setMaxValue(maxValue);
         } else {
-            /* negative value represents the absolute quantization level */
-            bScale = -parameter.getQLevel();
-            /* only need to calculate the min and max values */
-            calculateNoise(fdata);
+            /* set parameters to dummy values, which are not used */
+            parameter.setMinValue(0.0);
+            parameter.setMaxValue(0.0);
         }
 
         /* check that the number of quantized levels does not exceed the range of regular integer values */
-        if (Math.ceil((maxValue - minValue) / bScale) >= 2.0 * Integer.MAX_VALUE) {
+        if (Math.ceil((maxValue - minValue) / parameter.getBScale()) >= 2.0 * Integer.MAX_VALUE) {
             return false; /* don't quantize */
         }
 
-        parameter.setBScale(bScale);
-        parameter.setMinValue(minValue);
-        parameter.setMaxValue(maxValue);
         parameter.updateBZeroAndIntLimits();
 
         return true; /* yes, data have been quantized */

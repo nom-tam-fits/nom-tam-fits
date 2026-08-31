@@ -156,18 +156,6 @@ public class QuantizeTest {
                 .setTileWidth(3)//
                 .setTileHeight(2));
         Assertions.assertFalse(quantProcessor.quantize(matrix, null));
-
-        // test very small image
-        matrix = initMatrix();
-        quantProcessor = new QuantizeProcessor(new QuantizeOption()//
-                .setDither(false)//
-                .setDither2(false)//
-                .setQlevel(4.)//
-                .setCheckNull(true)//
-                .setNullValue(NULL_VALUE)//
-                .setTileWidth(1)//
-                .setTileHeight(1));
-        Assertions.assertFalse(quantProcessor.quantize(matrix, null));
     }
 
     @Test
