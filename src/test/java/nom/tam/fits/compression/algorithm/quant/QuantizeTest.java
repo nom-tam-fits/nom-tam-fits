@@ -139,7 +139,7 @@ public class QuantizeTest {
                 }
             }
 
-            Assertions.assertEquals(-2147483637, option.getIntMinValue());
+            Assertions.assertEquals(0, option.getIntMinValue());
         }
     }
 
@@ -220,15 +220,13 @@ public class QuantizeTest {
 
         checkRequantedValues(quantProcessor, quants, matrix, option, false);
 
-        Assertions.assertArrayEquals(new int[] {-2147483647, -2147483637, -2147483634, -2147483632, -2147483629,
-                -2147483627, -2147483625, -2147483622, -2147483619, -2147483617, -2147483615, -2147483612, -2147483609,
-                -2147483607, -2147483604, -2147483602, -2147483599, -2147483597, -2147483595, -2147483593, -2147483590,
-                -2147483587, -2147483585, -2147483582}, quants.array());
-
         Assertions.assertEquals(4.000000e+00, option.getBScale(), 1e-20);
-        Assertions.assertEquals(8.589934557999833E9, option.getBZero(), 1e-20);
-        Assertions.assertEquals(-2147483637, option.getIntMinValue());
-        Assertions.assertEquals(-2147483582, option.getIntMaxValue());
+        Assertions.assertEquals(8.0, option.getBZero(), 1e-12);
+        Assertions.assertEquals(0, option.getIntMinValue());
+        Assertions.assertEquals(55, option.getIntMaxValue());
+
+        Assertions.assertArrayEquals(new int[] {-2147483647, 0, 3, 5, 8, 10, 13, 15, 18, 21, 23, 25, 28, 30, 33, 36, 38, 41,
+                42, 45, 47, 50, 53, 55}, quants.array());
     }
 
     @Test
@@ -251,12 +249,12 @@ public class QuantizeTest {
         quantProcessor.quantize(matrix, quants);
         quants.rewind();
 
-        checkRequantedValues(quantProcessor, quants, matrix, option, false);
-
         Assertions.assertEquals(9.18810439811682E-7, option.getBScale(), 1e-20);
-        Assertions.assertEquals(1983.130218334527, option.getBZero(), 1e-10);
-        Assertions.assertEquals(-2147483637, option.getIntMinValue());
-        Assertions.assertEquals(-1974235153, option.getIntMaxValue());
+        Assertions.assertEquals(0.0, option.getBZero(), 1e-10);
+        Assertions.assertEquals(10883456, option.getIntMinValue());
+        Assertions.assertEquals(184131941, option.getIntMaxValue());
+
+        checkRequantedValues(quantProcessor, quants, matrix, option, false);
     }
 
     @Test
@@ -282,14 +280,14 @@ public class QuantizeTest {
         quantProcessor.quantize(matrix, quants);
         quants.rewind();
 
-        checkRequantedValues(quantProcessor, quants, matrix, option, false);
-
         Assertions.assertEquals(xsize * ysize, quants.limit());
 
         Assertions.assertEquals(8.11574856349585578526e-07, option.getBScale(), 1e-20);
-        Assertions.assertEquals(1.74284372421136049525e+03, option.getBZero(), 1e-10);
-        Assertions.assertEquals(-2147483637, option.getIntMinValue());
-        Assertions.assertEquals(-1866576063, option.getIntMaxValue());
+        Assertions.assertEquals(0.0, option.getBZero(), 1e-10);
+        Assertions.assertEquals(0, option.getIntMinValue());
+        Assertions.assertEquals(280907574, option.getIntMaxValue());
+
+        checkRequantedValues(quantProcessor, quants, matrix, option, false);
     }
 
     @Test
@@ -313,12 +311,12 @@ public class QuantizeTest {
         quantProcessor.quantize(matrix, quants);
         quants.rewind();
 
-        checkRequantedValues(quantProcessor, quants, matrix, option, false);
-
         Assertions.assertEquals(8.11574856349585578526e-07, option.getBScale(), 1e-20);
-        Assertions.assertEquals(1.74284372421136049525e+03, option.getBZero(), 1e-10);
-        Assertions.assertEquals(-2147483637, option.getIntMinValue());
-        Assertions.assertEquals(-1866576063, option.getIntMaxValue());
+        Assertions.assertEquals(0.0, option.getBZero(), 1e-10);
+        Assertions.assertEquals(0, option.getIntMinValue());
+        Assertions.assertEquals(280907574, option.getIntMaxValue());
+
+        checkRequantedValues(quantProcessor, quants, matrix, option, false);
     }
 
     @Test
@@ -715,19 +713,12 @@ public class QuantizeTest {
 
         o.setCheckNull(true);
         Assertions.assertTrue(o.isCheckNull());
-        Assertions.assertNotNull(o.getBNull());
 
-        o.setCheckNull(true);
-        Assertions.assertTrue(o.isCheckNull());
-        Assertions.assertNotNull(o.getBNull());
+        o.setBNull(null);
+        Assertions.assertNull(o.getBNull());
 
-        o.setCheckNull(false);
-        Assertions.assertFalse(o.isCheckNull());
-        Assertions.assertNotNull(o.getBNull());
-
-        o.setCheckNull(false);
-        Assertions.assertFalse(o.isCheckNull());
-        Assertions.assertNotNull(o.getBNull());
+        o.setBNull(-999);
+        Assertions.assertEquals(-999, o.getBNull());
     }
 
     @Test
@@ -784,7 +775,7 @@ public class QuantizeTest {
     }
 
     @Test
-    public void testDindBero() throws Exception {
+    public void testFindBero() throws Exception {
         QuantizeOption o = new QuantizeOption();
         o.setBScale(1.0);
         o.setBZero(0.0);
@@ -799,8 +790,8 @@ public class QuantizeTest {
         o.setMaxValue(Integer.MAX_VALUE);
         Assertions.assertEquals(0.5 * Integer.MAX_VALUE, o.findBZero(), 1e-6);
 
-        o.setCheckNull(true);
-        Assertions.assertEquals(2.147483637E9, o.findBZero(), 1e-6);
+        o.setCenterOnZero(true);
+        Assertions.assertEquals(0.0, o.findBZero(), 0.5);
     }
 
     @Test
@@ -832,11 +823,9 @@ public class QuantizeTest {
 
         o.setBNull(null);
         Assertions.assertNull(o.getBNull());
-        Assertions.assertFalse(o.isCheckNull());
 
         o.setBNull(-999);
         Assertions.assertEquals(-999, o.getBNull());
-        Assertions.assertTrue(o.isCheckNull());
 
         o.setBScale(3.3);
         Assertions.assertEquals(3.3, o.getBScale());

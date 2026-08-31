@@ -76,7 +76,7 @@ public class QuantizeOption implements ICompressOption {
 
     private Integer nullValueIndicator;
 
-    private boolean checkNull;
+    private boolean checkNull; // tracked but not used
 
     private int intMaxValue;
 
@@ -92,17 +92,10 @@ public class QuantizeOption implements ICompressOption {
 
     private int tileWidth;
 
-    private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
-
     /** Quantization constant */
     private static final int RANDOM_MULTIPLICATOR = 500;
 
     private static final double DITHER_HALF = 0.5;
-
-    /**
-     * number of reserved values, starting with
-     */
-    private static final long N_RESERVED_VALUES = 10;
 
     /**
      * Dither random seed value
@@ -372,7 +365,7 @@ public class QuantizeOption implements ICompressOption {
      * Checks whether we force the integer quantized level 0 to correspond to a floating-point level 0.0, when using
      * automatic quantization.
      * 
-     * @return <code>true</code> if we want to keep `BZERO` at 0 when quantizing automatically.
+     * @return <code>true</code> if we want to keep `ZZERO` at 0.0 when quantizing automatically.
      * 
      * @see    #setCenterOnZero(boolean)
      */
@@ -459,12 +452,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #getBNull()
      */
     public ICompressOption setBNull(Integer blank) {
-        if (blank != null) {
-            nullValueIndicator = blank;
-            checkNull = true;
-        } else {
-            checkNull = false;
-        }
+        nullValueIndicator = blank;
         return this;
     }
 
@@ -506,9 +494,9 @@ public class QuantizeOption implements ICompressOption {
     }
 
     /**
-     * Enabled or disables keeping `BZERO` at 0 when using automatic quantization.
+     * Enabled or disables keeping `ZZERO` at 0 when using automatic quantization.
      * 
-     * @param  value <code>true</code> to keep `BZERO` at 0 when quantizing automatically, that is keep the integer
+     * @param  value <code>true</code> to keep `ZZERO` at 0 when quantizing automatically, that is keep the integer
      *                   quantized level 0 correspond to floating-point level 0.0. Or, <code>false</code> to let the
      *                   automatic quantization algorithm determine the optimal quantization offset.
      * 
@@ -535,9 +523,6 @@ public class QuantizeOption implements ICompressOption {
     @Deprecated
     public QuantizeOption setCheckNull(boolean value) {
         checkNull = value;
-        if (value && nullValueIndicator == null) {
-            nullValueIndicator = RECOMMENDED_NAN_INDICATOR;
-        }
         return this;
     }
 
@@ -801,7 +786,7 @@ public class QuantizeOption implements ICompressOption {
         if (!Double.isFinite(x)) {
             return false;
         }
-        if (checkNull && x == nullValue) {
+        if (x == nullValue) {
             return false;
         }
         if (isCheckZero() && x == 0.0) {
@@ -872,27 +857,27 @@ public class QuantizeOption implements ICompressOption {
     }
 
     double findBZero() {
-        if (!checkNull && !isCenterOnZero()) {
-            // don't have to check for nulls
-            // return all positive values, if possible since some compression
-            // algorithms either only work for positive integers, or are more
-            // efficient.
-            if ((maxValue - minValue) / bScale < MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
-                // fudge the zero point so it is an integer multiple of bScale
-                // This helps to ensure the same scaling will be performed if
-                // the file undergoes multiple fpack/funpack cycles
-                // AK: round to multiple of bScale.
-                return minValue - Math.IEEEremainder(minValue, bScale);
-            }
-
-            /* center the quantized levels around zero */
-            return (minValue + maxValue) / 2.;
+        if (isCenterOnZero()) {
+            // Force ZZERO to be 0.0, as requested
+            return 0.0;
         }
 
-        // data contains null values or has be forced to center on zero
-        // shift the range to be close to the value used to represent null
-        // values
-        return minValue - bScale * (Integer.MIN_VALUE + N_RESERVED_VALUES + 1);
+        // return all positive values, if possible since some compression
+        // algorithms are more efficient that way.
+        if (Math.ceil((maxValue - minValue) / bScale) < Integer.MAX_VALUE) {
+            // fudge the zero point so it is an integer multiple of bScale
+            // This helps to ensure the same scaling will be performed if
+            // the file undergoes multiple fpack/funpack cycles
+            // AK: round to multiple of bScale.
+            double rem = Math.IEEEremainder(minValue, bScale);
+            if (rem < 0.0) {
+                rem += bScale;
+            }
+            return minValue - rem;
+        }
+
+        // center the quantized levels around zero
+        return (minValue + maxValue) / 2.;
     }
 
     /**

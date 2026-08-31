@@ -22,7 +22,7 @@ Upcoming feature release, likely around 15 September 2026. Many fixes and improv
  - [#891] `QuantizeOption.setDither2()` should not enable/disable zero leveling (it was), or dithering itself. Instead, needs only to enable or disable the special treatment of 0.0 values, as per the FITS specification. Fixed to conform to standard more closely, and updated the Javadoc to reflect its proper usage.
   
  - [#892] When `SUBTRACTIVE_DITHER_2` was used (via `QuantizeOption.setDither()` and `.setDither2()`), the library used the wrong 0.0 value indicator (-2147483646), instead of the value -2147483647 desginated by the standard. Fixed by switching to the standard indicator value. (by @attipaci)
-
+ 
 ### Added
 
  - [#883] Added `TableHDU.getColumnMeta(int, IFitsHeader)` to support standard keyword enums beside the existing string keyword form. (by @attipaci)
@@ -67,7 +67,9 @@ Upcoming feature release, likely around 15 September 2026. Many fixes and improv
  
  - [#885] Speed up compression / decompression by eliminating extraneous arrays / buffers from the processing. (by @attipaci, thanks to @keastrid)
  
- - [#891] `QuantizeProcessor` constructor does not enable centering on zero when dither method 2 (`SUBTRACTIVE_DITHER_2`) is used. It was not particularly troublesome, but it was an unnecessary quirk of the implementation. (by @attipaci)
+ - [#891] `QuantizeProcessor` constructor no longer calls `QuantizeOption.setCenterOnZero(true)` when dither method 2 (`SUBTRACTIVE_DITHER_2`) is used. While the old behavior was not particularly troublesome, but it was an unnecessary quirk of the implementation. (by @attipaci)
+ 
+ - [#891] `QuantizeOption.setCenterOnZero()` did not produce the advertised behavior of keeping ZZERO at 0.0. Changed implementation to match the contract of this method. As such when `ZZERO` is not forced to be 0.0, it will be chosen to try quantize with positive integers only, which can make compression more efficient in some cases. (by @attipaci)
  
  - The latest build and runtime Maven dependencies. (by @attipaci)
  

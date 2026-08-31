@@ -49,14 +49,7 @@ public class Quantize {
 
     private static final double DEFAULT_QUANT_LEVEL = 4.;
 
-    private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
-
     private static final int MINIMUM_PIXEL_WIDTH = 9;
-
-    /**
-     * number of reserved values, starting with
-     */
-    private static final long N_RESERVED_VALUES = 10;
 
     private static final int N4 = 4;
 
@@ -350,7 +343,8 @@ public class Quantize {
      * @param  nxpix (unused) the image width -- the tile width of the initializing option is used instead.
      * @param  nypix (unused) the image hight -- the tile height of the initializing option is used instead.
      * 
-     * @return       true if the quantification was possible
+     * @return       <code>true</code> if the quantification was possible, or else <code>false</code> if the tile cannot
+     *                   be quantized
      */
     @Deprecated
     public boolean quantize(double[] fdata, int nxpix, int nypix) {
@@ -384,6 +378,7 @@ public class Quantize {
         if (nx <= 1L) {
             return false;
         }
+
         if (parameter.getQLevel() >= 0.) {
             /* estimate background noise using MAD pixel differences */
             calculateNoise(fdata);
@@ -419,8 +414,9 @@ public class Quantize {
             /* only need to calculate the min and max values */
             calculateNoise(fdata);
         }
-        /* check that the range of quantized levels is not > range of int */
-        if ((maxValue - minValue) / bScale > 2. * MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
+
+        /* check that the number of quantized levels does not exceed the range of regular integer values */
+        if (Math.ceil((maxValue - minValue) / bScale) >= 2.0 * Integer.MAX_VALUE) {
             return false; /* don't quantize */
         }
 
