@@ -76,8 +76,6 @@ public class QuantizeOption implements ICompressOption {
 
     private Integer nullValueIndicator;
 
-    private boolean checkNull; // tracked but not used
-
     private int intMaxValue;
 
     private int intMinValue;
@@ -384,8 +382,8 @@ public class QuantizeOption implements ICompressOption {
      * @deprecated Use {@link #getBNull()} instead to see if a custom null-value indicator has been configured.
      */
     @Deprecated
-    public boolean isCheckNull() {
-        return checkNull;
+    public final boolean isCheckNull() {
+        return true;
     }
 
     /**
@@ -451,7 +449,7 @@ public class QuantizeOption implements ICompressOption {
      * 
      * @see          #getBNull()
      */
-    public ICompressOption setBNull(Integer blank) {
+    public QuantizeOption setBNull(Integer blank) {
         nullValueIndicator = blank;
         return this;
     }
@@ -510,11 +508,12 @@ public class QuantizeOption implements ICompressOption {
     }
 
     /**
-     * Sets whether we should expect the floating-point data to contain <code>null</code> values (normally NaNs).
+     * Obsolete method that used to set whether we should expect the floating-point data to contain <code>null</code>
+     * values (normally NaNs).
      * 
      * @deprecated       This feature is set automatically as needed.
      * 
-     * @param      value <code>true</code> if the floating-point data may contain <code>null</code> values.
+     * @param      value (unused)
      * 
      * @return           itself
      * 
@@ -522,7 +521,6 @@ public class QuantizeOption implements ICompressOption {
      */
     @Deprecated
     public QuantizeOption setCheckNull(boolean value) {
-        checkNull = value;
         return this;
     }
 
@@ -923,7 +921,7 @@ public class QuantizeOption implements ICompressOption {
 
         private boolean checkZero;
 
-        private double qlevel = Double.NaN;
+        private double qlevel = 4.0;
 
         private long seed = 1L;
     }

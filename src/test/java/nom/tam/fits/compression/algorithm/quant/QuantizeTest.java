@@ -42,6 +42,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
@@ -147,11 +148,12 @@ public class QuantizeTest {
     public void testDifferentfailQuantCases() {
         double[] matrix = initMatrix();
 
+        matrix[0] = Double.NaN;
+
         QuantizeProcessor quantProcessor = new QuantizeProcessor(new QuantizeOption()//
                 .setDither(false)//
                 .setDither2(false)//
                 .setQlevel(4.)//
-                .setCheckNull(false)//
                 .setNullValue(NULL_VALUE)//
                 .setTileWidth(3)//
                 .setTileHeight(2));
@@ -606,10 +608,40 @@ public class QuantizeTest {
         Assertions.assertNull(o.getBNull());
         Assertions.assertEquals(1.0, o.getBScale(), 1e-6);
         Assertions.assertEquals(0.0, o.getBZero(), 1e-6);
+    }
+
+    public void testSetColumnData() throws Exception {
+        QuantizeOption o = new QuantizeOption();
+        QuantizeParameters p = new QuantizeParameters(o);
 
         p.initializeColumns(10);
-        p.setValuesInColumn(0);
-        p.setValueInColumn(0); // deprecated old form...
+
+        BinaryTable tab = new BinaryTable();
+        BinaryTableHDU hdu = tab.toHDU();
+        p.addColumnsToTable(hdu);
+        Assertions.assertEquals(2, tab.getNCols());
+        Assertions.assertNull(hdu.getColumn("ZBLANK")); // no ZBLANK column
+
+        o.setBNull(-999);
+        o.setBScale(2.0);
+        o.setBZero(-1.0);
+        p.setValueInColumn(1); // just calls setValuesInColumn()
+
+        tab = new BinaryTable();
+        hdu = tab.toHDU();
+        p.addColumnsToTable(hdu);
+        Assertions.assertEquals(3, tab.getNCols());
+        Assertions.assertNotNull(hdu.getColumn("ZBLANK")); // has ZBLANK column
+
+        p.getValuesFromColumn(0);
+        Assertions.assertNull(o.getBNull());
+        Assertions.assertEquals(1.0, o.getBScale(), 1e-6);
+        Assertions.assertEquals(0.0, o.getBZero(), 1e-6);
+
+        p.getValuesFromColumn(1);
+        Assertions.assertEquals(-999, o.getBNull());
+        Assertions.assertEquals(2.0, o.getBScale(), 1e-6);
+        Assertions.assertEquals(-1.0, o.getBZero(), 1e-6);
     }
 
     @Test
@@ -693,7 +725,7 @@ public class QuantizeTest {
     public void testSetNullValue() throws Exception {
         QuantizeOption o = new QuantizeOption();
 
-        Assertions.assertFalse(o.isCheckNull());
+        Assertions.assertTrue(o.isCheckNull());
         Assertions.assertNull(o.getBNull());
 
         o.setCheckNull(false);
@@ -763,12 +795,11 @@ public class QuantizeTest {
     }
 
     @Test
-    public void testFindBero() throws Exception {
+    public void testFindBZero() throws Exception {
         QuantizeOption o = new QuantizeOption();
         o.setBScale(1.0);
         o.setBZero(0.0);
 
-        Assertions.assertFalse(o.isCheckNull());
         Assertions.assertFalse(o.isCenterOnZero());
 
         o.setMaxValue(1000.0);
@@ -822,7 +853,7 @@ public class QuantizeTest {
         Assertions.assertEquals(-1.2, o.getBZero());
 
         o.setCheckNull(false);
-        Assertions.assertFalse(o.isCheckNull());
+        Assertions.assertTrue(o.isCheckNull());
         o.setCheckNull(true);
         Assertions.assertTrue(o.isCheckNull());
 
@@ -885,6 +916,10 @@ public class QuantizeTest {
         o.setTileHeight(6);
         Assertions.assertTrue(q.guessQuantization(fdata));
         Assertions.assertTrue(q.guessQuantization(ddata));
+
+        o.setQlevel(-1.0);
+        Assertions.assertTrue(q.guessQuantization(fdata));
+        Assertions.assertTrue(q.guessQuantization(ddata));
     }
 
     @Test
@@ -916,6 +951,13 @@ public class QuantizeTest {
 
         o.setTileWidth(16);
         o.setTileHeight(6);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> q.guessQuantization(ints));
+
+        o.setQlevel(-1.0);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> q.guessQuantization(ints));
+
+        o.setTileWidth(8);
+        o.setTileHeight(1);
         Assertions.assertThrows(IllegalArgumentException.class, () -> q.guessQuantization(ints));
     }
 
