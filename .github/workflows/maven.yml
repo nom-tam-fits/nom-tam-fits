@@ -34,7 +34,7 @@ jobs:
       uses: actions/setup-java@v5
       with:
         java-version: '21'
-        distribution: 'adopt'
+        distribution: 'oracle-openjdk'
         cache: maven
 
     - name: Compile
@@ -60,7 +60,7 @@ jobs:
       uses: actions/setup-java@v5
       with:
         java-version: '21'
-        distribution: 'adopt'
+        distribution: 'oracle-openjdk'
         cache: maven
 
     - name: Build and run tests
@@ -86,7 +86,7 @@ jobs:
       uses: actions/setup-java@v5
       with:
         java-version: '21'
-        distribution: 'adopt'
+        distribution: 'oracle-openjdk'
         cache: maven
 
     - name: Build and run tests
@@ -135,7 +135,7 @@ jobs:
       uses: actions/setup-java@v5
       with:
         java-version: '21'
-        distribution: 'adopt'
+        distribution: 'oracle-openjdk'
         cache: maven
 
     - name: Import GPG key
