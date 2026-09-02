@@ -48,7 +48,7 @@ public class QuantColumnParameterTest {
 
         z.setColumnSize(10);
         Assertions.assertEquals(10, z.getColumnData().length);
-        Assertions.assertTrue(Double.isNaN(z.getColumnData()[0]));
+        Assertions.assertEquals(1.0, z.getColumnData()[0]);
 
         double[] data = new double[] {2.0, 3.0, 4.0};
         z.setColumnData(data);
@@ -58,12 +58,12 @@ public class QuantColumnParameterTest {
         z.setColumnSize(10);
         Assertions.assertEquals(10, z.getColumnData().length);
         Assertions.assertEquals(2.0, z.getColumnData()[0], 1e-12);
-        Assertions.assertTrue(Double.isNaN(z.getColumnData()[3]));
+        Assertions.assertEquals(1.0, z.getColumnData()[3]);
 
         z.createColumnData(10);
         Assertions.assertEquals(10, z.getColumnData().length);
-        Assertions.assertTrue(Double.isNaN(z.getColumnData()[0]));
-        Assertions.assertTrue(Double.isNaN(z.getColumnData()[3]));
+        Assertions.assertEquals(1.0, z.getColumnData()[0]);
+        Assertions.assertEquals(1.0, z.getColumnData()[3]);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class QuantColumnParameterTest {
 
         z.setColumnData(null, 10);
         Assertions.assertEquals(10, z.getColumnData().length);
-        Assertions.assertTrue(Double.isNaN(z.getColumnData()[0]));
+        Assertions.assertEquals(1.0, z.getColumnData()[0]);
 
         double[] data = new double[] {2.0, 3.0, 4.0};
         z.setColumnData(data, 0);
@@ -84,8 +84,8 @@ public class QuantColumnParameterTest {
 
         z.setColumnData(null, 10);
         Assertions.assertEquals(10, z.getColumnData().length);
-        Assertions.assertTrue(Double.isNaN(z.getColumnData()[0]));
-        Assertions.assertTrue(Double.isNaN(z.getColumnData()[3]));
+        Assertions.assertEquals(1.0, z.getColumnData()[0]);
+        Assertions.assertEquals(1.0, z.getColumnData()[3]);
     }
 
     @Test

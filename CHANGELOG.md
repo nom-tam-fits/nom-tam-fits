@@ -5,9 +5,9 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [1.23.0-rc1] - 2026-08-28
+## [Unreleased]
 
-Upcoming feature release, likely around 15 September 2026.
+Upcoming feature release, likely around 15 September 2026. Many fixes and improvements to the handling of integer-compressed floating point data (with or without dithering).
 
 ### Fixed
 
@@ -18,7 +18,9 @@ Upcoming feature release, likely around 15 September 2026.
  - [#885] `QuantizeProcessor` had extraneous rounding by half, and sometimes in the wrong direction. Fixed to conform to the FITS specification more completely. (by @attipaci)
  
  - [#887] Fixed PLIO decompression of 32-bit integer data to restore the upper 2 bytes also.
-
+  
+ - [#892] When `SUBTRACTIVE_DITHER_2` was used (via `QuantizeOption.setDither()` and `.setDither2()`), the library used the wrong 0.0 value indicator (-2147483646), instead of the value -2147483647 desginated by the standard. Fixed by switching to the standard indicator value. (by @attipaci)
+ 
 ### Added
 
  - [#883] Added `TableHDU.getColumnMeta(int, IFitsHeader)` to support standard keyword enums beside the existing string keyword form. (by @attipaci)
@@ -27,12 +29,12 @@ Upcoming feature release, likely around 15 September 2026.
  
  - [#884] Added `CompressParameters.activeHeaderParameters()` / `.activeColumnParameters()` to selectively return only those parameters that are necessary for describing the tile compression. (by @attipaci)
  
- - [#885] Added `QuantizeOption.toInt(double)` and `.toDouble(int)` methods which actually perform the conversion. The `.toDouble()` method now uses `Math.fma()` to match cfistion / funpack more closely (thanks to @keastrid). (by @attipaci)
+ - [#885] Added `QuantizeOption.toInt(double)` and `.toDouble(int)` methods which actually perform the conversion. The `.toDouble()` method now uses `Math.fma()` to match cfistio / funpack more closely (thanks to @keastrid). (by @attipaci)
  
  - [#885] `QuantizeOption.useFMA()` method can select whether `Math.fma()` should be used instead of regular arithmetics (default) when converting quantized integers back to their floating-point values. The use of `fma()` matches cfistio / funpack and astropy more closely, but may be very slow on platforms without hardware support. (by @attipaci, thanks to @keastrid)
  
  - [#893] `setup-java` action Java distribution bumped to openJDK 27.
-
+  
 ### Changed
 
  - [#879] Simplified GZIP2 decompression code. (by @attipaci)
@@ -63,11 +65,21 @@ Upcoming feature release, likely around 15 September 2026.
  
  - [#885] Speed up compression / decompression by eliminating extraneous arrays / buffers from the processing. (by @attipaci, thanks to @keastrid)
  
+ - [#891] `QuantizeOption.setDither2()` should not force setting `ZZERO` to 0.0 (it was), or enable dithering itself. Instead, it needs only to enable or disable the special treatment of 0.0 values, as per the FITS specification. Fixed to conform to standard more closely, and updated the Javadoc to reflect its proper usage. The old behavior was not particularly troublesome, but it was an unnecessary quirk of the implementation. (by @attipaci)
+ 
+ - [#891] `QuantizeOption.setCenterOnZero()` did not produce the advertised behavior of keeping ZZERO at 0.0. Changed implementation to match the contract of this method. As such when `ZZERO` is not forced to be 0.0, it will be chosen to try quantize with positive integers only, which can make compression more efficient in some cases. (by @attipaci)
+ 
+ - [#891] Automatic quantization for the compression of floating-point data as integers (via `Quantize.quantize()`) returned `false` (failure to quantize) in more cases than needed. Quantized representation is not possible only if the quantized range exceeds the 32-bit integer data range available, exclusing the special values). The change improves the compression of data. (by @attipaci) 
+ 
+ - [#891] `TableHDU.getColumn(String)` changed to return `null` when there is no column with the specified name. Previously, it threw an `IndexOutOfBoundsException`. (by @attipaci)
+ 
  - The latest build and runtime Maven dependencies. (by @attipaci)
  
 ### Deprecated
 
  - [#884] Deprecated `ICompressColumnParameter.setColumnData(Object, int)`. Its dual functionality has been split into separate `.setColumnData(Object)`, `createColumnData(int)` and `ensureColumnData(int)` methods. (by @attipaci)
+ 
+ - [#891] Deprecated `QuantizeOption.setCheckZero()` and `.isCheckZero()` methods. They duplicate the `setDither2()` and `isDither2()` methods respectively. Meanwhile, `.setCheckNull()` and `.isCheckNull()` methods are deprecated as checking for NaN values is automatic when integer compressing floating-point values. (by @attipaci)
  
 
 ## [1.22.2] - 2026-08-05

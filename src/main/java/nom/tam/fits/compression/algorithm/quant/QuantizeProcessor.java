@@ -91,11 +91,6 @@ public class QuantizeProcessor {
     public QuantizeProcessor(QuantizeOption quantizeOption, ICompressor<IntBuffer> compressor) {
         this.quantizeOption = quantizeOption;
         this.postCompressor = compressor;
-
-        if (quantizeOption.isDither2()) {
-            quantizeOption.setCenterOnZero(true);
-            quantizeOption.setCheckZero(true);
-        }
         quantize = new Quantize(quantizeOption);
     }
 
