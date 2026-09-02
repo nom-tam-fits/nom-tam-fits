@@ -68,32 +68,28 @@ public final class ZBlankColumnParameter extends CompressColumnParameter<int[], 
     }
 
     /**
-     * Checks if any of the column entries differs from the specified 'standard' value.
+     * Checks if the column entries are all the same.
      * 
-     * @param  value the 'standard' value
+     * @return <code>true</code> if the entries in the column are all identical. Otherwise <code>false</code> if the
+     *             entries vary.
      * 
-     * @return       <code>true</code> if any column entry differs from the specified value. Otherwise
-     *                   <code>false</code>.
-     * 
-     * @since        1.23
+     * @since  1.23
      */
-    boolean differsFrom(Integer value) {
+    boolean isUniform() {
         int[] col = getColumnData();
         if (col != null) {
-            if (value == null) {
-                return true;
-            }
+            int value = col[0];
             for (int entry : col) {
                 if (entry != value) {
-                    return true;
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
     }
 
     @Override
     protected Integer getInitValue() {
-        return Integer.MIN_VALUE;
+        return QuantizeOption.RECOMMENDED_NAN_INDICATOR;
     }
 }

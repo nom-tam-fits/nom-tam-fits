@@ -610,6 +610,7 @@ public class QuantizeTest {
         Assertions.assertEquals(0.0, o.getBZero(), 1e-6);
     }
 
+    @Test
     public void testSetColumnData() throws Exception {
         QuantizeOption o = new QuantizeOption();
         QuantizeParameters p = new QuantizeParameters(o);
@@ -634,7 +635,7 @@ public class QuantizeTest {
         Assertions.assertNotNull(hdu.getColumn("ZBLANK")); // has ZBLANK column
 
         p.getValuesFromColumn(0);
-        Assertions.assertNull(o.getBNull());
+        Assertions.assertEquals(Integer.MIN_VALUE, o.getBNull());
         Assertions.assertEquals(1.0, o.getBScale(), 1e-6);
         Assertions.assertEquals(0.0, o.getBZero(), 1e-6);
 

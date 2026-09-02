@@ -93,18 +93,18 @@ public class QuantizeParameters extends CompressParameters {
 
     @Override
     protected ICompressColumnParameter[] activeColumnParameters() {
-        if (blankColumn.differsFrom(getCurrentZBlank())) {
-            // We have per-tile blanking values
-            return new ICompressColumnParameter[] {blankColumn, zero, scale};
+        if (blankColumn.isUniform()) {
+            return new ICompressColumnParameter[] {zero, scale};
         }
-        return new ICompressColumnParameter[] {zero, scale};
+        // We have per-tile blanking values
+        return new ICompressColumnParameter[] {blankColumn, zero, scale};
     }
 
     @Override
     protected ICompressHeaderParameter[] activeHeaderParameters() {
         Integer zblank = getCurrentZBlank();
 
-        if (zblank == null || blankColumn.differsFrom(zblank)) {
+        if (zblank == null || !blankColumn.isUniform()) {
             // We have per-tile blanking values
             return new ICompressHeaderParameter[] {quantz, seed};
         }

@@ -51,7 +51,7 @@ public class QuantizeOption implements ICompressOption {
      * The integer value recommeded by the FITS standard to represent NaN floating-point values in integer compressed
      * data.
      */
-    private static final int RECOMMENDED_NAN_INDICATOR = Integer.MIN_VALUE;
+    public static final int RECOMMENDED_NAN_INDICATOR = Integer.MIN_VALUE;
 
     /**
      * value used to represent zero-valued pixels when dither method 2 is used.
@@ -374,8 +374,7 @@ public class QuantizeOption implements ICompressOption {
     /**
      * Whether the floating-point data may contain <code>null</code> values (normally NaNs).
      * 
-     * @return     <code>true</code> if we should expect <code>null</code> in the floating-point data. This is
-     *                 automatically <code>true</code> if {@link #setBNull(Integer)} was called with a non-null value.
+     * @return     <code>true</code> (always since 1.23).
      * 
      * @see        #setBNull(Integer)
      * 
@@ -509,11 +508,11 @@ public class QuantizeOption implements ICompressOption {
 
     /**
      * Obsolete method that used to set whether we should expect the floating-point data to contain <code>null</code>
-     * values (normally NaNs).
+     * values (NaNs).
      * 
      * @deprecated       This feature is set automatically as needed.
      * 
-     * @param      value (unused)
+     * @param      value (unused since 1.23)
      * 
      * @return           itself
      * 

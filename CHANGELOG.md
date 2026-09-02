@@ -18,8 +18,6 @@ Upcoming feature release, likely around 15 September 2026. Many fixes and improv
  - [#885] `QuantizeProcessor` had extraneous rounding by half, and sometimes in the wrong direction. Fixed to conform to the FITS specification more completely. (by @attipaci)
  
  - [#887] Fixed PLIO decompression of 32-bit integer data to restore the upper 2 bytes also.
- 
- - [#891] `QuantizeOption.setDither2()` should not enable/disable zero leveling (it was), or dithering itself. Instead, needs only to enable or disable the special treatment of 0.0 values, as per the FITS specification. Fixed to conform to standard more closely, and updated the Javadoc to reflect its proper usage.
   
  - [#892] When `SUBTRACTIVE_DITHER_2` was used (via `QuantizeOption.setDither()` and `.setDither2()`), the library used the wrong 0.0 value indicator (-2147483646), instead of the value -2147483647 desginated by the standard. Fixed by switching to the standard indicator value. (by @attipaci)
  
@@ -31,7 +29,7 @@ Upcoming feature release, likely around 15 September 2026. Many fixes and improv
  
  - [#884] Added `CompressParameters.activeHeaderParameters()` / `.activeColumnParameters()` to selectively return only those parameters that are necessary for describing the tile compression. (by @attipaci)
  
- - [#885] Added `QuantizeOption.toInt(double)` and `.toDouble(int)` methods which actually perform the conversion. The `.toDouble()` method now uses `Math.fma()` to match cfistion / funpack more closely (thanks to @keastrid). (by @attipaci)
+ - [#885] Added `QuantizeOption.toInt(double)` and `.toDouble(int)` methods which actually perform the conversion. The `.toDouble()` method now uses `Math.fma()` to match cfistio / funpack more closely (thanks to @keastrid). (by @attipaci)
  
  - [#885] `QuantizeOption.useFMA()` method can select whether `Math.fma()` should be used instead of regular arithmetics (default) when converting quantized integers back to their floating-point values. The use of `fma()` matches cfistio / funpack and astropy more closely, but may be very slow on platforms without hardware support. (by @attipaci, thanks to @keastrid)
  
@@ -67,11 +65,13 @@ Upcoming feature release, likely around 15 September 2026. Many fixes and improv
  
  - [#885] Speed up compression / decompression by eliminating extraneous arrays / buffers from the processing. (by @attipaci, thanks to @keastrid)
  
- - [#891] `QuantizeProcessor` constructor no longer calls `QuantizeOption.setCenterOnZero(true)` when dither method 2 (`SUBTRACTIVE_DITHER_2`) is used. While the old behavior was not particularly troublesome, but it was an unnecessary quirk of the implementation. (by @attipaci)
+ - [#891] `QuantizeOption.setDither2()` should not force setting `ZZERO` to 0.0 (it was), or enable dithering itself. Instead, it needs only to enable or disable the special treatment of 0.0 values, as per the FITS specification. Fixed to conform to standard more closely, and updated the Javadoc to reflect its proper usage. The old behavior was not particularly troublesome, but it was an unnecessary quirk of the implementation. (by @attipaci)
  
  - [#891] `QuantizeOption.setCenterOnZero()` did not produce the advertised behavior of keeping ZZERO at 0.0. Changed implementation to match the contract of this method. As such when `ZZERO` is not forced to be 0.0, it will be chosen to try quantize with positive integers only, which can make compression more efficient in some cases. (by @attipaci)
  
  - [#891] Automatic quantization for the compression of floating-point data as integers (via `Quantize.quantize()`) returned `false` (failure to quantize) in more cases than needed. Quantized representation is not possible only if the quantized range exceeds the 32-bit integer data range available, exclusing the special values). The change improves the compression of data. (by @attipaci) 
+ 
+ - [#891] `TableHDU.getColumn(String)` changed to return `null` when there is no column with the specified name. Previously, it threw an `IndexOutOfBoundsException`. (by @attipaci)
  
  - The latest build and runtime Maven dependencies. (by @attipaci)
  
