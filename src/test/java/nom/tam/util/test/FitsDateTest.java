@@ -94,6 +94,13 @@ public class FitsDateTest {
     }
 
     @Test
+    public void yearZeroPadding() throws FitsException {
+        Assertions.assertEquals("0999-07-25", testArg("0999-07-25"));
+        Assertions.assertEquals("0099-07-25", testArg("0099-07-25"));
+        Assertions.assertEquals("0009-07-25", testArg("0009-07-25"));
+    }
+
+    @Test
     public void testNow() {
         String now = FitsDate.getFitsDateString();
         String now2 = FitsDate.getFitsDateString(new Date());

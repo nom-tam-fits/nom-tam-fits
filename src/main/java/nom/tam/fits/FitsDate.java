@@ -48,6 +48,8 @@ public class FitsDate implements Comparable<FitsDate> {
      * logger to log to.
      */
 
+    private static final int FIRST_FOUR_CHARACTER_VALUE = 1000;
+
     private static final int FIRST_THREE_CHARACTER_VALUE = 100;
 
     private static final int FIRST_TWO_CHARACTER_VALUE = 10;
@@ -263,7 +265,7 @@ public class FitsDate implements Comparable<FitsDate> {
             return "";
         }
         StringBuilder buf = new StringBuilder(FitsDate.FITS_DATE_STRING_SIZE);
-        buf.append(year);
+        appendFourDigitValue(buf, year);
         buf.append('-');
         appendTwoDigitValue(buf, month);
         buf.append('-');
@@ -334,6 +336,13 @@ public class FitsDate implements Comparable<FitsDate> {
         }
 
         return Integer.compare(millisecond, fitsDate.millisecond);
+    }
+
+    private void appendFourDigitValue(StringBuilder buf, int value) {
+        if (value < FitsDate.FIRST_FOUR_CHARACTER_VALUE) {
+            buf.append('0');
+        }
+        appendThreeDigitValue(buf, value);
     }
 
     private void appendThreeDigitValue(StringBuilder buf, int value) {
