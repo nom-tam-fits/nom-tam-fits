@@ -330,7 +330,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *                           keyword.
      * 
      * @return               an array of primitives (for scalar columns), or else an <code>Object[]</code> array, or
-     *                           possibly <code>null</code>
+     *                           <code>null</code> if there is no column by that name.
      * 
      * @throws FitsException if the table could not be accessed
      *
@@ -340,7 +340,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @see                  #getNCols()
      */
     public Object getColumn(String colName) throws FitsException {
-        return getColumn(findColumn(colName));
+        int col = findColumn(colName);
+        return col < 0 ? null : getColumn(col);
     }
 
     /**

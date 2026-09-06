@@ -58,6 +58,6 @@ final class ZScaleColumnParameter extends CompressColumnParameter<double[], Quan
 
     @Override
     protected Double getInitValue() {
-        return Double.NaN;
+        return 1.0;
     }
 }
