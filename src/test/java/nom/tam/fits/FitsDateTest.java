@@ -202,4 +202,16 @@ public class FitsDateTest {
         Assertions.assertEquals(expected, fitsDate.toString());
     }
 
+    @Test
+    public void testNoMillis() throws Exception {
+        FitsDate date = new FitsDate("2026-09-07T12:11:49.");
+        Assertions.assertEquals("2026-09-07T12:11:49", date.toString());
+    }
+
+    @Test
+    public void testRoundToNextSecond() throws Exception {
+        FitsDate date = new FitsDate("2026-09-07T12:11:49.9995");
+        Assertions.assertEquals("2026-09-07T12:11:50.000", date.toString());
+    }
+
 }

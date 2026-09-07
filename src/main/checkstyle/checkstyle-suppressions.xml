@@ -13,4 +13,6 @@
 	<suppress checks="MethodName" files="nom.tam.fits.FitsFactory" />
 	<!-- we want explicit indexed array access over 9 elements -->
 	<suppress checks="MagicNumber" files="nom.tam.fits.compression.algorithm.quant.Quantize" />
+	<!-- Let's not go crazy in FitsDate -->
+	<suppress checks="MagicNumber" files="nom.tam.fits.FitsDate" />
 </suppressions>
