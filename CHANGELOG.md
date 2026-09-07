@@ -5,7 +5,7 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [1.23.0-rc2] - 2026-09-07
+## [Unreleased]
 
 Upcoming feature release, likely around 15 September 2026. Many fixes and improvements to the handling of integer-compressed floating point data (with or without dithering).
 
@@ -74,6 +74,8 @@ Upcoming feature release, likely around 15 September 2026. Many fixes and improv
  - [#891] `TableHDU.getColumn(String)` changed to return `null` when there is no column with the specified name. Previously, it threw an `IndexOutOfBoundsException`. (by @attipaci)
  
  - [#894] `FitsDate` formatting and parsing dates that are not 4-digit AD dates (i.e. outside of years 1000 through 9999). Also, add support for the signed 5-digit date format described in Section 9.1.1 of the FITS Standard for dates &lt;0 or &gt;=10000. (by @traitimtrongvag)
+ 
+ - [#895] Simplify / consolidate `FitsDate`, and relax checkstyle on it. (by @attipaci)
  
  - The latest build and runtime Maven dependencies. (by @attipaci)
  
