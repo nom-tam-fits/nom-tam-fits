@@ -49,7 +49,7 @@ Upcoming feature release, likely around 15 September 2026. Many fixes and improv
  
  - [#884] Quantized compression to either add `ZBLANK` header value or per-tile column data, but not both, and possibly neither -- as necessary. (by @attipaci)
 
- - [#885] Quantization in HDU compression has been overhauled, and much simplified. Many strenuous internal classes have been eliminated in favor of simpler, easier to follow, logic. (by @attipaci)
+ - [#885] Quantization in HDU compression has been overhauled, and much simplified. Many strenuous internal classes have been eliminated in favor of simpler, easier to follow, logic. (by @attipaci, thanks to @bogdanni)
   
  - [#885] `QuantizeProcessor` integer min/max ranges to use floor / ceil to accommodate dither. (by @attipaci)
  
