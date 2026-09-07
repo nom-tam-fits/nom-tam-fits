@@ -132,6 +132,26 @@ public class FitsDateTest {
         Assertions.assertEquals("1979-09-20", testArg("20/09/79"));
     }
 
+    @Test
+    public void extendedYearGood() {
+        Assertions.assertEquals("0000-07-25", testArg("0000-07-25"));
+        Assertions.assertEquals("+10000-07-25", testArg("+10000-07-25"));
+        Assertions.assertEquals("+99999-07-25", testArg("+99999-07-25"));
+        Assertions.assertEquals("-00001-07-25", testArg("-00001-07-25"));
+        Assertions.assertEquals("-00999-07-25", testArg("-00999-07-25"));
+        Assertions.assertEquals("-09999-07-25", testArg("-09999-07-25"));
+        Assertions.assertEquals("-99999-07-25", testArg("-99999-07-25"));
+    }
+
+    @Test
+    public void extendedYearBad() {
+        Assertions.assertEquals("EX", testArg("+100000-07-25"));
+        Assertions.assertEquals("EX", testArg("-100000-07-25"));
+        Assertions.assertEquals("EX", testArg("+00001-07-25"));
+        Assertions.assertEquals("EX", testArg("+09999-07-25"));
+        Assertions.assertEquals("EX", testArg("-00000-07-25"));
+    }
+
     private String testArg(String arg) {
         try {
             return new FitsDate(arg).toString();
