@@ -164,8 +164,6 @@ public class ReadWriteProvidedCompressedImageTest {
             void assertCompressedToUncompressedImage(String fileName, String unCompfileName, Class<T> clazz,
                     IHDUAsserter<T> reader) throws Exception {
 
-        // System.out.println(" checking file: " + fileName);
-
         try (Fits f = new Fits(fileName); Fits unFits = new Fits(unCompfileName)) {
             ImageHDU hdu = readHDU(unFits, ImageHDU.class);
             unFits.deleteHDU(0);
@@ -176,8 +174,14 @@ public class ReadWriteProvidedCompressedImageTest {
                 T compressedData = (T) uncompHdu.asImageHDU().getData().getData();
                 T orgData = (T) hdu.getData().getData();
 
+                String name = fileName;
+                int iSep = name.lastIndexOf(File.separator);
+                if (iSep >= 0) {
+                    name = name.substring(iSep + 1);
+                }
+
                 // show travis something is going on
-                System.out.println("Asserting image data! " + (assertionCounter++));
+                System.out.println("Checking compressed image " + (assertionCounter++) + ": " + name);
                 reader.assertData(orgData, compressedData);
 
                 hdu = readHDU(unFits, ImageHDU.class);
