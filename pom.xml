@@ -85,25 +85,14 @@
         <picUrl>https://www.gravatar.com/avatar/6f82a608d349cc24f05604242422b1b8.png</picUrl>
       </properties>
     </developer>
-    
   </developers>
   
   <contributors>
     <contributor>
-      <name>Kevin Eastridge</name>
+      <name>Phuc An</name>
     </contributor>
     <contributor>
-      <name>William H. Cleveland Jr.</name>
-      <email>whclevelandjr [at] gmail [dot] com</email>
-    </contributor>
-    <contributor>
-      <name>David Glowacki</name>
-    </contributor>
-    <contributor>
-      <name>R.J. Mathar</name>
-    </contributor>
-    <contributor>
-      <name>Laurent Michel</name>
+      <name>Jorgo Baker</name>
     </contributor>
     <contributor>
       <name>Guillaume Belanger</name>
@@ -112,32 +101,45 @@
       <name>Laurent Bourges</name>
     </contributor>
     <contributor>
+      <name>William H. Cleveland Jr.</name>
+      <email>whclevelandjr [at] gmail [dot] com</email>
+    </contributor>
+    <contributor>
+      <name>Jonathan Cook</name>
+    </contributor>
+    <contributor>
       <name>Rose Early</name>
     </contributor>
     <contributor>
-      <name>Jorgo Baker</name>
+      <name>Kevin Eastridge</name>
     </contributor>
     <contributor>
       <name>Vincenzo Forchi</name>
       <email>vforchi [at] eso [dot] org</email>
     </contributor>
     <contributor>
-      <name>J.C. Segovia</name>
+      <name>David Glowacki</name>
     </contributor>
     <contributor>
       <name>Booth Hartley</name>
     </contributor>
     <contributor>
-      <name>Jason Weiss</name>
+      <name>R.J. Mathar</name>
+    </contributor>
+    <contributor>
+      <name>Laurent Michel</name>
+    </contributor>
+    <contributor>
+      <name>John Murphy</name>
+    </contributor>
+    <contributor>
+      <name>J.C. Segovia</name>
     </contributor>
     <contributor>
       <name>Martin Vrábel</name>
     </contributor>
     <contributor>
-      <name>Jonathan Cook</name>
-    </contributor>
-    <contributor>
-      <name>John Murphy</name>
+      <name>Jason Weiss</name>
     </contributor>
   </contributors>
   

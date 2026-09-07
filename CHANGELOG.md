@@ -73,6 +73,8 @@ Upcoming feature release, likely around 15 September 2026. Many fixes and improv
  
  - [#891] `TableHDU.getColumn(String)` changed to return `null` when there is no column with the specified name. Previously, it threw an `IndexOutOfBoundsException`. (by @attipaci)
  
+ - [#894] `FitsDate` fix formatting and parsing dates that are not 4-digit AD dates. Also add support for the signed 5-digit date format described in Section 9.1.1 of the FITS Standard for dates &lt;0 or &gt;=10000. (by @traitimtrongvag)
+ 
  - The latest build and runtime Maven dependencies. (by @attipaci)
  
 ### Deprecated
