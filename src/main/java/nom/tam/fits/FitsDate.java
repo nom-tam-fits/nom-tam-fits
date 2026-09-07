@@ -230,7 +230,7 @@ public class FitsDate implements Comparable<FitsDate> {
         Matcher match = NORMAL_REGEX.matcher(dStr);
         if (match.matches()) {
             // The regex match ensures we can never get a NumberFormatException here...
-            year = parseYear(match.group(NEW_FORMAT_YEAR_GROUP));
+            year = Integer.parseInt(match.group(NEW_FORMAT_YEAR_GROUP));
             month = getInt(match, NEW_FORMAT_MONTH_GROUP);
             mday = getInt(match, NEW_FORMAT_DAY_OF_MONTH_GROUP);
             hour = getInt(match, NEW_FORMAT_HOUR_GROUP);
@@ -249,19 +249,6 @@ public class FitsDate implements Comparable<FitsDate> {
             year = getInt(match, OLD_FORMAT_YEAR_GROUP) + YEAR_OFFSET;
             month = getInt(match, OLD_FORMAT_MONTH_GROUP);
             mday = getInt(match, OLD_FORMAT_DAY_OF_MONTH_GROUP);
-        }
-    }
-
-    /**
-     * Parses the signed/unsigned FITS year token matched by {@link #NORMAL_REGEX}.
-     *
-     * @throws FitsException if the token is not a valid integer.
-     */
-    private static int parseYear(String yearToken) throws FitsException {
-        try {
-            return Integer.parseInt(yearToken);
-        } catch (NumberFormatException e) {
-            throw new FitsException("Invalid year specification: " + yearToken, e);
         }
     }
 
