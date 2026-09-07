@@ -147,9 +147,13 @@ public class FitsDateTest {
     public void extendedYearBad() {
         Assertions.assertEquals("EX", testArg("+100000-07-25"));
         Assertions.assertEquals("EX", testArg("-100000-07-25"));
-        Assertions.assertEquals("EX", testArg("+00001-07-25"));
-        Assertions.assertEquals("EX", testArg("+09999-07-25"));
-        Assertions.assertEquals("EX", testArg("-00000-07-25"));
+    }
+
+    @Test
+    public void extendedYearNonCanonical() {
+        Assertions.assertEquals("0001-07-25", testArg("+00001-07-25"));
+        Assertions.assertEquals("9999-07-25", testArg("+09999-07-25"));
+        Assertions.assertEquals("0000-07-25", testArg("-00000-07-25"));
     }
 
     private String testArg(String arg) {

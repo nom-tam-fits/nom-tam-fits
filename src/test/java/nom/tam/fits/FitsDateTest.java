@@ -109,9 +109,13 @@ public class FitsDateTest {
     public void testInvalidExtendedYearParsing() {
         Assertions.assertThrows(FitsException.class, () -> new FitsDate("+100000-01-01"));
         Assertions.assertThrows(FitsException.class, () -> new FitsDate("-100000-01-01"));
-        Assertions.assertThrows(FitsException.class, () -> new FitsDate("+00001-01-01"));
-        Assertions.assertThrows(FitsException.class, () -> new FitsDate("+09999-01-01"));
-        Assertions.assertThrows(FitsException.class, () -> new FitsDate("-00000-01-01"));
+    }
+
+    @Test
+    public void testNonCanonicalExtendedYearParsing() throws Exception {
+        Assertions.assertEquals("0001-01-01", new FitsDate("+00001-01-01").toString());
+        Assertions.assertEquals("9999-01-01", new FitsDate("+09999-01-01").toString());
+        Assertions.assertEquals("0000-01-01", new FitsDate("-00000-01-01").toString());
     }
 
     @Test

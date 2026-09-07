@@ -152,7 +152,7 @@ public class FitsDate implements Comparable<FitsDate> {
 
         int fitsYear = toFitsYear(cal.get(Calendar.ERA), cal.get(Calendar.YEAR));
 
-        StringBuilder fitsDate = new StringBuilder(FitsDate.FITS_DATE_STRING_SIZE);
+        StringBuilder fitsDate = new StringBuilder(FITS_DATE_STRING_SIZE);
         appendYear(fitsDate, fitsYear);
         fitsDate.append('-');
         appendTwoDigitValue(fitsDate, cal.get(Calendar.MONTH) + 1);
@@ -188,17 +188,13 @@ public class FitsDate implements Comparable<FitsDate> {
      * @throws FitsException if the year is outside of the range that FITS can represent.
      */
     private static void appendYear(StringBuilder buf, int year) {
-        if (year < -FitsDate.MAX_FITS_YEAR || year > FitsDate.MAX_FITS_YEAR) {
+        if (year < -MAX_FITS_YEAR || year > MAX_FITS_YEAR) {
             throw new FitsException(
-                    "Year " + year + " is outside of the range [-" + FitsDate.MAX_FITS_YEAR + ":" + FitsDate.MAX_FITS_YEAR
+                    "Year " + year + " is outside of the range [-" + MAX_FITS_YEAR + ":" + MAX_FITS_YEAR
                             + "] that a FITS date can represent");
         }
-        if (year > FitsDate.MAX_FOUR_DIGIT_YEAR) {
-            buf.append('+');
+        if (year < 0 || year > MAX_FOUR_DIGIT_YEAR) {
             appendFiveDigitValue(buf, year);
-        } else if (year < 0) {
-            buf.append('-');
-            appendFiveDigitValue(buf, -year);
         } else {
             appendFourDigitValue(buf, year);
         }
@@ -231,53 +227,42 @@ public class FitsDate implements Comparable<FitsDate> {
             return;
         }
 
-        Matcher match = FitsDate.NORMAL_REGEX.matcher(dStr);
+        Matcher match = NORMAL_REGEX.matcher(dStr);
         if (match.matches()) {
             // The regex match ensures we can never get a NumberFormatException here...
-            year = parseYear(match.group(FitsDate.NEW_FORMAT_YEAR_GROUP));
-            month = getInt(match, FitsDate.NEW_FORMAT_MONTH_GROUP);
-            mday = getInt(match, FitsDate.NEW_FORMAT_DAY_OF_MONTH_GROUP);
-            hour = getInt(match, FitsDate.NEW_FORMAT_HOUR_GROUP);
-            minute = getInt(match, FitsDate.NEW_FORMAT_MINUTE_GROUP);
-            second = getInt(match, FitsDate.NEW_FORMAT_SECOND_GROUP);
-            millisecond = getMilliseconds(match, FitsDate.NEW_FORMAT_MILLISECOND_GROUP);
+            year = parseYear(match.group(NEW_FORMAT_YEAR_GROUP));
+            month = getInt(match, NEW_FORMAT_MONTH_GROUP);
+            mday = getInt(match, NEW_FORMAT_DAY_OF_MONTH_GROUP);
+            hour = getInt(match, NEW_FORMAT_HOUR_GROUP);
+            minute = getInt(match, NEW_FORMAT_MINUTE_GROUP);
+            second = getInt(match, NEW_FORMAT_SECOND_GROUP);
+            millisecond = getMilliseconds(match, NEW_FORMAT_MILLISECOND_GROUP);
         } else {
             // The regex match ensures we can never get a NumberFormatException here...
-            match = FitsDate.OLD_REGEX.matcher(dStr);
+            match = OLD_REGEX.matcher(dStr);
             if (!match.matches()) {
                 if (dStr.trim().isEmpty()) {
                     return;
                 }
                 throw new FitsException("Bad FITS date string \"" + dStr + '"');
             }
-            year = getInt(match, FitsDate.OLD_FORMAT_YEAR_GROUP) + FitsDate.YEAR_OFFSET;
-            month = getInt(match, FitsDate.OLD_FORMAT_MONTH_GROUP);
-            mday = getInt(match, FitsDate.OLD_FORMAT_DAY_OF_MONTH_GROUP);
+            year = getInt(match, OLD_FORMAT_YEAR_GROUP) + YEAR_OFFSET;
+            month = getInt(match, OLD_FORMAT_MONTH_GROUP);
+            mday = getInt(match, OLD_FORMAT_DAY_OF_MONTH_GROUP);
         }
     }
 
     /**
      * Parses the signed/unsigned FITS year token matched by {@link #NORMAL_REGEX}.
      *
-     * @throws FitsException if the extended year token is out of range for its sign (e.g. <code>+00001</code> or
-     *                           <code>-00000</code>).
+     * @throws FitsException if the token is not a valid integer.
      */
     private static int parseYear(String yearToken) throws FitsException {
-        char sign = yearToken.charAt(0);
-        if (sign == '+') {
-            int value = Integer.parseInt(yearToken.substring(1));
-            if (value <= FitsDate.MAX_FOUR_DIGIT_YEAR || value > FitsDate.MAX_FITS_YEAR) {
-                throw new FitsException("Bad FITS extended year \"" + yearToken + '"');
-            }
-            return value;
-        } else if (sign == '-') {
-            int value = Integer.parseInt(yearToken.substring(1));
-            if (value <= 0 || value > FitsDate.MAX_FITS_YEAR) {
-                throw new FitsException("Bad FITS extended year \"" + yearToken + '"');
-            }
-            return -value;
+        try {
+            return Integer.parseInt(yearToken);
+        } catch (NumberFormatException e) {
+            throw new FitsException("Invalid year specification: " + yearToken, e);
         }
-        return Integer.parseInt(yearToken);
     }
 
     private static int getInt(Matcher match, int groupIndex) throws NumberFormatException {
@@ -410,28 +395,34 @@ public class FitsDate implements Comparable<FitsDate> {
     }
 
     private static void appendFourDigitValue(StringBuilder buf, int value) {
-        if (value < FitsDate.FIRST_FOUR_CHARACTER_VALUE) {
+        if (value < FIRST_FOUR_CHARACTER_VALUE) {
             buf.append('0');
         }
         appendThreeDigitValue(buf, value);
     }
 
     private static void appendFiveDigitValue(StringBuilder buf, int value) {
-        if (value < FitsDate.FIRST_FIVE_CHARACTER_VALUE) {
+        if (value < 0) {
+            buf.append('-');
+            value = -value;
+        } else {
+            buf.append('+');
+        }
+        if (value < FIRST_FIVE_CHARACTER_VALUE) {
             buf.append('0');
         }
         appendFourDigitValue(buf, value);
     }
 
     private static void appendThreeDigitValue(StringBuilder buf, int value) {
-        if (value < FitsDate.FIRST_THREE_CHARACTER_VALUE) {
+        if (value < FIRST_THREE_CHARACTER_VALUE) {
             buf.append('0');
         }
         appendTwoDigitValue(buf, value);
     }
 
     private static void appendTwoDigitValue(StringBuilder buf, int value) {
-        if (value < FitsDate.FIRST_TWO_CHARACTER_VALUE) {
+        if (value < FIRST_TWO_CHARACTER_VALUE) {
             buf.append('0');
         }
         buf.append(value);
