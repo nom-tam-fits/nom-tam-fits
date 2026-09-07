@@ -31,9 +31,9 @@ package nom.tam.fits;
  * #L%
  */
 
-import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,11 +48,26 @@ public class FitsDate implements Comparable<FitsDate> {
      * logger to log to.
      */
 
+    private static final int FIRST_FOUR_CHARACTER_VALUE = 1000;
+
     private static final int FIRST_THREE_CHARACTER_VALUE = 100;
 
     private static final int FIRST_TWO_CHARACTER_VALUE = 10;
 
-    private static final int FITS_DATE_STRING_SIZE = 23;
+    private static final int FIRST_FIVE_CHARACTER_VALUE = 10000;
+
+    /**
+     * The largest (and, negated, the smallest) year value permitted by FITS Section 9.1.1 ("[{+,-}C]CCYY" extended
+     * to 5 digits).
+     */
+    private static final int MAX_FITS_YEAR = 99999;
+
+    /**
+     * The largest year that is represented with an unsigned, exactly 4-digit value.
+     */
+    private static final int MAX_FOUR_DIGIT_YEAR = 9999;
+
+    private static final int FITS_DATE_STRING_SIZE = 25;
 
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
@@ -71,7 +86,7 @@ public class FitsDate implements Comparable<FitsDate> {
     private static final int NEW_FORMAT_YEAR_GROUP = 2;
 
     private static final Pattern NORMAL_REGEX = Pattern
-            .compile("\\s*((\\d\\d\\d\\d)-(\\d\\d)-(\\d\\d))(T(\\d\\d):(\\d\\d):(\\d\\d)(\\.(\\d+))?)?\\s*");
+            .compile("\\s*((\\d{4}|[+-]\\d{5})-(\\d\\d)-(\\d\\d))(T(\\d\\d):(\\d\\d):(\\d\\d)(\\.(\\d+))?)?\\s*");
 
     private static final int OLD_FORMAT_DAY_OF_MONTH_GROUP = 1;
 
@@ -114,40 +129,75 @@ public class FitsDate implements Comparable<FitsDate> {
 
     /**
      * Returns the FITS date string, with or without the time component, for a specific date and time.
+     * <p>
+     * Years are formatted per FITS Section 9.1.1 ("[{+,-}C]CCYY"): <code>0</code>-<code>9999</code> as an unsigned
+     * 4-digit value, <code>10000</code>-<code>99999</code> as <code>+</code> followed by 5 digits, and
+     * <code>-1</code>-<code>-99999</code> as <code>-</code> followed by 5 digits.
+     * </p>
      * 
      * @return           a created FITS format date string. Note that the date is not rounded.
      *
      * @param  epoch     The epoch to be converted to FITS format.
      * @param  timeOfDay Whether the time of day information shouldd be included
      * 
+     * @throws FitsException if the year of <code>epoch</code> is outside of the range <code>-99999</code> to
+     *                           <code>99999</code> that a FITS date can represent.
+     *
      * @see              #getFitsDateString(Date)
      * @see              #getFitsDateString()
      */
     public static String getFitsDateString(Date epoch, boolean timeOfDay) {
-        Calendar cal = Calendar.getInstance(UTC);
+        Calendar cal = new GregorianCalendar(UTC);
         cal.setTime(epoch);
-        StringBuilder fitsDate = new StringBuilder();
-        DecimalFormat df = new DecimalFormat("0000");
-        fitsDate.append(df.format(cal.get(Calendar.YEAR)));
-        fitsDate.append("-");
-        df = new DecimalFormat("00");
 
-        fitsDate.append(df.format(cal.get(Calendar.MONTH) + 1));
-        fitsDate.append("-");
-        fitsDate.append(df.format(cal.get(Calendar.DAY_OF_MONTH)));
+        int fitsYear = toFitsYear(cal.get(Calendar.ERA), cal.get(Calendar.YEAR));
+
+        StringBuilder fitsDate = new StringBuilder(FITS_DATE_STRING_SIZE);
+        appendYear(fitsDate, fitsYear);
+        fitsDate.append('-');
+        appendTwoDigitValue(fitsDate, cal.get(Calendar.MONTH) + 1);
+        fitsDate.append('-');
+        appendTwoDigitValue(fitsDate, cal.get(Calendar.DAY_OF_MONTH));
 
         if (timeOfDay) {
-            fitsDate.append("T");
-            fitsDate.append(df.format(cal.get(Calendar.HOUR_OF_DAY)));
-            fitsDate.append(":");
-            fitsDate.append(df.format(cal.get(Calendar.MINUTE)));
-            fitsDate.append(":");
-            fitsDate.append(df.format(cal.get(Calendar.SECOND)));
-            fitsDate.append(".");
-            df = new DecimalFormat("000");
-            fitsDate.append(df.format(cal.get(Calendar.MILLISECOND)));
+            fitsDate.append('T');
+            appendTwoDigitValue(fitsDate, cal.get(Calendar.HOUR_OF_DAY));
+            fitsDate.append(':');
+            appendTwoDigitValue(fitsDate, cal.get(Calendar.MINUTE));
+            fitsDate.append(':');
+            appendTwoDigitValue(fitsDate, cal.get(Calendar.SECOND));
+            fitsDate.append('.');
+            appendThreeDigitValue(fitsDate, cal.get(Calendar.MILLISECOND));
         }
         return fitsDate.toString();
+    }
+
+    /**
+     * Converts a {@link Calendar} era/year pair into the signed FITS year (BC 1 is FITS 0, BC 2 is FITS -1, etc.).
+     */
+    private static int toFitsYear(int era, int calendarYear) {
+        if (era == GregorianCalendar.BC) {
+            return 1 - calendarYear;
+        }
+        return calendarYear;
+    }
+
+    /**
+     * Appends the FITS Section 9.1.1 representation of a signed astronomical year to the buffer.
+     *
+     * @throws FitsException if the year is outside of the range that FITS can represent.
+     */
+    private static void appendYear(StringBuilder buf, int year) {
+        if (year < -MAX_FITS_YEAR || year > MAX_FITS_YEAR) {
+            throw new FitsException(
+                    "Year " + year + " is outside of the range [-" + MAX_FITS_YEAR + ":" + MAX_FITS_YEAR
+                            + "] that a FITS date can represent");
+        }
+        if (year < 0 || year > MAX_FOUR_DIGIT_YEAR) {
+            appendFiveDigitValue(buf, year);
+        } else {
+            appendFourDigitValue(buf, year);
+        }
     }
 
     private int hour = -1;
@@ -177,28 +227,28 @@ public class FitsDate implements Comparable<FitsDate> {
             return;
         }
 
-        Matcher match = FitsDate.NORMAL_REGEX.matcher(dStr);
+        Matcher match = NORMAL_REGEX.matcher(dStr);
         if (match.matches()) {
             // The regex match ensures we can never get a NumberFormatException here...
-            year = getInt(match, FitsDate.NEW_FORMAT_YEAR_GROUP);
-            month = getInt(match, FitsDate.NEW_FORMAT_MONTH_GROUP);
-            mday = getInt(match, FitsDate.NEW_FORMAT_DAY_OF_MONTH_GROUP);
-            hour = getInt(match, FitsDate.NEW_FORMAT_HOUR_GROUP);
-            minute = getInt(match, FitsDate.NEW_FORMAT_MINUTE_GROUP);
-            second = getInt(match, FitsDate.NEW_FORMAT_SECOND_GROUP);
-            millisecond = getMilliseconds(match, FitsDate.NEW_FORMAT_MILLISECOND_GROUP);
+            year = Integer.parseInt(match.group(NEW_FORMAT_YEAR_GROUP));
+            month = getInt(match, NEW_FORMAT_MONTH_GROUP);
+            mday = getInt(match, NEW_FORMAT_DAY_OF_MONTH_GROUP);
+            hour = getInt(match, NEW_FORMAT_HOUR_GROUP);
+            minute = getInt(match, NEW_FORMAT_MINUTE_GROUP);
+            second = getInt(match, NEW_FORMAT_SECOND_GROUP);
+            millisecond = getMilliseconds(match, NEW_FORMAT_MILLISECOND_GROUP);
         } else {
             // The regex match ensures we can never get a NumberFormatException here...
-            match = FitsDate.OLD_REGEX.matcher(dStr);
+            match = OLD_REGEX.matcher(dStr);
             if (!match.matches()) {
                 if (dStr.trim().isEmpty()) {
                     return;
                 }
                 throw new FitsException("Bad FITS date string \"" + dStr + '"');
             }
-            year = getInt(match, FitsDate.OLD_FORMAT_YEAR_GROUP) + FitsDate.YEAR_OFFSET;
-            month = getInt(match, FitsDate.OLD_FORMAT_MONTH_GROUP);
-            mday = getInt(match, FitsDate.OLD_FORMAT_DAY_OF_MONTH_GROUP);
+            year = getInt(match, OLD_FORMAT_YEAR_GROUP) + YEAR_OFFSET;
+            month = getInt(match, OLD_FORMAT_MONTH_GROUP);
+            mday = getInt(match, OLD_FORMAT_DAY_OF_MONTH_GROUP);
         }
     }
 
@@ -229,13 +279,19 @@ public class FitsDate implements Comparable<FitsDate> {
      * @return The Java Date object.
      */
     public Date toDate() {
-        if (year == -1) {
+        if (month == -1) {
             return null;
         }
 
-        Calendar cal = Calendar.getInstance(UTC);
+        Calendar cal = new GregorianCalendar(UTC);
 
-        cal.set(Calendar.YEAR, year);
+        if (year > 0) {
+            cal.set(Calendar.ERA, GregorianCalendar.AD);
+            cal.set(Calendar.YEAR, year);
+        } else {
+            cal.set(Calendar.ERA, GregorianCalendar.BC);
+            cal.set(Calendar.YEAR, 1 - year);
+        }
         cal.set(Calendar.MONTH, month - 1);
         cal.set(Calendar.DAY_OF_MONTH, mday);
 
@@ -259,28 +315,17 @@ public class FitsDate implements Comparable<FitsDate> {
 
     @Override
     public String toString() {
-        if (year == -1) {
+        if (month == -1) {
             return "";
         }
-        StringBuilder buf = new StringBuilder(FitsDate.FITS_DATE_STRING_SIZE);
-        buf.append(year);
-        buf.append('-');
-        appendTwoDigitValue(buf, month);
-        buf.append('-');
-        appendTwoDigitValue(buf, mday);
-        if (hour != -1) {
-            buf.append('T');
-            appendTwoDigitValue(buf, hour);
-            buf.append(':');
-            appendTwoDigitValue(buf, minute);
-            buf.append(':');
-            appendTwoDigitValue(buf, second);
-            if (millisecond != -1) {
-                buf.append('.');
-                appendThreeDigitValue(buf, millisecond);
-            }
+
+        // Delegate to the centralized Date -> FITS formatter, but keep the original ".000"
+        // omission for values parsed without a fractional-seconds component.
+        String formatted = getFitsDateString(toDate(), hour != -1);
+        if (hour != -1 && millisecond == -1) {
+            return formatted.substring(0, formatted.lastIndexOf('.'));
         }
-        return buf.toString();
+        return formatted;
     }
 
     @Override
@@ -336,15 +381,35 @@ public class FitsDate implements Comparable<FitsDate> {
         return Integer.compare(millisecond, fitsDate.millisecond);
     }
 
-    private void appendThreeDigitValue(StringBuilder buf, int value) {
-        if (value < FitsDate.FIRST_THREE_CHARACTER_VALUE) {
+    private static void appendFourDigitValue(StringBuilder buf, int value) {
+        if (value < FIRST_FOUR_CHARACTER_VALUE) {
+            buf.append('0');
+        }
+        appendThreeDigitValue(buf, value);
+    }
+
+    private static void appendFiveDigitValue(StringBuilder buf, int value) {
+        if (value < 0) {
+            buf.append('-');
+            value = -value;
+        } else {
+            buf.append('+');
+        }
+        if (value < FIRST_FIVE_CHARACTER_VALUE) {
+            buf.append('0');
+        }
+        appendFourDigitValue(buf, value);
+    }
+
+    private static void appendThreeDigitValue(StringBuilder buf, int value) {
+        if (value < FIRST_THREE_CHARACTER_VALUE) {
             buf.append('0');
         }
         appendTwoDigitValue(buf, value);
     }
 
-    private void appendTwoDigitValue(StringBuilder buf, int value) {
-        if (value < FitsDate.FIRST_TWO_CHARACTER_VALUE) {
+    private static void appendTwoDigitValue(StringBuilder buf, int value) {
+        if (value < FIRST_TWO_CHARACTER_VALUE) {
             buf.append('0');
         }
         buf.append(value);
