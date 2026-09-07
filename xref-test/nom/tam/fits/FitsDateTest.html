@@ -9,94 +9,208 @@
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> nom.tam.fits;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> java.util.Calendar;
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> java.util.TimeZone;
-<a class="jxr_linenumber" name="L5" href="#L5">5</a>   
-<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * #%L</em>
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * * nom.tam FITS library</em>
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * *</em>
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * Copyright (C) 1996 - 2024 nom-tam-fits</em>
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * *</em>
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> * Anyone is free to copy, modify, publish, use, compile, sell, or</em>
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> * distribute this software, either in source code form or as a compiled</em>
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_comment"> * binary, for any purpose, commercial or non-commercial, and by any</em>
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_comment"> * means.</em>
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> * In jurisdictions that recognize copyright laws, the author or authors</em>
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment"> * of this software dedicate any and all copyright interest in the</em>
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> * software to the public domain. We make this dedication for the benefit</em>
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment"> * of the public at large and to the detriment of our heirs and</em>
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_comment"> * successors. We intend this dedication to be an overt act of</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment"> * relinquishment in perpetuity of all present and future rights to this</em>
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_comment"> * software under copyright law.</em>
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_comment"> * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,</em>
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_comment"> * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</em>
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_comment"> * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_comment"> * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR</em>
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_comment"> * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,</em>
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_comment"> * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR</em>
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_comment"> * OTHER DEALINGS IN THE SOFTWARE.</em>
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_comment"> * #L%</em>
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_comment"> */</em>
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Assertions;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="FitsDateTest" href="../../../nom/tam/fits/FitsDateTest.html#FitsDateTest">FitsDateTest</a> {
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">long</strong> REF_TIME_MS = 1543407194000L;
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>      @Test
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIsoDateParsing() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>          Assertions.assertEquals(REF_TIME_MS, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14"</span>).toDate().getTime());
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>          Assertions.assertEquals(REF_TIME_MS + 100, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.1"</span>).toDate().getTime());
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>          Assertions.assertEquals(REF_TIME_MS + 120, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.12"</span>).toDate().getTime());
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>          Assertions.assertEquals(REF_TIME_MS + 123, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.123"</span>).toDate().getTime());
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>          Assertions.assertEquals(REF_TIME_MS + 123, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.1234"</span>).toDate().getTime());
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>          Assertions.assertEquals(REF_TIME_MS + 124, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.1236"</span>).toDate().getTime());
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>          Assertions.assertEquals(REF_TIME_MS + 123, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.12345"</span>).toDate().getTime());
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>          Assertions.assertEquals(REF_TIME_MS + 124, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.123567"</span>).toDate().getTime());
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          Assertions.assertEquals(REF_TIME_MS + 10, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.01"</span>).toDate().getTime());
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          Assertions.assertEquals(REF_TIME_MS + 1, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.001"</span>).toDate().getTime());
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          Assertions.assertEquals(REF_TIME_MS, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.0001"</span>).toDate().getTime());
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>      }
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>      @Test
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFitsDateCompare() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          Assertions.assertEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          Assertions.assertNotEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.151"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          Assertions.assertNotEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:13.15"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          Assertions.assertNotEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:12:14.15"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          Assertions.assertNotEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T11:13:14.15"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          Assertions.assertNotEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-27T12:13:14.15"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          Assertions.assertNotEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-10-28T12:13:14.15"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          Assertions.assertNotEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2017-11-28T12:13:14.15"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>      }
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>      @Test
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDateOnly() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          Calendar cal = Calendar.getInstance(TimeZone.getTimeZone(<span class="jxr_string">"UTC"</span>));
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          cal.set(2023, 4 - 1, 3, 13, 9, 33);
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          Assertions.assertEquals(<span class="jxr_string">"2023-04-03"</span>, FitsDate.getFitsDateString(cal.getTime(), false));
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>      }
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>      @Test
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testNullDate() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>          Assertions.assertNull(<strong class="jxr_keyword">new</strong> FitsDate(<strong class="jxr_keyword">null</strong>).toDate());
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>      }
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>  
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>      @Test
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testEmptyDate() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>          Assertions.assertNull(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">""</span>).toDate());
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>      }
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  }
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> java.util.Date;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> java.util.GregorianCalendar;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> java.util.TimeZone;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * #%L</em>
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * * nom.tam FITS library</em>
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * *</em>
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * %%</em>
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * Copyright (C) 1996 - 2024 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * *</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> * %%</em>
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_comment"> * Anyone is free to copy, modify, publish, use, compile, sell, or</em>
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_comment"> * distribute this software, either in source code form or as a compiled</em>
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_comment"> * binary, for any purpose, commercial or non-commercial, and by any</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> * means.</em>
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> * In jurisdictions that recognize copyright laws, the author or authors</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment"> * of this software dedicate any and all copyright interest in the</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_comment"> * software to the public domain. We make this dedication for the benefit</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment"> * of the public at large and to the detriment of our heirs and</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_comment"> * successors. We intend this dedication to be an overt act of</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_comment"> * relinquishment in perpetuity of all present and future rights to this</em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_comment"> * software under copyright law.</em>
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_comment"> * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_comment"> * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</em>
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_comment"> * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</em>
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_comment"> * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR</em>
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_comment"> * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,</em>
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_comment"> * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_comment"> * OTHER DEALINGS IN THE SOFTWARE.</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_comment"> * #L%</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_comment"> */</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Assertions;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="FitsDateTest" href="../../../nom/tam/fits/FitsDateTest.html#FitsDateTest">FitsDateTest</a> {
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">long</strong> REF_TIME_MS = 1543407194000L;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>      @Test
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIsoDateParsing() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          Assertions.assertEquals(REF_TIME_MS, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14"</span>).toDate().getTime());
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          Assertions.assertEquals(REF_TIME_MS + 100, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.1"</span>).toDate().getTime());
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>          Assertions.assertEquals(REF_TIME_MS + 120, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.12"</span>).toDate().getTime());
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          Assertions.assertEquals(REF_TIME_MS + 123, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.123"</span>).toDate().getTime());
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          Assertions.assertEquals(REF_TIME_MS + 123, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.1234"</span>).toDate().getTime());
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>          Assertions.assertEquals(REF_TIME_MS + 124, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.1236"</span>).toDate().getTime());
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          Assertions.assertEquals(REF_TIME_MS + 123, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.12345"</span>).toDate().getTime());
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>          Assertions.assertEquals(REF_TIME_MS + 124, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.123567"</span>).toDate().getTime());
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          Assertions.assertEquals(REF_TIME_MS + 10, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.01"</span>).toDate().getTime());
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          Assertions.assertEquals(REF_TIME_MS + 1, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.001"</span>).toDate().getTime());
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          Assertions.assertEquals(REF_TIME_MS, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.0001"</span>).toDate().getTime());
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>      }
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>      @Test
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFitsDateCompare() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          Assertions.assertEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          Assertions.assertNotEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.151"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          Assertions.assertNotEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:13.15"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          Assertions.assertNotEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:12:14.15"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          Assertions.assertNotEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T11:13:14.15"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          Assertions.assertNotEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-27T12:13:14.15"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          Assertions.assertNotEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-10-28T12:13:14.15"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          Assertions.assertNotEquals(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2017-11-28T12:13:14.15"</span>), <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2018-11-28T12:13:14.15"</span>));
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>      }
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      @Test
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDateOnly() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          Calendar cal = Calendar.getInstance(TimeZone.getTimeZone(<span class="jxr_string">"UTC"</span>));
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>          cal.set(2023, 4 - 1, 3, 13, 9, 33);
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          Assertions.assertEquals(<span class="jxr_string">"2023-04-03"</span>, FitsDate.getFitsDateString(cal.getTime(), false));
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      }
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>      @Test
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testNullDate() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>          Assertions.assertNull(<strong class="jxr_keyword">new</strong> FitsDate(<strong class="jxr_keyword">null</strong>).toDate());
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>      }
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>      @Test
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testEmptyDate() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          Assertions.assertNull(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">""</span>).toDate());
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>      }
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>      @Test
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testYearFormatting() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>          Assertions.assertEquals(<span class="jxr_string">"0000-01-01"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"0000-01-01"</span>).toString());
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>          Assertions.assertEquals(<span class="jxr_string">"0001-01-01"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"0001-01-01"</span>).toString());
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>          Assertions.assertEquals(<span class="jxr_string">"0099-01-01"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"0099-01-01"</span>).toString());
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>          Assertions.assertEquals(<span class="jxr_string">"0999-01-01"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"0999-01-01"</span>).toString());
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>          Assertions.assertEquals(<span class="jxr_string">"9999-01-01"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"9999-01-01"</span>).toString());
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>         Assertions.assertEquals(<span class="jxr_string">"+10000-01-01"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"+10000-01-01"</span>).toString());
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>         Assertions.assertEquals(<span class="jxr_string">"+99999-01-01"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"+99999-01-01"</span>).toString());
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>         Assertions.assertEquals(<span class="jxr_string">"-00001-01-01"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"-00001-01-01"</span>).toString());
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>         Assertions.assertEquals(<span class="jxr_string">"-00999-01-01"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"-00999-01-01"</span>).toString());
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>         Assertions.assertEquals(<span class="jxr_string">"-09999-01-01"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"-09999-01-01"</span>).toString());
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>         Assertions.assertEquals(<span class="jxr_string">"-99999-01-01"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"-99999-01-01"</span>).toString());
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>     }
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> 
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>     @Test
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testInvalidExtendedYearParsing() {
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>         Assertions.assertThrows(FitsException.<strong class="jxr_keyword">class</strong>, () -&gt; <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"+100000-01-01"</span>));
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>         Assertions.assertThrows(FitsException.<strong class="jxr_keyword">class</strong>, () -&gt; <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"-100000-01-01"</span>));
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>     }
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> 
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>     @Test
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testNonCanonicalExtendedYearParsing() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>         Assertions.assertEquals(<span class="jxr_string">"0001-01-01"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"+00001-01-01"</span>).toString());
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>         Assertions.assertEquals(<span class="jxr_string">"9999-01-01"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"+09999-01-01"</span>).toString());
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>         Assertions.assertEquals(<span class="jxr_string">"0000-01-01"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"-00000-01-01"</span>).toString());
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>     }
+<a class="jxr_linenumber" name="L120" href="#L120">120</a> 
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>     @Test
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGetFitsDateStringRangeValidation() {
+<a class="jxr_linenumber" name="L123" href="#L123">123</a>         Calendar cal = <strong class="jxr_keyword">new</strong> GregorianCalendar(TimeZone.getTimeZone(<span class="jxr_string">"UTC"</span>));
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>         cal.set(Calendar.ERA, GregorianCalendar.AD);
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>         cal.set(Calendar.YEAR, 99999);
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>         cal.set(Calendar.MONTH, Calendar.JANUARY);
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>         cal.set(Calendar.DAY_OF_MONTH, 1);
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>         Assertions.assertEquals(<span class="jxr_string">"+99999-01-01"</span>, FitsDate.getFitsDateString(cal.getTime(), false));
+<a class="jxr_linenumber" name="L129" href="#L129">129</a> 
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>         cal.set(Calendar.YEAR, 100000);
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>         Assertions.assertThrows(FitsException.<strong class="jxr_keyword">class</strong>, () -&gt; FitsDate.getFitsDateString(cal.getTime(), false));
+<a class="jxr_linenumber" name="L132" href="#L132">132</a> 
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>         cal.set(Calendar.ERA, GregorianCalendar.BC);
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>         cal.set(Calendar.YEAR, 100000); <em class="jxr_comment">// Calendar YEAR 100000 BC == FITS year -99999</em>
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>         Assertions.assertEquals(<span class="jxr_string">"-99999-01-01"</span>, FitsDate.getFitsDateString(cal.getTime(), false));
+<a class="jxr_linenumber" name="L136" href="#L136">136</a> 
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>         cal.set(Calendar.YEAR, 100001); <em class="jxr_comment">// Calendar YEAR 100001 BC == FITS year -100000</em>
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>         Assertions.assertThrows(FitsException.<strong class="jxr_keyword">class</strong>, () -&gt; FitsDate.getFitsDateString(cal.getTime(), false));
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>     }
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> 
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>     @Test
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCalendarEraMapping() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>         assertEraYear(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"0001-06-15"</span>), GregorianCalendar.AD, 1);
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>         assertEraYear(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"0000-06-15"</span>), GregorianCalendar.BC, 1);
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>         assertEraYear(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"-00001-06-15"</span>), GregorianCalendar.BC, 2);
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>         assertEraYear(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"-00999-06-15"</span>), GregorianCalendar.BC, 1000);
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>         assertEraYear(<strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"-99999-06-15"</span>), GregorianCalendar.BC, 100000);
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>     }
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> 
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> assertEraYear(FitsDate fitsDate, <strong class="jxr_keyword">int</strong> expectedEra, <strong class="jxr_keyword">int</strong> expectedYear) {
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>         Calendar cal = <strong class="jxr_keyword">new</strong> GregorianCalendar(TimeZone.getTimeZone(<span class="jxr_string">"UTC"</span>));
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>         cal.setTime(fitsDate.toDate());
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>         Assertions.assertEquals(expectedEra, cal.get(Calendar.ERA));
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>         Assertions.assertEquals(expectedYear, cal.get(Calendar.YEAR));
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>     }
+<a class="jxr_linenumber" name="L156" href="#L156">156</a> 
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>     @Test
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testBcCalendarYearIsNotMisreadAsPositiveFitsYear() {
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>         Calendar cal = <strong class="jxr_keyword">new</strong> GregorianCalendar(TimeZone.getTimeZone(<span class="jxr_string">"UTC"</span>));
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>         cal.set(Calendar.ERA, GregorianCalendar.BC);
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>         cal.set(Calendar.YEAR, 1);
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>         cal.set(Calendar.MONTH, Calendar.JANUARY);
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>         cal.set(Calendar.DAY_OF_MONTH, 1);
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>         Assertions.assertEquals(<span class="jxr_string">"0000-01-01"</span>, FitsDate.getFitsDateString(cal.getTime(), false));
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> 
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>         cal.set(Calendar.YEAR, 2);
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>         Assertions.assertEquals(<span class="jxr_string">"-00001-01-01"</span>, FitsDate.getFitsDateString(cal.getTime(), false));
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>     }
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> 
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>     @Test
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testRoundTripExtendedYears() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>         String[] dates = {<span class="jxr_string">"0000-05-06"</span>, <span class="jxr_string">"0001-05-06"</span>, <span class="jxr_string">"9999-05-06"</span>, <span class="jxr_string">"+10000-05-06"</span>, <span class="jxr_string">"+99999-05-06"</span>, <span class="jxr_string">"-00001-05-06"</span>,
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>                 <span class="jxr_string">"-00999-05-06"</span>, <span class="jxr_string">"-09999-05-06"</span>, <span class="jxr_string">"-99999-05-06"</span>};
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>         <strong class="jxr_keyword">for</strong> (String d : dates) {
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>             Date date = <strong class="jxr_keyword">new</strong> FitsDate(d).toDate();
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>             Assertions.assertEquals(d, FitsDate.getFitsDateString(date, false));
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>         }
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>     }
+<a class="jxr_linenumber" name="L179" href="#L179">179</a> 
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>     @Test
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFractionalSecondsPrecisionUnchanged() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>         Assertions.assertEquals(<span class="jxr_string">"2000-01-01T00:00:00.000"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2000-01-01T00:00:00.0"</span>).toString());
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>         Assertions.assertEquals(<span class="jxr_string">"2000-01-01T00:00:00.000"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2000-01-01T00:00:00.00"</span>).toString());
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>         Assertions.assertEquals(<span class="jxr_string">"2000-01-01T00:00:00.000"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2000-01-01T00:00:00.000"</span>).toString());
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>         Assertions.assertEquals(<span class="jxr_string">"2000-01-01T00:00:00.001"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2000-01-01T00:00:00.001"</span>).toString());
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>         Assertions.assertEquals(<span class="jxr_string">"2000-01-01T00:00:00.010"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2000-01-01T00:00:00.01"</span>).toString());
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>         Assertions.assertEquals(<span class="jxr_string">"2000-01-01T00:00:00.100"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2000-01-01T00:00:00.1"</span>).toString());
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>         Assertions.assertEquals(<span class="jxr_string">"2000-01-01T00:00:00.123"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2000-01-01T00:00:00.123"</span>).toString());
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>         Assertions.assertEquals(<span class="jxr_string">"2000-01-01T00:00:00.123"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2000-01-01T00:00:00.1234"</span>).toString());
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>         Assertions.assertEquals(<span class="jxr_string">"2000-01-01T00:00:00.123"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2000-01-01T00:00:00.12345"</span>).toString());
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>         Assertions.assertEquals(<span class="jxr_string">"2000-01-01T00:00:00.124"</span>, <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2000-01-01T00:00:00.123567"</span>).toString());
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>     }
+<a class="jxr_linenumber" name="L193" href="#L193">193</a> 
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>     @Test
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testToStringAndToDateAgreeOnLenientCalendarNormalization() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>         FitsDate fitsDate = <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2023-02-30"</span>);
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>         Calendar cal = <strong class="jxr_keyword">new</strong> GregorianCalendar(TimeZone.getTimeZone(<span class="jxr_string">"UTC"</span>));
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>         cal.setTime(fitsDate.toDate());
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>         <strong class="jxr_keyword">int</strong> rolledOverMonth = cal.get(Calendar.MONTH) + 1;
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>         <strong class="jxr_keyword">int</strong> rolledOverDay = cal.get(Calendar.DAY_OF_MONTH);
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>         String expected = String.format(<span class="jxr_string">"2023-%02d-%02d"</span>, rolledOverMonth, rolledOverDay);
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>         Assertions.assertEquals(expected, fitsDate.toString());
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>     }
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> 
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> }
 </pre>
 <hr/>
 <div id="footer">© 1996–2026 nom-tam-fits</div>
