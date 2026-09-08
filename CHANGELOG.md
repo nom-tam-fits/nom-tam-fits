@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-Upcoming feature release, likely around 15 September 2026. Many fixes and improvements to the handling of integer-compressed floating point data (with or without dithering).
+Feature release, including many fixes and improvements to the handling of integer-compressed floating point data (with or without dithering).
 
 ### Fixed
 
@@ -81,7 +81,7 @@ Upcoming feature release, likely around 15 September 2026. Many fixes and improv
  
 ### Deprecated
 
- - [#884] Deprecated `ICompressColumnParameter.setColumnData(Object, int)`. Its dual functionality has been split into separate `.setColumnData(Object)`, `createColumnData(int)` and `ensureColumnData(int)` methods. (by @attipaci)
+ - [#884] Deprecated `ICompressColumnParameter.setColumnData(Object, int)`. Its composite functionality has been split into separate `.setColumnData(Object)`, `createColumnData(int)` and `setColumnSize(int)` methods. (by @attipaci)
  
  - [#891] Deprecated `QuantizeOption.setCheckZero()` and `.isCheckZero()` methods. They duplicate the `setDither2()` and `isDither2()` methods respectively. Meanwhile, `.setCheckNull()` and `.isCheckNull()` methods are deprecated as checking for NaN values is automatic when integer compressing floating-point values. (by @attipaci)
  
