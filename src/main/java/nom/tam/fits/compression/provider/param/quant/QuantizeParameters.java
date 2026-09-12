@@ -122,6 +122,7 @@ public class QuantizeParameters extends CompressParameters {
             QuantizeOption qo = (QuantizeOption) option;
 
             QuantizeParameters p = (QuantizeParameters) super.clone();
+            p.options = qo;
             p.quantz = (ZQuantizeParameter) quantz.copy(qo);
             p.blank = (ZBlankParameter) blank.copy(qo);
             p.seed = (ZDither0Parameter) seed.copy(qo);
