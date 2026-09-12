@@ -116,7 +116,7 @@ public class DupTest {
     public void testGetDetached() throws Exception {
         try (Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits")) {
             Header hdr = f.readHDU().getHeader();
-            Header detached = hdr.getDetached();
+            Header detached = hdr.getDetachedCopy();
 
             Assertions.assertEquals(hdr.getDuplicates().size(), detached.getDuplicates().size());
             Assertions.assertEquals(hdr.getDuplicateKeySet().size(), detached.getDuplicateKeySet().size());

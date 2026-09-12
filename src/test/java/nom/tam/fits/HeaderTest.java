@@ -1711,17 +1711,37 @@ public class HeaderTest {
     }
 
     @Test
-    public void testHetDetached() throws Exception {
+    public void testGetDetached() throws Exception {
         Header h = new Header();
 
         h.addValue("TEST", 1.0, "test value");
 
-        Header detached = h.getDetached();
+        Header detached = h.getDetachedCopy();
 
         Assertions.assertEquals(1.0, detached.getDoubleValue("TEST"));
         Assertions.assertNotEquals(h.getCard("TEST"), detached.getCard("TEST"));
         Assertions.assertNull(detached.getDuplicates());
         Assertions.assertNull(detached.getDuplicateKeySet());
+    }
+
+    @Test
+    public void testGetDetachedMerge() throws Exception {
+        Header h = new Header();
+
+        h.addValue("TEST", 1.0, "test value");
+
+        Header detached = h.getDetachedCopy();
+
+        Header h2 = new Header();
+        h2.addValue("TEST2", 2, "test value");
+        h2.mergeDistinct(detached);
+
+        Assertions.assertEquals(1.0, h2.getDoubleValue("TEST"));
+        Assertions.assertEquals(2, h2.getIntValue("TEST2"));
+        Assertions.assertNotEquals(h.getCard("TEST"), h2.getCard("TEST"));
+        Assertions.assertNull(h2.getDuplicates());
+        Assertions.assertNull(h2.getDuplicateKeySet());
+
     }
 
 }

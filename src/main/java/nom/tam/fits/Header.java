@@ -322,14 +322,19 @@ public class Header implements FitsElement {
      * preserved.
      * 
      * @return A new header that contains an independent copy of this header's content. The returned header will not be
-     *             associated to any input or HDU, and will not share any references with the original.
+     *             associated to any input or HDU, and will not share any mutable references with the original.
+     * 
+     * @see    #mergeDistinct(Header)
      * 
      * @since  1.23
      */
-    public Header getDetached() {
+    @SuppressWarnings("unchecked")
+    public Header getDetachedCopy() {
         Header detached = new Header();
 
         detached.minCards = minCards;
+        detached.headerSorter = headerSorter;
+        detached.keyCheck = keyCheck;
 
         Cursor<String, HeaderCard> iterator = iterator();
         while (iterator.hasNext()) {
@@ -344,10 +349,7 @@ public class Header implements FitsElement {
         }
 
         if (dupKeys != null) {
-            detached.dupKeys = new HashSet<>(dupKeys.size());
-            for (String key : dupKeys) {
-                detached.dupKeys.add(new String(key));
-            }
+            detached.dupKeys = (HashSet<String>) dupKeys.clone();
         }
 
         return detached;
@@ -400,6 +402,7 @@ public class Header implements FitsElement {
      * @since        1.19
      * 
      * @see          #updateLines(Header)
+     * @see          #getDetachedCopy()
      */
     public void mergeDistinct(Header source) {
         seekTail();
