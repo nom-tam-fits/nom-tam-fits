@@ -582,6 +582,32 @@ public class QuantizeTest {
     }
 
     @Test
+    public void testCopiedParametersUseDestinationBlankValue() throws Exception {
+        QuantizeOption source = new QuantizeOption();
+        QuantizeOption destination = new QuantizeOption().setBNull(-999);
+
+        destination.setParameters(new QuantizeParameters(source));
+
+        Header header = new Header();
+        destination.getCompressionParameters().setValuesInHeader(header);
+
+        Assertions.assertEquals(-999, header.getIntValue(Compression.ZBLANK));
+    }
+
+    @Test
+    public void testCopiedParametersDoNotUseSourceBlankValue() throws Exception {
+        QuantizeOption source = new QuantizeOption().setBNull(-999);
+        QuantizeOption destination = new QuantizeOption();
+
+        destination.setParameters(new QuantizeParameters(source));
+
+        Header header = new Header();
+        destination.getCompressionParameters().setValuesInHeader(header);
+
+        Assertions.assertNull(header.getCard(Compression.ZBLANK));
+    }
+
+    @Test
     public void testColumnParameterCreateData() throws Exception {
         QuantizeOption o = new QuantizeOption();
         ZBlankColumnParameter p = new ZBlankColumnParameter(o);
