@@ -21,6 +21,8 @@ Feature release, including many fixes and improvements to the handling of intege
   
  - [#892] When `SUBTRACTIVE_DITHER_2` was used (via `QuantizeOption.setDither()` and `.setDither2()`), the library used the wrong 0.0 value indicator (-2147483646), instead of the value -2147483647 desginated by the standard. Fixed by switching to the standard indicator value. (by @attipaci)
  
+ - [#900] Fixed `QuantizeParameters.copy()` to update the `QuantizeOption` reference to the newly supplied one. (by @traitimtrongvag)
+ 
 ### Added
 
  - [#883] Added `TableHDU.getColumnMeta(int, IFitsHeader)` to support standard keyword enums beside the existing string keyword form. (by @attipaci)
