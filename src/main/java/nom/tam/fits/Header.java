@@ -318,6 +318,42 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Returns a copy of this header that is not attached to a HDU. The cards of the header, including duplicates are
+     * preserved.
+     * 
+     * @return A new header that contains an independent copy of this header's content. The returned header will not be
+     *             associated to any input or HDU, and will not share any references with the original.
+     * 
+     * @since  1.23
+     */
+    public Header getDetached() {
+        Header detached = new Header();
+
+        detached.minCards = minCards;
+
+        Cursor<String, HeaderCard> iterator = iterator();
+        while (iterator.hasNext()) {
+            detached.addLine(iterator.next().copy());
+        }
+
+        if (duplicates != null) {
+            detached.duplicates = new ArrayList<>(duplicates.size());
+            for (HeaderCard dup : duplicates) {
+                detached.duplicates.add(dup.copy());
+            }
+        }
+
+        if (dupKeys != null) {
+            detached.dupKeys = new HashSet<>(dupKeys.size());
+            for (String key : dupKeys) {
+                detached.dupKeys.add(new String(key));
+            }
+        }
+
+        return detached;
+    }
+
+    /**
      * <p>
      * Reserves header card space for populating at a later time. When written to a stream, the header will be large
      * enough to hold at least the specified number of cards. If the header has fewer physical cards then the remaining

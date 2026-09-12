@@ -112,6 +112,17 @@ public class DupTest {
         }
     }
 
+    @Test
+    public void testGetDetached() throws Exception {
+        try (Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits")) {
+            Header hdr = f.readHDU().getHeader();
+            Header detached = hdr.getDetached();
+
+            Assertions.assertEquals(hdr.getDuplicates().size(), detached.getDuplicates().size());
+            Assertions.assertEquals(hdr.getDuplicateKeySet().size(), detached.getDuplicateKeySet().size());
+        }
+    }
+
     private Logger getParserLogger() {
         return Logger.getLogger("nom.tam.fits.HeaderCardParser");
     }
