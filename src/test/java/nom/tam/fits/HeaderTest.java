@@ -1711,12 +1711,12 @@ public class HeaderTest {
     }
 
     @Test
-    public void testHetDetached() throws Exception {
+    public void testGetDetached() throws Exception {
         Header h = new Header();
 
         h.addValue("TEST", 1.0, "test value");
 
-        Header detached = h.getDetached();
+        Header detached = h.getDetachedCopy();
 
         Assertions.assertEquals(1.0, detached.getDoubleValue("TEST"));
         Assertions.assertNotEquals(h.getCard("TEST"), detached.getCard("TEST"));
