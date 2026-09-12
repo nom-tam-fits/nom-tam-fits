@@ -1710,4 +1710,18 @@ public class HeaderTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> h.replaceKey(Standard.COMMENT, Standard.BLANKS));
     }
 
+    @Test
+    public void testGetDetached() throws Exception {
+        Header h = new Header();
+
+        h.addValue("TEST", 1.0, "test value");
+
+        Header detached = h.getDetachedCopy();
+
+        Assertions.assertEquals(1.0, detached.getDoubleValue("TEST"));
+        Assertions.assertNotEquals(h.getCard("TEST"), detached.getCard("TEST"));
+        Assertions.assertNull(detached.getDuplicates());
+        Assertions.assertNull(detached.getDuplicateKeySet());
+    }
+
 }
