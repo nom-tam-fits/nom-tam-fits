@@ -36,6 +36,8 @@ Feature release, including many fixes and improvements to the handling of intege
  - [#885] `QuantizeOption.useFMA()` method can select whether `Math.fma()` should be used instead of regular arithmetics (default) when converting quantized integers back to their floating-point values. The use of `fma()` matches cfistio / funpack and astropy more closely, but may be very slow on platforms without hardware support. (by @attipaci, thanks to @keastrid)
  
  - [#893] `setup-java` action Java distribution bumped to openJDK 27.
+ 
+ - [#903] Added `Header.getDetached()` to return a fully independent copy of a headers content that is not attached to a HDU or input, and which shares no references with the original.
   
 ### Changed
 
