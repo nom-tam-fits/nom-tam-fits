@@ -57,6 +57,8 @@ import static nom.tam.fits.header.Standard.COMMENT;
 import static nom.tam.fits.header.Standard.CONTINUE;
 import static nom.tam.fits.header.Standard.HISTORY;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * An individual entry in the FITS header, such as a key/value pair with an optional comment field, or a comment-style
  * entry without a value field.
@@ -612,7 +614,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     @Override
     protected HeaderCard clone() {
         try {
-            return (HeaderCard) super.clone();
+            HeaderCard clone = (HeaderCard) super.clone();
+            clone.lock = new Object();
+            return clone;
         } catch (CloneNotSupportedException e) {
             return null;
         }
@@ -1462,6 +1466,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *
      * @return <code>true</code> if the card contains nothing but blank spaces.
      */
+    @SuppressFBWarnings(value = "USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION", justification = "false positive: cause by clones having their own locks.")
     public boolean isBlank() {
         synchronized (lock) {
             if (!isCommentStyleCard() || !key.isEmpty()) {

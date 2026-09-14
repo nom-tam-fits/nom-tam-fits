@@ -1582,7 +1582,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     @Override
     protected BinaryTable clone() {
         try {
-            return (BinaryTable) super.clone();
+            BinaryTable clone = (BinaryTable) super.clone();
+            clone.lock = new Object();
+            return clone;
         } catch (CloneNotSupportedException e) {
             return null;
         }
@@ -4431,6 +4433,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @since 1.19.1
      */
+    @SuppressFBWarnings(value = "USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION", justification = "false positive: caused by clones having their own locks.")
     public void compact() {
         synchronized (lock) {
             heapFileSize = 0;
