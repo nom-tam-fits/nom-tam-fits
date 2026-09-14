@@ -318,6 +318,44 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Returns a copy of this header that is not attached to a HDU. The cards of the header, including duplicates are
+     * preserved.
+     * 
+     * @return A new header that contains an independent copy of this header's content. The returned header will not be
+     *             associated to any input or HDU, and will not share any mutable references with the original.
+     * 
+     * @see    #mergeDistinct(Header)
+     * 
+     * @since  1.23
+     */
+    @SuppressWarnings("unchecked")
+    public Header getDetachedCopy() {
+        Header detached = new Header();
+
+        detached.minCards = minCards;
+        detached.headerSorter = headerSorter;
+        detached.keyCheck = keyCheck;
+
+        Cursor<String, HeaderCard> iterator = iterator();
+        while (iterator.hasNext()) {
+            detached.addLine(iterator.next().copy());
+        }
+
+        if (duplicates != null) {
+            detached.duplicates = new ArrayList<>(duplicates.size());
+            for (HeaderCard dup : duplicates) {
+                detached.duplicates.add(dup.copy());
+            }
+        }
+
+        if (dupKeys != null) {
+            detached.dupKeys = (HashSet<String>) dupKeys.clone();
+        }
+
+        return detached;
+    }
+
+    /**
      * <p>
      * Reserves header card space for populating at a later time. When written to a stream, the header will be large
      * enough to hold at least the specified number of cards. If the header has fewer physical cards then the remaining
@@ -364,6 +402,7 @@ public class Header implements FitsElement {
      * @since        1.19
      * 
      * @see          #updateLines(Header)
+     * @see          #getDetachedCopy()
      */
     public void mergeDistinct(Header source) {
         seekTail();

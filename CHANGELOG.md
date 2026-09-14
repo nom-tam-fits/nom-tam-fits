@@ -23,6 +23,8 @@ Feature release, including many fixes and improvements to the handling of intege
  
  - [#900] Fixed `QuantizeParameters.copy()` to update the `QuantizeOption` reference to the newly supplied one. (by @traitimtrongvag)
  
+ - [#904] Fixed cloned `HeaderCard` and `BinaryTable` objects to have their own synchronization locks. (by @attipaci)
+ 
 ### Added
 
  - [#883] Added `TableHDU.getColumnMeta(int, IFitsHeader)` to support standard keyword enums beside the existing string keyword form. (by @attipaci)
@@ -36,6 +38,8 @@ Feature release, including many fixes and improvements to the handling of intege
  - [#885] `QuantizeOption.useFMA()` method can select whether `Math.fma()` should be used instead of regular arithmetics (default) when converting quantized integers back to their floating-point values. The use of `fma()` matches cfistio / funpack and astropy more closely, but may be very slow on platforms without hardware support. (by @attipaci, thanks to @keastrid)
  
  - [#893] `setup-java` action Java distribution bumped to openJDK 27.
+ 
+ - [#903] Added `Header.getDetachedCopy()` to return a fully independent copy of a headers content that is not attached to a HDU or input, and which shares no references with the original. (by @attipaci, thanks to @AstroPixelProcessor).
   
 ### Changed
 
