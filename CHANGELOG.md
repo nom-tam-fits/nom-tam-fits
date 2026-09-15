@@ -5,7 +5,7 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [1.23.0] - 2026-09-15
 
 Feature release, including many fixes and improvements to the handling of integer-compressed floating point data (with or without dithering).
 
@@ -17,7 +17,7 @@ Feature release, including many fixes and improvements to the handling of intege
  
  - [#885] `QuantizeProcessor` had extraneous rounding by half, and sometimes in the wrong direction. Fixed to conform to the FITS specification more completely. (by @attipaci)
  
- - [#887] Fixed PLIO decompression of 32-bit integer data to restore the upper 2 bytes also.
+ - [#887] Fixed PLIO decompression of 32-bit integer data to restore the upper 2 bytes also. (by @attipaci)
   
  - [#892] When `SUBTRACTIVE_DITHER_2` was used (via `QuantizeOption.setDither()` and `.setDither2()`), the library used the wrong 0.0 value indicator (-2147483646), instead of the value -2147483647 desginated by the standard. Fixed by switching to the standard indicator value. (by @attipaci)
  
