@@ -215,8 +215,8 @@ public class QuantizeTest {
         Assertions.assertEquals(0, option.getIntMinValue());
         Assertions.assertEquals(55, option.getIntMaxValue());
 
-        Assertions.assertArrayEquals(new int[] {-2147483647, 0, 3, 5, 8, 10, 13, 15, 18, 21, 23, 25, 28, 30, 33, 36, 38, 41,
-                42, 45, 47, 50, 53, 55}, quants.array());
+        Assertions.assertArrayEquals(new int[] {-2147483647, 1, 3, 6, 8, 10, 13, 16, 18, 20, 23, 26, 28, 31, 33, 36, 38, 40,
+                42, 45, 48, 50, 53, 55}, quants.array());
     }
 
     @Test
