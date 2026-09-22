@@ -802,6 +802,10 @@ public class QuantizeOption implements ICompressOption {
      * @since    1.23
      */
     int toInt(double d) {
+        // Always calculate the next dither value in the sequence even if we don't end up
+        // using it. See FITS 4.0 Section 10.2.1 bullet point 5.
+        double dither = isDither() ? nextDither() : 0.0;
+
         if (Double.isNaN(d) || d == nullValue) {
             if (nullValueIndicator == null) {
                 nullValueIndicator = RECOMMENDED_NAN_INDICATOR;
@@ -816,7 +820,7 @@ public class QuantizeOption implements ICompressOption {
         d -= bZero;
         d /= bScale;
         if (isDither()) {
-            d += nextDither();
+            d += dither;
         }
         return (int) Math.round(d);
     }
@@ -831,6 +835,10 @@ public class QuantizeOption implements ICompressOption {
      * @since    1.23
      */
     double toDouble(int i) {
+        // Always calculate the next dither value in the sequence even if we don't end up
+        // using it. See FITS 4.0 Section 10.2.1 bullet point 5.
+        double dither = isDither() ? nextDither() : 0.0;
+
         if (isDither() && isDither2() && i == DITHER2_ZERO_INDICATOR) {
             return 0.0;
         }
@@ -841,7 +849,7 @@ public class QuantizeOption implements ICompressOption {
 
         double d = i;
         if (isDither()) {
-            d -= nextDither();
+            d -= dither;
         }
 
         return useFMA ? Math.fma(d, bScale, bZero) : d * bScale + bZero;
