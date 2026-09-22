@@ -200,7 +200,7 @@ public class QuantizeProcessor {
     protected void unquantize(final IntBuffer intData, final DoubleBuffer fdata) throws BufferOverflowException {
         quantizeOption.initDither();
         while (fdata.hasRemaining()) {
-            fdata.put((float) quantizeOption.toDouble(intData.get()));
+            fdata.put(quantizeOption.toDouble(intData.get()));
         }
     }
 
