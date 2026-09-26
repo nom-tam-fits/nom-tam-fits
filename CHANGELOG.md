@@ -6,9 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased] 
 
+Upcomoing bug-fix release around 15 December 2026, or possibly a little earlier.
+
 ### Fixed
 
- - [#908] Fixed advancing dither sequence even if dithering is not used, e.g. for special values such as NaN or 0.0, as prescribed bu Section 10.2.1 (bullet point 5) of the FITS standard 4.0. (by @attipaci, thanks to @bogdanni)
+ - [#908] Fixed advancing dither sequence even if dithering is not used, e.g. for special values such as NaN or 0.0, as prescribed by Section 10.2.1 (bullet point 5) of the FITS standard 4.0. (by @attipaci, thanks to @bogdanni)
  
  - [#909] Fixed loss of precision in `QuantizeProcessor.unquantize()` due to casting to float for double-precision data. (by @attipaci, thanks to @bogdanni)
  
