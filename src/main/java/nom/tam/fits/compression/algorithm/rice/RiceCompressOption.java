@@ -61,14 +61,14 @@ public class RiceCompressOption implements ICompressOption {
     /** The parameters that represent settings for this option in the FITS headers and/or compressed data columns */
     private RiceCompressParameters parameters;
 
-    /** Shared configuration across copies */
-    private final Config config;
+    private int bytePix = DEFAULT_RICE_BYTEPIX;
+
+    private int blockSize = DEFAULT_RICE_BLOCKSIZE;
 
     /**
      * Creates a new set of options for Rice compression.
      */
     public RiceCompressOption() {
-        config = new Config();
         parameters = new RiceCompressParameters(this);
     }
 
@@ -91,7 +91,7 @@ public class RiceCompressOption implements ICompressOption {
      * @see    #setBlockSize(int)
      */
     public final int getBlockSize() {
-        return config.blockSize;
+        return blockSize;
     }
 
     /**
@@ -102,7 +102,7 @@ public class RiceCompressOption implements ICompressOption {
      * @see    #setBytePix(int)
      */
     public final int getBytePix() {
-        return config.bytePix;
+        return bytePix;
     }
 
     @Override
@@ -129,7 +129,7 @@ public class RiceCompressOption implements ICompressOption {
     public RiceCompressOption setBlockSize(int value) throws IllegalArgumentException {
         for (int i : VALID_BLOCKSIZE) {
             if (value == i) {
-                config.blockSize = value;
+                blockSize = value;
                 return this;
             }
         }
@@ -151,7 +151,7 @@ public class RiceCompressOption implements ICompressOption {
     public RiceCompressOption setBytePix(int value) throws IllegalArgumentException {
         for (int i : VALID_BYTEPIX) {
             if (value == i) {
-                config.bytePix = value;
+                bytePix = value;
                 return this;
             }
         }
@@ -182,18 +182,5 @@ public class RiceCompressOption implements ICompressOption {
             return clazz.cast(this);
         }
         return null;
-    }
-
-    /**
-     * Stores configuration in a way that can be shared and modified across enclosing option copies.
-     * 
-     * @author Attila Kovacs
-     *
-     * @since  1.18
-     */
-    private static final class Config {
-        private int bytePix = DEFAULT_RICE_BYTEPIX;
-
-        private int blockSize = DEFAULT_RICE_BLOCKSIZE;
     }
 }

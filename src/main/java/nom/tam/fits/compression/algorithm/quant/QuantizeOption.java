@@ -60,8 +60,15 @@ public class QuantizeOption implements ICompressOption {
 
     private static boolean useFMA = false;
 
-    /** Shared configuration across copies */
-    private Config config;
+    private boolean centerOnZero;
+
+    private boolean dither;
+
+    private boolean checkZero;
+
+    private double qlevel = 4.0;
+
+    private long seed = 1L;
 
     /** The parameters that represent settings for this option in the FITS headers and/or compressed data columns */
     protected QuantizeParameters parameters;
@@ -118,7 +125,6 @@ public class QuantizeOption implements ICompressOption {
      */
     public QuantizeOption(ICompressOption compressOption) {
         parameters = new QuantizeParameters(this);
-        config = new Config();
         this.compressOption = compressOption;
     }
 
@@ -307,7 +313,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #getBScale()
      */
     public double getQLevel() {
-        return config.qlevel;
+        return qlevel;
     }
 
     /**
@@ -319,7 +325,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    RandomSequence
      */
     public long getSeed() {
-        return config.seed;
+        return seed;
     }
 
     /**
@@ -368,7 +374,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #setCenterOnZero(boolean)
      */
     public boolean isCenterOnZero() {
-        return config.centerOnZero;
+        return centerOnZero;
     }
 
     /**
@@ -402,7 +408,7 @@ public class QuantizeOption implements ICompressOption {
      */
     @Deprecated
     public boolean isCheckZero() {
-        return config.checkZero;
+        return checkZero;
     }
 
     /**
@@ -414,7 +420,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #isDither2()
      */
     public boolean isDither() {
-        return config.dither;
+        return dither;
     }
 
     /**
@@ -426,7 +432,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #isDither()
      */
     public boolean isDither2() {
-        return config.checkZero;
+        return checkZero;
     }
 
     @Override
@@ -502,7 +508,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #isCenterOnZero()
      */
     public QuantizeOption setCenterOnZero(boolean value) {
-        config.centerOnZero = value;
+        centerOnZero = value;
         return this;
     }
 
@@ -556,7 +562,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setDither2(boolean)
      */
     public QuantizeOption setDither(boolean value) {
-        config.dither = value;
+        dither = value;
         return this;
     }
 
@@ -574,7 +580,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setDither(boolean)
      */
     public QuantizeOption setDither2(boolean value) {
-        config.checkZero = value;
+        checkZero = value;
         return this;
     }
 
@@ -689,7 +695,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setBScale(double)
      */
     public QuantizeOption setQlevel(double value) {
-        config.qlevel = value;
+        qlevel = value;
         return this;
     }
 
@@ -703,7 +709,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setTileIndex(int)
      */
     public QuantizeOption setSeed(long value) {
-        config.seed = value;
+        seed = value;
         return this;
     }
 
@@ -804,7 +810,7 @@ public class QuantizeOption implements ICompressOption {
     int toInt(double d) {
         // Always calculate the next dither value in the sequence even if we don't end up
         // using it. See FITS 4.0 Section 10.2.1 bullet point 5.
-        double dither = isDither() ? nextDither() : 0.0;
+        double ditherValue = isDither() ? nextDither() : 0.0;
 
         if (Double.isNaN(d) || d == nullValue) {
             if (nullValueIndicator == null) {
@@ -820,7 +826,7 @@ public class QuantizeOption implements ICompressOption {
         d -= bZero;
         d /= bScale;
         if (isDither()) {
-            d += dither;
+            d += ditherValue;
         }
         return (int) Math.round(d);
     }
@@ -837,7 +843,7 @@ public class QuantizeOption implements ICompressOption {
     double toDouble(int i) {
         // Always calculate the next dither value in the sequence even if we don't end up
         // using it. See FITS 4.0 Section 10.2.1 bullet point 5.
-        double dither = isDither() ? nextDither() : 0.0;
+        double ditherValue = isDither() ? nextDither() : 0.0;
 
         if (isDither() && isDither2() && i == DITHER2_ZERO_INDICATOR) {
             return 0.0;
@@ -849,7 +855,7 @@ public class QuantizeOption implements ICompressOption {
 
         double d = i;
         if (isDither()) {
-            d -= dither;
+            d -= ditherValue;
         }
 
         return useFMA ? Math.fma(d, bScale, bZero) : d * bScale + bZero;
@@ -911,25 +917,5 @@ public class QuantizeOption implements ICompressOption {
      */
     public static final boolean isUseFMA() {
         return useFMA;
-    }
-
-    /**
-     * Stores configuration in a way that can be shared and modified across enclosing option copies.
-     * 
-     * @author Attila Kovacs
-     *
-     * @since  1.18
-     */
-    private static final class Config {
-
-        private boolean centerOnZero;
-
-        private boolean dither;
-
-        private boolean checkZero;
-
-        private double qlevel = 4.0;
-
-        private long seed = 1L;
     }
 }
