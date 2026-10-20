@@ -139,7 +139,9 @@ abstract class TileCompressionOperation extends AbstractTileOperation implements
 
     @Override
     public TileCompressionOperation setDimensions(int dataOffset, int width, int height) {
-        super.setDimensions(dataOffset, width, height);
+        synchronized (lock) {
+            super.setDimensions(dataOffset, width, height);
+        }
         return this;
     }
 
