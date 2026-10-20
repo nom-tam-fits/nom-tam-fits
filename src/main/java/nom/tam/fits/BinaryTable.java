@@ -4433,7 +4433,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @since 1.19.1
      */
-    @SuppressFBWarnings(value = "USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION", justification = "false positive: caused by clones having their own locks.")
     public void compact() {
         synchronized (lock) {
             heapFileSize = 0;
