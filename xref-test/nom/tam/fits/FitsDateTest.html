@@ -210,7 +210,19 @@
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>         Assertions.assertEquals(expected, fitsDate.toString());
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>     }
 <a class="jxr_linenumber" name="L204" href="#L204">204</a> 
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> }
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>     @Test
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testNoMillis() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>         FitsDate date = <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2026-09-07T12:11:49."</span>);
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>         Assertions.assertEquals(<span class="jxr_string">"2026-09-07T12:11:49"</span>, date.toString());
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>     }
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> 
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>     @Test
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testRoundToNextSecond() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>         FitsDate date = <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2026-09-07T12:11:49.9995"</span>);
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>         Assertions.assertEquals(<span class="jxr_string">"2026-09-07T12:11:50.000"</span>, date.toString());
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>     }
+<a class="jxr_linenumber" name="L216" href="#L216">216</a> 
+<a class="jxr_linenumber" name="L217" href="#L217">217</a> }
 </pre>
 <hr/>
 <div id="footer">© 1996–2026 nom-tam-fits</div>
