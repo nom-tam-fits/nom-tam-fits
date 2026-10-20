@@ -195,6 +195,7 @@ public enum Stokes {
         }
 
         private Parameters(int offset, int step, int n) {
+            this.flags = 0;
             this.offset = offset;
             this.step = step;
             this.count = n;
