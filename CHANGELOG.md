@@ -15,6 +15,8 @@ Upcoming bug-fix release, possibly around 15 December 2026.
  
  - [#909] Fixed loss of precision in `QuantizeProcessor.unquantize()` due to casting to float for double-precision data. (by @attipaci, thanks to @bogdanni)
  
+ - [#916] Sharing configs across compression option copies was intriduced in 1.18. However, was ill-conceived, and could result in race conditions when parallel (de)compressing tiles. (by @attipaci)
+ 
 ### Changed
 
  - [#912] Explicit initialization of `flags` in `Stokes.Parameters`. (by @attipaci)
