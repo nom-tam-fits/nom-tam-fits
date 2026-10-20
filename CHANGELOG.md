@@ -18,9 +18,13 @@ Upcoming bug-fix release, possibly around 15 December 2026.
 ### Changed
 
  - [#912] Explicit initialization of `flags` in `Stokes.Parameters`. (by @attipaci)
+ 
+ - [#916] Sharing configs across compression option copies was introduced in 1.18. It may have been somewhat ill-conceived, and could potentially result in race conditions when (de)compressing tiles in paprallel. However there is no concrete evidence that it was an actual problem in normal uses cases, hence not a 'bug' per se. (by @attipaci)
+
+ - [#916] Ajusted testing with random generated images. Now tests use deterministic random sequences, and added noise is zero-mean and not cumulative.
 
  - `QuantizeProcessor.quantize()` / `.unquantize()` are now synchronized to be thread-safe. (by @attipaci)
- 
+  
  - The latest Maven build and runtime dependencies. (by @attipaci)
  
 

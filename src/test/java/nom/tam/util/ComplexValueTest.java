@@ -59,7 +59,7 @@ public class ComplexValueTest {
 
     @Test
     public void testComplex() throws Exception {
-        Random random = new Random();
+        Random random = new Random(42);
         FlexFormat f = new FlexFormat();
         ComplexValue z;
 

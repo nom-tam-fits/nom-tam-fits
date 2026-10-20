@@ -631,16 +631,18 @@ public class ReadWriteProvidedCompressedImageTest {
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
                     .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
                     .getCompressOption(HCompressorOption.class)//
-                    /**/.setScale(4);
+                    .setScale(4);
             compressedHdu//
                     .getCompressOption(QuantizeOption.class)//
-                    /**/.setQlevel(1.0)/**/.setCheckNull(true);
+                    .setQlevel(1.0)//
+                    .setCheckNull(true);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             f.write(bdos);
             Assertions.assertEquals(Compression.COMPRESSED_DATA_COLUMN,
                     compressedHdu.getHeader().findCard(Standard.TTYPEn.n(1)).getValue());
         }
+
         try (Fits f = new Fits("target/testSomeBlanksInCompressedFloatImage.fits.fz")) {
             f.readHDU();
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
@@ -1115,15 +1117,15 @@ public class ReadWriteProvidedCompressedImageTest {
         double[][] data = new double[100][100];
         double value = -1000.0d;
         int blanks = 0;
-        Random random = new Random();
+        Random random = new Random(0L);
         for (int index1 = 0; index1 < 100; index1++) {
             for (int index2 = 0; index2 < 100; index2++) {
                 data[index1][index2] = value;
                 if (blanks++ % 20 == 0) {
                     data[index1][index2] = Double.NaN;
                 } else {
-                    data[index1][index2] = value;
-                    value += 0.12345d + random.nextDouble() / 1000d;
+                    data[index1][index2] = value + (random.nextDouble() - 0.5) / 1000d;
+                    value += 0.12345d;
                 }
             }
         }
