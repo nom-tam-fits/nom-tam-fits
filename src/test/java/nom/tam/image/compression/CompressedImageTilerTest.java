@@ -651,7 +651,7 @@ public class CompressedImageTilerTest {
         final Buffer buffer = bufferElementType.newBuffer(12 * 4);
 
         final byte[] gzipData = new byte[12];
-        final Random random = new Random();
+        final Random random = new Random(42);
         random.nextBytes(gzipData);
 
         final Object[] rowData = new Object[] {new byte[0], gzipData};
@@ -684,7 +684,7 @@ public class CompressedImageTilerTest {
         columnNames.add(Compression.GZIP_COMPRESSED_DATA_COLUMN);
 
         final byte[] gzipData = new byte[12];
-        final Random random = new Random();
+        final Random random = new Random(42);
         random.nextBytes(gzipData);
 
         final Object[] rowData = new Object[] {new byte[0], gzipData};

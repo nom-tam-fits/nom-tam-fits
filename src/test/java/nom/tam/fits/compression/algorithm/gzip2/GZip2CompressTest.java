@@ -355,7 +355,7 @@ public class GZip2CompressTest {
     @Test
     public void testGzipCompressFloat() throws Exception {
         float[] floats = new float[1000];
-        Random random = new Random();
+        Random random = new Random(42);
         for (int index = 0; index < floats.length; index++) {
             floats[index] = random.nextFloat();
         }
@@ -378,7 +378,7 @@ public class GZip2CompressTest {
     @Test
     public void testGzipCompressDouble() throws Exception {
         double[] doubles = new double[1000];
-        Random random = new Random();
+        Random random = new Random(42);
         for (int index = 0; index < doubles.length; index++) {
             doubles[index] = random.nextDouble();
         }

@@ -81,7 +81,7 @@ public class StreamingTileImageDataTest {
     public void testWriteStep() throws Exception {
         final int axis1 = 200;
         final int axis2 = 200;
-        final Random random = new Random();
+        final Random random = new Random(42);
         final int[][] testData = new int[axis1][axis2];
         for (int x = 0; x < axis1; x++) {
             for (int y = 0; y < axis2; y++) {
@@ -130,7 +130,7 @@ public class StreamingTileImageDataTest {
     public void testWrite() throws Exception {
         final int axis1 = 200;
         final int axis2 = 200;
-        final Random random = new Random();
+        final Random random = new Random(42);
         final int[][] testData = new int[axis1][axis2];
         for (int x = 0; x < axis1; x++) {
             for (int y = 0; y < axis2; y++) {
