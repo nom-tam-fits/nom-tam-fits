@@ -4,6 +4,7 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
 ## [Unreleased] 
 
 ### Fixed
@@ -11,6 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
  - [#908] Fixed advancing dither sequence even if dithering is not used, e.g. for special values such as NaN or 0.0, as prescribed by Section 10.2.1 (bullet point 5) of the FITS standard 4.0. (by @attipaci, thanks to @bogdanni)
  
  - [#909] Fixed loss of precision in `QuantizeProcessor.unquantize()` due to casting to float for double-precision data. (by @attipaci, thanks to @bogdanni)
+ 
+### Changed
+
+ - [#912] Explicit initialization of `flags` in `Stokes.Parameters`. (by @attipaci)
+
+ - `QuantizeProcessor.quantize()` / `.unquantize()` are now synchronized to be thread-safe. (by @attipaci)
+ 
+ - The latest Maven build and runtime dependencies. (by @attipaci)
  
 
 ## [1.23.0] - 2026-09-15
