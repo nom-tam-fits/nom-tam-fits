@@ -1124,8 +1124,8 @@ public class ReadWriteProvidedCompressedImageTest {
                 if (blanks++ % 20 == 0) {
                     data[index1][index2] = Double.NaN;
                 } else {
-                    data[index1][index2] = value;
-                    value += 0.12345d + random.nextDouble() / 1000d;
+                    data[index1][index2] = value + (random.nextDouble() - 0.5) / 1000d;
+                    value += 0.12345d;
                 }
             }
         }
