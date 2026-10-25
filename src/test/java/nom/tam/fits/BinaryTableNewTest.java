@@ -1623,7 +1623,7 @@ public class BinaryTableNewTest {
             fits.close();
         }
 
-        try (Fits fits = new Fits(new FitsInputStream(new FileInputStream(new File(fileName))))) {
+        try (FitsInputStream in = new FitsInputStream(new FileInputStream(new File(fileName))); Fits fits = new Fits(in)) {
             BinaryTableHDU bhdu = (BinaryTableHDU) fits.getHDU(1);
 
             tab = bhdu.getData();

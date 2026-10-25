@@ -161,8 +161,8 @@ public class ReadWriteProvidedCompressedImageTest {
     @SuppressWarnings("unchecked")
     private <T>
 
-            void assertCompressedToUncompressedImage(String fileName, String unCompfileName, Class<T> clazz,
-                    IHDUAsserter<T> reader) throws Exception {
+            void assertCompressedToUncompressedImage(String fileName, String unCompfileName, IHDUAsserter<T> reader)
+                    throws Exception {
 
         try (Fits f = new Fits(fileName); Fits unFits = new Fits(unCompfileName)) {
             ImageHDU hdu = readHDU(unFits, ImageHDU.class);
@@ -247,49 +247,49 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest_c4s_060126_182642_zri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("c4s_060126_182642_zri.fits.fz"), //
-                resolveLocalOrRemoteFileName("c4s_060126_182642_zri.fits"), short[][].class,
+                resolveLocalOrRemoteFileName("c4s_060126_182642_zri.fits"),
                 (IHDUAsserter<short[][]>) (expected, actual) -> assert_short_image(actual, expected));
     }
 
     @Test
     public void blackboxTest_c4s_060127_070751_cri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits.fz"), //
-                resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits"), short[][].class,
+                resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits"),
                 (IHDUAsserter<short[][]>) (expected, actual) -> assert_short_image(actual, expected));
     }
 
     @Test
     public void blackboxTest_kwi_041217_212603_fri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("kwi_041217_212603_fri.fits.fz"), //
-                resolveLocalOrRemoteFileName("kwi_041217_212603_fri.fits"), short[][].class,
+                resolveLocalOrRemoteFileName("kwi_041217_212603_fri.fits"),
                 (IHDUAsserter<short[][]>) (expected, actual) -> assert_short_image(actual, expected));
     }
 
     @Test
     public void blackboxTest_kwi_041217_213100_fri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("kwi_041217_213100_fri.fits.fz"), //
-                resolveLocalOrRemoteFileName("kwi_041217_213100_fri.fits"), short[][].class,
+                resolveLocalOrRemoteFileName("kwi_041217_213100_fri.fits"),
                 (IHDUAsserter<short[][]>) (expected, actual) -> assert_short_image(actual, expected));
     }
 
     @Test
     public void blackboxTest_psa_140305_191552_zri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("psa_140305_191552_zri.fits.fz"), //
-                resolveLocalOrRemoteFileName("psa_140305_191552_zri.fits"), short[][].class,
+                resolveLocalOrRemoteFileName("psa_140305_191552_zri.fits"),
                 (IHDUAsserter<short[][]>) (expected, actual) -> assert_short_image(actual, expected));
     }
 
     @Test
     public void blackboxTest_psa_140305_194520_fri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits.fz"), //
-                resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits"), short[][].class,
+                resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits"),
                 (IHDUAsserter<short[][]>) (expected, actual) -> assert_short_image(actual, expected));
     }
 
     @Test
     public void blackboxTest_tu1134529() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("tu1134529.fits.fz"), //
-                resolveLocalOrRemoteFileName("tu1134529.fits"), int[][].class,
+                resolveLocalOrRemoteFileName("tu1134529.fits"),
                 (IHDUAsserter<int[][]>) (expected, actual) -> assert_int_image(actual, expected));
 
     }
@@ -297,7 +297,7 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest_tu1134531() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("tu1134531.fits.fz"), //
-                resolveLocalOrRemoteFileName("tu1134531.fits"), float[][].class,
+                resolveLocalOrRemoteFileName("tu1134531.fits"),
                 (IHDUAsserter<float[][]>) (expected, actual) -> assert_float_image(actual, expected, 15f));
     }
 
@@ -487,7 +487,7 @@ public class ReadWriteProvidedCompressedImageTest {
         if (showImage) {
             dispayImage(data);
         }
-        "to set a breakpoint ;-)".toString();
+
         doTile("readRiceAsImageHDU", data, image.getTiler(), 0, 0, 20, 20);
     }
 

@@ -222,15 +222,15 @@ public class GZip2CompressTest {
         } finally {
             SafeClose.close(out);
         }
-        InputStream in = null;
-        try {
-            in = new ByteBufferInputStream(ByteBuffer.wrap(expected));
+
+        try (InputStream in = new ByteBufferInputStream(ByteBuffer.wrap(expected))) {
             Assertions.assertEquals(1, in.read());
-            in.read(array, 1, 9);
+            if (in.read(array, 1, 9) < 0) {
+                throw new IOException("read() failed()");
+            }
             Assertions.assertArrayEquals(expected, array);
             Assertions.assertEquals(-1, in.read());
             Assertions.assertEquals(-1, in.read(array, 1, 9));
-        } finally {
             SafeClose.close(in);
         }
     }
