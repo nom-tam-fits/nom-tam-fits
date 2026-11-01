@@ -1631,7 +1631,7 @@
 <a class="jxr_linenumber" name="L1623" href="#L1623">1623</a>             fits.close();
 <a class="jxr_linenumber" name="L1624" href="#L1624">1624</a>         }
 <a class="jxr_linenumber" name="L1625" href="#L1625">1625</a> 
-<a class="jxr_linenumber" name="L1626" href="#L1626">1626</a>         <strong class="jxr_keyword">try</strong> (Fits fits = <strong class="jxr_keyword">new</strong> Fits(<strong class="jxr_keyword">new</strong> FitsInputStream(<strong class="jxr_keyword">new</strong> FileInputStream(<strong class="jxr_keyword">new</strong> File(fileName))))) {
+<a class="jxr_linenumber" name="L1626" href="#L1626">1626</a>         <strong class="jxr_keyword">try</strong> (FitsInputStream in = <strong class="jxr_keyword">new</strong> FitsInputStream(<strong class="jxr_keyword">new</strong> FileInputStream(<strong class="jxr_keyword">new</strong> File(fileName))); Fits fits = <strong class="jxr_keyword">new</strong> Fits(in)) {
 <a class="jxr_linenumber" name="L1627" href="#L1627">1627</a>             BinaryTableHDU bhdu = (BinaryTableHDU) fits.getHDU(1);
 <a class="jxr_linenumber" name="L1628" href="#L1628">1628</a> 
 <a class="jxr_linenumber" name="L1629" href="#L1629">1629</a>             tab = bhdu.getData();

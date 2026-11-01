@@ -230,15 +230,15 @@
 <a class="jxr_linenumber" name="L222" href="#L222">222</a>         } <strong class="jxr_keyword">finally</strong> {
 <a class="jxr_linenumber" name="L223" href="#L223">223</a>             SafeClose.close(out);
 <a class="jxr_linenumber" name="L224" href="#L224">224</a>         }
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>         InputStream in = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>             in = <strong class="jxr_keyword">new</strong> ByteBufferInputStream(ByteBuffer.wrap(expected));
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>             Assertions.assertEquals(1, in.read());
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>             in.read(array, 1, 9);
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>             Assertions.assertArrayEquals(expected, array);
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>             Assertions.assertEquals(-1, in.read());
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>             Assertions.assertEquals(-1, in.read(array, 1, 9));
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>         } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> 
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>         <strong class="jxr_keyword">try</strong> (InputStream in = <strong class="jxr_keyword">new</strong> ByteBufferInputStream(ByteBuffer.wrap(expected))) {
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>             Assertions.assertEquals(1, in.read());
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>             <strong class="jxr_keyword">if</strong> (in.read(array, 1, 9) &lt; 0) {
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"read() failed."</span>);
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>             }
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>             Assertions.assertArrayEquals(expected, array);
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>             Assertions.assertEquals(-1, in.read());
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>             Assertions.assertEquals(-1, in.read(array, 1, 9));
 <a class="jxr_linenumber" name="L234" href="#L234">234</a>             SafeClose.close(in);
 <a class="jxr_linenumber" name="L235" href="#L235">235</a>         }
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>     }
@@ -590,52 +590,51 @@
 <a class="jxr_linenumber" name="L582" href="#L582">582</a> 
 <a class="jxr_linenumber" name="L583" href="#L583">583</a>         <em class="jxr_comment">// Compared as bits, since the random patterns include NaNs.</em>
 <a class="jxr_linenumber" name="L584" href="#L584">584</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; expected.length; i++) {
-<a class="jxr_linenumber" name="L585" href="#L585">585</a>             Assertions.assertEquals(Float.floatToRawIntBits(expected[i]), Float.floatToRawIntBits(actual[i]),
-<a class="jxr_linenumber" name="L586" href="#L586">586</a>                     <span class="jxr_string">"pixel "</span> + i);
-<a class="jxr_linenumber" name="L587" href="#L587">587</a>         }
-<a class="jxr_linenumber" name="L588" href="#L588">588</a>     }
-<a class="jxr_linenumber" name="L589" href="#L589">589</a> 
-<a class="jxr_linenumber" name="L590" href="#L590">590</a>     @Test
-<a class="jxr_linenumber" name="L591" href="#L591">591</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGzipDecompressMisalignedChunksDouble() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L592" href="#L592">592</a>         Random random = <strong class="jxr_keyword">new</strong> Random(42);
-<a class="jxr_linenumber" name="L593" href="#L593">593</a>         <strong class="jxr_keyword">double</strong>[] expected = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[LARGE_ELEMENT_COUNT];
-<a class="jxr_linenumber" name="L594" href="#L594">594</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; expected.length; i++) {
-<a class="jxr_linenumber" name="L595" href="#L595">595</a>             expected[i] = Double.longBitsToDouble(random.nextLong());
-<a class="jxr_linenumber" name="L596" href="#L596">596</a>         }
-<a class="jxr_linenumber" name="L597" href="#L597">597</a> 
-<a class="jxr_linenumber" name="L598" href="#L598">598</a>         ByteBuffer compressed = gzip(<strong class="jxr_keyword">new</strong> DoubleGZipCompressor(), DoubleBuffer.wrap(expected), expected.length * 8);
-<a class="jxr_linenumber" name="L599" href="#L599">599</a> 
-<a class="jxr_linenumber" name="L600" href="#L600">600</a>         <strong class="jxr_keyword">double</strong>[] actual = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[expected.length];
-<a class="jxr_linenumber" name="L601" href="#L601">601</a>         <strong class="jxr_keyword">new</strong> DoubleGZipCompressor() {
-<a class="jxr_linenumber" name="L602" href="#L602">602</a> 
-<a class="jxr_linenumber" name="L603" href="#L603">603</a>             @Override
-<a class="jxr_linenumber" name="L604" href="#L604">604</a>             <strong class="jxr_keyword">protected</strong> GZIPInputStream createGZipInputStream(ByteBuffer c) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L605" href="#L605">605</a>                 <strong class="jxr_keyword">return</strong> misalignedChunks(c);
-<a class="jxr_linenumber" name="L606" href="#L606">606</a>             }
-<a class="jxr_linenumber" name="L607" href="#L607">607</a>         }.decompress(compressed, DoubleBuffer.wrap(actual));
-<a class="jxr_linenumber" name="L608" href="#L608">608</a> 
-<a class="jxr_linenumber" name="L609" href="#L609">609</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; expected.length; i++) {
-<a class="jxr_linenumber" name="L610" href="#L610">610</a>             Assertions.assertEquals(Double.doubleToRawLongBits(expected[i]), Double.doubleToRawLongBits(actual[i]),
-<a class="jxr_linenumber" name="L611" href="#L611">611</a>                     <span class="jxr_string">"pixel "</span> + i);
-<a class="jxr_linenumber" name="L612" href="#L612">612</a>         }
-<a class="jxr_linenumber" name="L613" href="#L613">613</a>     }
-<a class="jxr_linenumber" name="L614" href="#L614">614</a> 
-<a class="jxr_linenumber" name="L615" href="#L615">615</a>     @Test
-<a class="jxr_linenumber" name="L616" href="#L616">616</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGzipRoundTripLargerThanInternalBuffer() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L617" href="#L617">617</a>         Random random = <strong class="jxr_keyword">new</strong> Random(1234);
-<a class="jxr_linenumber" name="L618" href="#L618">618</a>         <strong class="jxr_keyword">float</strong>[] expected = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[LARGE_ELEMENT_COUNT];
-<a class="jxr_linenumber" name="L619" href="#L619">619</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; expected.length; i++) {
-<a class="jxr_linenumber" name="L620" href="#L620">620</a>             expected[i] = random.nextFloat() * 1000.0f;
-<a class="jxr_linenumber" name="L621" href="#L621">621</a>         }
-<a class="jxr_linenumber" name="L622" href="#L622">622</a> 
-<a class="jxr_linenumber" name="L623" href="#L623">623</a>         ByteBuffer compressed = gzip(<strong class="jxr_keyword">new</strong> FloatGZipCompressor(), FloatBuffer.wrap(expected), expected.length * 4);
-<a class="jxr_linenumber" name="L624" href="#L624">624</a> 
-<a class="jxr_linenumber" name="L625" href="#L625">625</a>         <strong class="jxr_keyword">float</strong>[] actual = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[expected.length];
-<a class="jxr_linenumber" name="L626" href="#L626">626</a>         <strong class="jxr_keyword">new</strong> FloatGZipCompressor().decompress(compressed, FloatBuffer.wrap(actual));
-<a class="jxr_linenumber" name="L627" href="#L627">627</a> 
-<a class="jxr_linenumber" name="L628" href="#L628">628</a>         Assertions.assertArrayEquals(expected, actual, 0.0f);
-<a class="jxr_linenumber" name="L629" href="#L629">629</a>     }
-<a class="jxr_linenumber" name="L630" href="#L630">630</a> }
+<a class="jxr_linenumber" name="L585" href="#L585">585</a>             Assertions.assertEquals(Float.floatToRawIntBits(expected[i]), Float.floatToRawIntBits(actual[i]), <span class="jxr_string">"pixel "</span> + i);
+<a class="jxr_linenumber" name="L586" href="#L586">586</a>         }
+<a class="jxr_linenumber" name="L587" href="#L587">587</a>     }
+<a class="jxr_linenumber" name="L588" href="#L588">588</a> 
+<a class="jxr_linenumber" name="L589" href="#L589">589</a>     @Test
+<a class="jxr_linenumber" name="L590" href="#L590">590</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGzipDecompressMisalignedChunksDouble() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L591" href="#L591">591</a>         Random random = <strong class="jxr_keyword">new</strong> Random(42);
+<a class="jxr_linenumber" name="L592" href="#L592">592</a>         <strong class="jxr_keyword">double</strong>[] expected = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[LARGE_ELEMENT_COUNT];
+<a class="jxr_linenumber" name="L593" href="#L593">593</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; expected.length; i++) {
+<a class="jxr_linenumber" name="L594" href="#L594">594</a>             expected[i] = Double.longBitsToDouble(random.nextLong());
+<a class="jxr_linenumber" name="L595" href="#L595">595</a>         }
+<a class="jxr_linenumber" name="L596" href="#L596">596</a> 
+<a class="jxr_linenumber" name="L597" href="#L597">597</a>         ByteBuffer compressed = gzip(<strong class="jxr_keyword">new</strong> DoubleGZipCompressor(), DoubleBuffer.wrap(expected), expected.length * 8);
+<a class="jxr_linenumber" name="L598" href="#L598">598</a> 
+<a class="jxr_linenumber" name="L599" href="#L599">599</a>         <strong class="jxr_keyword">double</strong>[] actual = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[expected.length];
+<a class="jxr_linenumber" name="L600" href="#L600">600</a>         <strong class="jxr_keyword">new</strong> DoubleGZipCompressor() {
+<a class="jxr_linenumber" name="L601" href="#L601">601</a> 
+<a class="jxr_linenumber" name="L602" href="#L602">602</a>             @Override
+<a class="jxr_linenumber" name="L603" href="#L603">603</a>             <strong class="jxr_keyword">protected</strong> GZIPInputStream createGZipInputStream(ByteBuffer c) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L604" href="#L604">604</a>                 <strong class="jxr_keyword">return</strong> misalignedChunks(c);
+<a class="jxr_linenumber" name="L605" href="#L605">605</a>             }
+<a class="jxr_linenumber" name="L606" href="#L606">606</a>         }.decompress(compressed, DoubleBuffer.wrap(actual));
+<a class="jxr_linenumber" name="L607" href="#L607">607</a> 
+<a class="jxr_linenumber" name="L608" href="#L608">608</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; expected.length; i++) {
+<a class="jxr_linenumber" name="L609" href="#L609">609</a>             Assertions.assertEquals(Double.doubleToRawLongBits(expected[i]), Double.doubleToRawLongBits(actual[i]),
+<a class="jxr_linenumber" name="L610" href="#L610">610</a>                     <span class="jxr_string">"pixel "</span> + i);
+<a class="jxr_linenumber" name="L611" href="#L611">611</a>         }
+<a class="jxr_linenumber" name="L612" href="#L612">612</a>     }
+<a class="jxr_linenumber" name="L613" href="#L613">613</a> 
+<a class="jxr_linenumber" name="L614" href="#L614">614</a>     @Test
+<a class="jxr_linenumber" name="L615" href="#L615">615</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGzipRoundTripLargerThanInternalBuffer() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L616" href="#L616">616</a>         Random random = <strong class="jxr_keyword">new</strong> Random(1234);
+<a class="jxr_linenumber" name="L617" href="#L617">617</a>         <strong class="jxr_keyword">float</strong>[] expected = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[LARGE_ELEMENT_COUNT];
+<a class="jxr_linenumber" name="L618" href="#L618">618</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; expected.length; i++) {
+<a class="jxr_linenumber" name="L619" href="#L619">619</a>             expected[i] = random.nextFloat() * 1000.0f;
+<a class="jxr_linenumber" name="L620" href="#L620">620</a>         }
+<a class="jxr_linenumber" name="L621" href="#L621">621</a> 
+<a class="jxr_linenumber" name="L622" href="#L622">622</a>         ByteBuffer compressed = gzip(<strong class="jxr_keyword">new</strong> FloatGZipCompressor(), FloatBuffer.wrap(expected), expected.length * 4);
+<a class="jxr_linenumber" name="L623" href="#L623">623</a> 
+<a class="jxr_linenumber" name="L624" href="#L624">624</a>         <strong class="jxr_keyword">float</strong>[] actual = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[expected.length];
+<a class="jxr_linenumber" name="L625" href="#L625">625</a>         <strong class="jxr_keyword">new</strong> FloatGZipCompressor().decompress(compressed, FloatBuffer.wrap(actual));
+<a class="jxr_linenumber" name="L626" href="#L626">626</a> 
+<a class="jxr_linenumber" name="L627" href="#L627">627</a>         Assertions.assertArrayEquals(expected, actual, 0.0f);
+<a class="jxr_linenumber" name="L628" href="#L628">628</a>     }
+<a class="jxr_linenumber" name="L629" href="#L629">629</a> }
 </pre>
 <hr/>
 <div id="footer">© 1996–2026 nom-tam-fits</div>

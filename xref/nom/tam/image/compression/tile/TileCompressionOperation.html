@@ -147,30 +147,32 @@
 <a class="jxr_linenumber" name="L139" href="#L139">139</a> 
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>     @Override
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>     <strong class="jxr_keyword">public</strong> <a name="TileCompressionOperation" href="../../../../../nom/tam/image/compression/tile/TileCompressionOperation.html#TileCompressionOperation">TileCompressionOperation</a> setDimensions(<strong class="jxr_keyword">int</strong> dataOffset, <strong class="jxr_keyword">int</strong> width, <strong class="jxr_keyword">int</strong> height) {
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>         <strong class="jxr_keyword">super</strong>.setDimensions(dataOffset, width, height);
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>     }
-<a class="jxr_linenumber" name="L145" href="#L145">145</a> 
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L147" href="#L147">147</a> <em class="jxr_javadoccomment">     * set the buffer that describes the whole compressed image and let the tile create a slice of it from the position</em>
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> <em class="jxr_javadoccomment">     * where the tile starts in the whole image. Attention this method is not thread-safe because it changes the</em>
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     * position of the buffer parameter. This buffer is just as big as the image buffer but will be reduced to the</em>
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     * needed size as a last step of the Compression.</em>
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_javadoccomment">     * @param compressed the buffer that describes the whole image.</em>
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setWholeImageCompressedBuffer(ByteBuffer compressed) {
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>         <strong class="jxr_keyword">synchronized</strong> (lock) {
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>             compressed.position(compressedOffset * getBaseType().size());
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>             compressedData = compressed.slice();
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>             compressedOffset = 0;
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>             <em class="jxr_comment">// we do not limit this buffer but is expected not to write more than</em>
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>             <em class="jxr_comment">// the uncompressed size.</em>
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>         }
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>     }
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> 
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <a name="AbstractNullPixelMask" href="../../../../../nom/tam/image/compression/tile/mask/AbstractNullPixelMask.html#AbstractNullPixelMask">AbstractNullPixelMask</a> createImageNullPixelMask(<a name="ImageNullPixelMask" href="../../../../../nom/tam/image/compression/tile/mask/ImageNullPixelMask.html#ImageNullPixelMask">ImageNullPixelMask</a> imageNullPixelMask);
-<a class="jxr_linenumber" name="L165" href="#L165">165</a> }
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>         <strong class="jxr_keyword">synchronized</strong> (lock) {
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>             <strong class="jxr_keyword">super</strong>.setDimensions(dataOffset, width, height);
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>         }
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>     }
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> 
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     * set the buffer that describes the whole compressed image and let the tile create a slice of it from the position</em>
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     * where the tile starts in the whole image. Attention this method is not thread-safe because it changes the</em>
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     * position of the buffer parameter. This buffer is just as big as the image buffer but will be reduced to the</em>
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_javadoccomment">     * needed size as a last step of the Compression.</em>
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> <em class="jxr_javadoccomment">     * @param compressed the buffer that describes the whole image.</em>
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setWholeImageCompressedBuffer(ByteBuffer compressed) {
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>         <strong class="jxr_keyword">synchronized</strong> (lock) {
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>             compressed.position(compressedOffset * getBaseType().size());
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>             compressedData = compressed.slice();
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>             compressedOffset = 0;
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>             <em class="jxr_comment">// we do not limit this buffer but is expected not to write more than</em>
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>             <em class="jxr_comment">// the uncompressed size.</em>
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>         }
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>     }
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> 
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <a name="AbstractNullPixelMask" href="../../../../../nom/tam/image/compression/tile/mask/AbstractNullPixelMask.html#AbstractNullPixelMask">AbstractNullPixelMask</a> createImageNullPixelMask(<a name="ImageNullPixelMask" href="../../../../../nom/tam/image/compression/tile/mask/ImageNullPixelMask.html#ImageNullPixelMask">ImageNullPixelMask</a> imageNullPixelMask);
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> }
 </pre>
 <hr/>
 <div id="footer">© 1996–2026 nom-tam-fits</div>

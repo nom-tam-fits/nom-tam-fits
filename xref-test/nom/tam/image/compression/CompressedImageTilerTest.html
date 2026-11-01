@@ -659,7 +659,7 @@
 <a class="jxr_linenumber" name="L651" href="#L651">651</a>         <strong class="jxr_keyword">final</strong> Buffer buffer = bufferElementType.newBuffer(12 * 4);
 <a class="jxr_linenumber" name="L652" href="#L652">652</a> 
 <a class="jxr_linenumber" name="L653" href="#L653">653</a>         <strong class="jxr_keyword">final</strong> byte[] gzipData = <strong class="jxr_keyword">new</strong> byte[12];
-<a class="jxr_linenumber" name="L654" href="#L654">654</a>         <strong class="jxr_keyword">final</strong> Random random = <strong class="jxr_keyword">new</strong> Random();
+<a class="jxr_linenumber" name="L654" href="#L654">654</a>         <strong class="jxr_keyword">final</strong> Random random = <strong class="jxr_keyword">new</strong> Random(42);
 <a class="jxr_linenumber" name="L655" href="#L655">655</a>         random.nextBytes(gzipData);
 <a class="jxr_linenumber" name="L656" href="#L656">656</a> 
 <a class="jxr_linenumber" name="L657" href="#L657">657</a>         <strong class="jxr_keyword">final</strong> Object[] rowData = <strong class="jxr_keyword">new</strong> Object[] {<strong class="jxr_keyword">new</strong> byte[0], gzipData};
@@ -692,7 +692,7 @@
 <a class="jxr_linenumber" name="L684" href="#L684">684</a>         columnNames.add(Compression.GZIP_COMPRESSED_DATA_COLUMN);
 <a class="jxr_linenumber" name="L685" href="#L685">685</a> 
 <a class="jxr_linenumber" name="L686" href="#L686">686</a>         <strong class="jxr_keyword">final</strong> byte[] gzipData = <strong class="jxr_keyword">new</strong> byte[12];
-<a class="jxr_linenumber" name="L687" href="#L687">687</a>         <strong class="jxr_keyword">final</strong> Random random = <strong class="jxr_keyword">new</strong> Random();
+<a class="jxr_linenumber" name="L687" href="#L687">687</a>         <strong class="jxr_keyword">final</strong> Random random = <strong class="jxr_keyword">new</strong> Random(42);
 <a class="jxr_linenumber" name="L688" href="#L688">688</a>         random.nextBytes(gzipData);
 <a class="jxr_linenumber" name="L689" href="#L689">689</a> 
 <a class="jxr_linenumber" name="L690" href="#L690">690</a>         <strong class="jxr_keyword">final</strong> Object[] rowData = <strong class="jxr_keyword">new</strong> Object[] {<strong class="jxr_keyword">new</strong> byte[0], gzipData};
