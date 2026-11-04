@@ -3545,12 +3545,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
     }
 
-    @SuppressWarnings("resource")
     @Override
     public void write(ArrayDataOutput os) throws FitsException {
         synchronized (lock) {
             try {
-                if (isDeferred() && os == getRandomAccessInput()) {
+                if (isDeferred() && os instanceof RandomAccess) {
                     // It it's a deferred mode re-write, then data were edited in place if at all,
                     // so we can skip the main table.
                     ((RandomAccess) os).skipAllBytes(getRegularTableSize());
