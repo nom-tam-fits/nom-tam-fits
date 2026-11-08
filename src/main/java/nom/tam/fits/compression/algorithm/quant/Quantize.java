@@ -55,11 +55,11 @@ public class Quantize {
 
     private static final int N6 = 6;
 
-    private static final double NOISE_2_MULTIPLICATOR = 1.0483579;
+    private static final double NOISE_2_MULTIPLIER = 1.0483579;
 
-    private static final double NOISE_3_MULTIPLICATOR = 0.6052697;
+    private static final double NOISE_3_MULTIPLIER = 0.6052697;
 
-    private static final double NOISE_5_MULTIPLICATOR = 0.1772048;
+    private static final double NOISE_5_MULTIPLIER = 0.1772048;
 
     private final QuantizeOption parameter;
 
@@ -532,9 +532,9 @@ public class Quantize {
         minValue = Double.isFinite(xminval) ? xminval : 0.0;
         maxValue = Double.isFinite(xmaxval) ? xmaxval : 0.0;
         ngood = ngoodpix;
-        noise2 = NOISE_2_MULTIPLICATOR * xnoise2;
-        noise3 = NOISE_3_MULTIPLICATOR * xnoise3;
-        noise5 = NOISE_5_MULTIPLICATOR * xnoise5;
+        noise2 = NOISE_2_MULTIPLIER * xnoise2;
+        noise3 = NOISE_3_MULTIPLIER * xnoise3;
+        noise5 = NOISE_5_MULTIPLIER * xnoise5;
     }
 
     private void swapElements(double[] array, int i, int j) {

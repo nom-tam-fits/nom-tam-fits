@@ -11,6 +11,7 @@ import nom.tam.image.compression.hdu.CompressedImageData;
 import nom.tam.image.compression.hdu.CompressedImageHDU;
 import nom.tam.image.compression.hdu.CompressedTableData;
 import nom.tam.image.compression.hdu.CompressedTableHDU;
+import nom.tam.util.ArrayDataInput;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -79,6 +80,9 @@ public final class FitsFactory {
 
     private static final IHierarchKeyFormatter DEFAULT_HIERARCH_FORMATTER = new StandardIHierarchKeyFormatter();
 
+    private FitsFactory() {
+    }
+
     /**
      * An class for aggregating all the settings internal to {@link FitsFactory}.
      * 
@@ -86,37 +90,30 @@ public final class FitsFactory {
      */
     protected static final class FitsSettings implements Cloneable {
 
-        private boolean useAsciiTables;
+        private boolean useAsciiTables = DEFAULT_USE_ASCII_TABLES;
 
-        private boolean useHierarch;
+        private boolean useHierarch = DEFAULT_USE_HIERARCH;
 
-        private boolean useExponentD;
+        private boolean useExponentD = DEFAULT_USE_EXPONENT_D;
 
-        private boolean checkAsciiStrings;
+        private boolean checkAsciiStrings = DEFAULT_CHECK_ASCII_STRINGS;
 
-        private boolean allowTerminalJunk;
+        private boolean allowTerminalJunk = DEFAULT_ALLOW_TERMINAL_JUNK;
 
-        private boolean allowHeaderRepairs;
+        private boolean allowHeaderRepairs = DEFAULT_ALLOW_HEADER_REPAIRS;
 
-        private boolean longStringsEnabled;
+        private boolean longStringsEnabled = DEFAULT_LONG_STRINGS_ENABLED;
 
-        private boolean useUnicodeChars;
+        private boolean useUnicodeChars = DEFAULT_USE_UNICODE_CHARS;
+
+        private long maxReadSize = Long.MAX_VALUE;
 
         @Deprecated
-        private boolean skipBlankAfterAssign;
+        private boolean skipBlankAfterAssign = DEFAULT_SKIP_BLANK_AFTER_ASSIGN;
 
-        private IHierarchKeyFormatter hierarchKeyFormatter = DEFAULT_HIERARCH_FORMATTER;
+        private IHierarchKeyFormatter hierarchKeyFormatter;
 
         private FitsSettings() {
-            useAsciiTables = DEFAULT_USE_ASCII_TABLES;
-            useHierarch = DEFAULT_USE_HIERARCH;
-            useUnicodeChars = DEFAULT_USE_UNICODE_CHARS;
-            checkAsciiStrings = DEFAULT_CHECK_ASCII_STRINGS;
-            useExponentD = DEFAULT_USE_EXPONENT_D;
-            allowTerminalJunk = DEFAULT_ALLOW_TERMINAL_JUNK;
-            allowHeaderRepairs = DEFAULT_ALLOW_HEADER_REPAIRS;
-            longStringsEnabled = DEFAULT_LONG_STRINGS_ENABLED;
-            skipBlankAfterAssign = DEFAULT_SKIP_BLANK_AFTER_ASSIGN;
             hierarchKeyFormatter = DEFAULT_HIERARCH_FORMATTER;
             hierarchKeyFormatter.setCaseSensitive(DEFAULT_CASE_SENSITIVE_HIERARCH);
         }
@@ -259,11 +256,58 @@ public final class FitsFactory {
             return allowHeaderRepairs;
         }
 
+        /**
+         * Returns the maximum FITS {@link Data} segment size that can be loaded from a file or stream as configured by
+         * {@link #setReadBounds(long)}.
+         * 
+         * @return (bytes) The maximum data size that can be loaded from a file or stream input, or a negative value to
+         *             indicate that the {@link FitsFactory#getReadBounds()} should determine the size limit dynamically
+         *             based on the memory available to the Java VM.
+         * 
+         * @since  1.24
+         * 
+         * @see    #setReadBounds(long)
+         */
+        protected long getReadBounds() {
+            return maxReadSize;
+        }
+
+        /**
+         * <p>
+         * Sets the maximum size of a FITS {@link Data} segment that is allowed to be loaded from the input. It can be
+         * used to avoid loading data that are too big for the application to hold or process. It is also useful for
+         * preventing huge image allocations based on incorrect header descriptions when reading from a stream, and when
+         * the header is not actually followed by the corresponding data of that size (such as may be used in a
+         * malicious service attack).
+         * </p>
+         * <p>
+         * Enforcing a reasonable size limit is a good idea in general, and especially advisable for online services
+         * that use this library to read FITS data provided by users. Without a size limit, an attacker could use a
+         * simple 2880 byte FITS header to crash the service by asking it to allocate huge images, without having to
+         * supply the promised data along with it also (many thanks to Nathan Cross at CyberBadger, who brought
+         * attention to thisvulnerability).
+         * </p>
+         * <p>
+         * The default limit is {@link Long#MAX_VALUE}, that is effectively unlimited.
+         * </p>
+         * 
+         * @param size (bytes) The maximum FITS image data size (as stored in the FITS) that can be loaded from a file
+         *                 or stream, or a negative number if you want {@link #getReadBounds()} to always return the
+         *                 maximum amount of memory available to the VM at the time of the call.
+         * 
+         * @since      1.24
+         * 
+         * @see        #getReadBounds()
+         */
+        protected void setReadBounds(long size) {
+            maxReadSize = size;
+        }
+
     }
 
-    private static final FitsSettings GLOBAL_SETTINGS = new FitsSettings();
+    private static FitsSettings globalSettings = new FitsSettings();
 
-    private static final ThreadLocal<FitsSettings> LOCAL_SETTINGS = new ThreadLocal<>();
+    private static ThreadLocal<FitsSettings> localSettings = new ThreadLocal<>();
 
     private static ExecutorService threadPool;
 
@@ -456,7 +500,7 @@ public final class FitsFactory {
     /**
      * .
      * 
-     * @deprecated               (<i>for internal use</i>)/ Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return                   Given Header and data objects return the appropriate type of HDU.
      *
@@ -541,7 +585,8 @@ public final class FitsFactory {
             d = BinaryTableHDU.encapsulate(o);
             h = BinaryTableHDU.manufactureHeader(d);
         } else {
-            throw new FitsException("This type of data is not supported for FITS representation");
+            throw new FitsException("This type of data is not        if(type.equals(Standard.XTENSION_BINTABLE))\n"
+                    + "         supported for FITS representation");
         }
 
         return hduFactory(h, d);
@@ -584,26 +629,6 @@ public final class FitsFactory {
     }
 
     // CHECKSTYLE:ON
-
-    /**
-     * Restores all settings to their default values.
-     *
-     * @since 1.16
-     */
-    public static void setDefaults() {
-        FitsSettings s = current();
-        s.useExponentD = DEFAULT_USE_EXPONENT_D;
-        s.allowHeaderRepairs = DEFAULT_ALLOW_HEADER_REPAIRS;
-        s.allowTerminalJunk = DEFAULT_ALLOW_TERMINAL_JUNK;
-        s.checkAsciiStrings = DEFAULT_CHECK_ASCII_STRINGS;
-        s.longStringsEnabled = DEFAULT_LONG_STRINGS_ENABLED;
-        s.skipBlankAfterAssign = DEFAULT_SKIP_BLANK_AFTER_ASSIGN;
-        s.useAsciiTables = DEFAULT_USE_ASCII_TABLES;
-        s.useHierarch = DEFAULT_USE_HIERARCH;
-        s.useUnicodeChars = DEFAULT_USE_UNICODE_CHARS;
-        s.hierarchKeyFormatter = DEFAULT_HIERARCH_FORMATTER;
-        s.hierarchKeyFormatter.setCaseSensitive(DEFAULT_CASE_SENSITIVE_HIERARCH);
-    }
 
     /**
      * Sets whether 'D' may be used instead of 'E' to mark the exponent for a floating point value with precision beyond
@@ -756,15 +781,15 @@ public final class FitsFactory {
      */
     public static void useThreadLocalSettings(boolean useThreadSettings) {
         if (useThreadSettings) {
-            LOCAL_SETTINGS.set(GLOBAL_SETTINGS.copy());
+            localSettings.set(globalSettings.copy());
         } else {
-            LOCAL_SETTINGS.remove();
+            localSettings.remove();
         }
     }
 
     @SuppressFBWarnings(value = "USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION", justification = "Lock is through a private static field.")
     private static void initializeThreadPool() {
-        synchronized (GLOBAL_SETTINGS) {
+        synchronized (globalSettings) {
             if (threadPool == null) {
                 threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, //
                         new ThreadFactory() {
@@ -787,13 +812,76 @@ public final class FitsFactory {
      * @return the current active settings for generating or interpreting FITS files.
      */
     protected static FitsSettings current() {
-        FitsSettings settings = LOCAL_SETTINGS.get();
-        if (settings == null) {
-            return GLOBAL_SETTINGS;
-        }
-        return settings;
+        FitsSettings local = localSettings.get();
+        return local == null ? globalSettings : local;
     }
 
-    private FitsFactory() {
+    /**
+     * Restores all settings to their default values.
+     *
+     * @since 1.16
+     */
+    public static void setDefaults() {
+        globalSettings = new FitsSettings();
+        localSettings.set(null);
     }
+
+    /**
+     * Returns the maximum size of a {@link nom.tam.fits.Data} segment (as stored in the FITS) that can be read (and
+     * allocated) at the present time. The returned value is either the fixed value that was previously set via
+     * {@link #setReadBounds(long)} (if it was positive or zero), or else the maximum amount of unused memory available
+     * to the Java VM at the time of this call (if the set value was negative).
+     *
+     * @return (bytes) The maximum size of a FITS data segment (as stored in the FITS) allowed to be read from an input
+     *             source right now.
+     * 
+     * @since  1.24
+     * 
+     * @see    #setReadBounds(long)
+     * @see    Data#read(ArrayDataInput)
+     * @see    nom.tam.image.ImageTiler#getTile(int[], int[], int[])
+     * @see    nom.tam.image.ImageTiler#getCompleteImage()
+     */
+    public static long getReadBounds() {
+        long max = current().getReadBounds();
+
+        if (max < 0) {
+            Runtime r = Runtime.getRuntime();
+            max = r.maxMemory() - (r.totalMemory() - r.freeMemory());
+        }
+
+        return max;
+    }
+
+    /**
+     * <p>
+     * Sets the maximum size of a FITS {@link Data} segment that is allowed to be loaded from the input. It can be used
+     * to avoid loading data that are too big for the application to hold or process. It is also useful for preventing
+     * huge image allocations based on incorrect header descriptions when reading from a stream, and when the header is
+     * not actually followed by the corresponding data of that size (such as may be used in a malicious service attack).
+     * </p>
+     * <p>
+     * Enforcing a reasonable size limit is a good idea in general, and especially advisable for online services that
+     * use this library to read FITS data provided by users. Without a size limit, an attacker could use a simple 2880
+     * byte FITS header to crash the service by asking it to allocate huge images, without having to supply the promised
+     * data along with it also (many thanks to Nathan Cross at CyberBadger, who brought attention to thisvulnerability).
+     * </p>
+     * <p>
+     * The default limit is {@link Long#MAX_VALUE}, that is effectively unlimited.
+     * </p>
+     * 
+     * @param size (bytes) The maximum FITS image data size (as stored in the FITS) that can be loaded from a file or
+     *                 stream, or a negative number if you want {@link #getReadBounds()} to always return the maximum
+     *                 amount of memory available to the VM at the time of the call.
+     * 
+     * @since      1.24
+     * 
+     * @see        #getReadBounds()
+     * @see        Data#read(nom.tam.util.ArrayDataInput)
+     * @see        Data#ensureData()
+     */
+    public static void setReadBounds(long size) {
+        current().setReadBounds(size);
+    }
+
 }

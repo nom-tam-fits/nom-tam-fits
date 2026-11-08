@@ -5,6 +5,27 @@ All notable changes to the nom.tam.fits library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+Feature release with a security fix.
+
+### Added
+
+ - [#924] Added `setReadBounds(long)` / `getReadBounds()` methods to `FitsFactory`, and `FitsSettings`. The purpose of these methods is to allow the user to limit the size of allocations or inbound data transfers (e.g. into a fixed-sized buffer) when reading data from an input file or stream (either direcly or through an image tiler). This may be especially important for services that open FITS from user supplied streams as part of an online service. A tiny header alone may prescribe a huge image segment, data for which may or may not to follow in the stream. Unchecked, faked or corrupted headers could induce huge allocations, which would crash and bring down the service. Even in offline use, resource limits generally make it desirable to fail gracefully for overly large data segments instead than crashing with an `OutOfMemoryError` or some uncaught overflow exception. (by @attipaci, thanks to @NathanCss)
+ 
+ - [#924] Added runtime `ReadBoundsException`, a subclass of `FitsException`, to indicate when the reading of a data segment would exceed the read size limit configured.
+ 
+ - [#924] Added `Data.getProjectedReadSize()` to return the expected size of a FITS data segment, as stored in the FITS, including both the regular n-dimensional data, as well as any data residing on the heap. While not exact, especially given the Java vs. FITS type differences, the returned value may provide a ballpark estimate of the memory requirements for loading FITS data into RAM. (by @attipaci)
+ 
+### Changed
+
+ - [#924] `ImageTiler.getCompleteImage()`, and some variants of the `ImageTiler.getTile()` methods can now throw a `ReadBoundsException` also, if the image or tile size exceeds the read bounds configured, or if the tile is too big to fit into a flattened Java array. (by @attipaci, thanks to @NathanCss)
+ 
+ - [#924] `Data.read()`, `Data.ensureData()`, `StandardImageTile.getTile()` / `.getCompleteImage()`, and `CompressedImageTiler.getCompleteImage()`, now throw a `ReadBoundsException` if the requested image or tile size exceeds the image read size limit set by the user (via `FitsFactory.setImageReadSizeLimit(long)`), thus preventing the allocation image data larger than the previously specified limit. (by @attipaci, thanks to @NathanCss)
+ 
+ - [#924] Simplified `FitsFactory` settings handling.
+
+
 ## [1.23.1] - 2026-11-01
 
 Bug-fix release. 
