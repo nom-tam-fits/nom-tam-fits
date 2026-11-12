@@ -468,7 +468,7 @@ public abstract class StandardImageTiler implements ImageTiler {
             throw new IOException("Attempt to read from null file");
         }
 
-        long size = (long) countPixels(new int[dims.length], dims, null) * ElementType.forClass(base).size();
+        long size = countPixels(new int[dims.length], dims, null) * ElementType.forClass(base).size();
         if (size > FitsFactory.getReadBounds()) {
             throw new ReadBoundsException("Image size (" + size + ") exceeds read size limit.");
         }
@@ -489,7 +489,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      */
     protected abstract Object getMemoryImage();
 
-    private int countPixels(int[] corners, int[] lengths, int[] steps) throws ReadBoundsException, IOException {
+    private long countPixels(int[] corners, int[] lengths, int[] steps) throws IOException {
         if (steps == null) {
             steps = new int[dims.length];
             Arrays.fill(steps, 1);
@@ -510,23 +510,25 @@ public abstract class StandardImageTiler implements ImageTiler {
             pixels *= ((long) lengths[i] + steps[i] - 1) / steps[i];
         }
 
-        return (int) pixels;
+        return pixels;
     }
 
     @Override
-    public Object getTile(int[] corners, int[] lengths) throws ReadBoundsException, IOException {
+    public Object getTile(int[] corners, int[] lengths)
+            throws ArrayIndexOutOfBoundsException, ReadBoundsException, IOException {
         final int[] steps = new int[corners.length];
         Arrays.fill(steps, 1);
         return getTile(corners, lengths, steps);
     }
 
     @Override
-    public Object getTile(int[] corners, int[] lengths, int[] steps) throws ReadBoundsException, IOException {
+    public Object getTile(int[] corners, int[] lengths, int[] steps)
+            throws ArrayIndexOutOfBoundsException, ReadBoundsException, IOException {
         int elementSize = ElementType.forClass(base).size();
 
         long pixels = countPixels(corners, lengths, steps);
         if (pixels > Integer.MAX_VALUE) {
-            throw new ReadBoundsException("flattened tile does not fit into Java array");
+            throw new ArrayIndexOutOfBoundsException("flattened tile does not fit into Java array");
         }
 
         long size = pixels * elementSize;

@@ -19,7 +19,7 @@ Feature release with a security fix.
  
 ### Changed
 
- - [#924] `ImageTiler.getCompleteImage()`, and some variants of the `ImageTiler.getTile()` methods can now throw a `ReadBoundsException` also, if the image or tile size exceeds the read bounds configured, or if the tile is too big to fit into a flattened Java array. (by @attipaci, thanks to @NathanCss)
+ - [#924] `ImageTiler.getCompleteImage()`, and some variants of the `ImageTiler.getTile()` methods can now throw a `ReadBoundsException` also,  if the image or tile size exceeds the read bounds configured, or and `ArrayIndexOutOfBoundsException` if the tile is too big to fit into a flattened Java array. (by @attipaci, thanks to @NathanCss)
  
  - [#924] `Data.read()`, `Data.ensureData()`, `StandardImageTile.getTile()` / `.getCompleteImage()`, and `CompressedImageTiler.getCompleteImage()`, now throw a `ReadBoundsException` if the requested image or tile size exceeds the image read size limit set by the user (via `FitsFactory.setImageReadSizeLimit(long)`), thus preventing the allocation image data larger than the previously specified limit. (by @attipaci, thanks to @NathanCss)
  

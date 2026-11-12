@@ -229,11 +229,11 @@ Before you read data from FITS into memory, you might want to set the maximum si
 and loaded into memory from the FITS input file or stream. This may be especially important if your application is an 
 online service that processes user-supplied data files from stream inputs. A user-provided FITS header may prescribe a 
 huge image (data for which may or may not follow in the stream as such), and the library will have to allocate the 
-image data prior to attempting to load it. An attacker may take advantage of that by requiring impossibly large 
+image data prior to attempting to load it. A malicious attack may take advantage of that by requiring impossibly large 
 allocations with a simple 2880-byte header alone (without the data to follow), and thus crash the service.
 
 By default, the library does not limit the size of data that can be read from the FITS or allocated based on their 
-header prescriptions. Therefore, we strongly suggest that you set an limit as appropriate for your application and/or 
+header prescriptions. Therefore, we strongly suggest that you set a limit as appropriate for your application and/or 
 resources available before you attempt to read FITS files from an input, especially if that input is a remote
 stream resource. 
 
