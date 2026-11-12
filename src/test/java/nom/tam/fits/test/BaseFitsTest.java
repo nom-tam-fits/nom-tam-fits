@@ -732,10 +732,10 @@ public class BaseFitsTest {
                         FitsFactory.useThreadLocalSettings(true);
                         for (int index = 0; index < testFitsSettingsValue.length; index++) {
                             waitForThread(testFitsSettingsValue, 1);
-                            testFitsSettingsValue[index++] = FitsFactory.isLongStringsEnabled();
                             if (testFitsSettingsValue[index] != null) {
                                 FitsFactory.setLongStringsEnabled(testFitsSettingsValue[index]);
                             }
+                            testFitsSettingsValue[index] = FitsFactory.isLongStringsEnabled();
                         }
                     } catch (InterruptedException e) {
                         Arrays.fill(testFitsSettingsValue, null);
