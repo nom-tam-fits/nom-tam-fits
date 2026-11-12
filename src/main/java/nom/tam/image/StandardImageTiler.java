@@ -468,7 +468,7 @@ public abstract class StandardImageTiler implements ImageTiler {
             throw new IOException("Attempt to read from null file");
         }
 
-        long size = countPixels(new int[dims.length], dims, null) * ElementType.forClass(base).size();
+        long size = (long) countPixels(new int[dims.length], dims, null) * ElementType.forClass(base).size();
         if (size > FitsFactory.getReadBounds()) {
             throw new ReadBoundsException("Image size (" + size + ") exceeds read size limit.");
         }
