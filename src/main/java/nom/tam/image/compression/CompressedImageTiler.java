@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
+import nom.tam.fits.ReadBoundsException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
@@ -411,9 +412,9 @@ public class CompressedImageTiler implements ImageTiler {
     }
 
     @Override
-    public Object getCompleteImage() throws IOException {
+    public Object getCompleteImage() throws ReadBoundsException, IOException {
         try {
-            return compressedImageHDU.asImageHDU().getData().getData();
+            return compressedImageHDU.asImageHDU().getKernel();
         } catch (FitsException fitsException) {
             throw new IOException(fitsException.getMessage(), fitsException);
         }

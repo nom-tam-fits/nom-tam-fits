@@ -2553,6 +2553,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
     }
 
+    @Override
+    protected long getProjectedReadSize() {
+        return super.getProjectedReadSize() + getHeapSize();
+    }
+
     /**
      * @return the size of the heap -- including the offset from the end of the table data, and reserved space after.
      */
@@ -2613,7 +2618,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     private void readTableElement(Object o, ColumnDesc c, int row) throws IOException, FitsException {
         synchronized (lock) {
-            @SuppressWarnings("resource")
             RandomAccess in = getRandomAccessInput();
 
             in.position(getFileOffset() + row * (long) rowLen + c.offset);
@@ -4388,7 +4392,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             }
 
             FitsHeap hp = getHeap();
-            long oldSize = hp.size();
+            long oldSize = hp.getSize();
             FitsHeap compact = new FitsHeap(0);
 
             for (int i = 0; i < nRow; i++) {

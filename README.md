@@ -16,7 +16,7 @@ __nom.tam.fits__ is a full-featured, fast, 100% pure Java 8+ library for reading
 _nom.tam_ prefix) at NASA Goddard Space Flight Center. Currently it is maintained by 
 [Attila Kov&aacute;cs](https://github.com/attipaci).
 
-This document has been updated for 1.22 and/or later 1.x releases.
+This document has been updated for 1.24 and/or later 1.x releases.
 
 ## Table of Contents
 
@@ -160,6 +160,7 @@ dodgy they may be, will be supported in all future releases prior to version __2
 
  - [FITS vs Java bytes](#fits-vs-java-bytes)
  - [Deferred reading](#deferred-reading)
+ - [Setting a size limit for reads](#read-size-limit)
  - [Tolerance to standard violations in 3rd party FITS files](#read-tolerance)
  - [Reading images](#reading-images)
  - [Reading tables](#reading-tables)
@@ -221,6 +222,43 @@ it. That's not going to work. The correct order is of course:
 As of version __1.18__, all data classes of the library support deferred reading.
 
 
+<a id="read-size-limit"></a>
+#### Setting a size limit for reads
+
+Before you read data from FITS into memory, you might want to set the maximum size that you will allow to be allocated 
+and loaded into memory from the FITS input file or stream. This may be especially important if your application is an 
+online service that processes user-supplied data files from stream inputs. A user-provided FITS header may prescribe a 
+huge image (data for which may or may not follow in the stream as such), and the library will have to allocate the 
+image data prior to attempting to load it. A malicious attack may take advantage of that by requiring impossibly large 
+allocations with a simple 2880-byte header alone (without the data to follow), and thus crash the service.
+
+By default, the library does not limit the size of data that can be read from the FITS or allocated based on their 
+header prescriptions. Therefore, we strongly suggest that you set a limit as appropriate for your application and/or 
+resources available before you attempt to read FITS files from an input, especially if that input is a remote
+stream resource. 
+
+The `FitsFactory.setReadBounds(long)` method, since version __1.24__, is there to do exactly that, e.g.:
+
+```java
+  // Set 1MB as the maximum stored data size that may be loaded into memory 
+  // FITS from a file or stream.
+  FitsFactory.setReadBounds(1000000L);
+```
+
+After that, if you attempt to read a FITS file whose header describes a data segment larger than the limit you set, 
+then `read()` on that image will throw a `ReadBoundsException` (a subclass of `FitsException`).
+
+You can also specify a negative value, to set the limiting size dynamically to the maximum amount of memory 
+available to the VM at the time you attempt to read the image data, e.g.:
+
+```java
+  // Set the maximum image size that can be allocated dynamically to the
+  // amount of memory available to the VM when loading the image data is attempted.
+  FitsFactory.setReadBounds(-1);
+```
+
+The limits set by `FitsFactory.setReadBounds()` will apply to `Data.read()`, and the `StandardImageTiler.getTile()` and `getCompleteImage()` methods also. 
+
 
 <a id="read-tolerance"></a>
 ### Tolerance to standard violations in 3rd party FITS files.
@@ -244,12 +282,13 @@ during reading.
 - [Reading whole images](#reading-whole-images)
 - [Reading selected parts of images only (cutouts)](#reading-cutouts)
 - [Streaming image cutouts](#streaming-cutouts)
+- [Converting images to a different type](#converting-image-type)
+- [Complex valued images](#complex-images) 
 - [Low-level reading of image data](#low-level-image-read)
 
 
 
 <a id="reading-whole-images"></a>
-
 #### Reading whole images
 
 The simplest example of reading an image contained in the first HDU is given below:
@@ -266,73 +305,6 @@ Note the casting into an `ImageHDU`. When reading FITS data using the nom.tam li
 the results to the appropriate type. Given that the FITS file may contain many different kinds of data and that Java 
 provides us with no class that can point to different kinds of primitive arrays other than `Object`, such explicit 
 casting is inevitable if you want to use the data from the FITS files.
-
-
-#### Converting images to a different type
-
-As of version 1.20, the library provides the means for converting images between numerical types. Let's say the FITS 
-stored the image as integers, but we want them as double-precision values. 
-
-```java
-  double[][] darray = (double[][]) hdu.getData().convertTo(double.class).getKernel();
-```
-
-Things get somewhat interesting at this point, because the FITS standard also allows for the integer representation of 
-floating-point values, via quantization. The quantization has the following parameters:
-
- - A scaling factor, i.e. the separation of discrete levels in the floating point data (defaults to 1.0)
- - an offset, i.e. the floating point value that corresponds to an integer value of 0 (defaults to 0.0).
- - a blanking value, i.e. the integer that corresponds to NaN (not used by default).
- 
- The quantization of images is defined by the `BSCALE`, `BZERO`, and `BLANK` keywords accordingly in the FITS header.
- Thus, when these keywords are present, the integer to decimal conversion will automatically apply the 
- integer-to-decimal conversion as:
- 
- ```
-   <decimal-value> = <scaling> * <integer-value> + <offset>
- ``` 
- 
-or else set NaN values when the integer value matches the designated blanking value. In the absence of the above
-header keywords defining quantization, the integer-to-decimal conversion is effectively just a widening conversion.
-
-The reverse conversion, from decimal images to integer images, involves rounding, i.e.:
-
-```
-  <integer-value> = round((<decimal-value> - <offset>) / <scaling>)
-```
-
-If you want to convert the image without quantization, you may call `ImageData.setQuantizer(null)` prior to the 
-conversions, or else use the static low-level `ArrayFuncs.convertArray(Object, Class)` method instead.
-
-
-#### Complex valued images
- 
-While the original FITS standard designated images for scalar numerical types only, the current standard (version 4.0) 
-also specifies a convention to represent complex valued data as images. Complex arrays are recorded as any scalar 
-numerical type, but with an extra dimension of 2 containing the real and imaginary components. E.g. a 4x3 complex 
-array can thus be represented as any primitive type array with 4x3x2 dimensions. The convention is that the axis 
-containing the complex pair of values has is `CTYPEn` header keyword named as 'COMPLEX'. Note, that complex values can 
-be recorded as integers also, and use quantization just like decimals.
-
-As of version 1.20, this library recognizes when the convention is used when reading FITS image HDUs. (The library can 
-only handle the convention if the 'COMPLEX' axis is the first or last image axis -- which should cover all but some 
-very pathological use cases.) 
-
-However, complex-valued images will continue to read back as their raw storage type (e.g. `float[4][3][2]`) for back 
-compatibility with previous releases. But, you can easily check if the data is meant to be complex (or not) and 
-convert them to complex values in a second step after loading the data. E.g.:
-
-```java
-  // Get the data in the stored data format as some primitive array...
-  ImageData data = hdu.getData();
-  
-  // If the complex array convention was used in the header, we can convert the image data
-  // to complex-valued as the second step...
-  if (data.isComplexValued()) {
-     ComplexValue[][] z = (ComplexValue[][]) data.convertTo(ComplexValue.class).getKernel();
-     ...
-  }
-```
 
 
 <a id="reading-cutouts"></a>
@@ -366,6 +338,8 @@ And you can convert to other numerical types, e.g. via one of the `ArrayFuncs.co
 ```
   double[][] dCenter2D = (double[][]) ArrayFuncs.convertArray(center2D, double.class, hdu.getData().getQuantizer());
 ```
+
+Note, that read size limits set via `FitsFactory.setReadBounds()` will apply to the image tiles also.
 
 
 <a id="reading-streaming-cutouts"></a>
@@ -429,7 +403,74 @@ example, replacing `imageHDU.getTiler()` with a `CompressedImageTiler` step, suc
   ...
 ```
 
+Note, that read size limits set via `FitsFactory.setReadBounds()` will apply to compressed image tiles also.
 
+<a id="converting-image-type"></a>
+#### Converting images to a different type
+
+As of version 1.20, the library provides the means for converting images between numerical types. Let's say the FITS 
+stored the image as integers, but we want them as double-precision values. 
+
+```java
+  double[][] darray = (double[][]) hdu.getData().convertTo(double.class).getKernel();
+```
+
+Things get somewhat interesting at this point, because the FITS standard also allows for the integer representation of 
+floating-point values, via quantization. The quantization has the following parameters:
+
+ - A scaling factor, i.e. the separation of discrete levels in the floating point data (defaults to 1.0)
+ - an offset, i.e. the floating point value that corresponds to an integer value of 0 (defaults to 0.0).
+ - a blanking value, i.e. the integer that corresponds to NaN (not used by default).
+ 
+ The quantization of images is defined by the `BSCALE`, `BZERO`, and `BLANK` keywords accordingly in the FITS header.
+ Thus, when these keywords are present, the integer to decimal conversion will automatically apply the 
+ integer-to-decimal conversion as:
+ 
+ ```
+   <decimal-value> = <scaling> * <integer-value> + <offset>
+ ``` 
+ 
+or else set NaN values when the integer value matches the designated blanking value. In the absence of the above
+header keywords defining quantization, the integer-to-decimal conversion is effectively just a widening conversion.
+
+The reverse conversion, from decimal images to integer images, involves rounding, i.e.:
+
+```
+  <integer-value> = round((<decimal-value> - <offset>) / <scaling>)
+```
+
+If you want to convert the image without quantization, you may call `ImageData.setQuantizer(null)` prior to the 
+conversions, or else use the static low-level `ArrayFuncs.convertArray(Object, Class)` method instead.
+
+<a id="complex-images"></a>
+#### Complex valued images
+ 
+While the original FITS standard designated images for scalar numerical types only, the current standard (version 4.0) 
+also specifies a convention to represent complex valued data as images. Complex arrays are recorded as any scalar 
+numerical type, but with an extra dimension of 2 containing the real and imaginary components. E.g. a 4x3 complex 
+array can thus be represented as any primitive type array with 4x3x2 dimensions. The convention is that the axis 
+containing the complex pair of values has is `CTYPEn` header keyword named as 'COMPLEX'. Note, that complex values can 
+be recorded as integers also, and use quantization just like decimals.
+
+As of version 1.20, this library recognizes when the convention is used when reading FITS image HDUs. (The library can 
+only handle the convention if the 'COMPLEX' axis is the first or last image axis -- which should cover all but some 
+very pathological use cases.) 
+
+However, complex-valued images will continue to read back as their raw storage type (e.g. `float[4][3][2]`) for back 
+compatibility with previous releases. But, you can easily check if the data is meant to be complex (or not) and 
+convert them to complex values in a second step after loading the data. E.g.:
+
+```java
+  // Get the data in the stored data format as some primitive array...
+  ImageData data = hdu.getData();
+  
+  // If the complex array convention was used in the header, we can convert the image data
+  // to complex-valued as the second step...
+  if (data.isComplexValued()) {
+     ComplexValue[][] z = (ComplexValue[][]) data.convertTo(ComplexValue.class).getKernel();
+     ...
+  }
+```
 
 <a id="low-level-image-read"></a>
 #### Low-level reading of image data
@@ -501,6 +542,11 @@ the entries. To load the entire HDU into memory:
   hdu.getKernel();
 ```
 
+Note, that if you set a read size limit via `FitsFactory.setReadSizeLimit(long)`, then the above may throw a 
+`FitsException` if the size of the full data exceeds said limit. You can still access the table data directly from a
+random accessible file (but not from a stream!), so you may want to surround the `getKernel()` call with a `try` / 
+`catch` block, if appropriate.
+
 Next, we might want to find which columns store the data we need, using column names if appropriate. (We can of course
 rely on hard-coded column indices too when we know we are dealing with tables of known fixed format).
 
@@ -534,7 +580,7 @@ index 3), and a spectrum stored in the fifth column (i.e. Java index 4):
 
 The old `getElement()` / `setElement()` methods supported access as arrays only. While this is still a viable 
 alternative (though slightly less elegant), we recommend against it going forward. Nevertheless, the equivalent to the 
-above using this approach would be:
+above using the old approach would be:
 
 ```java
   // Loop through rows, accessing the relevant column data
@@ -561,9 +607,9 @@ which means that while FITS supports `null` logical values, we don't and these w
 the `get()` method introduced in version __1.18__ will return these as `Boolean` arrays instead, retaining `null` 
 values appropriately!).
 
-Note that for best performance you should access elements in monotonically increasing order when in deferred mode -- at 
+Note, that for best performance you should access elements in monotonically increasing order when in deferred mode -- at 
 least for the rows, but it does not hurt to follow the same principle for columns inside the loops also. This will help 
-avoid excess buffering that may otherwise be required at times for backward jumps.
+avoid excess buffering that may otherwise be required at times for backward jumps in the random accessible file.
 
 The library provides methods for accessing entire rows and columns also via the `TableData.getRow(int)` and 
 `TableData.getColumn(int)` or `BinaryTable.getColumn(String)` methods. However, we recommend against using these going
@@ -573,10 +619,10 @@ dimensions.
 
 #### Converting array elements
 
-As of version 1.20, the library also support converting array elements to a different numerical type than the stored
-data. Like in the case for images (further above) the integer-decimal conversions will use the columns quantization
-parameters if they are defined. Otherwise narrowing conversions of decimal-to-integer types will use simple rounding.
-You can convert array elements via the `BinaryTable.getArrayElementAs()` method. E.g.:
+As of version __1.20__, the library also support converting array elements to a different numerical type than the 
+stored data type. Like in the case for images (further above) the integer-decimal conversions will use the columns 
+quantization parameters if they are defined. Otherwise narrowing conversions of decimal-to-integer types will use 
+simple rounding. You can convert array elements via the `BinaryTable.getArrayElementAs()` method. E.g.:
 
 ```java
   BinaryTable tab = ...;

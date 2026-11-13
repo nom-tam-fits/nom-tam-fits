@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
+import nom.tam.fits.FitsFactory;
+import nom.tam.fits.ReadBoundsException;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.RandomAccess;
@@ -403,7 +405,6 @@ public abstract class StandardImageTiler implements ImageTiler {
         boolean hasNoOverlap = true;
 
         do {
-
             // This implies there is some overlap
             // in the last index (in conjunction
             // with other tests)
@@ -463,10 +464,15 @@ public abstract class StandardImageTiler implements ImageTiler {
 
     @Override
     public Object getCompleteImage() throws IOException {
-
         if (randomAccessFile == null) {
             throw new IOException("Attempt to read from null file");
         }
+
+        long size = countPixels(new int[dims.length], dims, null) * ElementType.forClass(base).size();
+        if (size > FitsFactory.getReadBounds()) {
+            throw new ReadBoundsException("Image size (" + size + ") exceeds read size limit.");
+        }
+
         long currentOffset = randomAccessFile.getFilePointer();
         Object o = ArrayFuncs.newInstance(base, dims);
         randomAccessFile.seek(fileOffset);
@@ -483,35 +489,57 @@ public abstract class StandardImageTiler implements ImageTiler {
      */
     protected abstract Object getMemoryImage();
 
-    @Override
-    public Object getTile(int[] corners, int[] lengths) throws IOException {
-        final int[] steps = new int[corners.length];
-        Arrays.fill(steps, 1);
-        return getTile(corners, lengths, steps);
-    }
+    private long countPixels(int[] corners, int[] lengths, int[] steps) throws IOException {
+        if (steps == null) {
+            steps = new int[dims.length];
+            Arrays.fill(steps, 1);
+        }
 
-    @Override
-    public Object getTile(int[] corners, int[] lengths, int[] steps) throws IOException {
-
-        if (corners.length != dims.length || lengths.length != dims.length) {
+        if (corners.length != dims.length || lengths.length != dims.length || steps.length != dims.length) {
             throw new IOException("Inconsistent sub-image request");
         }
 
-        int arraySize = 1;
+        long pixels = 1L;
         for (int i = 0; i < dims.length; i++) {
-
             if (corners[i] < 0 || lengths[i] < 0 || corners[i] + lengths[i] > dims[i]) {
                 throw new IOException("Sub-image not within image");
             }
             if (steps[i] < 1) {
                 throw new IOException("Step value cannot be less than 1.");
             }
-
-            arraySize *= lengths[i];
+            pixels *= ((long) lengths[i] + steps[i] - 1) / steps[i];
         }
 
-        Object outArray = ArrayFuncs.newInstance(base, arraySize);
+        return pixels;
+    }
 
+    @Override
+    public Object getTile(int[] corners, int[] lengths)
+            throws ArrayIndexOutOfBoundsException, ReadBoundsException, IOException {
+        final int[] steps = new int[corners.length];
+        Arrays.fill(steps, 1);
+        return getTile(corners, lengths, steps);
+    }
+
+    @Override
+    public Object getTile(int[] corners, int[] lengths, int[] steps)
+            throws ArrayIndexOutOfBoundsException, ReadBoundsException, IOException {
+        int elementSize = ElementType.forClass(base).size();
+
+        long pixels = countPixels(corners, lengths, steps);
+        if (pixels > Integer.MAX_VALUE) {
+            throw new ArrayIndexOutOfBoundsException("flattened tile does not fit into Java array");
+        }
+
+        long size = pixels * elementSize;
+
+        if (getMemoryImage() == null) {
+            if (size > FitsFactory.getReadBounds()) {
+                throw new ReadBoundsException("tile size (" + size + ") exceeds read size limit");
+            }
+        }
+
+        Object outArray = ArrayFuncs.newInstance(base, (int) pixels);
         getTile(outArray, corners, lengths, steps);
         return outArray;
     }

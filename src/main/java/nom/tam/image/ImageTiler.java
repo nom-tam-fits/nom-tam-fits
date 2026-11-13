@@ -37,6 +37,8 @@ package nom.tam.image;
 
 import java.io.IOException;
 
+import nom.tam.fits.ReadBoundsException;
+
 /**
  * Image tiling interface. This interface supports general multi-dimensional tiling. However, FITS tiles are always
  * 2-dimentional, but really images of any dimensions may be covered with 2D tiles.
@@ -48,56 +50,66 @@ public interface ImageTiler {
     /**
      * Returns the entire image reconstructed from the available tiles.
      * 
-     * @return             the complete reconstructed image from the available tiles, as a Java array. This may be an
-     *                         array of promitives (such as <code>float[][]</code>) for images, or an
-     *                         <code>Object[]</code> for binary tables.
+     * @return                     the complete reconstructed image from the available tiles, as a Java array. This may
+     *                                 be an array of promitives (such as <code>float[][]</code>) for images, or an
+     *                                 <code>Object[]</code> for binary tables.
      * 
-     * @throws IOException if there was an error accessing the tile data from the input.
+     * @throws ReadBoundsException if the image size exceeds the current read size limit.
+     * @throws IOException         if there was an error accessing the tile data from the input.
      * 
-     * @see                #getTile(int[], int[])
+     * @see                        #getTile(int[], int[])
      */
-    Object getCompleteImage() throws IOException;
+    Object getCompleteImage() throws ReadBoundsException, IOException;
 
     /**
      * Returns a tile from the image of the specified size at the specified location. An image tile is returned as a
      * one-dimensional array although the image will normally be multidimensional.
      * 
-     * @param  start       the pixels indices where the tile starts in the full image. The array =hould contain a value
-     *                         for each image dimension.
-     * @param  lengths     the tile size in pixels. The array should contain a value for each image dimension. For the
-     *                         supported 2D tiles, the values beyond the first two entries should be set to 1.
+     * @param  start                          the pixels indices where the tile starts in the full image. The array
+     *                                            =hould contain a value for each image dimension.
+     * @param  lengths                        the tile size in pixels. The array should contain a value for each image
+     *                                            dimension. For the supported 2D tiles, the values beyond the first two
+     *                                            entries should be set to 1.
      * 
-     * @return             a Java array containing data for the requested tile. This will always be a flattened 1D
-     *                         array, even if the image is multidimensional
+     * @return                                a Java array containing data for the requested tile. This will always be a
+     *                                            flattened 1D array, even if the image is multidimensional
      * 
-     * @throws IOException if there was an error accessing the tile data from the input.
+     * @throws ArrayIndexOutOfBoundsException if the tile is too big to fit into a flattened 1D array.
+     * @throws ReadBoundsException            if the tile size exceeds the current read size limit.
+     * @throws IOException                    if there was an error accessing the tile data from the input, or the tile
+     *                                            is invalid or not fully contained inside the image.
      * 
-     * @see                #getTile(Object, int[], int[])
-     * @see                #getTile(int[], int[], int[])
-     * @see                #getCompleteImage()
+     * @see                                   #getTile(Object, int[], int[])
+     * @see                                   #getTile(int[], int[], int[])
+     * @see                                   #getCompleteImage()
      */
-    Object getTile(int[] start, int[] lengths) throws IOException;
+    Object getTile(int[] start, int[] lengths) throws ArrayIndexOutOfBoundsException, ReadBoundsException, IOException;
 
     /**
      * Returns a sparsely sampled tile from the image of the specified size at the specified location.
      * 
-     * @param  start       the pixels indices where the tile starts in the full image. The array =hould contain a value
-     *                         for each image dimension.
-     * @param  lengths     the tile size in pixels. The array should contain a value for each image dimension. For the
-     *                         supported 2D tiles, the values beyond the first two entries should be set to 1.
-     * @param  steps       the sampling frequency of the original image, in pixels. The array =hould contain a value for
-     *                         each image dimension.
+     * @param  start                          the pixels indices where the tile starts in the full image. The array
+     *                                            =hould contain a value for each image dimension.
+     * @param  lengths                        the tile size in pixels. The array should contain a value for each image
+     *                                            dimension. For the supported 2D tiles, the values beyond the first two
+     *                                            entries should be set to 1.
+     * @param  steps                          the sampling frequency of the original image, in pixels. The array =hould
+     *                                            contain a value for each image dimension.
      * 
-     * @return             a Java array containing data for the requested tile. This will always be a flattened 1D
-     *                         array, even if the image is multidimensional
+     * @return                                a Java array containing data for the requested tile. This will always be a
+     *                                            flattened 1D array, even if the image is multidimensional
      * 
-     * @throws IOException if there was an error accessing the tile data from the input.
+     * @throws ArrayIndexOutOfBoundsException if the tile is too big to fit into a flattened 1D array.
+     * @throws ReadBoundsException            if the tile size exceeds the current read size limit.
+     * @throws IOException                    if there was an error accessing the tile data from the input, or the tile
+     *                                            is invalid or not fully contained inside the image.
      * 
-     * @see                #getTile(Object, int[], int[], int[])
-     * @see                #getTile(int[], int[])
-     * @see                #getCompleteImage()
+     * @see                                   #getTile(Object, int[], int[], int[])
+     * @see                                   #getTile(int[], int[])
+     * @see                                   #getCompleteImage()
      */
-    default Object getTile(int[] start, int[] lengths, int[] steps) throws IOException {
+    default Object getTile(int[] start, int[] lengths, int[] steps)
+            throws ArrayIndexOutOfBoundsException, ReadBoundsException, IOException {
         throw new UnsupportedOperationException("Striding feature not yet implemented.");
     }
 

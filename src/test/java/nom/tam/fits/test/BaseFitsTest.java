@@ -720,7 +720,8 @@ public class BaseFitsTest {
     @Test
     public void testFitsSettings() throws InterruptedException {
         boolean longstring = FitsFactory.isLongStringsEnabled();
-        final Boolean[] testFitsSettingsVlaue = new Boolean[6];
+        final Boolean[] testFitsSettingsValue = new Boolean[6];
+
         try {
             FitsFactory.setLongStringsEnabled(true);
             new Thread(new Runnable() {
@@ -729,42 +730,44 @@ public class BaseFitsTest {
                 public void run() {
                     try {
                         FitsFactory.useThreadLocalSettings(true);
-                        for (int index = 0; index < testFitsSettingsVlaue.length; index++) {
-                            waitForThread(testFitsSettingsVlaue, 1);
-                            testFitsSettingsVlaue[index++] = FitsFactory.isLongStringsEnabled();
-                            if (testFitsSettingsVlaue[index] != null) {
-                                FitsFactory.setLongStringsEnabled(testFitsSettingsVlaue[index]);
+                        for (int index = 0; index < testFitsSettingsValue.length; index++) {
+                            waitForThread(testFitsSettingsValue, 1);
+                            if (testFitsSettingsValue[index] != null) {
+                                FitsFactory.setLongStringsEnabled(testFitsSettingsValue[index]);
                             }
+                            testFitsSettingsValue[index] = FitsFactory.isLongStringsEnabled();
                         }
                     } catch (InterruptedException e) {
-                        Arrays.fill(testFitsSettingsVlaue, null);
+                        Arrays.fill(testFitsSettingsValue, null);
                     }
                 }
             }).start();
-            testFitsSettingsVlaue[1] = false;
-            waitForThread(testFitsSettingsVlaue, 0);
-            Assertions.assertEquals(Boolean.valueOf(true), testFitsSettingsVlaue[0]);
-            Assertions.assertEquals(Boolean.valueOf(false), testFitsSettingsVlaue[1]);
+
+            testFitsSettingsValue[1] = false;
+            waitForThread(testFitsSettingsValue, 0);
+
+            Assertions.assertEquals(Boolean.valueOf(true), testFitsSettingsValue[0]);
+            Assertions.assertEquals(Boolean.valueOf(false), testFitsSettingsValue[1]);
             Assertions.assertTrue(FitsFactory.isLongStringsEnabled());
-            testFitsSettingsVlaue[3] = true;
-            waitForThread(testFitsSettingsVlaue, 0);
-            Assertions.assertEquals(Boolean.valueOf(false), testFitsSettingsVlaue[2]);
-            Assertions.assertEquals(Boolean.valueOf(true), testFitsSettingsVlaue[3]);
+            testFitsSettingsValue[3] = true;
+            waitForThread(testFitsSettingsValue, 0);
+            Assertions.assertEquals(Boolean.valueOf(false), testFitsSettingsValue[2]);
+            Assertions.assertEquals(Boolean.valueOf(true), testFitsSettingsValue[3]);
             Assertions.assertTrue(FitsFactory.isLongStringsEnabled());
             FitsFactory.setLongStringsEnabled(false);
-            testFitsSettingsVlaue[5] = true;
-            waitForThread(testFitsSettingsVlaue, 0);
-            Assertions.assertEquals(Boolean.valueOf(false), testFitsSettingsVlaue[2]);
-            Assertions.assertEquals(Boolean.valueOf(true), testFitsSettingsVlaue[3]);
+            testFitsSettingsValue[5] = true;
+            waitForThread(testFitsSettingsValue, 0);
+            Assertions.assertEquals(Boolean.valueOf(false), testFitsSettingsValue[2]);
+            Assertions.assertEquals(Boolean.valueOf(true), testFitsSettingsValue[3]);
             Assertions.assertFalse(FitsFactory.isLongStringsEnabled());
         } finally {
             FitsFactory.setLongStringsEnabled(longstring);
         }
     }
 
-    private void waitForThread(final Boolean[] testFitsSettingsVlaue, int index) throws InterruptedException {
+    private void waitForThread(final Boolean[] testFitsSettingsValue, int index) throws InterruptedException {
         int count = 0;
-        while (testFitsSettingsVlaue[index] == null && count < 100) {
+        while (testFitsSettingsValue[index] == null && count < 100) {
             Thread.sleep(10);
             count++;
         }

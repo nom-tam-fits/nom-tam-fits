@@ -42,6 +42,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import nom.tam.fits.Fits;
+import nom.tam.fits.ImageHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsFile;
 import nom.tam.util.FitsOutputStream;
@@ -259,5 +261,54 @@ public class StandardImageTilerTest {
         Assertions.assertArrayEquals(new int[] {2, 0}, current);
 
         Assertions.assertFalse(StandardImageTiler.incrementPosition(start, current, lengths));
+    }
+
+    @Test
+    public void testStandardTileWrongDims() throws Exception {
+        try (Fits fits = new Fits()) {
+            fits.addHDU(Fits.makeHDU(new double[100][100]));
+            ImageHDU im = (ImageHDU) fits.getHDU(0);
+            StandardImageTiler tiler = im.getTiler();
+
+            tiler.getTile(new int[] {0, 0}, new int[] {2, 100});
+
+            Assertions.assertThrows(IOException.class, () -> tiler.getTile(new int[] {0}, new int[] {99, 99}));
+            Assertions.assertThrows(IOException.class, () -> tiler.getTile(new int[] {0, 0}, new int[] {99}));
+            Assertions.assertThrows(IOException.class,
+                    () -> tiler.getTile(new int[] {0, 0}, new int[] {99, 99}, new int[] {1}));
+        }
+    }
+
+    @Test
+    public void testStandardTileInvalidDims() throws Exception {
+        try (Fits fits = new Fits()) {
+            fits.addHDU(Fits.makeHDU(new double[100][100]));
+            ImageHDU im = (ImageHDU) fits.getHDU(0);
+            StandardImageTiler tiler = im.getTiler();
+
+            tiler.getTile(new int[] {0, 0}, new int[] {2, 100});
+
+            Assertions.assertThrows(IOException.class, () -> tiler.getTile(new int[] {0, -1}, new int[] {99, 99}));
+            Assertions.assertThrows(IOException.class, () -> tiler.getTile(new int[] {1, 1}, new int[] {100, 100}));
+            Assertions.assertThrows(IOException.class, () -> tiler.getTile(new int[] {0, 0}, new int[] {99, -1}));
+            Assertions.assertThrows(IOException.class,
+                    () -> tiler.getTile(new int[] {0, 0}, new int[] {99, 99}, new int[] {1, -1}));
+        }
+    }
+
+    @Test
+    public void testStandardTileTooBig() throws Exception {
+        StandardImageTiler tiler = new StandardImageTiler(null, 0L, new int[] {Integer.MAX_VALUE, 2}, int.class) {
+
+            @Override
+            protected Object getMemoryImage() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+        };
+
+        Assertions.assertThrows(ArrayIndexOutOfBoundsException.class,
+                () -> tiler.getTile(new int[] {0, 0}, new int[] {Integer.MAX_VALUE, 2}));
     }
 }
